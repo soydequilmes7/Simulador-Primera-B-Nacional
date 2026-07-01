@@ -1,5 +1,5 @@
 {
-  "outputDirectory": "PAGINAHTLM",
+  "outputDirectory": "public",
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/index" }
   ],

@@ -194,7 +194,7 @@ def actualizar(n_sims=1000, imprimir=True):
     # Importa aquí para evitar import circular si este módulo se usa antes
     # de que main.py esté disponible en el path
     from main import correr_simulacion
-    # En Vercel no tiene sentido escribir PAGINAHTLM/data.json (filesystem
+    # En Vercel no tiene sentido escribir public/data.json (filesystem
     # de solo lectura): el endpoint devuelve "datos" directo en la
     # respuesta y el frontend lo usa de ahí. Local sigue guardando el
     # archivo como siempre.

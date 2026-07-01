@@ -35,7 +35,7 @@ Los resultados de las simulaciones se exportan a archivos JSON y se presentan me
 
 ```
 .
-├── PAGINAHTML/              # Dashboard web (se sirve estático en Vercel)
+├── public/                  # Dashboard web (se sirve estático en Vercel)
 ├── api/
 │   └── index.py             # API FastAPI, deployable como Vercel Function
 ├── datos/                   # Bases de datos y archivos auxiliares
@@ -152,7 +152,7 @@ vercel deploy        # preview
 vercel deploy --prod # producción
 ```
 
-`vercel.json` ya enruta `/api/*` a `api/index.py` y sirve `PAGINAHTLM/`
+`vercel.json` ya enruta `/api/*` a `api/index.py` y sirve `public/`
 como sitio estático (el dashboard).
 
 ### ⚠️ Limitación importante: persistencia en Vercel
