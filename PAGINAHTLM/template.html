@@ -328,6 +328,24 @@
   footer{ text-align:center; padding: 60px 24px 0; color: var(--muted); font-size:12px; font-family:'JetBrains Mono'; }
   footer p{ margin-top:6px; }
 
+  /* ---------- COAUTORES (X) ---------- */
+  .coauthors{
+    position:fixed; top:16px; right:16px; z-index:100;
+    display:flex; gap:10px;
+  }
+  .coauthors a{
+    display:flex; align-items:center; justify-content:center;
+    width:34px; height:34px; border-radius:8px;
+    background: var(--bg-panel); border:1px solid var(--line);
+    color: var(--ink-dim); transition: color 0.15s, border-color 0.15s, background 0.15s;
+  }
+  .coauthors a:hover{ color: var(--ink); border-color: var(--amber-dim); background: var(--bg-panel-2); }
+  .coauthors svg{ width:16px; height:16px; fill:currentColor; }
+  @media (max-width: 600px){
+    .coauthors{ top:10px; right:10px; gap:8px; }
+    .coauthors a{ width:30px; height:30px; }
+  }
+
   @media (max-width: 600px){
     .hero{ padding:48px 16px 32px; }
     section{ padding: 44px 16px 0; }
@@ -336,6 +354,15 @@
 </style>
 </head>
 <body>
+
+  <div class="coauthors">
+    <a href="https://x.com/monti3dev" target="_blank" rel="noopener noreferrer" title="@monti3dev en X" aria-label="@monti3dev en X">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+    </a>
+    <a href="https://x.com/soydequilmes7" target="_blank" rel="noopener noreferrer" title="@soydequilmes7 en X" aria-label="@soydequilmes7 en X">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+    </a>
+  </div>
 
   <div class="hero">
     <div class="eyebrow">SIMULACIÓN MONTE CARLO — <span id="hero-n">0</span> CORRIDAS</div>
