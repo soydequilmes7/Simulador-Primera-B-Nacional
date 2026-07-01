@@ -155,8 +155,139 @@ def correr_simulacion(n_sims=1000, imprimir=True, guardar_json=True):
     return datos_web
 
 
+def simular_hasta_campeon(equipo_objetivo, max_intentos=5000, imprimir=True):
+    """Repite la simulación de la temporada (fase regular + final de ascenso +
+    Reducido) hasta que `equipo_objetivo` consiga el ascenso -- ya sea
+    ganando la final directa (1° ascenso) o el Reducido (2° ascenso).
+
+    A diferencia de correr_simulacion(), acá NO se corre Monte Carlo en cada
+    intento (sería carísimo repetir 1000 simulaciones por cada intento): en
+    cada vuelta se simula una sola temporada completa, se revisa si el
+    equipo pedido ascendió, y si no, se descarta y se prueba de nuevo con
+    los mismos ratings (calculados una sola vez al principio, no hace falta
+    recalcularlos en cada intento).
+
+    Devuelve un dict con el detalle de la corrida ganadora (tabla final,
+    marcador de la final de ascenso, bracket completo del Reducido y
+    cuántos intentos hicieron falta), o None si no se logró en
+    max_intentos intentos.
+    """
+
+    if imprimir:
+        print("=" * 45)
+        print(f"SIMULANDO HASTA QUE ASCIENDA: {equipo_objetivo}")
+        print("=" * 45)
+
+    estadisticas_obj = Estadisticas()
+    estadisticas_obj.cargar_datos()
+    estadisticas_obj.crear_equipos()
+    estadisticas_obj.calcular_estadisticas()
+    estadisticas_obj.calcular_ratings()
+
+    if equipo_objetivo not in estadisticas_obj.equipos:
+        sugerencias = [nombre for nombre in estadisticas_obj.equipos if equipo_objetivo.lower() in nombre.lower()]
+        mensaje = f"'{equipo_objetivo}' no es un equipo válido."
+        if sugerencias:
+            mensaje += f" ¿Quisiste decir: {', '.join(sugerencias)}?"
+        raise ValueError(mensaje)
+
+    for intento in range(1, max_intentos + 1):
+        if imprimir and intento % 200 == 0:
+            print(f"...intento {intento}, todavía no salió campeón")
+
+        tablas = estadisticas_obj.simular_fase_regular()
+
+        puntero_a = tablas["A"].iloc[0]["equipo"]
+        puntero_b = tablas["B"].iloc[0]["equipo"]
+
+        ganador_ascenso, perdedor_ascenso, detalle_final = estadisticas_obj.jugar_final_ascenso(puntero_a, puntero_b)
+        campeon_reducido, detalle_reducido = estadisticas_obj.jugar_reducido(tablas, perdedor_ascenso)
+
+        asciende_directo = (ganador_ascenso == equipo_objetivo)
+        asciende_por_reducido = (campeon_reducido == equipo_objetivo)
+
+        if asciende_directo or asciende_por_reducido:
+            resultado = {
+                "equipo": equipo_objetivo,
+                "intentos": intento,
+                "via": "ascenso_directo" if asciende_directo else "reducido",
+                "tablas": {zona: tabla_zona.to_dict(orient="records") for zona, tabla_zona in tablas.items()},
+                "final_ascenso": {
+                    "equipo_a": puntero_a,
+                    "equipo_b": puntero_b,
+                    "ganador": ganador_ascenso,
+                    "perdedor": perdedor_ascenso,
+                    "detalle_marcador": detalle_final.get("marcador", [0, 0]),
+                    "texto": detalle_final.get("texto", ""),
+                },
+                "reducido": detalle_reducido,
+            }
+
+            if imprimir:
+                _imprimir_resultado_hasta_campeon(resultado, tablas)
+
+            return resultado
+
+    if imprimir:
+        print(f"\nNo se logró el ascenso de {equipo_objetivo} en {max_intentos} intentos.")
+    return None
+
+
+def _imprimir_resultado_hasta_campeon(resultado, tablas):
+    equipo_objetivo = resultado["equipo"]
+
+    print(f"\n¡{equipo_objetivo} ASCENDIÓ! (tardó {resultado['intentos']} intentos)")
+    print(f"Vía: {'ascenso directo (final)' if resultado['via'] == 'ascenso_directo' else 'Reducido'}")
+
+    print("\n--- Tabla final de esa temporada ---")
+    for zona, tabla_zona in tablas.items():
+        print(f"\nZona {zona}")
+        print(tabla_zona.to_string())
+
+    fa = resultado["final_ascenso"]
+    print(f"\n--- Final por el 1° ascenso ---")
+    print(fa["texto"])
+    print(f"Asciende directo: {fa['ganador']}")
+    print(f"{fa['perdedor']} pasa al Reducido")
+
+    print("\n--- Reducido (2° ascenso) ---")
+    reducido = resultado["reducido"]
+
+    print("\nPrimera ronda:")
+    for partido in reducido["primera_ronda"]:
+        print(f"  {partido['local']} {partido['golesLocal']} - {partido['golesVisitante']} {partido['visitante']}  (avanza {partido['avanza']})")
+
+    print("\nCuartos de final:")
+    for partido in reducido["cuartos"]:
+        print(f"  {partido['local']} {partido['golesLocal']} - {partido['golesVisitante']} {partido['visitante']}  (avanza {partido['avanza']})")
+
+    print("\nSemifinales:")
+    for partido in reducido["semis"]:
+        print(f"  {partido['local']} {partido['golesLocal']} - {partido['golesVisitante']} {partido['visitante']}  (avanza {partido['avanza']})")
+
+    print("\nFinal del Reducido:")
+    print(f"  {reducido['final']['detalle']}")
+    print(f"  Campeón del Reducido (2° ascenso): {reducido['final']['campeon']}")
+
+
 def main():
-    correr_simulacion(n_sims=1000, imprimir=True)
+    print("=" * 45)
+    print("SIMULADOR PRIMERA NACIONAL")
+    print("=" * 45)
+    print("1) Correr una simulación normal (tabla + Monte Carlo)")
+    print("2) Simular hasta que un equipo salga campeón (ascienda)")
+
+    opcion = input("\nElegí una opción (1/2): ").strip()
+
+    if opcion == "2":
+        equipo_objetivo = input("¿Qué equipo querés que ascienda?: ").strip()
+        max_intentos = 5000
+        try:
+            simular_hasta_campeon(equipo_objetivo, max_intentos=max_intentos, imprimir=True)
+        except ValueError as e:
+            print(f"\nError: {e}")
+    else:
+        correr_simulacion(n_sims=1000, imprimir=True)
 
 
 if __name__ == "__main__":

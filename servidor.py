@@ -28,7 +28,7 @@ import time
 import traceback
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
-from main import correr_simulacion
+from main import correr_simulacion, simular_hasta_campeon
 from actualizar_resultados import actualizar
 
 PUERTO = 8000
@@ -39,6 +39,13 @@ N_SIMULACIONES = 1000
 # valor mal formado o abusivo tumbe el servidor o lo cuelgue por horas).
 N_SIMULACIONES_MIN = 50
 N_SIMULACIONES_MAX = 5000
+
+# Límites para "simular hasta que un equipo ascienda" (/api/simular-campeon).
+# Cada intento es una sola temporada (mucho más liviano que un Monte Carlo
+# de 1000 corridas), así que se puede permitir un tope más alto.
+MAX_INTENTOS_CAMPEON_DEFAULT = 5000
+MAX_INTENTOS_CAMPEON_MIN = 100
+MAX_INTENTOS_CAMPEON_MAX = 20000
 
 # Cada cuántas horas se corre la actualización automática sola en segundo
 # plano. Poné None para desactivar el auto-update y usar solo el botón manual.
@@ -65,6 +72,8 @@ class Handler(SimpleHTTPRequestHandler):
             self._manejar_simular()
         elif self.path == "/api/actualizar":
             self._manejar_actualizar()
+        elif self.path == "/api/simular-campeon":
+            self._manejar_simular_campeon()
         else:
             self._responder_json(404, {"error": "Ruta no encontrada"})
 
@@ -112,6 +121,56 @@ class Handler(SimpleHTTPRequestHandler):
             self._responder_json(200, resultado)
         except Exception as e:
             print(f">>> ERROR al actualizar: {e}")
+            self._responder_json(500, {"error": str(e)})
+        finally:
+            lock_simulacion.release()
+
+    def _manejar_simular_campeon(self):
+        """Corre simular_hasta_campeon() del equipo pedido desde la web y
+        devuelve esa temporada completa (tabla, final de ascenso y
+        Reducido) en la respuesta. No toca data.json: es una corrida
+        aparte, para "ver cómo sería" el ascenso de un equipo puntual."""
+        if not lock_simulacion.acquire(blocking=False):
+            self._responder_json(409, {"error": "Ya hay una simulación corriendo, esperá a que termine"})
+            return
+        try:
+            largo = int(self.headers.get("Content-Length", 0))
+            cuerpo_raw = self.rfile.read(largo) if largo > 0 else b"{}"
+            datos = json.loads(cuerpo_raw) if cuerpo_raw else {}
+
+            equipo_objetivo = str(datos.get("equipo", "")).strip()
+            if not equipo_objetivo:
+                self._responder_json(400, {"error": "Falta indicar el equipo"})
+                return
+
+            try:
+                max_intentos = int(datos.get("max_intentos", MAX_INTENTOS_CAMPEON_DEFAULT))
+            except (ValueError, TypeError):
+                max_intentos = MAX_INTENTOS_CAMPEON_DEFAULT
+            max_intentos = max(MAX_INTENTOS_CAMPEON_MIN, min(MAX_INTENTOS_CAMPEON_MAX, max_intentos))
+
+            print(f"\n>>> Simulando hasta el ascenso de {equipo_objetivo} pedido desde la web ({max_intentos} intentos máx)...")
+            resultado = simular_hasta_campeon(equipo_objetivo, max_intentos=max_intentos, imprimir=True)
+
+            if resultado is None:
+                print(f">>> No se logró el ascenso de {equipo_objetivo} en {max_intentos} intentos.\n")
+                self._responder_json(200, {
+                    "logrado": False,
+                    "equipo": equipo_objetivo,
+                    "max_intentos": max_intentos,
+                })
+                return
+
+            print(f">>> {equipo_objetivo} ascendió en el intento {resultado['intentos']}.\n")
+            self._responder_json(200, {"logrado": True, **resultado})
+        except ValueError as e:
+            # simular_hasta_campeon levanta ValueError si el nombre de
+            # equipo no existe (con sugerencias si hay coincidencias parciales)
+            self._responder_json(400, {"error": str(e)})
+        except json.JSONDecodeError:
+            self._responder_json(400, {"error": "Body inválido"})
+        except Exception as e:
+            print(f">>> ERROR al simular hasta campeón: {e}")
             self._responder_json(500, {"error": str(e)})
         finally:
             lock_simulacion.release()

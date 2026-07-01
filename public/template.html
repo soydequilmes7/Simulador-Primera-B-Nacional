@@ -285,6 +285,22 @@
   }
   .search-hint{ font-family:'JetBrains Mono'; font-size:11px; color:var(--muted); margin-top:8px; text-align:center; }
 
+  /* ---------- SIMULAR HASTA CAMPEÓN ---------- */
+  .campeon-controls{ display:flex; gap:10px; flex-wrap:wrap; justify-content:center; align-items:center; margin-bottom:6px; }
+  #campeon-equipo{
+    font-family:'JetBrains Mono'; font-size:13px; font-weight:600; color: var(--ink);
+    background: var(--bg-panel-2); border:1px solid var(--line); border-radius:8px;
+    padding: 10px 12px; outline:none; transition: border-color 0.15s, opacity 0.15s; min-width:220px;
+  }
+  #campeon-equipo:hover:not(:disabled){ border-color: var(--amber); }
+  #campeon-equipo:focus{ border-color: var(--amber); }
+  #campeon-equipo:disabled{ cursor:wait; opacity:0.5; }
+  .campeon-summary{
+    font-family:'JetBrains Mono'; font-size:13px; color:var(--ink-dim); text-align:center;
+    padding:14px; background:var(--bg-panel); border:1px solid var(--line); border-radius:10px;
+  }
+  .campeon-summary b{ color:var(--amber); }
+
   .team-card{
     margin-top:18px; border:1px solid var(--line); border-radius:12px; background: var(--bg-panel);
     padding: 20px; animation: fade-in 0.35s ease forwards;
@@ -406,6 +422,23 @@
     <div id="search-result"></div>
   </div>
 
+  <div class="search-section" id="campeon-section">
+    <div class="section-head" style="margin-bottom:14px;">
+      <span class="idx">🏆</span><h2 style="font-size:18px;">Simulá hasta que tu equipo ascienda</h2><div class="rule"></div>
+    </div>
+    <p class="section-note" style="margin:0 0 16px; text-align:center; max-width:none;">
+      Elegí un equipo: corremos temporadas completas (fase regular + final de ascenso + Reducido), una tras otra,
+      hasta encontrar la primera en la que consigue el ascenso. Te mostramos esa temporada puntual: cómo terminó
+      la tabla, contra quién le tocó la final y cómo le fue en el Reducido.
+    </p>
+    <div class="campeon-controls">
+      <select id="campeon-equipo"><option value="">Elegí un equipo…</option></select>
+      <button id="btn-campeon" class="btn-simular">🏆 Simular hasta el ascenso</button>
+    </div>
+    <div id="campeon-status" class="sim-status"></div>
+    <div id="campeon-resultado"></div>
+  </div>
+
   <div class="zone-tabs">
     <div class="group">
       <button class="zone-tab active" data-zone="A">ZONA A</button>
@@ -518,6 +551,7 @@ function iniciar() {
 
     TEAM_INDEX = buildTeamIndex();
     poblarDatalist(TEAM_INDEX);
+    poblarSelectEquipos(TEAM_INDEX);
 
     // Si el link trae ?equipo=Nombre (compartido con "Copiar link"),
     // abrimos esa ficha directo sin que el usuario tenga que buscar.
@@ -967,6 +1001,156 @@ function buscarEquipo(nombre){
 
 let TEAM_INDEX = {};
 document.getElementById('team-search').addEventListener('input', (e) => buscarEquipo(e.target.value));
+
+/* ---------- SIMULAR HASTA CAMPEÓN ---------- */
+function poblarSelectEquipos(index){
+  const sel = document.getElementById('campeon-equipo');
+  const valorPrevio = sel.value;
+  const nombres = Object.keys(index).sort();
+  sel.innerHTML = '<option value="">Elegí un equipo…</option>' +
+    nombres.map(n => `<option value="${n}">${n}</option>`).join('');
+  if (valorPrevio && index[valorPrevio]) sel.value = valorPrevio;
+}
+
+async function simularHastaCampeon(){
+  const btn = document.getElementById('btn-campeon');
+  const sel = document.getElementById('campeon-equipo');
+  const status = document.getElementById('campeon-status');
+  const resultado = document.getElementById('campeon-resultado');
+  const equipo = sel.value;
+
+  status.classList.remove('error', 'ok');
+
+  if (!equipo){
+    status.classList.add('error');
+    status.textContent = "Elegí un equipo primero.";
+    return;
+  }
+
+  btn.disabled = true;
+  sel.disabled = true;
+  btn.textContent = "Simulando…";
+  status.textContent = `Corriendo temporadas hasta que ${equipo} ascienda — puede tardar unos segundos.`;
+  resultado.innerHTML = "";
+
+  try {
+    const respuesta = await fetch("/api/simular-campeon", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ equipo })
+    });
+    const cuerpo = await respuesta.json().catch(() => ({}));
+
+    if (!respuesta.ok) {
+      throw new Error(cuerpo.error || `El servidor respondió con error ${respuesta.status}`);
+    }
+
+    if (!cuerpo.logrado) {
+      status.classList.add('error');
+      status.textContent = `No se logró el ascenso de ${equipo} en ${cuerpo.max_intentos} intentos simulados. Probá de nuevo — el azar puede variar.`;
+      return;
+    }
+
+    renderCampeonResultado(cuerpo);
+    status.classList.add('ok');
+    status.textContent = `✓ Encontrado en el intento N° ${cuerpo.intentos}`;
+  } catch (e) {
+    status.classList.add('error');
+    status.textContent = "No se pudo simular: " + e.message + " — revisá que la API esté disponible.";
+  } finally {
+    btn.disabled = false;
+    sel.disabled = false;
+    btn.textContent = "🏆 Simular hasta el ascenso";
+  }
+}
+
+function renderCampeonResultado(r){
+  const cont = document.getElementById('campeon-resultado');
+  const via = r.via === 'ascenso_directo' ? 'ascenso directo (ganó la final)' : 'el Reducido';
+
+  function filasZonaHTML(filas){
+    let html = "";
+    filas.forEach((f, i) => {
+      const clases = [];
+      if (i === 0) clases.push('punta');
+      else if (i >= 1 && i <= 7) clases.push('reducido');
+      if (i >= filas.length - 2) clases.push('descenso');
+      const esObjetivo = f.equipo === r.equipo;
+      html += `<tr class="${clases.join(' ')}"${esObjetivo ? ' style="box-shadow: inset 3px 0 0 var(--amber);"' : ''}>
+        <td>${i + 1}</td><td>${f.equipo}${esObjetivo ? ' 🏆' : ''}</td><td>${f.puntos}</td><td>${f.gf}</td><td>${f.gc}</td><td>${f.dg > 0 ? '+' + f.dg : f.dg}</td>
+      </tr>`;
+    });
+    return html;
+  }
+
+  const tablasZonasHTML = ['A', 'B'].map(zona => `
+    <div style="margin-top:14px;">
+      <div class="label" style="font-family:'JetBrains Mono'; font-size:11px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:8px;">Zona ${zona}</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>GF</th><th>GC</th><th>DG</th></tr></thead>
+          <tbody>${filasZonaHTML(r.tablas[zona])}</tbody>
+        </table>
+      </div>
+    </div>
+  `).join("");
+
+  const fa = r.final_ascenso;
+  const faScoreHTML = `
+    <span class="team ${fa.ganador === fa.equipo_a ? "win" : ""}">${fa.equipo_a}</span>
+    <span class="gscore">${fa.detalle_marcador[0]} - ${fa.detalle_marcador[1]}</span>
+    <span class="team ${fa.ganador === fa.equipo_b ? "win" : ""}">${fa.equipo_b}</span>
+  `;
+  let faFooter = `Asciende directo: <b>${fa.ganador}</b> · ${fa.perdedor} pasa al Reducido`;
+  if (fa.detalle_penales) faFooter += ` &middot; definido por penales ${fa.detalle_penales[0]}-${fa.detalle_penales[1]}`;
+
+  const red = r.reducido;
+  let bracketHTML = "";
+  bracketHTML += `<div class="round">
+    <div class="round-title">Primera ronda</div>
+    <div class="round-body">${red.primera_ronda.map(m => matchHTML(m)).join("")}</div>
+  </div>`;
+  bracketHTML += `<div class="round">
+    <div class="round-title">Cuartos</div>
+    <div class="round-body">
+      ${red.cuartos.map(m => matchHTML(m)).join("")}
+      <div class="match note">+ ${red.perdedor_final_ascenso} entra directo como 8° clasificado</div>
+    </div>
+  </div>`;
+  bracketHTML += `<div class="round">
+    <div class="round-title">Semifinal</div>
+    <div class="round-body">${red.semis.map(m => matchHTML(m)).join("")}</div>
+  </div>`;
+  bracketHTML += `<div class="round final-col">
+    <div class="round-title">Final (ida y vuelta)</div>
+    <div class="round-body">
+      <div class="match">
+        ${red.semis.map(m => {
+          const nombreEquipo = m.avanza;
+          const esCampeon = nombreEquipo === red.final.campeon;
+          return `<div class="row ${esCampeon ? 'winner' : ''}"><span>${nombreEquipo}</span></div>`;
+        }).join("")}
+        <div class="leg-detail">${red.final.detalle}</div>
+      </div>
+      <div class="campeon">▲ ${red.final.campeon}</div>
+    </div>
+  </div>`;
+
+  cont.innerHTML = `
+    <div class="campeon-summary">🏆 <b>${r.equipo}</b> asciende en esta temporada simulada — vía <b>${via}</b>
+      (intento N° ${r.intentos} de una búsqueda al azar entre distintas temporadas posibles)</div>
+    ${tablasZonasHTML}
+    <div class="ascenso-card" style="margin-top:18px;">
+      <div class="label">Final 1° ascenso</div>
+      <div class="ascenso-score">${faScoreHTML}</div>
+      <div class="ascenso-footer">${faFooter}</div>
+    </div>
+    <div class="label" style="font-family:'JetBrains Mono'; font-size:11px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin: 24px 0 4px;">Reducido — 2° ascenso</div>
+    <div class="bracket-scroll"><div class="bracket">${bracketHTML}</div></div>
+  `;
+}
+
+document.getElementById('btn-campeon').addEventListener('click', simularHastaCampeon);
 
 document.querySelectorAll('.zone-tab').forEach(btn => {
   btn.addEventListener('click', () => setZone(btn.dataset.zone));
