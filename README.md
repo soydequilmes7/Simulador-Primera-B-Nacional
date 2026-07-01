@@ -129,7 +129,7 @@ Este proyecto fue desarrollado con fines de análisis estadístico y simulación
 
 ## Autor
 
-**Matías Sosa**
+**El gonza**
 
 GitHub:
 https://github.com/soydequilmes7
