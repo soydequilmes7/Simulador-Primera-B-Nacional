@@ -9,7 +9,7 @@ from modelos.estadisticas import Estadisticas
 def correr_simulacion(n_sims=1000, imprimir=True, guardar_json=True):
     """Corre toda la simulación (fase regular, final de ascenso, reducido y
     Monte Carlo) y devuelve el diccionario de resultados. Si guardar_json es
-    True (default), además lo guarda en PAGINAHTLM/data.json. La usan tanto
+    True (default), además lo guarda en public/data.json. La usan tanto
     main.py (línea de comandos) y servidor.py (botón "Correr nueva
     simulación" de la página web) -- con guardar_json=True, para que la
     página estática quede al día -- como api/index.py (Vercel Function),
@@ -142,13 +142,13 @@ def correr_simulacion(n_sims=1000, imprimir=True, guardar_json=True):
         }
     }
 
-    # Guardar en la carpeta PAGINAHTLM
+    # Guardar en la carpeta public
     if guardar_json:
-        ruta_data_json = Path(__file__).resolve().parent / "PAGINAHTLM" / "data.json"
+        ruta_data_json = Path(__file__).resolve().parent / "public" / "data.json"
         try:
             with open(ruta_data_json, "w", encoding="utf-8") as file:
                 json.dump(datos_web, file, ensure_ascii=False, indent=4)
-            print("¡Archivo data.json generado con éxito en la carpeta PAGINAHTLM!")
+            print("¡Archivo data.json generado con éxito en la carpeta public!")
         except Exception as e:
             print(f"Error al guardar el archivo JSON: {e}")
 

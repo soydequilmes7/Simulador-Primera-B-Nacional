@@ -2,11 +2,11 @@
 Servidor local para el Simulador Primera Nacional.
 
 Hace tres cosas:
-  1. Sirve los archivos de la carpeta PAGINAHTLM (template.html, data.json)
+  1. Sirve los archivos de la carpeta public (template.html, data.json)
      igual que "python -m http.server", para que abras la página en el navegador.
   2. Escucha POST /api/simular: cuando apretás el botón "Correr nueva
      simulación" en la web, corre la simulación completa (estadisticas.py +
-     main.py), regenera PAGINAHTLM/data.json y le devuelve el resultado al
+     main.py), regenera public/data.json y le devuelve el resultado al
      navegador, sin que tengas que volver a la terminal.
   3. Escucha POST /api/actualizar: scrapea los resultados jugados desde Promiedos,
      completa fixture.csv -> resultados.csv y corre la simulación si hay
@@ -32,7 +32,7 @@ from main import correr_simulacion
 from actualizar_resultados import actualizar
 
 PUERTO = 8000
-CARPETA_WEB = "PAGINAHTLM"
+CARPETA_WEB = "public"
 N_SIMULACIONES = 1000
 
 # Límites para el valor de n_sims que puede pedir la página (evita que un
