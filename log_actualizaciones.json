@@ -1,0 +1,141 @@
+[
+  {
+    "timestamp": "2026-07-01T11:53:05",
+    "partidos_cargados": [],
+    "sin_matchear": [],
+    "simulacion_corrida": false
+  },
+  {
+    "timestamp": "2026-07-01T11:57:43",
+    "partidos_cargados": [
+      {
+        "equipo_local": "Dep. Madryn",
+        "equipo_visitante": "Los Andes",
+        "goles_local": 2,
+        "goles_visitante": 1
+      },
+      {
+        "equipo_local": "Ferro",
+        "equipo_visitante": "Morón",
+        "goles_local": 1,
+        "goles_visitante": 0
+      },
+      {
+        "equipo_local": "Defensores",
+        "equipo_visitante": "All Boys",
+        "goles_local": 0,
+        "goles_visitante": 1
+      },
+      {
+        "equipo_local": "Alte. Brown",
+        "equipo_visitante": "CA Mitre",
+        "goles_local": 3,
+        "goles_visitante": 1
+      },
+      {
+        "equipo_local": "Chacarita",
+        "equipo_visitante": "Tristan Suárez",
+        "goles_local": 0,
+        "goles_visitante": 0
+      },
+      {
+        "equipo_local": "Patronato",
+        "equipo_visitante": "Midland",
+        "goles_local": 1,
+        "goles_visitante": 1
+      },
+      {
+        "equipo_local": "Central Norte",
+        "equipo_visitante": "Godoy Cruz",
+        "goles_local": 1,
+        "goles_visitante": 0
+      },
+      {
+        "equipo_local": "Maipú",
+        "equipo_visitante": "Gimnasia y Tiro",
+        "goles_local": 0,
+        "goles_visitante": 0
+      },
+      {
+        "equipo_local": "Güemes",
+        "equipo_visitante": "Gimnasia (J)",
+        "goles_local": 1,
+        "goles_visitante": 3
+      },
+      {
+        "equipo_local": "Chicago",
+        "equipo_visitante": "Atlético Rafaela",
+        "goles_local": 0,
+        "goles_visitante": 0
+      },
+      {
+        "equipo_local": "Alte. Brown",
+        "equipo_visitante": "Godoy Cruz",
+        "goles_local": 1,
+        "goles_visitante": 0
+      },
+      {
+        "equipo_local": "Dep. Madryn",
+        "equipo_visitante": "San Miguel",
+        "goles_local": 2,
+        "goles_visitante": 2
+      },
+      {
+        "equipo_local": "Estudiantes",
+        "equipo_visitante": "All Boys",
+        "goles_local": 2,
+        "goles_visitante": 1
+      },
+      {
+        "equipo_local": "Ferro",
+        "equipo_visitante": "Acassuso",
+        "goles_local": 2,
+        "goles_visitante": 1
+      },
+      {
+        "equipo_local": "Patronato",
+        "equipo_visitante": "Atlético Rafaela",
+        "goles_local": 0,
+        "goles_visitante": 0
+      },
+      {
+        "equipo_local": "Racing (Cba)",
+        "equipo_visitante": "Chaco For Ever",
+        "goles_local": 2,
+        "goles_visitante": 0
+      },
+      {
+        "equipo_local": "CA Mitre",
+        "equipo_visitante": "Los Andes",
+        "goles_local": 0,
+        "goles_visitante": 3
+      },
+      {
+        "equipo_local": "Temperley",
+        "equipo_visitante": "Güemes",
+        "goles_local": 4,
+        "goles_visitante": 1
+      },
+      {
+        "equipo_local": "Central Norte",
+        "equipo_visitante": "San Telmo",
+        "goles_local": 0,
+        "goles_visitante": 0
+      },
+      {
+        "equipo_local": "Maipú",
+        "equipo_visitante": "Tristan Suárez",
+        "goles_local": 0,
+        "goles_visitante": 1
+      }
+    ],
+    "sin_matchear": [],
+    "simulacion_corrida": true
+  },
+  {
+    "timestamp": "2026-07-01T12:03:11",
+    "partidos_cargados": [],
+    "sin_matchear": [],
+    "simulacion_corrida": false
+  }
+]

@@ -1,0 +1,3190 @@
+{
+    "n_simulaciones": 1200,
+    "generado": "2026-07-01 15:09",
+    "tablas": {
+        "A": [
+            {
+                "equipo": "Colón",
+                "puntos": 60,
+                "gf": 40,
+                "gc": 24,
+                "dg": 16
+            },
+            {
+                "equipo": "Bolivar",
+                "puntos": 59,
+                "gf": 38,
+                "gc": 32,
+                "dg": 6
+            },
+            {
+                "equipo": "Dep. Madryn",
+                "puntos": 57,
+                "gf": 46,
+                "gc": 29,
+                "dg": 17
+            },
+            {
+                "equipo": "Ferro",
+                "puntos": 56,
+                "gf": 42,
+                "gc": 35,
+                "dg": 7
+            },
+            {
+                "equipo": "Estudiantes",
+                "puntos": 54,
+                "gf": 35,
+                "gc": 34,
+                "dg": 1
+            },
+            {
+                "equipo": "Los Andes",
+                "puntos": 53,
+                "gf": 36,
+                "gc": 24,
+                "dg": 12
+            },
+            {
+                "equipo": "Racing (Cba)",
+                "puntos": 52,
+                "gf": 45,
+                "gc": 40,
+                "dg": 5
+            },
+            {
+                "equipo": "Morón",
+                "puntos": 50,
+                "gf": 44,
+                "gc": 42,
+                "dg": 2
+            },
+            {
+                "equipo": "San Miguel",
+                "puntos": 50,
+                "gf": 35,
+                "gc": 36,
+                "dg": -1
+            },
+            {
+                "equipo": "San Telmo",
+                "puntos": 49,
+                "gf": 41,
+                "gc": 38,
+                "dg": 3
+            },
+            {
+                "equipo": "Defensores",
+                "puntos": 45,
+                "gf": 32,
+                "gc": 36,
+                "dg": -4
+            },
+            {
+                "equipo": "Godoy Cruz",
+                "puntos": 44,
+                "gf": 33,
+                "gc": 36,
+                "dg": -3
+            },
+            {
+                "equipo": "CA Mitre",
+                "puntos": 42,
+                "gf": 41,
+                "gc": 44,
+                "dg": -3
+            },
+            {
+                "equipo": "Alte. Brown",
+                "puntos": 42,
+                "gf": 29,
+                "gc": 38,
+                "dg": -9
+            },
+            {
+                "equipo": "Acassuso",
+                "puntos": 41,
+                "gf": 33,
+                "gc": 44,
+                "dg": -11
+            },
+            {
+                "equipo": "Central Norte",
+                "puntos": 40,
+                "gf": 35,
+                "gc": 41,
+                "dg": -6
+            },
+            {
+                "equipo": "All Boys",
+                "puntos": 40,
+                "gf": 28,
+                "gc": 40,
+                "dg": -12
+            },
+            {
+                "equipo": "Chaco For Ever",
+                "puntos": 31,
+                "gf": 37,
+                "gc": 51,
+                "dg": -14
+            }
+        ],
+        "B": [
+            {
+                "equipo": "Atlanta",
+                "puntos": 74,
+                "gf": 54,
+                "gc": 30,
+                "dg": 24
+            },
+            {
+                "equipo": "Gimnasia (J)",
+                "puntos": 62,
+                "gf": 68,
+                "gc": 49,
+                "dg": 19
+            },
+            {
+                "equipo": "Tristan Suárez",
+                "puntos": 57,
+                "gf": 33,
+                "gc": 26,
+                "dg": 7
+            },
+            {
+                "equipo": "Temperley",
+                "puntos": 55,
+                "gf": 48,
+                "gc": 43,
+                "dg": 5
+            },
+            {
+                "equipo": "San Martín",
+                "puntos": 51,
+                "gf": 49,
+                "gc": 44,
+                "dg": 5
+            },
+            {
+                "equipo": "Patronato",
+                "puntos": 51,
+                "gf": 35,
+                "gc": 33,
+                "dg": 2
+            },
+            {
+                "equipo": "Atlético Rafaela",
+                "puntos": 49,
+                "gf": 35,
+                "gc": 28,
+                "dg": 7
+            },
+            {
+                "equipo": "Midland",
+                "puntos": 49,
+                "gf": 45,
+                "gc": 44,
+                "dg": 1
+            },
+            {
+                "equipo": "Colegiales",
+                "puntos": 48,
+                "gf": 46,
+                "gc": 48,
+                "dg": -2
+            },
+            {
+                "equipo": "San Martín (T)",
+                "puntos": 45,
+                "gf": 40,
+                "gc": 36,
+                "dg": 4
+            },
+            {
+                "equipo": "Chicago",
+                "puntos": 45,
+                "gf": 43,
+                "gc": 41,
+                "dg": 2
+            },
+            {
+                "equipo": "Maipú",
+                "puntos": 45,
+                "gf": 49,
+                "gc": 51,
+                "dg": -2
+            },
+            {
+                "equipo": "Almagro",
+                "puntos": 44,
+                "gf": 29,
+                "gc": 35,
+                "dg": -6
+            },
+            {
+                "equipo": "Agropecuario",
+                "puntos": 42,
+                "gf": 37,
+                "gc": 48,
+                "dg": -11
+            },
+            {
+                "equipo": "Quilmes",
+                "puntos": 41,
+                "gf": 37,
+                "gc": 39,
+                "dg": -2
+            },
+            {
+                "equipo": "Gimnasia y Tiro",
+                "puntos": 41,
+                "gf": 36,
+                "gc": 51,
+                "dg": -15
+            },
+            {
+                "equipo": "Chacarita",
+                "puntos": 38,
+                "gf": 34,
+                "gc": 54,
+                "dg": -20
+            },
+            {
+                "equipo": "Güemes",
+                "puntos": 35,
+                "gf": 42,
+                "gc": 66,
+                "dg": -24
+            }
+        ]
+    },
+    "tabla_actual": {
+        "A": [
+            {
+                "zona": "A",
+                "posicion": 1,
+                "equipo": "Morón",
+                "partidos_jugados": 18,
+                "ganados": 10,
+                "empatados": 4,
+                "perdidos": 4,
+                "gf": 26,
+                "gc": 15,
+                "dg": 11,
+                "puntos": 34
+            },
+            {
+                "zona": "A",
+                "posicion": 2,
+                "equipo": "Ferro",
+                "partidos_jugados": 18,
+                "ganados": 10,
+                "empatados": 4,
+                "perdidos": 4,
+                "gf": 20,
+                "gc": 13,
+                "dg": 7,
+                "puntos": 34
+            },
+            {
+                "zona": "A",
+                "posicion": 3,
+                "equipo": "Los Andes",
+                "partidos_jugados": 18,
+                "ganados": 7,
+                "empatados": 8,
+                "perdidos": 3,
+                "gf": 16,
+                "gc": 6,
+                "dg": 10,
+                "puntos": 29
+            },
+            {
+                "zona": "A",
+                "posicion": 4,
+                "equipo": "Colón",
+                "partidos_jugados": 18,
+                "ganados": 7,
+                "empatados": 8,
+                "perdidos": 3,
+                "gf": 21,
+                "gc": 14,
+                "dg": 7,
+                "puntos": 29
+            },
+            {
+                "zona": "A",
+                "posicion": 5,
+                "equipo": "Dep. Madryn",
+                "partidos_jugados": 18,
+                "ganados": 7,
+                "empatados": 7,
+                "perdidos": 4,
+                "gf": 24,
+                "gc": 18,
+                "dg": 6,
+                "puntos": 28
+            },
+            {
+                "zona": "A",
+                "posicion": 6,
+                "equipo": "Bolivar",
+                "partidos_jugados": 18,
+                "ganados": 6,
+                "empatados": 9,
+                "perdidos": 3,
+                "gf": 15,
+                "gc": 12,
+                "dg": 3,
+                "puntos": 27
+            },
+            {
+                "zona": "A",
+                "posicion": 7,
+                "equipo": "Alte. Brown",
+                "partidos_jugados": 18,
+                "ganados": 7,
+                "empatados": 5,
+                "perdidos": 6,
+                "gf": 13,
+                "gc": 12,
+                "dg": 1,
+                "puntos": 26
+            },
+            {
+                "zona": "A",
+                "posicion": 8,
+                "equipo": "Estudiantes",
+                "partidos_jugados": 18,
+                "ganados": 7,
+                "empatados": 5,
+                "perdidos": 6,
+                "gf": 14,
+                "gc": 15,
+                "dg": -1,
+                "puntos": 26
+            },
+            {
+                "zona": "A",
+                "posicion": 9,
+                "equipo": "Godoy Cruz",
+                "partidos_jugados": 18,
+                "ganados": 6,
+                "empatados": 7,
+                "perdidos": 5,
+                "gf": 18,
+                "gc": 14,
+                "dg": 4,
+                "puntos": 25
+            },
+            {
+                "zona": "A",
+                "posicion": 10,
+                "equipo": "San Miguel",
+                "partidos_jugados": 18,
+                "ganados": 5,
+                "empatados": 9,
+                "perdidos": 4,
+                "gf": 16,
+                "gc": 19,
+                "dg": -3,
+                "puntos": 24
+            },
+            {
+                "zona": "A",
+                "posicion": 11,
+                "equipo": "San Telmo",
+                "partidos_jugados": 18,
+                "ganados": 4,
+                "empatados": 8,
+                "perdidos": 6,
+                "gf": 14,
+                "gc": 16,
+                "dg": -2,
+                "puntos": 20
+            },
+            {
+                "zona": "A",
+                "posicion": 12,
+                "equipo": "Defensores",
+                "partidos_jugados": 18,
+                "ganados": 4,
+                "empatados": 8,
+                "perdidos": 6,
+                "gf": 12,
+                "gc": 16,
+                "dg": -4,
+                "puntos": 20
+            },
+            {
+                "zona": "A",
+                "posicion": 13,
+                "equipo": "Racing (Cba)",
+                "partidos_jugados": 18,
+                "ganados": 5,
+                "empatados": 5,
+                "perdidos": 8,
+                "gf": 16,
+                "gc": 21,
+                "dg": -5,
+                "puntos": 20
+            },
+            {
+                "zona": "A",
+                "posicion": 14,
+                "equipo": "All Boys",
+                "partidos_jugados": 18,
+                "ganados": 4,
+                "empatados": 7,
+                "perdidos": 7,
+                "gf": 11,
+                "gc": 18,
+                "dg": -7,
+                "puntos": 19
+            },
+            {
+                "zona": "A",
+                "posicion": 15,
+                "equipo": "Central Norte",
+                "partidos_jugados": 18,
+                "ganados": 4,
+                "empatados": 6,
+                "perdidos": 8,
+                "gf": 11,
+                "gc": 16,
+                "dg": -5,
+                "puntos": 18
+            },
+            {
+                "zona": "A",
+                "posicion": 16,
+                "equipo": "Acassuso",
+                "partidos_jugados": 18,
+                "ganados": 5,
+                "empatados": 3,
+                "perdidos": 10,
+                "gf": 12,
+                "gc": 19,
+                "dg": -7,
+                "puntos": 18
+            },
+            {
+                "zona": "A",
+                "posicion": 17,
+                "equipo": "CA Mitre",
+                "partidos_jugados": 18,
+                "ganados": 3,
+                "empatados": 8,
+                "perdidos": 7,
+                "gf": 18,
+                "gc": 23,
+                "dg": -5,
+                "puntos": 17
+            },
+            {
+                "zona": "A",
+                "posicion": 18,
+                "equipo": "Chaco For Ever",
+                "partidos_jugados": 18,
+                "ganados": 2,
+                "empatados": 6,
+                "perdidos": 10,
+                "gf": 13,
+                "gc": 24,
+                "dg": -11,
+                "puntos": 12
+            }
+        ],
+        "B": [
+            {
+                "zona": "B",
+                "posicion": 1,
+                "equipo": "Gimnasia (J)",
+                "partidos_jugados": 18,
+                "ganados": 11,
+                "empatados": 3,
+                "perdidos": 4,
+                "gf": 30,
+                "gc": 20,
+                "dg": 10,
+                "puntos": 36
+            },
+            {
+                "zona": "B",
+                "posicion": 2,
+                "equipo": "Atlanta",
+                "partidos_jugados": 18,
+                "ganados": 10,
+                "empatados": 3,
+                "perdidos": 5,
+                "gf": 23,
+                "gc": 13,
+                "dg": 10,
+                "puntos": 33
+            },
+            {
+                "zona": "B",
+                "posicion": 3,
+                "equipo": "Tristan Suárez",
+                "partidos_jugados": 18,
+                "ganados": 7,
+                "empatados": 9,
+                "perdidos": 2,
+                "gf": 16,
+                "gc": 10,
+                "dg": 6,
+                "puntos": 30
+            },
+            {
+                "zona": "B",
+                "posicion": 4,
+                "equipo": "Atlético Rafaela",
+                "partidos_jugados": 18,
+                "ganados": 7,
+                "empatados": 6,
+                "perdidos": 5,
+                "gf": 14,
+                "gc": 12,
+                "dg": 2,
+                "puntos": 27
+            },
+            {
+                "zona": "B",
+                "posicion": 5,
+                "equipo": "Temperley",
+                "partidos_jugados": 18,
+                "ganados": 6,
+                "empatados": 9,
+                "perdidos": 3,
+                "gf": 18,
+                "gc": 17,
+                "dg": 1,
+                "puntos": 27
+            },
+            {
+                "zona": "B",
+                "posicion": 6,
+                "equipo": "Midland",
+                "partidos_jugados": 18,
+                "ganados": 7,
+                "empatados": 5,
+                "perdidos": 6,
+                "gf": 19,
+                "gc": 14,
+                "dg": 5,
+                "puntos": 26
+            },
+            {
+                "zona": "B",
+                "posicion": 7,
+                "equipo": "San Martín",
+                "partidos_jugados": 17,
+                "ganados": 6,
+                "empatados": 5,
+                "perdidos": 6,
+                "gf": 18,
+                "gc": 18,
+                "dg": 0,
+                "puntos": 23
+            },
+            {
+                "zona": "B",
+                "posicion": 8,
+                "equipo": "Colegiales",
+                "partidos_jugados": 18,
+                "ganados": 6,
+                "empatados": 5,
+                "perdidos": 7,
+                "gf": 17,
+                "gc": 17,
+                "dg": 0,
+                "puntos": 23
+            },
+            {
+                "zona": "B",
+                "posicion": 9,
+                "equipo": "San Martín (T)",
+                "partidos_jugados": 18,
+                "ganados": 5,
+                "empatados": 8,
+                "perdidos": 5,
+                "gf": 15,
+                "gc": 15,
+                "dg": 0,
+                "puntos": 23
+            },
+            {
+                "zona": "B",
+                "posicion": 10,
+                "equipo": "Maipú",
+                "partidos_jugados": 18,
+                "ganados": 6,
+                "empatados": 4,
+                "perdidos": 8,
+                "gf": 22,
+                "gc": 20,
+                "dg": 2,
+                "puntos": 22
+            },
+            {
+                "zona": "B",
+                "posicion": 11,
+                "equipo": "Chicago",
+                "partidos_jugados": 17,
+                "ganados": 5,
+                "empatados": 7,
+                "perdidos": 5,
+                "gf": 15,
+                "gc": 16,
+                "dg": -1,
+                "puntos": 22
+            },
+            {
+                "zona": "B",
+                "posicion": 12,
+                "equipo": "Almagro",
+                "partidos_jugados": 18,
+                "ganados": 6,
+                "empatados": 4,
+                "perdidos": 8,
+                "gf": 15,
+                "gc": 19,
+                "dg": -4,
+                "puntos": 22
+            },
+            {
+                "zona": "B",
+                "posicion": 13,
+                "equipo": "Quilmes",
+                "partidos_jugados": 18,
+                "ganados": 5,
+                "empatados": 6,
+                "perdidos": 7,
+                "gf": 16,
+                "gc": 14,
+                "dg": 2,
+                "puntos": 21
+            },
+            {
+                "zona": "B",
+                "posicion": 14,
+                "equipo": "Gimnasia y Tiro",
+                "partidos_jugados": 18,
+                "ganados": 5,
+                "empatados": 6,
+                "perdidos": 7,
+                "gf": 16,
+                "gc": 19,
+                "dg": -3,
+                "puntos": 21
+            },
+            {
+                "zona": "B",
+                "posicion": 15,
+                "equipo": "Patronato",
+                "partidos_jugados": 18,
+                "ganados": 4,
+                "empatados": 9,
+                "perdidos": 5,
+                "gf": 12,
+                "gc": 15,
+                "dg": -3,
+                "puntos": 21
+            },
+            {
+                "zona": "B",
+                "posicion": 16,
+                "equipo": "Chacarita",
+                "partidos_jugados": 18,
+                "ganados": 5,
+                "empatados": 4,
+                "perdidos": 9,
+                "gf": 14,
+                "gc": 20,
+                "dg": -6,
+                "puntos": 19
+            },
+            {
+                "zona": "B",
+                "posicion": 17,
+                "equipo": "Güemes",
+                "partidos_jugados": 18,
+                "ganados": 5,
+                "empatados": 4,
+                "perdidos": 9,
+                "gf": 18,
+                "gc": 30,
+                "dg": -12,
+                "puntos": 19
+            },
+            {
+                "zona": "B",
+                "posicion": 18,
+                "equipo": "Agropecuario",
+                "partidos_jugados": 18,
+                "ganados": 4,
+                "empatados": 6,
+                "perdidos": 8,
+                "gf": 14,
+                "gc": 22,
+                "dg": -8,
+                "puntos": 18
+            }
+        ]
+    },
+    "final_ascenso": {
+        "equipo_a": "Colón",
+        "equipo_b": "Atlanta",
+        "ganador": "Colón",
+        "perdedor": "Atlanta",
+        "detalle_marcador": [
+            1,
+            0
+        ]
+    },
+    "reducido": {
+        "perdedor_final_ascenso": "Atlanta",
+        "primera_ronda": [
+            {
+                "local": "Bolivar",
+                "visitante": "Midland",
+                "golesLocal": 2,
+                "golesVisitante": 1,
+                "avanza": "Bolivar"
+            },
+            {
+                "local": "Gimnasia (J)",
+                "visitante": "Morón",
+                "golesLocal": 3,
+                "golesVisitante": 0,
+                "avanza": "Gimnasia (J)"
+            },
+            {
+                "local": "Dep. Madryn",
+                "visitante": "Atlético Rafaela",
+                "golesLocal": 2,
+                "golesVisitante": 1,
+                "avanza": "Dep. Madryn"
+            },
+            {
+                "local": "Tristan Suárez",
+                "visitante": "Racing (Cba)",
+                "golesLocal": 1,
+                "golesVisitante": 2,
+                "avanza": "Racing (Cba)"
+            },
+            {
+                "local": "Ferro",
+                "visitante": "Patronato",
+                "golesLocal": 2,
+                "golesVisitante": 0,
+                "avanza": "Ferro"
+            },
+            {
+                "local": "Temperley",
+                "visitante": "Los Andes",
+                "golesLocal": 0,
+                "golesVisitante": 1,
+                "avanza": "Los Andes"
+            },
+            {
+                "local": "Estudiantes",
+                "visitante": "San Martín",
+                "golesLocal": 1,
+                "golesVisitante": 1,
+                "avanza": "Estudiantes"
+            }
+        ],
+        "cuartos": [
+            {
+                "local": "Atlanta",
+                "visitante": "Racing (Cba)",
+                "golesLocal": 2,
+                "golesVisitante": 0,
+                "avanza": "Atlanta"
+            },
+            {
+                "local": "Gimnasia (J)",
+                "visitante": "Los Andes",
+                "golesLocal": 0,
+                "golesVisitante": 2,
+                "avanza": "Los Andes"
+            },
+            {
+                "local": "Bolivar",
+                "visitante": "Estudiantes",
+                "golesLocal": 1,
+                "golesVisitante": 4,
+                "avanza": "Estudiantes"
+            },
+            {
+                "local": "Dep. Madryn",
+                "visitante": "Ferro",
+                "golesLocal": 3,
+                "golesVisitante": 2,
+                "avanza": "Dep. Madryn"
+            }
+        ],
+        "semis": [
+            {
+                "local": "Atlanta",
+                "visitante": "Los Andes",
+                "golesLocal": 0,
+                "golesVisitante": 2,
+                "avanza": "Los Andes"
+            },
+            {
+                "local": "Dep. Madryn",
+                "visitante": "Estudiantes",
+                "golesLocal": 1,
+                "golesVisitante": 0,
+                "avanza": "Dep. Madryn"
+            }
+        ],
+        "final": {
+            "detalle": "Ida: 2-0 | Vuelta: 3-4",
+            "campeon": "Los Andes"
+        }
+    },
+    "monte_carlo": {
+        "A": [
+            {
+                "equipo": "Morón",
+                "%puntero_zona": 46.5,
+                "%ascenso_directo": 25.2,
+                "%ascenso_reducido": 14.4,
+                "ascenso_total": 39.6,
+                "descenso": 0.0
+            },
+            {
+                "equipo": "Ferro",
+                "%puntero_zona": 23.8,
+                "%ascenso_directo": 11.4,
+                "%ascenso_reducido": 7.4,
+                "ascenso_total": 18.8,
+                "descenso": 0.0
+            },
+            {
+                "equipo": "Los Andes",
+                "%puntero_zona": 11.7,
+                "%ascenso_directo": 6.5,
+                "%ascenso_reducido": 12.2,
+                "ascenso_total": 18.7,
+                "descenso": 0.0
+            },
+            {
+                "equipo": "Dep. Madryn",
+                "%puntero_zona": 7.2,
+                "%ascenso_directo": 3.7,
+                "%ascenso_reducido": 7.7,
+                "ascenso_total": 11.3,
+                "descenso": 0.0
+            },
+            {
+                "equipo": "Colón",
+                "%puntero_zona": 6.7,
+                "%ascenso_directo": 3.2,
+                "%ascenso_reducido": 7.8,
+                "ascenso_total": 10.9,
+                "descenso": 0.1
+            },
+            {
+                "equipo": "Bolivar",
+                "%puntero_zona": 1.8,
+                "%ascenso_directo": 0.9,
+                "%ascenso_reducido": 2.6,
+                "ascenso_total": 3.5,
+                "descenso": 0.1
+            },
+            {
+                "equipo": "Estudiantes",
+                "%puntero_zona": 0.8,
+                "%ascenso_directo": 0.2,
+                "%ascenso_reducido": 1.2,
+                "ascenso_total": 1.4,
+                "descenso": 0.3
+            },
+            {
+                "equipo": "Godoy Cruz",
+                "%puntero_zona": 0.8,
+                "%ascenso_directo": 0.3,
+                "%ascenso_reducido": 0.8,
+                "ascenso_total": 1.2,
+                "descenso": 0.4
+            },
+            {
+                "equipo": "Alte. Brown",
+                "%puntero_zona": 0.4,
+                "%ascenso_directo": 0.2,
+                "%ascenso_reducido": 0.8,
+                "ascenso_total": 0.9,
+                "descenso": 1.1
+            },
+            {
+                "equipo": "San Miguel",
+                "%puntero_zona": 0.2,
+                "%ascenso_directo": 0.0,
+                "%ascenso_reducido": 0.5,
+                "ascenso_total": 0.5,
+                "descenso": 1.8
+            },
+            {
+                "equipo": "Central Norte",
+                "%puntero_zona": 0.0,
+                "%ascenso_directo": 0.0,
+                "%ascenso_reducido": 0.2,
+                "ascenso_total": 0.2,
+                "descenso": 20.1
+            },
+            {
+                "equipo": "Racing (Cba)",
+                "%puntero_zona": 0.0,
+                "%ascenso_directo": 0.0,
+                "%ascenso_reducido": 0.1,
+                "ascenso_total": 0.1,
+                "descenso": 8.0
+            },
+            {
+                "equipo": "San Telmo",
+                "%puntero_zona": 0.0,
+                "%ascenso_directo": 0.0,
+                "%ascenso_reducido": 0.1,
+                "ascenso_total": 0.1,
+                "descenso": 12.9
+            },
+            {
+                "equipo": "All Boys",
+                "%puntero_zona": 0.0,
+                "%ascenso_directo": 0.0,
+                "%ascenso_reducido": 0.1,
+                "ascenso_total": 0.1,
+                "descenso": 16.1
+            },
+            {
+                "equipo": "CA Mitre",
+                "%puntero_zona": 0.0,
+                "%ascenso_directo": 0.0,
+                "%ascenso_reducido": 0.0,
+                "ascenso_total": 0.0,
+                "descenso": 18.1
+            },
+            {
+                "equipo": "Chaco For Ever",
+                "%puntero_zona": 0.0,
+                "%ascenso_directo": 0.0,
+                "%ascenso_reducido": 0.0,
+                "ascenso_total": 0.0,
+                "descenso": 78.6
+            },
+            {
+                "equipo": "Acassuso",
+                "%puntero_zona": 0.0,
+                "%ascenso_directo": 0.0,
+                "%ascenso_reducido": 0.0,
+                "ascenso_total": 0.0,
+                "descenso": 30.4
+            },
+            {
+                "equipo": "Defensores",
+                "%puntero_zona": 0.0,
+                "%ascenso_directo": 0.0,
+                "%ascenso_reducido": 0.0,
+                "ascenso_total": 0.0,
+                "descenso": 12.0
+            }
+        ],
+        "B": [
+            {
+                "equipo": "Gimnasia (J)",
+                "%puntero_zona": 53.0,
+                "%ascenso_directo": 25.4,
+                "%ascenso_reducido": 15.2,
+                "ascenso_total": 40.7,
+                "descenso": 0.0
+            },
+            {
+                "equipo": "Atlanta",
+                "%puntero_zona": 29.6,
+                "%ascenso_directo": 14.7,
+                "%ascenso_reducido": 11.0,
+                "ascenso_total": 25.7,
+                "descenso": 0.0
+            },
+            {
+                "equipo": "Tristan Suárez",
+                "%puntero_zona": 9.0,
+                "%ascenso_directo": 4.5,
+                "%ascenso_reducido": 6.2,
+                "ascenso_total": 10.7,
+                "descenso": 0.1
+            },
+            {
+                "equipo": "Midland",
+                "%puntero_zona": 2.7,
+                "%ascenso_directo": 1.2,
+                "%ascenso_reducido": 2.6,
+                "ascenso_total": 3.8,
+                "descenso": 0.4
+            },
+            {
+                "equipo": "Temperley",
+                "%puntero_zona": 2.0,
+                "%ascenso_directo": 1.2,
+                "%ascenso_reducido": 2.3,
+                "ascenso_total": 3.6,
+                "descenso": 1.2
+            },
+            {
+                "equipo": "Atlético Rafaela",
+                "%puntero_zona": 1.3,
+                "%ascenso_directo": 0.2,
+                "%ascenso_reducido": 2.0,
+                "ascenso_total": 2.2,
+                "descenso": 0.8
+            },
+            {
+                "equipo": "Quilmes",
+                "%puntero_zona": 0.7,
+                "%ascenso_directo": 0.2,
+                "%ascenso_reducido": 1.6,
+                "ascenso_total": 1.8,
+                "descenso": 4.2
+            },
+            {
+                "equipo": "San Martín",
+                "%puntero_zona": 0.4,
+                "%ascenso_directo": 0.3,
+                "%ascenso_reducido": 0.8,
+                "ascenso_total": 1.2,
+                "descenso": 2.8
+            },
+            {
+                "equipo": "Maipú",
+                "%puntero_zona": 0.4,
+                "%ascenso_directo": 0.2,
+                "%ascenso_reducido": 0.8,
+                "ascenso_total": 1.1,
+                "descenso": 5.2
+            },
+            {
+                "equipo": "Colegiales",
+                "%puntero_zona": 0.2,
+                "%ascenso_directo": 0.1,
+                "%ascenso_reducido": 0.6,
+                "ascenso_total": 0.7,
+                "descenso": 3.3
+            },
+            {
+                "equipo": "Almagro",
+                "%puntero_zona": 0.2,
+                "%ascenso_directo": 0.0,
+                "%ascenso_reducido": 0.5,
+                "ascenso_total": 0.5,
+                "descenso": 7.0
+            },
+            {
+                "equipo": "San Martín (T)",
+                "%puntero_zona": 0.0,
+                "%ascenso_directo": 0.0,
+                "%ascenso_reducido": 0.4,
+                "ascenso_total": 0.4,
+                "descenso": 4.5
+            },
+            {
+                "equipo": "Chicago",
+                "%puntero_zona": 0.3,
+                "%ascenso_directo": 0.2,
+                "%ascenso_reducido": 0.1,
+                "ascenso_total": 0.2,
+                "descenso": 9.8
+            },
+            {
+                "equipo": "Patronato",
+                "%puntero_zona": 0.2,
+                "%ascenso_directo": 0.1,
+                "%ascenso_reducido": 0.1,
+                "ascenso_total": 0.2,
+                "descenso": 15.0
+            },
+            {
+                "equipo": "Gimnasia y Tiro",
+                "%puntero_zona": 0.0,
+                "%ascenso_directo": 0.0,
+                "%ascenso_reducido": 0.0,
+                "ascenso_total": 0.0,
+                "descenso": 16.6
+            },
+            {
+                "equipo": "Chacarita",
+                "%puntero_zona": 0.0,
+                "%ascenso_directo": 0.0,
+                "%ascenso_reducido": 0.0,
+                "ascenso_total": 0.0,
+                "descenso": 39.5
+            },
+            {
+                "equipo": "Güemes",
+                "%puntero_zona": 0.0,
+                "%ascenso_directo": 0.0,
+                "%ascenso_reducido": 0.0,
+                "ascenso_total": 0.0,
+                "descenso": 46.0
+            },
+            {
+                "equipo": "Agropecuario",
+                "%puntero_zona": 0.0,
+                "%ascenso_directo": 0.0,
+                "%ascenso_reducido": 0.0,
+                "ascenso_total": 0.0,
+                "descenso": 43.7
+            }
+        ]
+    },
+    "tabla_esperada": {
+        "A": [
+            {
+                "equipo": "Morón",
+                "puntos_prom": 63.2,
+                "posicion_prom": 2.2
+            },
+            {
+                "equipo": "Ferro",
+                "puntos_prom": 60.6,
+                "posicion_prom": 3.1
+            },
+            {
+                "equipo": "Los Andes",
+                "puntos_prom": 57.8,
+                "posicion_prom": 4.0
+            },
+            {
+                "equipo": "Colón",
+                "puntos_prom": 56.2,
+                "posicion_prom": 4.8
+            },
+            {
+                "equipo": "Dep. Madryn",
+                "puntos_prom": 56.0,
+                "posicion_prom": 5.0
+            },
+            {
+                "equipo": "Bolivar",
+                "puntos_prom": 53.1,
+                "posicion_prom": 6.5
+            },
+            {
+                "equipo": "Godoy Cruz",
+                "puntos_prom": 49.5,
+                "posicion_prom": 8.4
+            },
+            {
+                "equipo": "Estudiantes",
+                "puntos_prom": 49.7,
+                "posicion_prom": 8.5
+            },
+            {
+                "equipo": "Alte. Brown",
+                "puntos_prom": 49.4,
+                "posicion_prom": 8.7
+            },
+            {
+                "equipo": "San Miguel",
+                "puntos_prom": 47.9,
+                "posicion_prom": 9.6
+            },
+            {
+                "equipo": "Racing (Cba)",
+                "puntos_prom": 43.5,
+                "posicion_prom": 12.1
+            },
+            {
+                "equipo": "Defensores",
+                "puntos_prom": 42.4,
+                "posicion_prom": 12.8
+            },
+            {
+                "equipo": "San Telmo",
+                "puntos_prom": 42.1,
+                "posicion_prom": 12.9
+            },
+            {
+                "equipo": "All Boys",
+                "puntos_prom": 41.6,
+                "posicion_prom": 13.4
+            },
+            {
+                "equipo": "CA Mitre",
+                "puntos_prom": 40.9,
+                "posicion_prom": 13.5
+            },
+            {
+                "equipo": "Central Norte",
+                "puntos_prom": 40.4,
+                "posicion_prom": 13.9
+            },
+            {
+                "equipo": "Acassuso",
+                "puntos_prom": 39.2,
+                "posicion_prom": 14.6
+            },
+            {
+                "equipo": "Chaco For Ever",
+                "puntos_prom": 32.2,
+                "posicion_prom": 17.1
+            }
+        ],
+        "B": [
+            {
+                "equipo": "Gimnasia (J)",
+                "puntos_prom": 63.3,
+                "posicion_prom": 1.9
+            },
+            {
+                "equipo": "Atlanta",
+                "puntos_prom": 60.7,
+                "posicion_prom": 2.5
+            },
+            {
+                "equipo": "Tristan Suárez",
+                "puntos_prom": 56.0,
+                "posicion_prom": 4.5
+            },
+            {
+                "equipo": "Midland",
+                "puntos_prom": 52.6,
+                "posicion_prom": 6.1
+            },
+            {
+                "equipo": "Atlético Rafaela",
+                "puntos_prom": 51.3,
+                "posicion_prom": 7.3
+            },
+            {
+                "equipo": "Temperley",
+                "puntos_prom": 51.3,
+                "posicion_prom": 7.3
+            },
+            {
+                "equipo": "Quilmes",
+                "puntos_prom": 47.9,
+                "posicion_prom": 9.4
+            },
+            {
+                "equipo": "San Martín",
+                "puntos_prom": 47.9,
+                "posicion_prom": 9.6
+            },
+            {
+                "equipo": "Colegiales",
+                "puntos_prom": 47.6,
+                "posicion_prom": 9.7
+            },
+            {
+                "equipo": "San Martín (T)",
+                "puntos_prom": 47.3,
+                "posicion_prom": 9.9
+            },
+            {
+                "equipo": "Maipú",
+                "puntos_prom": 47.1,
+                "posicion_prom": 9.9
+            },
+            {
+                "equipo": "Almagro",
+                "puntos_prom": 46.3,
+                "posicion_prom": 10.8
+            },
+            {
+                "equipo": "Chicago",
+                "puntos_prom": 45.4,
+                "posicion_prom": 11.4
+            },
+            {
+                "equipo": "Patronato",
+                "puntos_prom": 43.8,
+                "posicion_prom": 12.5
+            },
+            {
+                "equipo": "Gimnasia y Tiro",
+                "puntos_prom": 43.5,
+                "posicion_prom": 12.8
+            },
+            {
+                "equipo": "Chacarita",
+                "puntos_prom": 40.0,
+                "posicion_prom": 14.9
+            },
+            {
+                "equipo": "Agropecuario",
+                "puntos_prom": 39.7,
+                "posicion_prom": 15.1
+            },
+            {
+                "equipo": "Güemes",
+                "puntos_prom": 39.5,
+                "posicion_prom": 15.3
+            }
+        ]
+    },
+    "goleadores": [
+        {
+            "jugador": "Franco Fagundez",
+            "equipo": "Morón",
+            "goles": 7,
+            "proyeccion": 13.2,
+            "proyeccion_min": 11,
+            "proyeccion_max": 15
+        },
+        {
+            "jugador": "Ignacio Lago",
+            "equipo": "Colón",
+            "goles": 7,
+            "proyeccion": 13.2,
+            "proyeccion_min": 11,
+            "proyeccion_max": 15
+        },
+        {
+            "jugador": "Martín Pino",
+            "equipo": "Godoy Cruz",
+            "goles": 7,
+            "proyeccion": 13.2,
+            "proyeccion_min": 11,
+            "proyeccion_max": 15
+        },
+        {
+            "jugador": "Lautaro Gordillo",
+            "equipo": "Gimnasia y Tiro",
+            "goles": 7,
+            "proyeccion": 13.1,
+            "proyeccion_min": 11,
+            "proyeccion_max": 15
+        },
+        {
+            "jugador": "Maximiliano Álvarez",
+            "equipo": "Tristan Suárez",
+            "goles": 6,
+            "proyeccion": 11.4,
+            "proyeccion_min": 9,
+            "proyeccion_max": 13
+        },
+        {
+            "jugador": "Marcos Machado",
+            "equipo": "CA Mitre",
+            "goles": 6,
+            "proyeccion": 11.3,
+            "proyeccion_min": 9,
+            "proyeccion_max": 13
+        },
+        {
+            "jugador": "Luis Silba",
+            "equipo": "Dep. Madryn",
+            "goles": 6,
+            "proyeccion": 11.3,
+            "proyeccion_min": 9,
+            "proyeccion_max": 13
+        },
+        {
+            "jugador": "Martiniano Moreno",
+            "equipo": "Atlético Rafaela",
+            "goles": 6,
+            "proyeccion": 11.3,
+            "proyeccion_min": 9,
+            "proyeccion_max": 13
+        },
+        {
+            "jugador": "Juan Sánchez Sotelo",
+            "equipo": "Güemes",
+            "goles": 6,
+            "proyeccion": 11.3,
+            "proyeccion_min": 9,
+            "proyeccion_max": 13
+        },
+        {
+            "jugador": "Mauricio Asenjo",
+            "equipo": "Los Andes",
+            "goles": 6,
+            "proyeccion": 11.1,
+            "proyeccion_min": 9,
+            "proyeccion_max": 13
+        },
+        {
+            "jugador": "Nazareno Funez",
+            "equipo": "San Martín",
+            "goles": 5,
+            "proyeccion": 9.8,
+            "proyeccion_min": 8,
+            "proyeccion_max": 12
+        },
+        {
+            "jugador": "Sebastian Cocimano",
+            "equipo": "Chicago",
+            "goles": 5,
+            "proyeccion": 9.6,
+            "proyeccion_min": 8,
+            "proyeccion_max": 11
+        },
+        {
+            "jugador": "Juan Pablo Gobetto",
+            "equipo": "Maipú",
+            "goles": 5,
+            "proyeccion": 9.5,
+            "proyeccion_min": 8,
+            "proyeccion_max": 11
+        },
+        {
+            "jugador": "Enzo Gonzalez",
+            "equipo": "Defensores",
+            "goles": 5,
+            "proyeccion": 9.5,
+            "proyeccion_min": 8,
+            "proyeccion_max": 11
+        },
+        {
+            "jugador": "Mateo Benegas",
+            "equipo": "Almagro",
+            "goles": 5,
+            "proyeccion": 9.5,
+            "proyeccion_min": 8,
+            "proyeccion_max": 11
+        },
+        {
+            "jugador": "Leandro Córdoba",
+            "equipo": "Racing (Cba)",
+            "goles": 5,
+            "proyeccion": 9.5,
+            "proyeccion_min": 8,
+            "proyeccion_max": 11
+        },
+        {
+            "jugador": "Agustín Lavezzi",
+            "equipo": "Quilmes",
+            "goles": 5,
+            "proyeccion": 9.5,
+            "proyeccion_min": 8,
+            "proyeccion_max": 11
+        },
+        {
+            "jugador": "Bruno Nasta",
+            "equipo": "San Miguel",
+            "goles": 5,
+            "proyeccion": 9.4,
+            "proyeccion_min": 8,
+            "proyeccion_max": 11
+        },
+        {
+            "jugador": "Marcelo Eggel",
+            "equipo": "Maipú",
+            "goles": 5,
+            "proyeccion": 9.4,
+            "proyeccion_min": 8,
+            "proyeccion_max": 11
+        },
+        {
+            "jugador": "Maximiliano Rogoski",
+            "equipo": "Midland",
+            "goles": 5,
+            "proyeccion": 9.4,
+            "proyeccion_min": 8,
+            "proyeccion_max": 11
+        }
+    ],
+    "rachas": {
+        "A": {
+            "Morón": [
+                {
+                    "gf": 0,
+                    "gc": 1,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "All Boys",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 2,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Estudiantes",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 3,
+                    "gc": 1,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "CA Mitre",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 1,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Alte. Brown",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 2,
+                    "gc": 1,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "Bolivar",
+                    "condicion": "visitante"
+                }
+            ],
+            "Ferro": [
+                {
+                    "gf": 0,
+                    "gc": 1,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Dep. Madryn",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 1,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Central Norte",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Racing (Cba)",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 2,
+                    "gc": 1,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Chaco For Ever",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 2,
+                    "gc": 1,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "Acassuso",
+                    "condicion": "local"
+                }
+            ],
+            "Los Andes": [
+                {
+                    "gf": 1,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Godoy Cruz",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 2,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Racing (Cba)",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "All Boys",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Estudiantes",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 3,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "CA Mitre",
+                    "condicion": "visitante"
+                }
+            ],
+            "Colón": [
+                {
+                    "gf": 1,
+                    "gc": 1,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Estudiantes",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 1,
+                    "gc": 1,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "CA Mitre",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 1,
+                    "gc": 1,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Alte. Brown",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Bolivar",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 3,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "Defensores",
+                    "condicion": "visitante"
+                }
+            ],
+            "Dep. Madryn": [
+                {
+                    "gf": 1,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Ferro",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 2,
+                    "gc": 1,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Chaco For Ever",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Acassuso",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "San Telmo",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 2,
+                    "gc": 2,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "San Miguel",
+                    "condicion": "local"
+                }
+            ],
+            "Bolivar": [
+                {
+                    "gf": 1,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Acassuso",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 1,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "San Telmo",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 1,
+                    "gc": 1,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "San Miguel",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Colón",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 1,
+                    "gc": 2,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "Morón",
+                    "condicion": "local"
+                }
+            ],
+            "Alte. Brown": [
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "San Telmo",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 1,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "San Miguel",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 1,
+                    "gc": 1,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Colón",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 1,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Morón",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 1,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "Godoy Cruz",
+                    "condicion": "local"
+                }
+            ],
+            "Estudiantes": [
+                {
+                    "gf": 1,
+                    "gc": 1,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Colón",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 2,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Morón",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 1,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Godoy Cruz",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Los Andes",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 2,
+                    "gc": 1,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "All Boys",
+                    "condicion": "local"
+                }
+            ],
+            "Godoy Cruz": [
+                {
+                    "gf": 0,
+                    "gc": 1,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Los Andes",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 4,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "All Boys",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 1,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Estudiantes",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 2,
+                    "gc": 1,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "CA Mitre",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 1,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "Alte. Brown",
+                    "condicion": "visitante"
+                }
+            ],
+            "San Miguel": [
+                {
+                    "gf": 0,
+                    "gc": 4,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "CA Mitre",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 1,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Alte. Brown",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 1,
+                    "gc": 1,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Bolivar",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Defensores",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 2,
+                    "gc": 2,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "Dep. Madryn",
+                    "condicion": "visitante"
+                }
+            ],
+            "San Telmo": [
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Alte. Brown",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 0,
+                    "gc": 1,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Bolivar",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 1,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Defensores",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Dep. Madryn",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "Central Norte",
+                    "condicion": "visitante"
+                }
+            ],
+            "Defensores": [
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Chaco For Ever",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 1,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Acassuso",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 1,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "San Telmo",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "San Miguel",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 0,
+                    "gc": 3,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "Colón",
+                    "condicion": "local"
+                }
+            ],
+            "Racing (Cba)": [
+                {
+                    "gf": 1,
+                    "gc": 2,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Central Norte",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 2,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Los Andes",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Ferro",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 1,
+                    "gc": 1,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "All Boys",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 2,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "Chaco For Ever",
+                    "condicion": "local"
+                }
+            ],
+            "All Boys": [
+                {
+                    "gf": 1,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Morón",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 4,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Godoy Cruz",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Los Andes",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 1,
+                    "gc": 1,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Racing (Cba)",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 1,
+                    "gc": 2,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "Estudiantes",
+                    "condicion": "visitante"
+                }
+            ],
+            "Central Norte": [
+                {
+                    "gf": 2,
+                    "gc": 1,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Racing (Cba)",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 0,
+                    "gc": 1,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Ferro",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 1,
+                    "gc": 1,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Chaco For Ever",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 1,
+                    "gc": 2,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Acassuso",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "San Telmo",
+                    "condicion": "local"
+                }
+            ],
+            "Acassuso": [
+                {
+                    "gf": 0,
+                    "gc": 1,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Bolivar",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 1,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Defensores",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Dep. Madryn",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 2,
+                    "gc": 1,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Central Norte",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 1,
+                    "gc": 2,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "Ferro",
+                    "condicion": "visitante"
+                }
+            ],
+            "CA Mitre": [
+                {
+                    "gf": 4,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "San Miguel",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 1,
+                    "gc": 1,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Colón",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 1,
+                    "gc": 3,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Morón",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 1,
+                    "gc": 2,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Godoy Cruz",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 0,
+                    "gc": 3,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "Los Andes",
+                    "condicion": "local"
+                }
+            ],
+            "Chaco For Ever": [
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Defensores",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 1,
+                    "gc": 2,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Dep. Madryn",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 1,
+                    "gc": 1,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Central Norte",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 1,
+                    "gc": 2,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Ferro",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 2,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "Racing (Cba)",
+                    "condicion": "visitante"
+                }
+            ]
+        },
+        "B": {
+            "Gimnasia (J)": [
+                {
+                    "gf": 1,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Temperley",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 1,
+                    "gc": 1,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Gimnasia y Tiro",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 4,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Chicago",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 3,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Atlanta",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 2,
+                    "gc": 1,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "San Martín",
+                    "condicion": "local"
+                }
+            ],
+            "Atlanta": [
+                {
+                    "gf": 2,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Atlético Rafaela",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 1,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "San Martín (T)",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 1,
+                    "gc": 1,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Gimnasia y Tiro",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 3,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Gimnasia (J)",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 2,
+                    "gc": 1,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "Midland",
+                    "condicion": "visitante"
+                }
+            ],
+            "Tristan Suárez": [
+                {
+                    "gf": 1,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Quilmes",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Colegiales",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 1,
+                    "gc": 1,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Patronato",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Almagro",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 1,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "Maipú",
+                    "condicion": "visitante"
+                }
+            ],
+            "Atlético Rafaela": [
+                {
+                    "gf": 0,
+                    "gc": 2,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Atlanta",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 1,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Midland",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 2,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Quilmes",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 1,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Colegiales",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "Patronato",
+                    "condicion": "visitante"
+                }
+            ],
+            "Temperley": [
+                {
+                    "gf": 0,
+                    "gc": 1,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Gimnasia (J)",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 1,
+                    "gc": 1,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Chicago",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 2,
+                    "gc": 1,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "San Martín",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 1,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Chacarita",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 4,
+                    "gc": 1,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "Güemes",
+                    "condicion": "local"
+                }
+            ],
+            "Midland": [
+                {
+                    "gf": 2,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Agropecuario",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 1,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Atlético Rafaela",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 2,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "San Martín (T)",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 1,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Gimnasia y Tiro",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 1,
+                    "gc": 2,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "Atlanta",
+                    "condicion": "local"
+                }
+            ],
+            "San Martín": [
+                {
+                    "gf": 1,
+                    "gc": 2,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Almagro",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 2,
+                    "gc": 1,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Maipú",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 1,
+                    "gc": 2,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Temperley",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 1,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Chicago",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 1,
+                    "gc": 2,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "Gimnasia (J)",
+                    "condicion": "visitante"
+                }
+            ],
+            "Colegiales": [
+                {
+                    "gf": 4,
+                    "gc": 1,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Güemes",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Tristan Suárez",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Agropecuario",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 1,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Atlético Rafaela",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 2,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "San Martín (T)",
+                    "condicion": "local"
+                }
+            ],
+            "San Martín (T)": [
+                {
+                    "gf": 0,
+                    "gc": 1,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Gimnasia y Tiro",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 0,
+                    "gc": 1,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Atlanta",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 2,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Midland",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Quilmes",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 2,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "Colegiales",
+                    "condicion": "visitante"
+                }
+            ],
+            "Maipú": [
+                {
+                    "gf": 1,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Chicago",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 1,
+                    "gc": 2,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "San Martín",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 3,
+                    "gc": 2,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Chacarita",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 1,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Güemes",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 0,
+                    "gc": 1,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "Tristan Suárez",
+                    "condicion": "local"
+                }
+            ],
+            "Chicago": [
+                {
+                    "gf": 0,
+                    "gc": 1,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Maipú",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 1,
+                    "gc": 1,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Temperley",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 4,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Gimnasia (J)",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 0,
+                    "gc": 1,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "San Martín",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 2,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "Chacarita",
+                    "condicion": "local"
+                }
+            ],
+            "Almagro": [
+                {
+                    "gf": 2,
+                    "gc": 1,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "San Martín",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 1,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Chacarita",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 2,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Güemes",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Tristan Suárez",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 2,
+                    "gc": 1,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "Agropecuario",
+                    "condicion": "local"
+                }
+            ],
+            "Quilmes": [
+                {
+                    "gf": 0,
+                    "gc": 1,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Tristan Suárez",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Agropecuario",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 2,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Atlético Rafaela",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "San Martín (T)",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 1,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "Gimnasia y Tiro",
+                    "condicion": "local"
+                }
+            ],
+            "Gimnasia y Tiro": [
+                {
+                    "gf": 1,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "San Martín (T)",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 1,
+                    "gc": 1,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Gimnasia (J)",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 1,
+                    "gc": 1,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Atlanta",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 1,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Midland",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 1,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "Quilmes",
+                    "condicion": "visitante"
+                }
+            ],
+            "Patronato": [
+                {
+                    "gf": 2,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Chacarita",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 1,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Güemes",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 1,
+                    "gc": 1,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Tristan Suárez",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 1,
+                    "gc": 1,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Agropecuario",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "Atlético Rafaela",
+                    "condicion": "local"
+                }
+            ],
+            "Chacarita": [
+                {
+                    "gf": 0,
+                    "gc": 2,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Patronato",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 1,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Almagro",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 2,
+                    "gc": 3,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Maipú",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 0,
+                    "gc": 1,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Temperley",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 2,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "Chicago",
+                    "condicion": "visitante"
+                }
+            ],
+            "Güemes": [
+                {
+                    "gf": 1,
+                    "gc": 4,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Colegiales",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 1,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Patronato",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 2,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Almagro",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 1,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Maipú",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 1,
+                    "gc": 4,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "Temperley",
+                    "condicion": "visitante"
+                }
+            ],
+            "Agropecuario": [
+                {
+                    "gf": 0,
+                    "gc": 2,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Midland",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Quilmes",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Colegiales",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 1,
+                    "gc": 1,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Patronato",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 1,
+                    "gc": 2,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "Almagro",
+                    "condicion": "visitante"
+                }
+            ]
+        }
+    }
+}

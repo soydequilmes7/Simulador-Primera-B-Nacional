@@ -1,0 +1,321 @@
+fecha,jornada,equipo_local,equipo_visitante,goles_local,goles_visitante
+,1,San Miguel,Central Norte,1,0
+,1,Atlético Rafaela,Almagro,0,0
+,1,Godoy Cruz,Bolivar,1,1
+,1,Gimnasia y Tiro,Colegiales,2,1
+,1,Acassuso,Chaco For Ever,2,0
+,1,All Boys,CA Mitre,2,1
+,1,Morón,Defensores,1,1
+,1,San Telmo,Ferro,0,2
+,1,Agropecuario,Maipú,2,1
+,1,Tristan Suárez,Temperley,0,0
+,1,Colón,Dep. Madryn,2,1
+,1,Chacarita,San Martín,1,1
+,1,Güemes,Chicago,0,1
+,1,Los Andes,Alte. Brown,0,0
+,1,Racing (Cba),Estudiantes,1,0
+,1,San Martín (T),Patronato,0,0
+,1,Atlanta,Quilmes,1,0
+,1,Gimnasia (J),Midland,2,1
+,2,Acassuso,Racing (Cba),3,0
+,2,Almagro,San Martín (T),0,1
+,2,Chicago,Tristan Suárez,0,0
+,2,Ferro,San Miguel,1,1
+,2,Dep. Madryn,Morón,1,1
+,2,Maipú,Atlético Rafaela,2,1
+,2,Patronato,Gimnasia y Tiro,1,2
+,2,Quilmes,Midland,0,0
+,2,San Martín,Güemes,2,1
+,2,Chaco For Ever,San Telmo,2,2
+,2,Defensores,Godoy Cruz,1,1
+,2,Alte. Brown,All Boys,2,1
+,2,Bolivar,Los Andes,1,1
+,2,Chacarita,Gimnasia (J),3,1
+,2,Central Norte,Colón,0,0
+,2,Colegiales,Atlanta,1,0
+,2,CA Mitre,Estudiantes,1,0
+,3,Gimnasia y Tiro,Almagro,2,0
+,3,Los Andes,Defensores,0,1
+,3,San Miguel,Chaco For Ever,2,0
+,3,Colón,Ferro,1,1
+,3,Agropecuario,Chicago,0,2
+,3,All Boys,Bolivar,0,0
+,3,Godoy Cruz,Dep. Madryn,0,0
+,3,Morón,Central Norte,2,0
+,3,San Telmo,Acassuso,2,3
+,3,Gimnasia (J),Quilmes,1,0
+,3,Midland,Colegiales,2,0
+,3,Güemes,Chacarita,2,1
+,3,San Martín (T),Maipú,2,2
+,3,Racing (Cba),CA Mitre,0,0
+,3,Estudiantes,Alte. Brown,0,1
+,3,Atlético Rafaela,Temperley,1,0
+,3,Tristan Suárez,San Martín,2,1
+,3,Atlanta,Patronato,0,0
+,5,Racing (Cba),Alte. Brown,2,1
+,5,Atlético Rafaela,San Martín,1,0
+,5,Los Andes,Central Norte,0,0
+,5,Estudiantes,Defensores,0,2
+,5,All Boys,Dep. Madryn,1,0
+,5,Morón,Chaco For Ever,3,2
+,5,San Miguel,San Telmo,1,1
+,5,Godoy Cruz,Ferro,2,1
+,5,Tristan Suárez,Güemes,1,1
+,5,Quilmes,Patronato,3,0
+,5,Colón,Acassuso,1,0
+,5,Midland,Almagro,2,2
+,5,Gimnasia y Tiro,Temperley,0,0
+,5,Agropecuario,Chacarita,2,0
+,5,CA Mitre,Bolivar,1,1
+,5,Gimnasia (J),Colegiales,2,1
+,5,San Martín (T),Chicago,2,0
+,5,Atlanta,Maipú,3,1
+,6,San Martín,San Martín (T),1,1
+,6,Almagro,Quilmes,1,0
+,6,San Miguel,Racing (Cba),1,2
+,6,Acassuso,Morón,0,3
+,6,Defensores,CA Mitre,0,0
+,6,Bolivar,Alte. Brown,0,0
+,6,Dep. Madryn,Estudiantes,3,0
+,6,Ferro,Los Andes,0,2
+,6,Tristan Suárez,Gimnasia (J),3,0
+,6,Chaco For Ever,Godoy Cruz,1,1
+,6,San Telmo,Colón,3,1
+,6,Chacarita,Atlético Rafaela,0,1
+,6,Temperley,Atlanta,2,1
+,6,Patronato,Colegiales,2,0
+,6,Central Norte,All Boys,1,0
+,6,Güemes,Agropecuario,1,1
+,6,Maipú,Midland,0,1
+,6,Chicago,Gimnasia y Tiro,3,1
+,7,Atlanta,Ferro,0,1
+,7,Almagro,Morón,2,0
+,7,Alte. Brown,Tristan Suárez,0,1
+,7,Colegiales,San Miguel,0,0
+,7,Los Andes,Temperley,0,1
+,7,Chicago,All Boys,0,0
+,7,Chacarita,Estudiantes,0,3
+,7,Dep. Madryn,San Martín (T),1,1
+,7,Patronato,Colón,0,2
+,7,San Telmo,Quilmes,0,3
+,7,Maipú,Godoy Cruz,0,1
+,7,Güemes,CA Mitre,2,2
+,7,Gimnasia y Tiro,Central Norte,0,1
+,7,Defensores,Atlético Rafaela,1,1
+,8,Gimnasia y Tiro,San Martín,1,1
+,8,All Boys,Ferro,0,0
+,8,Agropecuario,Tristan Suárez,0,2
+,8,Colegiales,Almagro,1,0
+,8,Estudiantes,Central Norte,1,0
+,8,Midland,Temperley,0,0
+,8,Godoy Cruz,Acassuso,2,0
+,8,San Martín (T),Chacarita,1,1
+,8,Colón,San Miguel,3,0
+,8,Los Andes,Chaco For Ever,2,0
+,8,Alte. Brown,Defensores,0,2
+,8,Morón,San Telmo,1,0
+,8,Gimnasia (J),Patronato,2,0
+,8,Quilmes,Maipú,2,1
+,8,Racing (Cba),Bolivar,0,2
+,8,CA Mitre,Dep. Madryn,1,3
+,8,Atlético Rafaela,Güemes,1,2
+,8,Atlanta,Chicago,1,2
+,7,Midland,Acassuso,1,0
+,9,San Miguel,Morón,2,1
+,9,San Telmo,Godoy Cruz,2,0
+,9,Almagro,Patronato,0,1
+,9,Colón,Racing (Cba),1,0
+,9,Acassuso,Los Andes,0,1
+,9,Chaco For Ever,All Boys,2,0
+,9,Ferro,Estudiantes,0,1
+,9,Central Norte,CA Mitre,1,1
+,9,Dep. Madryn,Alte. Brown,2,1
+,9,Defensores,Bolivar,0,0
+,9,Agropecuario,Gimnasia (J),1,2
+,9,Güemes,San Martín (T),0,2
+,9,Chacarita,Gimnasia y Tiro,2,0
+,9,Temperley,Quilmes,3,3
+,9,Maipú,Colegiales,3,1
+,9,Chicago,Midland,2,2
+,9,Tristan Suárez,Atlético Rafaela,0,0
+,9,San Martín,Atlanta,1,2
+,10,Los Andes,San Telmo,0,0
+,10,Midland,San Martín,0,1
+,10,All Boys,Acassuso,0,0
+,10,Morón,Colón,2,0
+,10,Godoy Cruz,San Miguel,0,0
+,10,Quilmes,Chicago,0,0
+,10,Bolivar,Dep. Madryn,1,0
+,10,Patronato,Maipú,0,0
+,10,Racing (Cba),Defensores,3,0
+,10,Alte. Brown,Central Norte,1,0
+,10,CA Mitre,Ferro,0,1
+,10,Estudiantes,Chaco For Ever,0,0
+,10,Gimnasia (J),Almagro,6,1
+,10,Colegiales,Temperley,1,1
+,10,Gimnasia y Tiro,Güemes,1,1
+,10,San Martín (T),Tristan Suárez,0,0
+,10,Atlético Rafaela,Agropecuario,4,1
+,10,Atlanta,Chacarita,1,0
+,11,San Miguel,Los Andes,0,2
+,11,San Telmo,All Boys,1,0
+,11,Temperley,Patronato,0,0
+,11,San Martín,Quilmes,1,0
+,11,Atlético Rafaela,Gimnasia (J),0,0
+,11,Morón,Racing (Cba),2,1
+,11,Tristan Suárez,Gimnasia y Tiro,2,1
+,11,Chicago,Colegiales,0,0
+,11,Acassuso,Estudiantes,0,1
+,11,Chacarita,Midland,1,0
+,11,Dep. Madryn,Defensores,2,1
+,11,Agropecuario,San Martín (T),2,0
+,11,Chaco For Ever,CA Mitre,1,1
+,11,Central Norte,Bolivar,0,1
+,11,Güemes,Atlanta,0,2
+,11,Maipú,Almagro,1,0
+,11,Colón,Godoy Cruz,0,0
+,11,Ferro,Alte. Brown,0,1
+,12,All Boys,San Miguel,1,1
+,12,Los Andes,Colón,1,1
+,12,San Martín (T),Atlético Rafaela,2,1
+,12,Defensores,Central Norte,1,1
+,12,Estudiantes,San Telmo,1,1
+,12,Colegiales,San Martín,2,0
+,12,Atlanta,Tristan Suárez,3,1
+,12,CA Mitre,Acassuso,2,0
+,12,Almagro,Temperley,1,1
+,12,Gimnasia (J),Maipú,1,1
+,12,Alte. Brown,Chaco For Ever,1,0
+,12,Patronato,Chicago,2,1
+,12,Bolivar,Ferro,2,4
+,12,Midland,Güemes,2,1
+,12,Godoy Cruz,Morón,2,2
+,12,Racing (Cba),Dep. Madryn,2,2
+,12,Quilmes,Chacarita,0,0
+,12,Gimnasia y Tiro,Agropecuario,2,3
+,13,Morón,Los Andes,0,0
+,13,San Telmo,CA Mitre,0,0
+,13,San Miguel,Estudiantes,1,1
+,13,Tristan Suárez,Midland,1,3
+,13,Temperley,Maipú,0,5
+,13,San Martín,Patronato,1,1
+,13,Atlético Rafaela,Gimnasia y Tiro,1,1
+,13,Acassuso,Alte. Brown,0,0
+,13,Godoy Cruz,Racing (Cba),2,1
+,13,Chaco For Ever,Bolivar,0,1
+,13,Central Norte,Dep. Madryn,2,3
+,13,Colón,All Boys,3,2
+,13,Chacarita,Colegiales,2,0
+,13,Güemes,Quilmes,2,1
+,13,Agropecuario,Atlanta,0,0
+,13,Ferro,Defensores,2,1
+,13,Chicago,Almagro,1,2
+,13,San Martín (T),Gimnasia (J),2,0
+,14,Racing (Cba),Central Norte,1,2
+,14,Atlanta,Atlético Rafaela,2,0
+,14,Los Andes,Godoy Cruz,1,0
+,14,Alte. Brown,San Telmo,0,0
+,14,Estudiantes,Colón,1,1
+,14,Bolivar,Acassuso,1,0
+,14,Colegiales,Güemes,4,1
+,14,Dep. Madryn,Ferro,1,0
+,14,Gimnasia (J),Temperley,1,0
+,14,Almagro,San Martín,2,1
+,14,CA Mitre,San Miguel,4,0
+,14,Patronato,Chacarita,2,0
+,14,Midland,Agropecuario,2,0
+,14,Maipú,Chicago,1,0
+,14,Quilmes,Tristan Suárez,0,1
+,14,Gimnasia y Tiro,San Martín (T),1,0
+,14,Defensores,Chaco For Ever,0,0
+,14,All Boys,Morón,1,0
+,15,Los Andes,Racing (Cba),2,0
+,15,San Telmo,Bolivar,0,1
+,15,Tristan Suárez,Colegiales,0,0
+,15,San Miguel,Alte. Brown,1,0
+,15,Chicago,Temperley,1,1
+,15,Atlético Rafaela,Midland,1,0
+,15,San Martín,Maipú,2,1
+,15,Acassuso,Defensores,1,0
+,15,Morón,Estudiantes,2,0
+,15,Chacarita,Almagro,1,0
+,15,Agropecuario,Quilmes,0,0
+,15,Chaco For Ever,Dep. Madryn,1,2
+,15,Ferro,Central Norte,1,0
+,15,Godoy Cruz,All Boys,4,0
+,15,Colón,CA Mitre,1,1
+,15,Gimnasia y Tiro,Gimnasia (J),1,1
+,15,Güemes,Patronato,1,0
+,15,San Martín (T),Atlanta,0,1
+,16,Racing (Cba),Ferro,0,0
+,16,Colegiales,Agropecuario,0,0
+,16,Estudiantes,Godoy Cruz,1,0
+,16,All Boys,Los Andes,0,0
+,16,Alte. Brown,Colón,1,1
+,16,Defensores,San Telmo,1,0
+,16,Atlanta,Gimnasia y Tiro,1,1
+,16,Dep. Madryn,Acassuso,0,0
+,16,Almagro,Güemes,2,0
+,16,Bolivar,San Miguel,1,1
+,16,Midland,San Martín (T),2,0
+,16,CA Mitre,Morón,1,3
+,16,Patronato,Tristan Suárez,1,1
+,16,Temperley,San Martín,2,1
+,16,Central Norte,Chaco For Ever,1,1
+,16,Maipú,Chacarita,3,2
+,16,Quilmes,Atlético Rafaela,2,0
+,16,Gimnasia (J),Chicago,4,0
+,17,Gimnasia y Tiro,Midland,1,0
+,17,Atlanta,Gimnasia (J),3,0
+,17,Los Andes,Estudiantes,0,0
+,17,Acassuso,Central Norte,2,1
+,17,San Miguel,Defensores,0,0
+,17,San Martín,Chicago,1,0
+,17,Atlético Rafaela,Colegiales,1,0
+,17,Tristan Suárez,Almagro,0,0
+,17,Morón,Alte. Brown,1,0
+,17,San Telmo,Dep. Madryn,0,0
+,17,All Boys,Racing (Cba),1,1
+,17,Chacarita,Temperley,0,1
+,17,Agropecuario,Patronato,1,1
+,17,Chaco For Ever,Ferro,1,2
+,17,Güemes,Maipú,1,0
+,17,Godoy Cruz,CA Mitre,2,1
+,17,Colón,Bolivar,0,0
+,17,San Martín (T),Quilmes,0,0
+,18,Midland,Atlanta,1,2
+,18,Defensores,Colón,0,3
+,18,Bolivar,Morón,1,2
+,18,Gimnasia (J),San Martín,2,1
+,18,Chicago,Chacarita,2,0
+,18,Almagro,Agropecuario,2,1
+,18,Colegiales,San Martín (T),2,0
+,18,Quilmes,Gimnasia y Tiro,1,0
+,4,San Telmo,Racing (Cba),2,0
+,4,Bolivar,Estudiantes,1,2
+,4,Almagro,Atlanta,2,0
+,4,Colegiales,Quilmes,3,1
+,4,Acassuso,San Miguel,0,2
+,4,Chaco For Ever,Colón,1,0
+,4,San Martín,Agropecuario,2,0
+,4,Temperley,San Martín (T),1,1
+,4,Dep. Madryn,Los Andes,2,1
+,4,Ferro,Morón,1,0
+,4,Defensores,All Boys,0,1
+,4,Alte. Brown,CA Mitre,3,1
+,4,Chacarita,Tristan Suárez,0,0
+,4,Patronato,Midland,1,1
+,4,Central Norte,Godoy Cruz,1,0
+,4,Maipú,Gimnasia y Tiro,0,0
+,4,Güemes,Gimnasia (J),1,3
+,4,Chicago,Atlético Rafaela,0,0
+,18,Alte. Brown,Godoy Cruz,1,0
+,18,Dep. Madryn,San Miguel,2,2
+,18,Estudiantes,All Boys,2,1
+,18,Ferro,Acassuso,2,1
+,18,Patronato,Atlético Rafaela,0,0
+,18,Racing (Cba),Chaco For Ever,2,0
+,18,CA Mitre,Los Andes,0,3
+,18,Temperley,Güemes,4,1
+,18,Central Norte,San Telmo,0,0
+,18,Maipú,Tristan Suárez,0,1

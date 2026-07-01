@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulador Primera Nacional — Reporte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  :root{
+    --bg: #0A1410;
+    --bg-panel: #0F2018;
+    --bg-panel-2: #122419;
+    --line: #213A2C;
+    --ink: #EDEAE0;
+    --ink-dim: #9FB0A6;
+    --muted: #6F8079;
+    --amber: #FFB627;
+    --amber-dim: #8a6b22;
+    --zone-a: #36A187;
+    --zone-a-dim: #1c4a3e;
+    --zone-b: #D9743A;
+    --zone-b-dim: #5c351c;
+    --danger: #C24343;
+    --danger-dim: #4a2222;
+    --azul: #4A9FE0;
+    --azul-dim: #1c3a52;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:
+      radial-gradient(1200px 600px at 50% -200px, rgba(255,182,39,0.06), transparent 60%),
+      var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.5;
+    padding-bottom: 80px;
+  }
+  ::selection{ background: var(--amber); color: #14210f; }
+
+  .display{ font-family:'Oswald', sans-serif; text-transform:uppercase; letter-spacing:0.04em; }
+  .mono{ font-family:'JetBrains Mono', monospace; }
+
+  a{ color: var(--amber); }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative;
+    padding: 64px 24px 40px;
+    text-align:center;
+    border-bottom: 1px solid var(--line);
+    overflow:hidden;
+  }
+  .hero::before{
+    content:"";
+    position:absolute; inset:0;
+    background-image: repeating-linear-gradient(transparent, transparent 3px, rgba(255,255,255,0.012) 4px);
+    pointer-events:none;
+  }
+  .hero .eyebrow{
+    font-family:'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.3em;
+    color: var(--amber);
+    margin-bottom: 18px;
+    opacity:0;
+    animation: flicker-in 0.6s ease forwards 0.1s;
+  }
+  .hero h1{
+    font-size: clamp(34px, 7vw, 64px);
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    text-shadow: 0 0 24px rgba(255,182,39,0.18);
+    opacity:0;
+    animation: flicker-in 0.8s ease forwards 0.3s;
+  }
+  .hero h1 span{ color: var(--amber); }
+  .hero p.sub{
+    margin-top:14px;
+    color: var(--ink-dim);
+    font-size: 15px;
+    max-width: 540px;
+    margin-left:auto; margin-right:auto;
+    opacity:0;
+    animation: fade-in 0.8s ease forwards 0.6s;
+  }
+  .hero .meta{
+    margin-top: 28px;
+    display:flex; justify-content:center; gap: 28px; flex-wrap:wrap;
+    opacity:0;
+    animation: fade-in 0.8s ease forwards 0.8s;
+  }
+  .hero .meta div{ text-align:center; }
+  .hero .meta .num{ font-family:'JetBrains Mono'; font-size:22px; color:var(--amber); font-weight:700; }
+  .hero .meta .lbl{ font-size:11px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-top:2px; }
+
+  .sim-control{ margin-top:30px; display:flex; flex-direction:column; align-items:center; gap:10px; }
+  .btn-simular{
+    font-family:'JetBrains Mono'; font-size:13px; font-weight:600; letter-spacing:0.04em;
+    color:#14210f; background: var(--amber); border:none; border-radius:8px;
+    padding: 12px 26px; cursor:pointer; transition: filter 0.15s, transform 0.1s;
+  }
+  .btn-simular:hover:not(:disabled){ filter:brightness(1.08); }
+  .btn-simular:active:not(:disabled){ transform:scale(0.98); }
+  .btn-simular:disabled{ cursor:wait; filter:grayscale(0.4) brightness(0.85); }
+  .btn-row{ display:flex; gap:10px; flex-wrap:wrap; justify-content:center; }
+  .btn-actualizar{
+    font-family:'JetBrains Mono'; font-size:13px; font-weight:600; letter-spacing:0.04em;
+    color: var(--azul); background: transparent; border:1px solid var(--azul); border-radius:8px;
+    padding: 12px 26px; cursor:pointer; transition: filter 0.15s, transform 0.1s, background 0.15s;
+  }
+  .btn-actualizar:hover:not(:disabled){ background: rgba(74,159,224,0.1); }
+  .btn-actualizar:active:not(:disabled){ transform:scale(0.98); }
+  .btn-actualizar:disabled{ cursor:wait; opacity:0.5; }
+  .sim-select-row{ display:flex; align-items:center; gap:8px; }
+  .sim-select-row label{ font-family:'JetBrains Mono'; font-size:11px; color:var(--muted); letter-spacing:0.04em; text-transform:uppercase; }
+  #sim-count{
+    font-family:'JetBrains Mono'; font-size:13px; font-weight:600; color: var(--ink);
+    background: var(--bg-panel-2); border:1px solid var(--line); border-radius:8px;
+    padding: 8px 10px; width:90px; text-align:center; outline:none; transition: border-color 0.15s, opacity 0.15s;
+  }
+  #sim-count:hover:not(:disabled){ border-color: var(--amber); }
+  #sim-count:focus{ border-color: var(--amber); }
+  #sim-count:disabled{ cursor:wait; opacity:0.5; }
+  #sim-count::-webkit-inner-spin-button, #sim-count::-webkit-outer-spin-button{ opacity:0.6; }
+  .sim-select-row .rango{ font-family:'JetBrains Mono'; font-size:10px; color:var(--muted); }
+  .last-update{ font-family:'JetBrains Mono'; font-size:10px; color:var(--muted); text-align:center; }
+  .sim-status{ font-family:'JetBrains Mono'; font-size:12px; color:var(--ink-dim); min-height:16px; text-align:center; }
+  .sim-status.error{ color:var(--danger); }
+  .sim-status.ok{ color:var(--zone-a); }
+
+  @keyframes flicker-in{
+    0%{ opacity:0; }
+    8%{ opacity:0.7; }
+    12%{ opacity:0.1; }
+    20%{ opacity:1; }
+    45%{ opacity:0.6; }
+    55%{ opacity:1; }
+    100%{ opacity:1; }
+  }
+  @keyframes fade-in{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+  @media (prefers-reduced-motion: reduce){
+    .hero .eyebrow, .hero h1, .hero p.sub, .hero .meta{ animation:none; opacity:1; }
+  }
+
+  /* ---------- ZONE TABS ---------- */
+  .zone-tabs{
+    position: sticky; top:0; z-index: 50;
+    display:flex; justify-content:center; gap:0;
+    background: rgba(10,20,16,0.92);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--line);
+    padding: 10px 16px;
+  }
+  .zone-tabs .group{ display:flex; border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+  .zone-tab{
+    font-family:'JetBrains Mono'; font-size:13px; font-weight:600;
+    padding: 9px 22px; cursor:pointer; background:transparent; border:none; color:var(--muted);
+    transition: background 0.15s, color 0.15s;
+    letter-spacing:0.05em;
+  }
+  .zone-tab.active[data-zone="A"]{ background: var(--zone-a-dim); color: var(--zone-a); }
+  .zone-tab.active[data-zone="B"]{ background: var(--zone-b-dim); color: var(--zone-b); }
+  .zone-tab:not(.active):hover{ color: var(--ink-dim); }
+
+  /* ---------- SECTIONS ---------- */
+  section{ max-width: 920px; margin: 0 auto; padding: 56px 24px 0; }
+  .section-head{ display:flex; align-items:baseline; gap:12px; margin-bottom:22px; }
+  .section-head .idx{ font-family:'JetBrains Mono'; color:var(--muted); font-size:13px; }
+  .section-head h2{ font-family:'Oswald'; text-transform:uppercase; letter-spacing:0.03em; font-size:24px; font-weight:600; }
+  .section-head .rule{ flex:1; height:1px; background: var(--line); }
+  .section-note{ color:var(--ink-dim); font-size:14px; margin-bottom:22px; max-width:65ch; }
+
+  /* ---------- STANDINGS TABLE ---------- */
+  .table-wrap{ border:1px solid var(--line); border-radius:10px; overflow:hidden; }
+  table{ width:100%; border-collapse:collapse; font-size:14px; }
+  thead th{
+    font-family:'JetBrains Mono'; font-size:11px; letter-spacing:0.06em; text-transform:uppercase;
+    color: var(--muted); text-align:right; padding:10px 12px; background: var(--bg-panel-2);
+    border-bottom:1px solid var(--line);
+  }
+  thead th:first-child, thead th:nth-child(2){ text-align:left; }
+  tbody td{ padding:9px 12px; text-align:right; border-bottom:1px solid var(--line); font-family:'JetBrains Mono'; font-size:13px; }
+  tbody td:first-child{ text-align:left; color:var(--muted); width:32px; }
+  tbody td:nth-child(2){ text-align:left; font-family:'Inter'; font-weight:500; color:var(--ink); }
+  tbody tr:last-child td{ border-bottom:none; }
+  tbody tr.punta{ background: rgba(255,182,39,0.08); }
+  tbody tr.punta td:nth-child(2){ color: var(--amber); font-weight:700; }
+  tbody tr.punta{ box-shadow: inset 3px 0 0 var(--amber); }
+  tbody tr.reducido{ background: rgba(74,159,224,0.07); }
+  tbody tr.reducido td:nth-child(2){ color: var(--azul); font-weight:600; }
+  tbody tr.reducido{ box-shadow: inset 3px 0 0 var(--azul); }
+  tbody tr.descenso{ background: rgba(194,67,67,0.06); }
+  tbody tr.descenso td:nth-child(2){ color: #e08a8a; }
+  tbody tr.descenso{ box-shadow: inset 3px 0 0 var(--danger); }
+
+  /* ---------- ASCENSO CARD ---------- */
+  .ascenso-card{
+    border:1px solid var(--line); border-radius:10px; padding:22px 24px;
+    background: var(--bg-panel); margin-bottom: 10px;
+  }
+  .ascenso-card .label{ font-family:'JetBrains Mono'; font-size:11px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:10px; }
+  .ascenso-score{ display:flex; align-items:center; justify-content:center; gap:18px; font-family:'JetBrains Mono'; font-size:20px; flex-wrap:wrap; }
+  .ascenso-score .team{ font-size:16px; }
+  .ascenso-score .team.win{ color:var(--amber); font-weight:700; }
+  .ascenso-score .gscore{ font-size:28px; font-weight:700; color:var(--ink); }
+  .ascenso-footer{ text-align:center; margin-top:14px; color:var(--ink-dim); font-size:13px; }
+  .ascenso-footer b{ color: var(--amber); }
+
+  /* ---------- BRACKET ---------- */
+  .bracket-scroll{ overflow-x:auto; padding: 10px 4px 18px; }
+  .bracket{ display:flex; gap: 30px; min-width: 760px; align-items:stretch; }
+  .round{ display:flex; flex-direction:column; flex:1; }
+  .round-title{ font-family:'JetBrains Mono'; font-size:10px; color:var(--muted); text-align:center; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:14px; flex-shrink:0; }
+  .round-body{ display:flex; flex-direction:column; justify-content:center; flex:1; gap:14px; }
+  .match{
+    position:relative; border:1px solid var(--line); border-radius:8px; background:var(--bg-panel);
+    font-family:'JetBrains Mono'; font-size:12px; padding:8px 10px; flex-shrink:0;
+  }
+  .match .row{ display:flex; justify-content:space-between; padding:3px 0; }
+  .match .row.winner{ color:var(--amber); font-weight:700; }
+  .match .row span:first-child{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:120px; }
+  .match::after{
+    content:""; position:absolute; right:-16px; top:50%; width:16px; height:1px; background:var(--line);
+  }
+  .round:last-child .match::after{ display:none; }
+  .match.note{ font-size:10px; color:var(--muted); border-style:dashed; }
+  .final-col .round-body{ align-items:center; }
+  .final-col .match{ width:100%; }
+  .final-col .row span:first-child{ max-width:none; }
+  .final-col .leg-detail{
+    margin-top:8px; padding-top:8px; border-top:1px dashed var(--line);
+    font-size:10px; color:var(--muted); text-align:center; letter-spacing:0.02em;
+  }
+  .final-col .campeon{
+    margin-top:14px; font-family:'Oswald'; color:var(--amber); font-size:16px;
+    text-transform:uppercase; letter-spacing:0.02em; text-align:center;
+  }
+
+  /* ---------- MONTE CARLO BARS ---------- */
+  .mc-row{ display:grid; grid-template-columns: 26px 1fr 86px; gap:14px; align-items:center; padding:10px 0; border-bottom:1px solid var(--line); }
+  .mc-row:last-child{ border-bottom:none; }
+  .mc-row .pos{ font-family:'JetBrains Mono'; font-size:11px; color:var(--muted); }
+  .mc-row .name{ font-size:13px; font-weight:500; margin-bottom:5px; display:flex; justify-content:space-between; gap:8px;}
+  .mc-row .name .pct{ font-family:'JetBrains Mono'; font-weight:700; }
+  .mc-bar-track{ position:relative; height:7px; background:var(--bg-panel-2); border-radius:4px; overflow:hidden; }
+  .mc-bar-fill{ position:absolute; top:0; bottom:0; height:100%; }
+  .mc-bar-fill.directo{ left:0; }
+  .mc-bar-fill.reducido{ opacity:0.5; }
+  .mc-sub{ display:flex; gap:14px; margin-top:5px; font-family:'JetBrains Mono'; font-size:10px; color:var(--ink-dim); }
+  .mc-sub .dot{ display:inline-block; width:6px; height:6px; border-radius:50%; margin-right:5px; }
+  .mc-desc{ text-align:right; }
+  .mc-desc .desc-pct{ font-family:'JetBrains Mono'; font-size:13px; font-weight:700; color:var(--ink-dim); }
+  .mc-desc .desc-pct.high{ color: var(--danger); }
+  .mc-desc .desc-lbl{ font-size:9px; letter-spacing:0.06em; text-transform:uppercase; color:var(--muted); margin-top:1px; }
+  .mc-desc .desc-bar-track{ height:5px; background:var(--bg-panel-2); border-radius:3px; overflow:hidden; margin-top:5px; }
+  .mc-desc .desc-bar-fill{ height:100%; background:var(--danger); border-radius:3px; }
+  .legend{ display:flex; gap:18px; font-size:12px; color:var(--ink-dim); margin-bottom:16px; flex-wrap:wrap; }
+  .legend span{ display:inline-flex; align-items:center; gap:6px; }
+  .legend i{ width:10px; height:10px; border-radius:2px; display:inline-block; }
+
+  /* ---------- SEARCH ---------- */
+  .search-section{ padding: 36px 24px 0; max-width: 720px; margin: 0 auto; }
+  .search-box{ position:relative; }
+  .search-box input{
+    width:100%; background: var(--bg-panel); border:1px solid var(--line); border-radius:10px;
+    padding: 14px 16px 14px 42px; color: var(--ink); font-family:'Inter'; font-size:14px;
+    outline:none; transition: border-color 0.15s;
+  }
+  .search-box input:focus{ border-color: var(--amber); }
+  .search-box input::placeholder{ color: var(--muted); }
+  .search-box::before{
+    content:"⌕"; position:absolute; left:15px; top:50%; transform:translateY(-50%) scaleX(1.3);
+    color: var(--muted); font-size:18px; pointer-events:none;
+  }
+  .search-hint{ font-family:'JetBrains Mono'; font-size:11px; color:var(--muted); margin-top:8px; text-align:center; }
+
+  .team-card{
+    margin-top:18px; border:1px solid var(--line); border-radius:12px; background: var(--bg-panel);
+    padding: 20px; animation: fade-in 0.35s ease forwards;
+  }
+  .team-card .tc-head{ display:flex; align-items:baseline; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-bottom:16px; }
+  .team-card .tc-name{ font-family:'Oswald'; font-size:22px; text-transform:uppercase; letter-spacing:0.02em; }
+  .team-card .tc-zone{ font-family:'JetBrains Mono'; font-size:11px; letter-spacing:0.08em; padding:4px 10px; border-radius:6px; }
+  .team-card .tc-pos{ font-family:'JetBrains Mono'; font-size:12px; color:var(--ink-dim); }
+  .team-card .tc-pos b{ color:var(--ink); }
+  .team-card .tc-grid{ display:grid; grid-template-columns: repeat(4, 1fr); gap:12px; margin-bottom:18px; }
+  .team-card .tc-stat{ text-align:center; padding:10px 4px; background: var(--bg-panel-2); border-radius:8px; }
+  .team-card .tc-stat .v{ font-family:'JetBrains Mono'; font-size:17px; font-weight:700; color:var(--ink); }
+  .team-card .tc-stat .l{ font-size:9px; letter-spacing:0.06em; text-transform:uppercase; color:var(--muted); margin-top:3px; }
+  .team-card .tc-mc-title{ font-family:'JetBrains Mono'; font-size:11px; color:var(--muted); letter-spacing:0.06em; text-transform:uppercase; margin-bottom:10px; }
+  .no-result{ margin-top:18px; text-align:center; color:var(--muted); font-size:13px; font-family:'JetBrains Mono'; }
+
+  /* ---- Historial de rachas (últimos 5 partidos) ---- */
+  .tc-racha{ margin-top:18px; padding-top:16px; border-top:1px solid var(--line); }
+  .tc-racha-title{ font-family:'JetBrains Mono'; font-size:11px; color:var(--muted); letter-spacing:0.06em; text-transform:uppercase; margin-bottom:10px; }
+  .tc-racha-row{ display:flex; gap:6px; flex-wrap:wrap; }
+  .racha-badge{
+    width:28px; height:28px; border-radius:6px; display:flex; align-items:center; justify-content:center;
+    font-family:'JetBrains Mono'; font-size:12px; font-weight:700; color:#fff; cursor:default; position:relative;
+  }
+  .racha-badge.v{ background: var(--zone-a); }
+  .racha-badge.e{ background: var(--muted); }
+  .racha-badge.d{ background: var(--danger); }
+  .racha-badge[title]:hover::after{
+    content: attr(title); position:absolute; bottom:130%; left:50%; transform:translateX(-50%);
+    background: var(--bg-panel-2); border:1px solid var(--line); color:var(--ink);
+    font-size:11px; padding:5px 8px; border-radius:6px; white-space:nowrap; z-index:5;
+  }
+  .tc-racha-empty{ font-family:'JetBrains Mono'; font-size:11px; color:var(--muted); }
+
+  /* ---- Compartir ficha ---- */
+  .tc-share{ display:flex; gap:8px; margin-top:16px; padding-top:16px; border-top:1px solid var(--line); }
+  .tc-share button{
+    flex:1; padding:8px 10px; border-radius:8px; border:1px solid var(--line); background: var(--bg-panel-2);
+    color: var(--ink-dim); font-family:'JetBrains Mono'; font-size:11px; letter-spacing:0.04em;
+    text-transform:uppercase; cursor:pointer; transition: all 0.15s ease;
+  }
+  .tc-share button:hover{ color: var(--ink); border-color: var(--amber-dim); }
+  .tc-share button.copied{ color: var(--zone-a); border-color: var(--zone-a); }
+
+  @media (max-width: 600px){
+    .team-card .tc-grid{ grid-template-columns: repeat(2, 1fr); }
+  }
+
+  footer{ text-align:center; padding: 60px 24px 0; color: var(--muted); font-size:12px; font-family:'JetBrains Mono'; }
+  footer p{ margin-top:6px; }
+
+  @media (max-width: 600px){
+    .hero{ padding:48px 16px 32px; }
+    section{ padding: 44px 16px 0; }
+    thead th, tbody td{ padding:8px 6px; font-size:12px; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="hero">
+    <div class="eyebrow">SIMULACIÓN MONTE CARLO — <span id="hero-n">0</span> CORRIDAS</div>
+    <h1 class="display">SIMULADOR <span>PRIMERA NACIONAL</span></h1>
+    <p class="sub">Probabilidades de ascenso y descenso calculadas simulando la temporada completa miles de veces con un modelo Poisson ajustado por forma reciente y corrección Dixon-Coles.</p>
+    <div class="meta">
+      <div><div class="num mono" id="meta-equipos">—</div><div class="lbl">Equipos</div></div>
+      <div><div class="num mono" id="meta-zonas">2</div><div class="lbl">Zonas</div></div>
+      <div><div class="num mono" id="meta-ascensos">2</div><div class="lbl">Ascensos por edición</div></div>
+      <div><div class="num mono" id="meta-descensos">4</div><div class="lbl">Descensos por edición</div></div>
+    </div>
+    <div class="sim-control">
+      <div class="sim-select-row">
+        <label for="sim-count">Cantidad de simulaciones</label>
+        <input type="number" id="sim-count" value="1000" min="50" max="5000" step="1">
+        <span class="rango">(50–5000)</span>
+      </div>
+      <div class="btn-row">
+        <button id="btn-simular" class="btn-simular">▶ Correr nueva simulación</button>
+        <button id="btn-actualizar" class="btn-actualizar">⟳ Actualizar desde Promiedos</button>
+      </div>
+      <div id="sim-status" class="sim-status"></div>
+      <div id="last-update" class="last-update"></div>
+    </div>
+  </div>
+
+  <div class="search-section">
+    <div class="search-box">
+      <input type="text" id="team-search" list="team-list" placeholder="Buscar equipo… (ej: Morón, Ferro, Colón)" autocomplete="off">
+      <datalist id="team-list"></datalist>
+    </div>
+    <div class="search-hint">Escribí el nombre del equipo para ver su tabla, chances de ascenso y descenso</div>
+    <div id="search-result"></div>
+  </div>
+
+  <div class="zone-tabs">
+    <div class="group">
+      <button class="zone-tab active" data-zone="A">ZONA A</button>
+      <button class="zone-tab" data-zone="B">ZONA B</button>
+    </div>
+  </div>
+
+  <section id="sec-tabla">
+    <div class="section-head"><span class="idx">01</span><h2>Tabla final simulada</h2><div class="rule"></div></div>
+    <p class="section-note">Resultado de una corrida puntual de la fase regular: se completan los partidos pendientes del fixture sobre la base de los resultados ya jugados.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>GF</th><th>GC</th><th>DG</th></tr></thead>
+        <tbody id="tabla-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="sec-ascenso">
+    <div class="section-head"><span class="idx">02</span><h2>Camino al ascenso</h2><div class="rule"></div></div>
+    <p class="section-note">El puntero de cada zona define el primer ascenso en una final a partido único, cancha neutral. El perdedor pasa directo a semifinales del Reducido junto a los 7 ganadores de la primera ronda.</p>
+
+    <div class="ascenso-card">
+      <div class="label">Final 1° ascenso</div>
+      <div class="ascenso-score" id="final-ascenso-score"></div>
+      <div class="ascenso-footer" id="final-ascenso-footer"></div>
+    </div>
+
+    <div class="label" style="font-family:'JetBrains Mono'; font-size:11px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin: 24px 0 4px;">Reducido — 2° ascenso</div>
+    <div class="bracket-scroll">
+      <div class="bracket" id="bracket"></div>
+    </div>
+  </section>
+
+  <section id="sec-mc">
+    <div class="section-head"><span class="idx">03</span><h2>Probabilidades — Monte Carlo</h2><div class="rule"></div></div>
+    <p class="section-note">Cada barra desglosa el % de simulaciones en que el equipo asciende directo (zona 1) o por el Reducido. A la derecha, el % de veces que descendió, con su propia barra.</p>
+    <div class="legend">
+      <span><i style="background:var(--zone-a)"></i> Ascenso directo (Zona A)</span>
+      <span><i style="background:var(--zone-a); opacity:0.5"></i> Ascenso por Reducido (Zona A)</span>
+      <span><i style="background:var(--zone-b)"></i> Ascenso directo (Zona B)</span>
+      <span><i style="background:var(--zone-b); opacity:0.5"></i> Ascenso por Reducido (Zona B)</span>
+      <span><i style="background:var(--danger)"></i> % descenso</span>
+    </div>
+    <div id="mc-list"></div>
+  </section>
+
+  <section id="sec-esperada">
+    <div class="section-head"><span class="idx">04</span><h2>Posición final esperada</h2><div class="rule"></div></div>
+    <p class="section-note">Puntos y posición promedio de cada equipo a lo largo de todas las simulaciones — la foto más estable de "dónde debería terminar" cada uno.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Equipo</th><th>Pts. prom.</th><th>Pos. prom.</th></tr></thead>
+        <tbody id="esperada-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="sec-goleadores">
+    <div class="section-head"><span class="idx">05</span><h2>Goleadores</h2><div class="rule"></div></div>
+    <p class="section-note">Proyección por simulación: partimos de los goles ya convertidos y corremos miles de simulaciones de los partidos que le quedan al equipo del jugador. El ritmo de cada uno se ajusta hacia el promedio de la liga mientras tiene pocos partidos jugados (para que una racha corta no dispare la proyección), y cada partido simulado tiene una probabilidad genérica de que no lo juegue —no sabemos si es lesión, suspensión o rotación, solo lo tratamos como riesgo—. Por eso el número que ves es un promedio entre un rango posible, no una cifra exacta.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Jugador</th><th>Equipo</th><th>Goles</th><th>Proy.</th></tr></thead>
+        <tbody id="goleadores-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    <p>Generado a partir de <span id="foot-n">0</span> simulaciones — modelo Poisson (ataque/defensa local-visitante, decay por antigüedad, regresión a la media, corrección Dixon-Coles)</p>
+    <p id="foot-date"></p>
+  </footer>
+
+<script>
+let DATA;
+
+async function cargarDatos() {
+    try {
+        const respuesta = await fetch("./data.json?t=" + Date.now());
+
+        if (!respuesta.ok) {
+            throw new Error("No se pudo cargar data.json");
+        }
+
+        DATA = await respuesta.json();
+
+        iniciar();
+    } catch (e) {
+        document.body.innerHTML = `
+            <div style="padding:40px;font-family:Arial">
+                <h2>Error cargando data.json</h2>
+                <pre>${e}</pre>
+            </div>
+        `;
+    }
+}
+function iniciar() {
+    document.getElementById('hero-n').textContent = DATA.n_simulaciones;
+    document.getElementById('foot-n').textContent = DATA.n_simulaciones;
+    document.getElementById('meta-equipos').textContent =
+        DATA.tablas.A.length + DATA.tablas.B.length;
+    document.getElementById('foot-date').textContent = DATA.generado || '';
+
+    renderAscenso();
+    renderBracket();
+    renderGoleadores();
+    setZone("A");
+
+    TEAM_INDEX = buildTeamIndex();
+    poblarDatalist(TEAM_INDEX);
+
+    // Si el link trae ?equipo=Nombre (compartido con "Copiar link"),
+    // abrimos esa ficha directo sin que el usuario tenga que buscar.
+    const equipoUrl = new URLSearchParams(window.location.search).get('equipo');
+    if (equipoUrl){
+        document.getElementById('team-search').value = equipoUrl;
+        buscarEquipo(equipoUrl);
+    }
+}
+
+cargarDatos();
+
+async function correrSimulacion(){
+    const btn = document.getElementById('btn-simular');
+    const status = document.getElementById('sim-status');
+    const input = document.getElementById('sim-count');
+    const nSims = leerNSims();
+
+    btn.disabled = true;
+    input.disabled = true;
+    btn.textContent = "Simulando…";
+    status.classList.remove('error', 'ok');
+    status.textContent = `Corriendo ${nSims} simulaciones — puede tardar 1-2 minutos, no cierres esta pestaña.`;
+
+    try {
+        const respuesta = await fetch("/simular", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ n_sims: Number(nSims) })
+        });
+
+        if (!respuesta.ok) {
+            const cuerpo = await respuesta.json().catch(() => ({}));
+            throw new Error(cuerpo.error || `El servidor respondió con error ${respuesta.status}`);
+        }
+
+        await cargarDatos();
+
+        status.classList.add('ok');
+        status.textContent = "✓ Simulación actualizada (" + (DATA.generado || "") + ")";
+    } catch (e) {
+        status.classList.add('error');
+        status.textContent = "No se pudo correr la simulación: " + e.message +
+            " — ¿Está corriendo servidor.py?";
+    } finally {
+        btn.disabled = false;
+        input.disabled = false;
+        btn.textContent = "▶ Correr nueva simulación";
+    }
+}
+
+document.getElementById('btn-simular').addEventListener('click', correrSimulacion);
+
+function leerNSims(){
+    const input = document.getElementById('sim-count');
+    let n = parseInt(input.value, 10);
+    if (!Number.isFinite(n)) n = 1000;
+    n = Math.max(50, Math.min(5000, n));
+    input.value = n; // refleja el valor ya corregido si el usuario puso algo fuera de rango
+    return n;
+}
+
+async function correrActualizacion(){
+    const btn = document.getElementById('btn-actualizar');
+    const status = document.getElementById('sim-status');
+    const lastUpdate = document.getElementById('last-update');
+    const input = document.getElementById('sim-count');
+    const nSims = leerNSims();
+
+    btn.disabled = true;
+    input.disabled = true;
+    btn.textContent = "Buscando resultados…";
+    status.classList.remove('error', 'ok');
+    status.textContent = "Consultando Promiedos y re-simulando si hay partidos nuevos — puede tardar 1-2 minutos.";
+
+    try {
+        const respuesta = await fetch("/actualizar", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ n_sims: Number(nSims) })
+        });
+        const cuerpo = await respuesta.json().catch(() => ({}));
+
+        if (!respuesta.ok) {
+            throw new Error(cuerpo.error || `El servidor respondió con error ${respuesta.status}`);
+        }
+
+        if (cuerpo.actualizado) {
+            await cargarDatos();
+            status.classList.add('ok');
+            status.textContent = `✓ Se cargaron ${cuerpo.cargados.length} partido(s) nuevo(s) y se re-simuló.`;
+        } else {
+            status.classList.add('ok');
+            status.textContent = "✓ Consultado — no había partidos nuevos jugados todavía.";
+        }
+
+        if (cuerpo.sin_matchear && cuerpo.sin_matchear.length){
+            status.textContent += ` (${cuerpo.sin_matchear.length} partido(s) de Promiedos no se pudieron identificar — revisar mapeo de nombres)`;
+        }
+
+        lastUpdate.textContent = "Última consulta a Promiedos: " + new Date().toLocaleString('es-AR');
+    } catch (e) {
+        status.classList.add('error');
+        status.textContent = "No se pudo actualizar: " + e.message +
+            " — ¿Está corriendo servidor.py?";
+    } finally {
+        btn.disabled = false;
+        input.disabled = false;
+        btn.textContent = "⟳ Actualizar desde Promiedos";
+    }
+}
+
+document.getElementById('btn-actualizar').addEventListener('click', correrActualizacion);
+
+let zonaActual = "A";
+
+function fmtPct(n){ return n.toFixed(1) + "%"; }
+
+function renderTabla(zona){
+  const body = document.getElementById('tabla-body');
+  body.innerHTML = "";
+  const filas = DATA.tablas[zona];
+  filas.forEach((f, i) => {
+    const tr = document.createElement('tr');
+    if (i === 0) tr.classList.add('punta');
+    else if (i >= 1 && i <= 7) tr.classList.add('reducido');
+    if (i >= filas.length - 2) tr.classList.add('descenso');
+    tr.innerHTML = `<td>${i+1}</td><td>${f.equipo}</td><td>${f.puntos}</td><td>${f.gf}</td><td>${f.gc}</td><td>${f.dg > 0 ? '+'+f.dg : f.dg}</td>`;
+    body.appendChild(tr);
+  });
+}
+
+function renderAscenso(){
+
+    const fa = DATA.final_ascenso;
+
+    document.getElementById("final-ascenso-score").innerHTML = `
+        <span class="team ${fa.ganador===fa.equipo_a?"win":""}">
+            ${fa.equipo_a}
+        </span>
+
+        <span class="gscore">
+            ${fa.detalle_marcador[0]} - ${fa.detalle_marcador[1]}
+        </span>
+
+        <span class="team ${fa.ganador===fa.equipo_b?"win":""}">
+            ${fa.equipo_b}
+        </span>
+    `;
+
+    let footer = `Asciende directo: <b>${fa.ganador}</b> · ${fa.perdedor} pasa al Reducido`;
+    if (fa.detalle_penales) {
+        footer += ` &middot; definido por penales ${fa.detalle_penales[0]}-${fa.detalle_penales[1]}`;
+    }
+    document.getElementById("final-ascenso-footer").innerHTML = footer;
+
+}
+
+function matchHTML(m, roundLabel){
+  const winnerIsLocal = m.avanza === m.local;
+  return `<div class="match">
+    <div class="row ${winnerIsLocal ? 'winner':''}"><span>${m.local}</span><span>${m.golesLocal}</span></div>
+    <div class="row ${!winnerIsLocal ? 'winner':''}"><span>${m.visitante}</span><span>${m.golesVisitante}</span></div>
+  </div>`;
+}
+
+function renderBracket(){
+  const r = DATA.reducido;
+  const bracket = document.getElementById('bracket');
+  let html = "";
+
+  html += `<div class="round">
+    <div class="round-title">Primera ronda</div>
+    <div class="round-body">${r.primera_ronda.map(m => matchHTML(m)).join("")}</div>
+  </div>`;
+
+  html += `<div class="round">
+    <div class="round-title">Cuartos</div>
+    <div class="round-body">
+      ${r.cuartos.map(m => matchHTML(m)).join("")}
+      <div class="match note">+ ${r.perdedor_final_ascenso} entra directo como 8° clasificado</div>
+    </div>
+  </div>`;
+
+  html += `<div class="round">
+    <div class="round-title">Semifinal</div>
+    <div class="round-body">${r.semis.map(m => matchHTML(m)).join("")}</div>
+  </div>`;
+
+  html += `<div class="round final-col">
+    <div class="round-title">Final (ida y vuelta)</div>
+    <div class="round-body">
+      <div class="match">
+        ${r.semis.map(m => {
+          const equipo = m.avanza;
+          const esCampeon = equipo === r.final.campeon;
+          return `<div class="row ${esCampeon ? 'winner' : ''}"><span>${equipo}</span></div>`;
+        }).join("")}
+        <div class="leg-detail">${r.final.detalle}</div>
+      </div>
+      <div class="campeon">▲ ${r.final.campeon}</div>
+    </div>
+  </div>`;
+
+  bracket.innerHTML = html;
+}
+
+function renderMC(zona){
+  const list = document.getElementById('mc-list');
+  list.innerHTML = "";
+  const filas = DATA.monte_carlo[zona];
+  const zoneColor = zona === 'A' ? 'var(--zone-a)' : 'var(--zone-b)';
+  filas.forEach((f, i) => {
+    const row = document.createElement('div');
+    row.className = 'mc-row';
+    const directo = f['%ascenso_directo'];
+    const reducido = f['%ascenso_reducido'];
+    const descClass = f.descenso >= 25 ? 'high' : '';
+    row.innerHTML = `
+      <div class="pos">${i+1}</div>
+      <div>
+        <div class="name"><span>${f.equipo}</span><span class="pct" style="color:${zoneColor}">${fmtPct(f.ascenso_total)} ascenso</span></div>
+        <div class="mc-bar-track">
+          <div class="mc-bar-fill directo" style="width:${directo}%; background:${zoneColor}"></div>
+          <div class="mc-bar-fill reducido" style="left:${directo}%; width:${reducido}%; background:${zoneColor}"></div>
+        </div>
+        <div class="mc-sub">
+          <span><i class="dot" style="background:${zoneColor}"></i>${fmtPct(directo)} directo</span>
+          <span><i class="dot" style="background:${zoneColor}; opacity:0.5"></i>${fmtPct(reducido)} reducido</span>
+        </div>
+      </div>
+      <div class="mc-desc">
+        <div class="desc-pct ${descClass}">${fmtPct(f.descenso)}</div>
+        <div class="desc-lbl">descenso</div>
+        <div class="desc-bar-track"><div class="desc-bar-fill" style="width:${Math.min(f.descenso, 100)}%"></div></div>
+      </div>
+    `;
+    list.appendChild(row);
+  });
+}
+
+function renderEsperada(zona){
+  const body = document.getElementById('esperada-body');
+  body.innerHTML = "";
+  DATA.tabla_esperada[zona].forEach((f, i) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${i+1}</td><td>${f.equipo}</td><td>${f.puntos_prom}</td><td>${f.posicion_prom}</td>`;
+    body.appendChild(tr);
+  });
+}
+
+function renderGoleadores(){
+  const body = document.getElementById('goleadores-body');
+  if (!body) return;
+  body.innerHTML = "";
+  const filas = DATA.goleadores || [];
+  if (filas.length === 0) {
+    body.innerHTML = `<tr><td colspan="5" style="color:var(--muted); text-align:center; padding:16px;">
+      Todavía no hay datos de goleadores — corré backfill_goleadores.py una vez para cargarlos.
+    </td></tr>`;
+    return;
+  }
+  filas.forEach((f, i) => {
+    const tr = document.createElement('tr');
+    if (i === 0) tr.classList.add('punta');
+    tr.innerHTML = `<td>${i+1}</td><td>${f.jugador}</td><td>${f.equipo}</td><td>${f.goles}</td><td>${f.proyeccion}</td>`;
+    body.appendChild(tr);
+  });
+}
+
+function setZone(zona){
+  zonaActual = zona;
+  document.querySelectorAll('.zone-tab').forEach(b => b.classList.toggle('active', b.dataset.zone === zona));
+  renderTabla(zona);
+  renderMC(zona);
+  renderEsperada(zona);
+}
+
+/* ---------- BUSCADOR DE EQUIPOS ---------- */
+function buildTeamIndex(){
+  const index = {};
+  ['A','B'].forEach(zona => {
+    // tabla_actual = posiciones reales de HOY (tabla.csv). Si por algún
+    // motivo no viene en data.json (data.json viejo), caemos a la tabla
+    // simulada para no romper la página.
+    const actual = (DATA.tabla_actual && DATA.tabla_actual[zona]) || DATA.tablas[zona];
+    const mc = DATA.monte_carlo[zona];
+    const esperada = DATA.tabla_esperada[zona];
+    // data.json viejo puede no tener "rachas" todavía; sin fallback no rompe.
+    const rachasZona = (DATA.rachas && DATA.rachas[zona]) || {};
+    actual.forEach((f, i) => {
+      const mcRow = mc.find(m => m.equipo === f.equipo) || {};
+      const espRow = esperada.find(e => e.equipo === f.equipo) || {};
+      // Los últimos 5 vienen en orden cronológico ascendente (más viejo
+      // primero); los damos vuelta para mostrar el partido más reciente
+      // primero en la ficha.
+      const ultimos5 = [...(rachasZona[f.equipo] || [])].reverse();
+      index[f.equipo] = {
+        equipo: f.equipo, zona, posicion: f.posicion ?? (i + 1), total: actual.length,
+        puntos: f.puntos, gf: f.gf, gc: f.gc, dg: f.dg,
+        puntero_zona: mcRow['%puntero_zona'] ?? 0,
+        ascenso_directo: mcRow['%ascenso_directo'] ?? 0,
+        ascenso_reducido: mcRow['%ascenso_reducido'] ?? 0,
+        ascenso_total: mcRow['ascenso_total'] ?? 0,
+        descenso: mcRow['descenso'] ?? 0,
+        puntos_prom: espRow['puntos_prom'] ?? '—',
+        posicion_prom: espRow['posicion_prom'] ?? '—',
+        ultimos5
+      };
+    });
+  });
+  return index;
+}
+
+function poblarDatalist(index){
+  const dl = document.getElementById('team-list');
+  dl.innerHTML = Object.keys(index).sort().map(nombre => `<option value="${nombre}">`).join('');
+}
+
+function renderTeamCard(t){
+  const zoneColor = t.zona === 'A' ? 'var(--zone-a)' : 'var(--zone-b)';
+  const zoneDim = t.zona === 'A' ? 'var(--zone-a-dim)' : 'var(--zone-b-dim)';
+  const descClass = t.descenso >= 25 ? 'high' : '';
+  return `
+    <div class="team-card">
+      <div class="tc-head">
+        <div class="tc-name">${t.equipo}</div>
+        <span class="tc-zone" style="background:${zoneDim}; color:${zoneColor}">ZONA ${t.zona}</span>
+      </div>
+      <div class="tc-pos">Posición actual: <b>${t.posicion}°</b> de ${t.total} — <b>${t.puntos}</b> pts (DG ${t.dg > 0 ? '+' + t.dg : t.dg})</div>
+      <div class="tc-grid" style="margin-top:16px;">
+        <div class="tc-stat"><div class="v" style="color:${zoneColor}">${fmtPct(t.puntero_zona)}</div><div class="l">Puntero de zona</div></div>
+        <div class="tc-stat"><div class="v" style="color:${zoneColor}">${fmtPct(t.ascenso_directo)}</div><div class="l">Ascenso directo</div></div>
+        <div class="tc-stat"><div class="v" style="color:${zoneColor}">${fmtPct(t.ascenso_reducido)}</div><div class="l">Ascenso reducido</div></div>
+        <div class="tc-stat"><div class="v ${descClass}" style="${t.descenso >= 25 ? 'color:var(--danger)' : ''}">${fmtPct(t.descenso)}</div><div class="l">Descenso</div></div>
+      </div>
+      <div class="tc-mc-title">Ascenso total: ${fmtPct(t.ascenso_total)} de las simulaciones</div>
+      <div class="mc-bar-track" style="margin-bottom:14px;">
+        <div class="mc-bar-fill directo" style="width:${t.ascenso_directo}%; background:${zoneColor}"></div>
+        <div class="mc-bar-fill reducido" style="left:${t.ascenso_directo}%; width:${t.ascenso_reducido}%; background:${zoneColor}"></div>
+      </div>
+      <div class="tc-pos">Posición final promedio: <b>${t.posicion_prom}°</b> — Puntos promedio: <b>${t.puntos_prom}</b></div>
+      <div class="tc-racha">
+        <div class="tc-racha-title">Últimos partidos</div>
+        ${renderRacha(t.ultimos5)}
+      </div>
+      <div class="tc-share">
+        <button onclick="compartirLink('${t.equipo.replace(/'/g, "\\'")}', this)">🔗 Copiar link</button>
+        <button onclick="compartirImagen('${t.equipo.replace(/'/g, "\\'")}', this)">📷 Descargar imagen</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderRacha(ultimos5){
+  if (!ultimos5 || ultimos5.length === 0){
+    return `<div class="tc-racha-empty">Sin datos de partidos recientes</div>`;
+  }
+  return `<div class="tc-racha-row">${ultimos5.map(p => {
+    let letra, clase;
+    if (p.puntos === 3){ letra = 'V'; clase = 'v'; }
+    else if (p.puntos === 1){ letra = 'E'; clase = 'e'; }
+    else { letra = 'D'; clase = 'd'; }
+    const cond = p.condicion === 'local' ? 'de local' : 'de visitante';
+    const titulo = `J${p.jornada} — vs ${p.rival} (${cond}): ${p.gf}-${p.gc}`;
+    return `<div class="racha-badge ${clase}" title="${titulo}">${letra}</div>`;
+  }).join('')}</div>`;
+}
+
+/* ---------- COMPARTIR FICHA ---------- */
+function compartirLink(nombre, btn){
+  const url = new URL(window.location.href);
+  url.searchParams.set('equipo', nombre);
+  navigator.clipboard.writeText(url.toString()).then(() => {
+    const original = btn.textContent;
+    btn.textContent = '✓ Copiado';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = original; btn.classList.remove('copied'); }, 1800);
+  }).catch(() => {
+    prompt('Copiá el link:', url.toString());
+  });
+}
+
+function compartirImagen(nombre, btn){
+  const card = document.querySelector('#search-result .team-card');
+  if (!card) return;
+  const original = btn.textContent;
+  btn.textContent = 'Generando…';
+  btn.disabled = true;
+  html2canvas(card, {
+    backgroundColor: getComputedStyle(document.body).getPropertyValue('--bg-panel') || '#0F2018',
+    scale: 2,
+    onclone: (clonedDoc) => {
+      // html2canvas re-dispara las animaciones CSS en el clon y saca la
+      // foto antes de que terminen (fade-in arranca en opacity:0), por
+      // eso la imagen salía "fantasma". Las anulamos solo en el clon.
+      const clonedCard = clonedDoc.querySelector('#search-result .team-card');
+      if (clonedCard){
+        clonedCard.style.animation = 'none';
+        clonedCard.style.opacity = '1';
+        clonedCard.style.transform = 'none';
+      }
+    }
+  }).then(canvas => {
+    const link = document.createElement('a');
+    link.download = `${nombre.replace(/\s+/g, '_')}_ficha.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    btn.textContent = original;
+    btn.disabled = false;
+  }).catch(() => {
+    btn.textContent = 'Error, probá de nuevo';
+    setTimeout(() => { btn.textContent = original; btn.disabled = false; }, 2000);
+  });
+}
+
+function buscarEquipo(nombre){
+  const resultDiv = document.getElementById('search-result');
+  if (!nombre || !nombre.trim()){
+    resultDiv.innerHTML = "";
+    return;
+  }
+  const index = TEAM_INDEX;
+  const exacto = index[nombre];
+  if (exacto){
+    resultDiv.innerHTML = renderTeamCard(exacto);
+    return;
+  }
+  const q = nombre.trim().toLowerCase();
+  const coincidencia = Object.values(index).find(t => t.equipo.toLowerCase().includes(q));
+  if (coincidencia){
+    resultDiv.innerHTML = renderTeamCard(coincidencia);
+  } else {
+    resultDiv.innerHTML = `<div class="no-result">No se encontró ningún equipo llamado "${nombre}"</div>`;
+  }
+}
+
+let TEAM_INDEX = {};
+document.getElementById('team-search').addEventListener('input', (e) => buscarEquipo(e.target.value));
+
+document.querySelectorAll('.zone-tab').forEach(btn => {
+  btn.addEventListener('click', () => setZone(btn.dataset.zone));
+});
+
+</script>

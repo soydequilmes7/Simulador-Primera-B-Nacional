@@ -1,0 +1,37 @@
+zona,posicion,equipo,partidos_jugados,ganados,empatados,perdidos,gf,gc,dg,puntos
+A,1,Morón,18,10,4,4,26,15,11,34
+A,2,Ferro,18,10,4,4,20,13,7,34
+A,3,Los Andes,18,7,8,3,16,6,10,29
+A,4,Colón,18,7,8,3,21,14,7,29
+A,5,Dep. Madryn,18,7,7,4,24,18,6,28
+A,6,Bolivar,18,6,9,3,15,12,3,27
+A,7,Alte. Brown,18,7,5,6,13,12,1,26
+A,8,Estudiantes,18,7,5,6,14,15,-1,26
+A,9,Godoy Cruz,18,6,7,5,18,14,4,25
+A,10,San Miguel,18,5,9,4,16,19,-3,24
+A,11,San Telmo,18,4,8,6,14,16,-2,20
+A,12,Defensores,18,4,8,6,12,16,-4,20
+A,13,Racing (Cba),18,5,5,8,16,21,-5,20
+A,14,All Boys,18,4,7,7,11,18,-7,19
+A,15,Central Norte,18,4,6,8,11,16,-5,18
+A,16,Acassuso,18,5,3,10,12,19,-7,18
+A,17,CA Mitre,18,3,8,7,18,23,-5,17
+A,18,Chaco For Ever,18,2,6,10,13,24,-11,12
+B,1,Gimnasia (J),18,11,3,4,30,20,10,36
+B,2,Atlanta,18,10,3,5,23,13,10,33
+B,3,Tristan Suárez,18,7,9,2,16,10,6,30
+B,4,Atlético Rafaela,18,7,6,5,14,12,2,27
+B,5,Temperley,18,6,9,3,18,17,1,27
+B,6,Midland,18,7,5,6,19,14,5,26
+B,7,San Martín,17,6,5,6,18,18,0,23
+B,8,Colegiales,18,6,5,7,17,17,0,23
+B,9,San Martín (T),18,5,8,5,15,15,0,23
+B,10,Maipú,18,6,4,8,22,20,2,22
+B,11,Chicago,17,5,7,5,15,16,-1,22
+B,12,Almagro,18,6,4,8,15,19,-4,22
+B,13,Quilmes,18,5,6,7,16,14,2,21
+B,14,Gimnasia y Tiro,18,5,6,7,16,19,-3,21
+B,15,Patronato,18,4,9,5,12,15,-3,21
+B,16,Chacarita,18,5,4,9,14,20,-6,19
+B,17,Güemes,18,5,4,9,18,30,-12,19
+B,18,Agropecuario,18,4,6,8,14,22,-8,18

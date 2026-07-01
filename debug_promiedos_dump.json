@@ -1,0 +1,2407 @@
+{
+  "fechas": [
+    {
+      "nombre": "Fecha 1",
+      "key": "419_46_1_1"
+    },
+    {
+      "nombre": "Fecha 2",
+      "key": "419_46_1_2"
+    },
+    {
+      "nombre": "Fecha 3",
+      "key": "419_46_1_3"
+    },
+    {
+      "nombre": "Fecha 4",
+      "key": "419_46_1_4"
+    },
+    {
+      "nombre": "Fecha 5",
+      "key": "419_46_1_5"
+    },
+    {
+      "nombre": "Fecha 6",
+      "key": "419_46_1_6"
+    },
+    {
+      "nombre": "Fecha 7",
+      "key": "419_46_1_7"
+    },
+    {
+      "nombre": "Fecha 8",
+      "key": "419_46_1_8"
+    },
+    {
+      "nombre": "Fecha 9",
+      "key": "419_46_1_9"
+    },
+    {
+      "nombre": "Fecha 10",
+      "key": "419_46_1_10"
+    },
+    {
+      "nombre": "Fecha 11",
+      "key": "419_46_1_11"
+    },
+    {
+      "nombre": "Fecha 12",
+      "key": "419_46_1_12"
+    },
+    {
+      "nombre": "Fecha 13",
+      "key": "419_46_1_13"
+    },
+    {
+      "nombre": "Fecha 14",
+      "key": "419_46_1_14"
+    },
+    {
+      "nombre": "Fecha 15",
+      "key": "419_46_1_15"
+    },
+    {
+      "nombre": "Fecha 16",
+      "key": "419_46_1_16"
+    },
+    {
+      "nombre": "Fecha 17",
+      "key": "419_46_1_17"
+    },
+    {
+      "nombre": "Fecha 18",
+      "key": "419_46_1_18"
+    },
+    {
+      "nombre": "Fecha 19",
+      "key": "419_46_1_19"
+    },
+    {
+      "nombre": "Fecha 20",
+      "key": "419_46_1_20"
+    },
+    {
+      "nombre": "Fecha 21",
+      "key": "419_46_1_21"
+    },
+    {
+      "nombre": "Fecha 22",
+      "key": "419_46_1_22"
+    },
+    {
+      "nombre": "Fecha 23",
+      "key": "419_46_1_23"
+    },
+    {
+      "nombre": "Fecha 24",
+      "key": "419_46_1_24"
+    },
+    {
+      "nombre": "Fecha 25",
+      "key": "419_46_1_25"
+    },
+    {
+      "nombre": "Fecha 26",
+      "key": "419_46_1_26"
+    },
+    {
+      "nombre": "Fecha 27",
+      "key": "419_46_1_27"
+    },
+    {
+      "nombre": "Fecha 28",
+      "key": "419_46_1_28"
+    },
+    {
+      "nombre": "Fecha 29",
+      "key": "419_46_1_29"
+    },
+    {
+      "nombre": "Fecha 30",
+      "key": "419_46_1_30"
+    },
+    {
+      "nombre": "Fecha 31",
+      "key": "419_46_1_31"
+    },
+    {
+      "nombre": "Fecha 32",
+      "key": "419_46_1_32"
+    },
+    {
+      "nombre": "Fecha 33",
+      "key": "419_46_1_33"
+    },
+    {
+      "nombre": "Fecha 34",
+      "key": "419_46_1_34"
+    },
+    {
+      "nombre": "Fecha 35",
+      "key": "419_46_1_35"
+    }
+  ],
+  "partidos_jugados": [
+    {
+      "jornada": 1,
+      "equipo_local": "San Miguel",
+      "equipo_visitante": "Central Norte",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 1,
+      "equipo_local": "Atlético Rafaela",
+      "equipo_visitante": "Almagro",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 1,
+      "equipo_local": "Godoy Cruz",
+      "equipo_visitante": "Bolivar",
+      "goles_local": 1,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 1,
+      "equipo_local": "Gimnasia y Tiro",
+      "equipo_visitante": "Colegiales",
+      "goles_local": 2,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 1,
+      "equipo_local": "All Boys",
+      "equipo_visitante": "CA Mitre",
+      "goles_local": 2,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 1,
+      "equipo_local": "Morón",
+      "equipo_visitante": "Defensores",
+      "goles_local": 1,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 1,
+      "equipo_local": "San Telmo",
+      "equipo_visitante": "Ferro",
+      "goles_local": 0,
+      "goles_visitante": 2
+    },
+    {
+      "jornada": 1,
+      "equipo_local": "Acassuso",
+      "equipo_visitante": "Chaco For Ever",
+      "goles_local": 2,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 1,
+      "equipo_local": "Agropecuario",
+      "equipo_visitante": "Maipú",
+      "goles_local": 2,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 1,
+      "equipo_local": "Tristan Suárez",
+      "equipo_visitante": "Temperley",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 1,
+      "equipo_local": "Colón",
+      "equipo_visitante": "Dep. Madryn",
+      "goles_local": 2,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 1,
+      "equipo_local": "Güemes",
+      "equipo_visitante": "Chicago",
+      "goles_local": 0,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 1,
+      "equipo_local": "Chacarita",
+      "equipo_visitante": "San Martín",
+      "goles_local": 1,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 1,
+      "equipo_local": "Los Andes",
+      "equipo_visitante": "Alte. Brown",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 1,
+      "equipo_local": "Racing (Cba)",
+      "equipo_visitante": "Estudiantes",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 1,
+      "equipo_local": "San Martín (T)",
+      "equipo_visitante": "Patronato",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 1,
+      "equipo_local": "Atlanta",
+      "equipo_visitante": "Quilmes",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 1,
+      "equipo_local": "Gimnasia (J)",
+      "equipo_visitante": "Midland",
+      "goles_local": 2,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 2,
+      "equipo_local": "Acassuso",
+      "equipo_visitante": "Racing (Cba)",
+      "goles_local": 3,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 2,
+      "equipo_local": "Chicago",
+      "equipo_visitante": "Tristan Suárez",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 2,
+      "equipo_local": "Almagro",
+      "equipo_visitante": "San Martín (T)",
+      "goles_local": 0,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 2,
+      "equipo_local": "Ferro",
+      "equipo_visitante": "San Miguel",
+      "goles_local": 1,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 2,
+      "equipo_local": "Dep. Madryn",
+      "equipo_visitante": "Morón",
+      "goles_local": 1,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 2,
+      "equipo_local": "San Martín",
+      "equipo_visitante": "Güemes",
+      "goles_local": 2,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 2,
+      "equipo_local": "Maipú",
+      "equipo_visitante": "Atlético Rafaela",
+      "goles_local": 2,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 2,
+      "equipo_local": "Patronato",
+      "equipo_visitante": "Gimnasia y Tiro",
+      "goles_local": 1,
+      "goles_visitante": 2
+    },
+    {
+      "jornada": 2,
+      "equipo_local": "Quilmes",
+      "equipo_visitante": "Midland",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 2,
+      "equipo_local": "Chaco For Ever",
+      "equipo_visitante": "San Telmo",
+      "goles_local": 2,
+      "goles_visitante": 2
+    },
+    {
+      "jornada": 2,
+      "equipo_local": "Defensores",
+      "equipo_visitante": "Godoy Cruz",
+      "goles_local": 1,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 2,
+      "equipo_local": "Chacarita",
+      "equipo_visitante": "Gimnasia (J)",
+      "goles_local": 3,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 2,
+      "equipo_local": "Alte. Brown",
+      "equipo_visitante": "All Boys",
+      "goles_local": 2,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 2,
+      "equipo_local": "Bolivar",
+      "equipo_visitante": "Los Andes",
+      "goles_local": 1,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 2,
+      "equipo_local": "Central Norte",
+      "equipo_visitante": "Colón",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 2,
+      "equipo_local": "Temperley",
+      "equipo_visitante": "Agropecuario",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 2,
+      "equipo_local": "Colegiales",
+      "equipo_visitante": "Atlanta",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 2,
+      "equipo_local": "CA Mitre",
+      "equipo_visitante": "Estudiantes",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 3,
+      "equipo_local": "Gimnasia y Tiro",
+      "equipo_visitante": "Almagro",
+      "goles_local": 2,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 3,
+      "equipo_local": "Los Andes",
+      "equipo_visitante": "Defensores",
+      "goles_local": 0,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 3,
+      "equipo_local": "San Miguel",
+      "equipo_visitante": "Chaco For Ever",
+      "goles_local": 2,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 3,
+      "equipo_local": "Colón",
+      "equipo_visitante": "Ferro",
+      "goles_local": 1,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 3,
+      "equipo_local": "Agropecuario",
+      "equipo_visitante": "Chicago",
+      "goles_local": 0,
+      "goles_visitante": 2
+    },
+    {
+      "jornada": 3,
+      "equipo_local": "All Boys",
+      "equipo_visitante": "Bolivar",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 3,
+      "equipo_local": "Godoy Cruz",
+      "equipo_visitante": "Dep. Madryn",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 3,
+      "equipo_local": "Morón",
+      "equipo_visitante": "Central Norte",
+      "goles_local": 2,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 3,
+      "equipo_local": "San Telmo",
+      "equipo_visitante": "Acassuso",
+      "goles_local": 2,
+      "goles_visitante": 3
+    },
+    {
+      "jornada": 3,
+      "equipo_local": "Gimnasia (J)",
+      "equipo_visitante": "Quilmes",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 3,
+      "equipo_local": "Midland",
+      "equipo_visitante": "Colegiales",
+      "goles_local": 2,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 3,
+      "equipo_local": "Güemes",
+      "equipo_visitante": "Chacarita",
+      "goles_local": 2,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 3,
+      "equipo_local": "San Martín (T)",
+      "equipo_visitante": "Maipú",
+      "goles_local": 2,
+      "goles_visitante": 2
+    },
+    {
+      "jornada": 3,
+      "equipo_local": "Racing (Cba)",
+      "equipo_visitante": "CA Mitre",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 3,
+      "equipo_local": "Estudiantes",
+      "equipo_visitante": "Alte. Brown",
+      "goles_local": 0,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 3,
+      "equipo_local": "Atlético Rafaela",
+      "equipo_visitante": "Temperley",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 3,
+      "equipo_local": "Tristan Suárez",
+      "equipo_visitante": "San Martín",
+      "goles_local": 2,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 3,
+      "equipo_local": "Atlanta",
+      "equipo_visitante": "Patronato",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 4,
+      "equipo_local": "San Telmo",
+      "equipo_visitante": "Racing (Cba)",
+      "goles_local": 2,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 4,
+      "equipo_local": "Bolivar",
+      "equipo_visitante": "Estudiantes",
+      "goles_local": 1,
+      "goles_visitante": 2
+    },
+    {
+      "jornada": 4,
+      "equipo_local": "Almagro",
+      "equipo_visitante": "Atlanta",
+      "goles_local": 2,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 4,
+      "equipo_local": "Colegiales",
+      "equipo_visitante": "Quilmes",
+      "goles_local": 3,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 4,
+      "equipo_local": "Acassuso",
+      "equipo_visitante": "San Miguel",
+      "goles_local": 0,
+      "goles_visitante": 2
+    },
+    {
+      "jornada": 4,
+      "equipo_local": "Chaco For Ever",
+      "equipo_visitante": "Colón",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 4,
+      "equipo_local": "San Martín",
+      "equipo_visitante": "Agropecuario",
+      "goles_local": 2,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 4,
+      "equipo_local": "Temperley",
+      "equipo_visitante": "San Martín (T)",
+      "goles_local": 1,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 4,
+      "equipo_local": "Dep. Madryn",
+      "equipo_visitante": "Los Andes",
+      "goles_local": 2,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 4,
+      "equipo_local": "Ferro",
+      "equipo_visitante": "Morón",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 4,
+      "equipo_local": "Defensores",
+      "equipo_visitante": "All Boys",
+      "goles_local": 0,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 4,
+      "equipo_local": "Alte. Brown",
+      "equipo_visitante": "CA Mitre",
+      "goles_local": 3,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 4,
+      "equipo_local": "Chacarita",
+      "equipo_visitante": "Tristan Suárez",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 4,
+      "equipo_local": "Patronato",
+      "equipo_visitante": "Midland",
+      "goles_local": 1,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 4,
+      "equipo_local": "Central Norte",
+      "equipo_visitante": "Godoy Cruz",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 4,
+      "equipo_local": "Maipú",
+      "equipo_visitante": "Gimnasia y Tiro",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 4,
+      "equipo_local": "Güemes",
+      "equipo_visitante": "Gimnasia (J)",
+      "goles_local": 1,
+      "goles_visitante": 3
+    },
+    {
+      "jornada": 4,
+      "equipo_local": "Chicago",
+      "equipo_visitante": "Atlético Rafaela",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 5,
+      "equipo_local": "Racing (Cba)",
+      "equipo_visitante": "Alte. Brown",
+      "goles_local": 2,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 5,
+      "equipo_local": "Atlético Rafaela",
+      "equipo_visitante": "San Martín",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 5,
+      "equipo_local": "Los Andes",
+      "equipo_visitante": "Central Norte",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 5,
+      "equipo_local": "Estudiantes",
+      "equipo_visitante": "Defensores",
+      "goles_local": 0,
+      "goles_visitante": 2
+    },
+    {
+      "jornada": 5,
+      "equipo_local": "All Boys",
+      "equipo_visitante": "Dep. Madryn",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 5,
+      "equipo_local": "Morón",
+      "equipo_visitante": "Chaco For Ever",
+      "goles_local": 3,
+      "goles_visitante": 2
+    },
+    {
+      "jornada": 5,
+      "equipo_local": "San Miguel",
+      "equipo_visitante": "San Telmo",
+      "goles_local": 1,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 5,
+      "equipo_local": "Godoy Cruz",
+      "equipo_visitante": "Ferro",
+      "goles_local": 2,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 5,
+      "equipo_local": "Tristan Suárez",
+      "equipo_visitante": "Güemes",
+      "goles_local": 1,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 5,
+      "equipo_local": "Colón",
+      "equipo_visitante": "Acassuso",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 5,
+      "equipo_local": "Quilmes",
+      "equipo_visitante": "Patronato",
+      "goles_local": 3,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 5,
+      "equipo_local": "Midland",
+      "equipo_visitante": "Almagro",
+      "goles_local": 1,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 5,
+      "equipo_local": "Gimnasia y Tiro",
+      "equipo_visitante": "Temperley",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 5,
+      "equipo_local": "Agropecuario",
+      "equipo_visitante": "Chacarita",
+      "goles_local": 2,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 5,
+      "equipo_local": "CA Mitre",
+      "equipo_visitante": "Bolivar",
+      "goles_local": 1,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 5,
+      "equipo_local": "Gimnasia (J)",
+      "equipo_visitante": "Colegiales",
+      "goles_local": 2,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 5,
+      "equipo_local": "San Martín (T)",
+      "equipo_visitante": "Chicago",
+      "goles_local": 2,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 5,
+      "equipo_local": "Atlanta",
+      "equipo_visitante": "Maipú",
+      "goles_local": 3,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 6,
+      "equipo_local": "San Martín",
+      "equipo_visitante": "San Martín (T)",
+      "goles_local": 1,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 6,
+      "equipo_local": "Almagro",
+      "equipo_visitante": "Quilmes",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 6,
+      "equipo_local": "San Miguel",
+      "equipo_visitante": "Racing (Cba)",
+      "goles_local": 1,
+      "goles_visitante": 2
+    },
+    {
+      "jornada": 6,
+      "equipo_local": "Acassuso",
+      "equipo_visitante": "Morón",
+      "goles_local": 0,
+      "goles_visitante": 3
+    },
+    {
+      "jornada": 6,
+      "equipo_local": "Defensores",
+      "equipo_visitante": "CA Mitre",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 6,
+      "equipo_local": "Bolivar",
+      "equipo_visitante": "Alte. Brown",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 6,
+      "equipo_local": "Ferro",
+      "equipo_visitante": "Los Andes",
+      "goles_local": 0,
+      "goles_visitante": 2
+    },
+    {
+      "jornada": 6,
+      "equipo_local": "Dep. Madryn",
+      "equipo_visitante": "Estudiantes",
+      "goles_local": 3,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 6,
+      "equipo_local": "Tristan Suárez",
+      "equipo_visitante": "Gimnasia (J)",
+      "goles_local": 3,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 6,
+      "equipo_local": "Chaco For Ever",
+      "equipo_visitante": "Godoy Cruz",
+      "goles_local": 1,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 6,
+      "equipo_local": "San Telmo",
+      "equipo_visitante": "Colón",
+      "goles_local": 3,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 6,
+      "equipo_local": "Chacarita",
+      "equipo_visitante": "Atlético Rafaela",
+      "goles_local": 0,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 6,
+      "equipo_local": "Temperley",
+      "equipo_visitante": "Atlanta",
+      "goles_local": 2,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 6,
+      "equipo_local": "Patronato",
+      "equipo_visitante": "Colegiales",
+      "goles_local": 2,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 6,
+      "equipo_local": "Central Norte",
+      "equipo_visitante": "All Boys",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 6,
+      "equipo_local": "Güemes",
+      "equipo_visitante": "Agropecuario",
+      "goles_local": 1,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 6,
+      "equipo_local": "Maipú",
+      "equipo_visitante": "Midland",
+      "goles_local": 0,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 6,
+      "equipo_local": "Chicago",
+      "equipo_visitante": "Gimnasia y Tiro",
+      "goles_local": 3,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 7,
+      "equipo_local": "Bolivar",
+      "equipo_visitante": "Agropecuario",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 7,
+      "equipo_local": "Chaco For Ever",
+      "equipo_visitante": "Gimnasia (J)",
+      "goles_local": 1,
+      "goles_visitante": 2
+    },
+    {
+      "jornada": 7,
+      "equipo_local": "San Martín",
+      "equipo_visitante": "Racing (Cba)",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 7,
+      "equipo_local": "Atlanta",
+      "equipo_visitante": "Ferro",
+      "goles_local": 0,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 7,
+      "equipo_local": "Almagro",
+      "equipo_visitante": "Morón",
+      "goles_local": 2,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 7,
+      "equipo_local": "Alte. Brown",
+      "equipo_visitante": "Tristan Suárez",
+      "goles_local": 0,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 7,
+      "equipo_local": "Colegiales",
+      "equipo_visitante": "San Miguel",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 7,
+      "equipo_local": "Los Andes",
+      "equipo_visitante": "Temperley",
+      "goles_local": 0,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 7,
+      "equipo_local": "Chicago",
+      "equipo_visitante": "All Boys",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 7,
+      "equipo_local": "Dep. Madryn",
+      "equipo_visitante": "San Martín (T)",
+      "goles_local": 1,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 7,
+      "equipo_local": "Chacarita",
+      "equipo_visitante": "Estudiantes",
+      "goles_local": 0,
+      "goles_visitante": 3
+    },
+    {
+      "jornada": 7,
+      "equipo_local": "Patronato",
+      "equipo_visitante": "Colón",
+      "goles_local": 0,
+      "goles_visitante": 2
+    },
+    {
+      "jornada": 7,
+      "equipo_local": "San Telmo",
+      "equipo_visitante": "Quilmes",
+      "goles_local": 0,
+      "goles_visitante": 3
+    },
+    {
+      "jornada": 7,
+      "equipo_local": "Güemes",
+      "equipo_visitante": "CA Mitre",
+      "goles_local": 2,
+      "goles_visitante": 2
+    },
+    {
+      "jornada": 7,
+      "equipo_local": "Maipú",
+      "equipo_visitante": "Godoy Cruz",
+      "goles_local": 0,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 7,
+      "equipo_local": "Gimnasia y Tiro",
+      "equipo_visitante": "Central Norte",
+      "goles_local": 0,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 7,
+      "equipo_local": "Defensores",
+      "equipo_visitante": "Atlético Rafaela",
+      "goles_local": 1,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 7,
+      "equipo_local": "Midland",
+      "equipo_visitante": "Acassuso",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 8,
+      "equipo_local": "Gimnasia y Tiro",
+      "equipo_visitante": "San Martín",
+      "goles_local": 1,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 8,
+      "equipo_local": "All Boys",
+      "equipo_visitante": "Ferro",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 8,
+      "equipo_local": "Estudiantes",
+      "equipo_visitante": "Central Norte",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 8,
+      "equipo_local": "Colegiales",
+      "equipo_visitante": "Almagro",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 8,
+      "equipo_local": "Midland",
+      "equipo_visitante": "Temperley",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 8,
+      "equipo_local": "Agropecuario",
+      "equipo_visitante": "Tristan Suárez",
+      "goles_local": 0,
+      "goles_visitante": 2
+    },
+    {
+      "jornada": 8,
+      "equipo_local": "Godoy Cruz",
+      "equipo_visitante": "Acassuso",
+      "goles_local": 2,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 8,
+      "equipo_local": "San Martín (T)",
+      "equipo_visitante": "Chacarita",
+      "goles_local": 1,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 8,
+      "equipo_local": "Colón",
+      "equipo_visitante": "San Miguel",
+      "goles_local": 3,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 8,
+      "equipo_local": "Los Andes",
+      "equipo_visitante": "Chaco For Ever",
+      "goles_local": 2,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 8,
+      "equipo_local": "Alte. Brown",
+      "equipo_visitante": "Defensores",
+      "goles_local": 0,
+      "goles_visitante": 2
+    },
+    {
+      "jornada": 8,
+      "equipo_local": "Morón",
+      "equipo_visitante": "San Telmo",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 8,
+      "equipo_local": "Racing (Cba)",
+      "equipo_visitante": "Bolivar",
+      "goles_local": 0,
+      "goles_visitante": 2
+    },
+    {
+      "jornada": 8,
+      "equipo_local": "Gimnasia (J)",
+      "equipo_visitante": "Patronato",
+      "goles_local": 2,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 8,
+      "equipo_local": "Quilmes",
+      "equipo_visitante": "Maipú",
+      "goles_local": 2,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 8,
+      "equipo_local": "CA Mitre",
+      "equipo_visitante": "Dep. Madryn",
+      "goles_local": 1,
+      "goles_visitante": 3
+    },
+    {
+      "jornada": 8,
+      "equipo_local": "Atlético Rafaela",
+      "equipo_visitante": "Güemes",
+      "goles_local": 1,
+      "goles_visitante": 2
+    },
+    {
+      "jornada": 8,
+      "equipo_local": "Atlanta",
+      "equipo_visitante": "Chicago",
+      "goles_local": 1,
+      "goles_visitante": 2
+    },
+    {
+      "jornada": 9,
+      "equipo_local": "San Miguel",
+      "equipo_visitante": "Morón",
+      "goles_local": 2,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 9,
+      "equipo_local": "San Telmo",
+      "equipo_visitante": "Godoy Cruz",
+      "goles_local": 2,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 9,
+      "equipo_local": "Almagro",
+      "equipo_visitante": "Patronato",
+      "goles_local": 0,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 9,
+      "equipo_local": "Acassuso",
+      "equipo_visitante": "Los Andes",
+      "goles_local": 0,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 9,
+      "equipo_local": "Ferro",
+      "equipo_visitante": "Estudiantes",
+      "goles_local": 0,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 9,
+      "equipo_local": "Defensores",
+      "equipo_visitante": "Bolivar",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 9,
+      "equipo_local": "Chacarita",
+      "equipo_visitante": "Gimnasia y Tiro",
+      "goles_local": 2,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 9,
+      "equipo_local": "Temperley",
+      "equipo_visitante": "Quilmes",
+      "goles_local": 3,
+      "goles_visitante": 3
+    },
+    {
+      "jornada": 9,
+      "equipo_local": "Dep. Madryn",
+      "equipo_visitante": "Alte. Brown",
+      "goles_local": 2,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 9,
+      "equipo_local": "Agropecuario",
+      "equipo_visitante": "Gimnasia (J)",
+      "goles_local": 1,
+      "goles_visitante": 2
+    },
+    {
+      "jornada": 9,
+      "equipo_local": "Chaco For Ever",
+      "equipo_visitante": "All Boys",
+      "goles_local": 2,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 9,
+      "equipo_local": "Central Norte",
+      "equipo_visitante": "CA Mitre",
+      "goles_local": 1,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 9,
+      "equipo_local": "Güemes",
+      "equipo_visitante": "San Martín (T)",
+      "goles_local": 0,
+      "goles_visitante": 2
+    },
+    {
+      "jornada": 9,
+      "equipo_local": "Maipú",
+      "equipo_visitante": "Colegiales",
+      "goles_local": 3,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 9,
+      "equipo_local": "Colón",
+      "equipo_visitante": "Racing (Cba)",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 9,
+      "equipo_local": "Chicago",
+      "equipo_visitante": "Midland",
+      "goles_local": 2,
+      "goles_visitante": 2
+    },
+    {
+      "jornada": 9,
+      "equipo_local": "Tristan Suárez",
+      "equipo_visitante": "Atlético Rafaela",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 9,
+      "equipo_local": "San Martín",
+      "equipo_visitante": "Atlanta",
+      "goles_local": 1,
+      "goles_visitante": 2
+    },
+    {
+      "jornada": 10,
+      "equipo_local": "Los Andes",
+      "equipo_visitante": "San Telmo",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 10,
+      "equipo_local": "Midland",
+      "equipo_visitante": "San Martín",
+      "goles_local": 0,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 10,
+      "equipo_local": "All Boys",
+      "equipo_visitante": "Acassuso",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 10,
+      "equipo_local": "Morón",
+      "equipo_visitante": "Colón",
+      "goles_local": 2,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 10,
+      "equipo_local": "Godoy Cruz",
+      "equipo_visitante": "San Miguel",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 10,
+      "equipo_local": "Quilmes",
+      "equipo_visitante": "Chicago",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 10,
+      "equipo_local": "Bolivar",
+      "equipo_visitante": "Dep. Madryn",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 10,
+      "equipo_local": "Patronato",
+      "equipo_visitante": "Maipú",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 10,
+      "equipo_local": "Colegiales",
+      "equipo_visitante": "Temperley",
+      "goles_local": 1,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 10,
+      "equipo_local": "Alte. Brown",
+      "equipo_visitante": "Central Norte",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 10,
+      "equipo_local": "CA Mitre",
+      "equipo_visitante": "Ferro",
+      "goles_local": 0,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 10,
+      "equipo_local": "Estudiantes",
+      "equipo_visitante": "Chaco For Ever",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 10,
+      "equipo_local": "Gimnasia (J)",
+      "equipo_visitante": "Almagro",
+      "goles_local": 6,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 10,
+      "equipo_local": "San Martín (T)",
+      "equipo_visitante": "Tristan Suárez",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 10,
+      "equipo_local": "Racing (Cba)",
+      "equipo_visitante": "Defensores",
+      "goles_local": 3,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 10,
+      "equipo_local": "Gimnasia y Tiro",
+      "equipo_visitante": "Güemes",
+      "goles_local": 1,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 10,
+      "equipo_local": "Atlético Rafaela",
+      "equipo_visitante": "Agropecuario",
+      "goles_local": 4,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 10,
+      "equipo_local": "Atlanta",
+      "equipo_visitante": "Chacarita",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 11,
+      "equipo_local": "San Miguel",
+      "equipo_visitante": "Los Andes",
+      "goles_local": 0,
+      "goles_visitante": 2
+    },
+    {
+      "jornada": 11,
+      "equipo_local": "San Telmo",
+      "equipo_visitante": "All Boys",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 11,
+      "equipo_local": "Temperley",
+      "equipo_visitante": "Patronato",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 11,
+      "equipo_local": "San Martín",
+      "equipo_visitante": "Quilmes",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 11,
+      "equipo_local": "Atlético Rafaela",
+      "equipo_visitante": "Gimnasia (J)",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 11,
+      "equipo_local": "Morón",
+      "equipo_visitante": "Racing (Cba)",
+      "goles_local": 2,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 11,
+      "equipo_local": "Tristan Suárez",
+      "equipo_visitante": "Gimnasia y Tiro",
+      "goles_local": 2,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 11,
+      "equipo_local": "Chicago",
+      "equipo_visitante": "Colegiales",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 11,
+      "equipo_local": "Acassuso",
+      "equipo_visitante": "Estudiantes",
+      "goles_local": 0,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 11,
+      "equipo_local": "Chacarita",
+      "equipo_visitante": "Midland",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 11,
+      "equipo_local": "Dep. Madryn",
+      "equipo_visitante": "Defensores",
+      "goles_local": 2,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 11,
+      "equipo_local": "Agropecuario",
+      "equipo_visitante": "San Martín (T)",
+      "goles_local": 2,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 11,
+      "equipo_local": "Chaco For Ever",
+      "equipo_visitante": "CA Mitre",
+      "goles_local": 1,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 11,
+      "equipo_local": "Central Norte",
+      "equipo_visitante": "Bolivar",
+      "goles_local": 0,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 11,
+      "equipo_local": "Güemes",
+      "equipo_visitante": "Atlanta",
+      "goles_local": 0,
+      "goles_visitante": 2
+    },
+    {
+      "jornada": 11,
+      "equipo_local": "Maipú",
+      "equipo_visitante": "Almagro",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 11,
+      "equipo_local": "Colón",
+      "equipo_visitante": "Godoy Cruz",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 11,
+      "equipo_local": "Ferro",
+      "equipo_visitante": "Alte. Brown",
+      "goles_local": 0,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 12,
+      "equipo_local": "All Boys",
+      "equipo_visitante": "San Miguel",
+      "goles_local": 1,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 12,
+      "equipo_local": "Defensores",
+      "equipo_visitante": "Central Norte",
+      "goles_local": 1,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 12,
+      "equipo_local": "Estudiantes",
+      "equipo_visitante": "San Telmo",
+      "goles_local": 1,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 12,
+      "equipo_local": "Los Andes",
+      "equipo_visitante": "Colón",
+      "goles_local": 1,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 12,
+      "equipo_local": "San Martín (T)",
+      "equipo_visitante": "Atlético Rafaela",
+      "goles_local": 2,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 12,
+      "equipo_local": "Atlanta",
+      "equipo_visitante": "Tristan Suárez",
+      "goles_local": 3,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 12,
+      "equipo_local": "CA Mitre",
+      "equipo_visitante": "Acassuso",
+      "goles_local": 2,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 12,
+      "equipo_local": "Almagro",
+      "equipo_visitante": "Temperley",
+      "goles_local": 1,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 12,
+      "equipo_local": "Colegiales",
+      "equipo_visitante": "San Martín",
+      "goles_local": 2,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 12,
+      "equipo_local": "Alte. Brown",
+      "equipo_visitante": "Chaco For Ever",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 12,
+      "equipo_local": "Gimnasia (J)",
+      "equipo_visitante": "Maipú",
+      "goles_local": 1,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 12,
+      "equipo_local": "Bolivar",
+      "equipo_visitante": "Ferro",
+      "goles_local": 2,
+      "goles_visitante": 4
+    },
+    {
+      "jornada": 12,
+      "equipo_local": "Patronato",
+      "equipo_visitante": "Chicago",
+      "goles_local": 2,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 12,
+      "equipo_local": "Godoy Cruz",
+      "equipo_visitante": "Morón",
+      "goles_local": 2,
+      "goles_visitante": 2
+    },
+    {
+      "jornada": 12,
+      "equipo_local": "Midland",
+      "equipo_visitante": "Güemes",
+      "goles_local": 2,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 12,
+      "equipo_local": "Racing (Cba)",
+      "equipo_visitante": "Dep. Madryn",
+      "goles_local": 2,
+      "goles_visitante": 2
+    },
+    {
+      "jornada": 12,
+      "equipo_local": "Quilmes",
+      "equipo_visitante": "Chacarita",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 12,
+      "equipo_local": "Gimnasia y Tiro",
+      "equipo_visitante": "Agropecuario",
+      "goles_local": 2,
+      "goles_visitante": 3
+    },
+    {
+      "jornada": 13,
+      "equipo_local": "Morón",
+      "equipo_visitante": "Los Andes",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 13,
+      "equipo_local": "San Telmo",
+      "equipo_visitante": "CA Mitre",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 13,
+      "equipo_local": "Tristan Suárez",
+      "equipo_visitante": "Midland",
+      "goles_local": 1,
+      "goles_visitante": 3
+    },
+    {
+      "jornada": 13,
+      "equipo_local": "San Miguel",
+      "equipo_visitante": "Estudiantes",
+      "goles_local": 1,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 13,
+      "equipo_local": "Temperley",
+      "equipo_visitante": "Maipú",
+      "goles_local": 0,
+      "goles_visitante": 5
+    },
+    {
+      "jornada": 13,
+      "equipo_local": "San Martín",
+      "equipo_visitante": "Patronato",
+      "goles_local": 1,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 13,
+      "equipo_local": "Atlético Rafaela",
+      "equipo_visitante": "Gimnasia y Tiro",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 13,
+      "equipo_local": "Acassuso",
+      "equipo_visitante": "Alte. Brown",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 13,
+      "equipo_local": "Chacarita",
+      "equipo_visitante": "Colegiales",
+      "goles_local": 2,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 13,
+      "equipo_local": "Agropecuario",
+      "equipo_visitante": "Atlanta",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 13,
+      "equipo_local": "Güemes",
+      "equipo_visitante": "Quilmes",
+      "goles_local": 2,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 13,
+      "equipo_local": "Godoy Cruz",
+      "equipo_visitante": "Racing (Cba)",
+      "goles_local": 2,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 13,
+      "equipo_local": "Chaco For Ever",
+      "equipo_visitante": "Bolivar",
+      "goles_local": 0,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 13,
+      "equipo_local": "Central Norte",
+      "equipo_visitante": "Dep. Madryn",
+      "goles_local": 2,
+      "goles_visitante": 3
+    },
+    {
+      "jornada": 13,
+      "equipo_local": "Colón",
+      "equipo_visitante": "All Boys",
+      "goles_local": 3,
+      "goles_visitante": 2
+    },
+    {
+      "jornada": 13,
+      "equipo_local": "Ferro",
+      "equipo_visitante": "Defensores",
+      "goles_local": 2,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 13,
+      "equipo_local": "Chicago",
+      "equipo_visitante": "Almagro",
+      "goles_local": 1,
+      "goles_visitante": 2
+    },
+    {
+      "jornada": 13,
+      "equipo_local": "San Martín (T)",
+      "equipo_visitante": "Gimnasia (J)",
+      "goles_local": 2,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 14,
+      "equipo_local": "Racing (Cba)",
+      "equipo_visitante": "Central Norte",
+      "goles_local": 1,
+      "goles_visitante": 2
+    },
+    {
+      "jornada": 14,
+      "equipo_local": "Atlanta",
+      "equipo_visitante": "Atlético Rafaela",
+      "goles_local": 2,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 14,
+      "equipo_local": "Los Andes",
+      "equipo_visitante": "Godoy Cruz",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 14,
+      "equipo_local": "Alte. Brown",
+      "equipo_visitante": "San Telmo",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 14,
+      "equipo_local": "Estudiantes",
+      "equipo_visitante": "Colón",
+      "goles_local": 1,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 14,
+      "equipo_local": "Bolivar",
+      "equipo_visitante": "Acassuso",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 14,
+      "equipo_local": "Colegiales",
+      "equipo_visitante": "Güemes",
+      "goles_local": 4,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 14,
+      "equipo_local": "Dep. Madryn",
+      "equipo_visitante": "Ferro",
+      "goles_local": 0,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 14,
+      "equipo_local": "Gimnasia (J)",
+      "equipo_visitante": "Temperley",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 14,
+      "equipo_local": "Almagro",
+      "equipo_visitante": "San Martín",
+      "goles_local": 1,
+      "goles_visitante": 2
+    },
+    {
+      "jornada": 14,
+      "equipo_local": "CA Mitre",
+      "equipo_visitante": "San Miguel",
+      "goles_local": 4,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 14,
+      "equipo_local": "Patronato",
+      "equipo_visitante": "Chacarita",
+      "goles_local": 2,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 14,
+      "equipo_local": "Midland",
+      "equipo_visitante": "Agropecuario",
+      "goles_local": 2,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 14,
+      "equipo_local": "Maipú",
+      "equipo_visitante": "Chicago",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 14,
+      "equipo_local": "Quilmes",
+      "equipo_visitante": "Tristan Suárez",
+      "goles_local": 0,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 14,
+      "equipo_local": "Gimnasia y Tiro",
+      "equipo_visitante": "San Martín (T)",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 14,
+      "equipo_local": "Defensores",
+      "equipo_visitante": "Chaco For Ever",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 14,
+      "equipo_local": "All Boys",
+      "equipo_visitante": "Morón",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 15,
+      "equipo_local": "Los Andes",
+      "equipo_visitante": "Racing (Cba)",
+      "goles_local": 2,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 15,
+      "equipo_local": "San Telmo",
+      "equipo_visitante": "Bolivar",
+      "goles_local": 0,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 15,
+      "equipo_local": "Tristan Suárez",
+      "equipo_visitante": "Colegiales",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 15,
+      "equipo_local": "San Miguel",
+      "equipo_visitante": "Alte. Brown",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 15,
+      "equipo_local": "Chicago",
+      "equipo_visitante": "Temperley",
+      "goles_local": 1,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 15,
+      "equipo_local": "Atlético Rafaela",
+      "equipo_visitante": "Midland",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 15,
+      "equipo_local": "San Martín",
+      "equipo_visitante": "Maipú",
+      "goles_local": 2,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 15,
+      "equipo_local": "Acassuso",
+      "equipo_visitante": "Defensores",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 15,
+      "equipo_local": "Morón",
+      "equipo_visitante": "Estudiantes",
+      "goles_local": 2,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 15,
+      "equipo_local": "Chacarita",
+      "equipo_visitante": "Almagro",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 15,
+      "equipo_local": "Chaco For Ever",
+      "equipo_visitante": "Dep. Madryn",
+      "goles_local": 1,
+      "goles_visitante": 2
+    },
+    {
+      "jornada": 15,
+      "equipo_local": "Ferro",
+      "equipo_visitante": "Central Norte",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 15,
+      "equipo_local": "Agropecuario",
+      "equipo_visitante": "Quilmes",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 15,
+      "equipo_local": "Godoy Cruz",
+      "equipo_visitante": "All Boys",
+      "goles_local": 4,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 15,
+      "equipo_local": "Colón",
+      "equipo_visitante": "CA Mitre",
+      "goles_local": 1,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 15,
+      "equipo_local": "Gimnasia y Tiro",
+      "equipo_visitante": "Gimnasia (J)",
+      "goles_local": 1,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 15,
+      "equipo_local": "Güemes",
+      "equipo_visitante": "Patronato",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 15,
+      "equipo_local": "San Martín (T)",
+      "equipo_visitante": "Atlanta",
+      "goles_local": 0,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 16,
+      "equipo_local": "Racing (Cba)",
+      "equipo_visitante": "Ferro",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 16,
+      "equipo_local": "Estudiantes",
+      "equipo_visitante": "Godoy Cruz",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 16,
+      "equipo_local": "Colegiales",
+      "equipo_visitante": "Agropecuario",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 16,
+      "equipo_local": "Defensores",
+      "equipo_visitante": "San Telmo",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 16,
+      "equipo_local": "Alte. Brown",
+      "equipo_visitante": "Colón",
+      "goles_local": 1,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 16,
+      "equipo_local": "All Boys",
+      "equipo_visitante": "Los Andes",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 16,
+      "equipo_local": "Atlanta",
+      "equipo_visitante": "Gimnasia y Tiro",
+      "goles_local": 1,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 16,
+      "equipo_local": "Dep. Madryn",
+      "equipo_visitante": "Acassuso",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 16,
+      "equipo_local": "Almagro",
+      "equipo_visitante": "Güemes",
+      "goles_local": 2,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 16,
+      "equipo_local": "Bolivar",
+      "equipo_visitante": "San Miguel",
+      "goles_local": 1,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 16,
+      "equipo_local": "CA Mitre",
+      "equipo_visitante": "Morón",
+      "goles_local": 1,
+      "goles_visitante": 3
+    },
+    {
+      "jornada": 16,
+      "equipo_local": "Temperley",
+      "equipo_visitante": "San Martín",
+      "goles_local": 2,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 16,
+      "equipo_local": "Patronato",
+      "equipo_visitante": "Tristan Suárez",
+      "goles_local": 1,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 16,
+      "equipo_local": "Midland",
+      "equipo_visitante": "San Martín (T)",
+      "goles_local": 2,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 16,
+      "equipo_local": "Central Norte",
+      "equipo_visitante": "Chaco For Ever",
+      "goles_local": 1,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 16,
+      "equipo_local": "Maipú",
+      "equipo_visitante": "Chacarita",
+      "goles_local": 3,
+      "goles_visitante": 2
+    },
+    {
+      "jornada": 16,
+      "equipo_local": "Quilmes",
+      "equipo_visitante": "Atlético Rafaela",
+      "goles_local": 2,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 16,
+      "equipo_local": "Gimnasia (J)",
+      "equipo_visitante": "Chicago",
+      "goles_local": 4,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 17,
+      "equipo_local": "Gimnasia y Tiro",
+      "equipo_visitante": "Midland",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 17,
+      "equipo_local": "Atlanta",
+      "equipo_visitante": "Gimnasia (J)",
+      "goles_local": 3,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 17,
+      "equipo_local": "Los Andes",
+      "equipo_visitante": "Estudiantes",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 17,
+      "equipo_local": "San Miguel",
+      "equipo_visitante": "Defensores",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 17,
+      "equipo_local": "Acassuso",
+      "equipo_visitante": "Central Norte",
+      "goles_local": 2,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 17,
+      "equipo_local": "Atlético Rafaela",
+      "equipo_visitante": "Colegiales",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 17,
+      "equipo_local": "Tristan Suárez",
+      "equipo_visitante": "Almagro",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 17,
+      "equipo_local": "Morón",
+      "equipo_visitante": "Alte. Brown",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 17,
+      "equipo_local": "San Telmo",
+      "equipo_visitante": "Dep. Madryn",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 17,
+      "equipo_local": "All Boys",
+      "equipo_visitante": "Racing (Cba)",
+      "goles_local": 1,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 17,
+      "equipo_local": "Chacarita",
+      "equipo_visitante": "Temperley",
+      "goles_local": 0,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 17,
+      "equipo_local": "Chaco For Ever",
+      "equipo_visitante": "Ferro",
+      "goles_local": 1,
+      "goles_visitante": 2
+    },
+    {
+      "jornada": 17,
+      "equipo_local": "Agropecuario",
+      "equipo_visitante": "Patronato",
+      "goles_local": 1,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 17,
+      "equipo_local": "Güemes",
+      "equipo_visitante": "Maipú",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 17,
+      "equipo_local": "Godoy Cruz",
+      "equipo_visitante": "CA Mitre",
+      "goles_local": 2,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 17,
+      "equipo_local": "Colón",
+      "equipo_visitante": "Bolivar",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 17,
+      "equipo_local": "San Martín (T)",
+      "equipo_visitante": "Quilmes",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 18,
+      "equipo_local": "Midland",
+      "equipo_visitante": "Atlanta",
+      "goles_local": 1,
+      "goles_visitante": 2
+    },
+    {
+      "jornada": 18,
+      "equipo_local": "Colegiales",
+      "equipo_visitante": "San Martín (T)",
+      "goles_local": 2,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 18,
+      "equipo_local": "Defensores",
+      "equipo_visitante": "Colón",
+      "goles_local": 0,
+      "goles_visitante": 3
+    },
+    {
+      "jornada": 18,
+      "equipo_local": "Chicago",
+      "equipo_visitante": "Chacarita",
+      "goles_local": 2,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 18,
+      "equipo_local": "Almagro",
+      "equipo_visitante": "Agropecuario",
+      "goles_local": 2,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 18,
+      "equipo_local": "Bolivar",
+      "equipo_visitante": "Morón",
+      "goles_local": 1,
+      "goles_visitante": 2
+    },
+    {
+      "jornada": 18,
+      "equipo_local": "Quilmes",
+      "equipo_visitante": "Gimnasia y Tiro",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 18,
+      "equipo_local": "Gimnasia (J)",
+      "equipo_visitante": "San Martín",
+      "goles_local": 2,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 18,
+      "equipo_local": "Alte. Brown",
+      "equipo_visitante": "Godoy Cruz",
+      "goles_local": 1,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 18,
+      "equipo_local": "Dep. Madryn",
+      "equipo_visitante": "San Miguel",
+      "goles_local": 2,
+      "goles_visitante": 2
+    },
+    {
+      "jornada": 18,
+      "equipo_local": "Estudiantes",
+      "equipo_visitante": "All Boys",
+      "goles_local": 2,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 18,
+      "equipo_local": "Ferro",
+      "equipo_visitante": "Acassuso",
+      "goles_local": 2,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 18,
+      "equipo_local": "Patronato",
+      "equipo_visitante": "Atlético Rafaela",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 18,
+      "equipo_local": "Racing (Cba)",
+      "equipo_visitante": "Chaco For Ever",
+      "goles_local": 2,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 18,
+      "equipo_local": "CA Mitre",
+      "equipo_visitante": "Los Andes",
+      "goles_local": 0,
+      "goles_visitante": 3
+    },
+    {
+      "jornada": 18,
+      "equipo_local": "Temperley",
+      "equipo_visitante": "Güemes",
+      "goles_local": 4,
+      "goles_visitante": 1
+    },
+    {
+      "jornada": 18,
+      "equipo_local": "Central Norte",
+      "equipo_visitante": "San Telmo",
+      "goles_local": 0,
+      "goles_visitante": 0
+    },
+    {
+      "jornada": 18,
+      "equipo_local": "Maipú",
+      "equipo_visitante": "Tristan Suárez",
+      "goles_local": 0,
+      "goles_visitante": 1
+    }
+  ]
+}
