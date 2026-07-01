@@ -30,7 +30,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
-from main import correr_simulacion
+from main import correr_simulacion, simular_hasta_campeon
 from actualizar_resultados import actualizar
 
 N_SIMULACIONES = 1000
@@ -38,6 +38,12 @@ N_SIMULACIONES = 1000
 # o abusivo tumbe la función o la haga correr durante horas.
 N_SIMULACIONES_MIN = 50
 N_SIMULACIONES_MAX = 5000
+
+# Límites para "simular hasta que un equipo ascienda" (/api/simular-campeon),
+# iguales a los que usaba servidor.py.
+MAX_INTENTOS_CAMPEON_DEFAULT = 5000
+MAX_INTENTOS_CAMPEON_MIN = 100
+MAX_INTENTOS_CAMPEON_MAX = 20000
 
 app = FastAPI(title="Simulador Primera Nacional API")
 
@@ -62,8 +68,17 @@ class SimularBody(BaseModel):
     n_sims: int = N_SIMULACIONES
 
 
+class SimularCampeonBody(BaseModel):
+    equipo: str
+    max_intentos: int = MAX_INTENTOS_CAMPEON_DEFAULT
+
+
 def _clamp_n_sims(n_sims: int) -> int:
     return max(N_SIMULACIONES_MIN, min(N_SIMULACIONES_MAX, n_sims))
+
+
+def _clamp_max_intentos(max_intentos: int) -> int:
+    return max(MAX_INTENTOS_CAMPEON_MIN, min(MAX_INTENTOS_CAMPEON_MAX, max_intentos))
 
 
 @app.get("/api/health")
@@ -86,6 +101,38 @@ def simular(body: SimularBody = SimularBody()):
     try:
         datos = correr_simulacion(n_sims=n_sims, imprimir=False, guardar_json=False)
         return datos
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
+    finally:
+        _lock_simulacion.release()
+
+
+@app.post("/api/simular-campeon")
+def simular_campeon(body: SimularCampeonBody):
+    """Corre simular_hasta_campeon() del equipo pedido y devuelve esa
+    temporada completa (tabla, final de ascenso y Reducido). No toca
+    data.json: es una corrida aparte, para "ver cómo sería" el ascenso
+    de un equipo puntual."""
+    equipo_objetivo = body.equipo.strip()
+    if not equipo_objetivo:
+        return JSONResponse(status_code=400, content={"error": "Falta indicar el equipo"})
+
+    max_intentos = _clamp_max_intentos(body.max_intentos)
+
+    if not _lock_simulacion.acquire(blocking=False):
+        return JSONResponse(
+            status_code=409,
+            content={"error": "Ya hay una simulación corriendo, esperá a que termine"},
+        )
+    try:
+        resultado = simular_hasta_campeon(equipo_objetivo, max_intentos=max_intentos, imprimir=False)
+        if resultado is None:
+            return {"logrado": False, "equipo": equipo_objetivo, "max_intentos": max_intentos}
+        return {"logrado": True, **resultado}
+    except ValueError as e:
+        # simular_hasta_campeon levanta ValueError si el nombre de equipo
+        # no existe (con sugerencias si hay coincidencias parciales)
+        return JSONResponse(status_code=400, content={"error": str(e)})
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
     finally:
