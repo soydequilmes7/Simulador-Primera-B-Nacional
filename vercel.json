@@ -1,5 +1,9 @@
 {
   "outputDirectory": "public",
+  "redirects": [
+    { "source": "/", "destination": "/index.html", "permanent": false },
+    { "source": "/template.html", "destination": "/", "permanent": true }
+  ],
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/index" }
   ],

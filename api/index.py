@@ -27,7 +27,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from pydantic import BaseModel
 
 from main import correr_simulacion
@@ -69,6 +69,11 @@ def _clamp_n_sims(n_sims: int) -> int:
 @app.get("/api/health")
 def health():
     return {"ok": True}
+
+
+@app.get("/")
+def root():
+    return RedirectResponse(url="/index.html")
 
 
 @app.post("/api/simular")
