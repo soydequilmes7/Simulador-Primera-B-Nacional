@@ -25,10 +25,8 @@ Uso:
                                                # actualizar_resultados.py
 """
 import csv
-from pathlib import Path
 
-DATOS_DIR = Path(__file__).resolve().parent / "datos"
-TABLA_CSV = DATOS_DIR / "tabla.csv"
+import rutas
 
 CAMPOS_TABLA = [
     "zona", "posicion", "equipo", "partidos_jugados", "ganados",
@@ -41,7 +39,7 @@ CAMPOS_NUMERICOS = [
 
 
 def _leer_tabla():
-    with open(TABLA_CSV, newline="", encoding="utf-8") as f:
+    with open(rutas.datos_dir() / "tabla.csv", newline="", encoding="utf-8") as f:
         filas = list(csv.DictReader(f))
     for f in filas:
         for campo in CAMPOS_NUMERICOS:
@@ -122,8 +120,9 @@ def aplicar_partidos(filas_tabla, partidos):
 
 def guardar_tabla(filas):
     """Escribe datos/tabla.csv con las filas dadas."""
-    DATOS_DIR.mkdir(exist_ok=True)
-    with open(TABLA_CSV, "w", newline="", encoding="utf-8") as f:
+    datos_dir = rutas.datos_dir()
+    datos_dir.mkdir(exist_ok=True)
+    with open(datos_dir / "tabla.csv", "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=CAMPOS_TABLA)
         writer.writeheader()
         writer.writerows(filas)

@@ -507,25 +507,31 @@ async function correrSimulacion(){
     status.textContent = `Corriendo ${nSims} simulaciones — puede tardar 1-2 minutos, no cierres esta pestaña.`;
 
     try {
-        const respuesta = await fetch("/simular", {
+        const respuesta = await fetch("/api/simular", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ n_sims: Number(nSims) })
         });
 
+        const cuerpo = await respuesta.json().catch(() => ({}));
+
         if (!respuesta.ok) {
-            const cuerpo = await respuesta.json().catch(() => ({}));
             throw new Error(cuerpo.error || `El servidor respondió con error ${respuesta.status}`);
         }
 
-        await cargarDatos();
+        // La API devuelve el mismo contenido que data.json directo en la
+        // respuesta (en Vercel no hay filesystem escribible para
+        // regenerar el data.json estático), así que renderizamos desde
+        // ahí en vez de volver a pedir data.json.
+        DATA = cuerpo;
+        iniciar();
 
         status.classList.add('ok');
         status.textContent = "✓ Simulación actualizada (" + (DATA.generado || "") + ")";
     } catch (e) {
         status.classList.add('error');
         status.textContent = "No se pudo correr la simulación: " + e.message +
-            " — ¿Está corriendo servidor.py?";
+            " — revisá que la API esté disponible.";
     } finally {
         btn.disabled = false;
         input.disabled = false;
@@ -558,7 +564,7 @@ async function correrActualizacion(){
     status.textContent = "Consultando Promiedos y re-simulando si hay partidos nuevos — puede tardar 1-2 minutos.";
 
     try {
-        const respuesta = await fetch("/actualizar", {
+        const respuesta = await fetch("/api/actualizar", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ n_sims: Number(nSims) })
@@ -570,7 +576,11 @@ async function correrActualizacion(){
         }
 
         if (cuerpo.actualizado) {
-            await cargarDatos();
+            // Igual que en correrSimulacion: usamos el JSON que ya vino en
+            // la respuesta en vez de re-pedir data.json (en Vercel ese
+            // archivo estático nunca cambia).
+            DATA = cuerpo.datos;
+            iniciar();
             status.classList.add('ok');
             status.textContent = `✓ Se cargaron ${cuerpo.cargados.length} partido(s) nuevo(s) y se re-simuló.`;
         } else {
@@ -586,7 +596,7 @@ async function correrActualizacion(){
     } catch (e) {
         status.classList.add('error');
         status.textContent = "No se pudo actualizar: " + e.message +
-            " — ¿Está corriendo servidor.py?";
+            " — revisá que la API esté disponible.";
     } finally {
         btn.disabled = false;
         input.disabled = false;
