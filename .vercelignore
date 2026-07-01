@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.context/
+.git/
+
+# Artefactos de debug/desarrollo local, no hacen falta en el deploy
+debug_promiedos_dump.json
+fecha18.json
+tabla_fixtures.json
+tabla_fixtures2.json
+firebase-debug.log
+log_actualizaciones.json

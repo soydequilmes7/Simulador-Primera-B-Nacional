@@ -4,11 +4,11 @@ Servidor local para el Simulador Primera Nacional.
 Hace tres cosas:
   1. Sirve los archivos de la carpeta PAGINAHTLM (template.html, data.json)
      igual que "python -m http.server", para que abras la página en el navegador.
-  2. Escucha POST /simular: cuando apretás el botón "Correr nueva simulación"
-     en la web, corre la simulación completa (estadisticas.py + main.py),
-     regenera PAGINAHTLM/data.json y le devuelve el resultado al navegador,
-     sin que tengas que volver a la terminal.
-  3. Escucha POST /actualizar: scrapea los resultados jugados desde Promiedos,
+  2. Escucha POST /api/simular: cuando apretás el botón "Correr nueva
+     simulación" en la web, corre la simulación completa (estadisticas.py +
+     main.py), regenera PAGINAHTLM/data.json y le devuelve el resultado al
+     navegador, sin que tengas que volver a la terminal.
+  3. Escucha POST /api/actualizar: scrapea los resultados jugados desde Promiedos,
      completa fixture.csv -> resultados.csv y corre la simulación si hay
      partidos nuevos. Además, cada ACTUALIZAR_CADA_HORAS corre esto solo
      en segundo plano, sin que tengas que apretar nada.
@@ -61,9 +61,9 @@ class Handler(SimpleHTTPRequestHandler):
         self.wfile.write(cuerpo)
 
     def do_POST(self):
-        if self.path == "/simular":
+        if self.path == "/api/simular":
             self._manejar_simular()
-        elif self.path == "/actualizar":
+        elif self.path == "/api/actualizar":
             self._manejar_actualizar()
         else:
             self._responder_json(404, {"error": "Ruta no encontrada"})

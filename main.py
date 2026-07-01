@@ -1,14 +1,21 @@
 import json
 import datetime
+from pathlib import Path
+
 from modelos import estadisticas
 from modelos.estadisticas import Estadisticas
 
 
-def correr_simulacion(n_sims=1000, imprimir=True):
+def correr_simulacion(n_sims=1000, imprimir=True, guardar_json=True):
     """Corre toda la simulación (fase regular, final de ascenso, reducido y
-    Monte Carlo), guarda el resultado en PAGINAHTLM/data.json y devuelve ese
-    mismo diccionario. La usan tanto main.py (linea de comandos) como
-    servidor.py (boton "Correr nueva simulacion" de la pagina web)."""
+    Monte Carlo) y devuelve el diccionario de resultados. Si guardar_json es
+    True (default), además lo guarda en PAGINAHTLM/data.json. La usan tanto
+    main.py (línea de comandos) y servidor.py (botón "Correr nueva
+    simulación" de la página web) -- con guardar_json=True, para que la
+    página estática quede al día -- como api/index.py (Vercel Function),
+    con guardar_json=False: ese filesystem es de solo lectura, así que el
+    resultado se devuelve directo en la respuesta HTTP en vez de escribirse
+    a disco."""
 
     if imprimir:
         print("=" * 45)
@@ -73,7 +80,7 @@ def correr_simulacion(n_sims=1000, imprimir=True):
     # =================================================================
     # EXPORTACIÓN A JSON PARA LA PÁGINA WEB
     # =================================================================
-    if imprimir:
+    if imprimir and guardar_json:
         print("\nGuardando resultados en data.json para la web...")
 
     mc_A = resumen_mc[resumen_mc["zona"] == "A"].drop(columns=["zona"]).to_dict(orient="records")
@@ -136,12 +143,14 @@ def correr_simulacion(n_sims=1000, imprimir=True):
     }
 
     # Guardar en la carpeta PAGINAHTLM
-    try:
-        with open("PAGINAHTLM/data.json", "w", encoding="utf-8") as file:
-            json.dump(datos_web, file, ensure_ascii=False, indent=4)
-        print("¡Archivo data.json generado con éxito en la carpeta PAGINAHTLM!")
-    except Exception as e:
-        print(f"Error al guardar el archivo JSON: {e}")
+    if guardar_json:
+        ruta_data_json = Path(__file__).resolve().parent / "PAGINAHTLM" / "data.json"
+        try:
+            with open(ruta_data_json, "w", encoding="utf-8") as file:
+                json.dump(datos_web, file, ensure_ascii=False, indent=4)
+            print("¡Archivo data.json generado con éxito en la carpeta PAGINAHTLM!")
+        except Exception as e:
+            print(f"Error al guardar el archivo JSON: {e}")
 
     return datos_web
 
