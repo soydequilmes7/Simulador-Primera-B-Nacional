@@ -1,9 +1,36 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es-AR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Simulador Primera Nacional — Reporte</title>
+<title>Simulador Primera Nacional — Ascenso, Descenso y Tabla</title>
+<meta name="description" content="Probabilidades de ascenso y descenso de la Primera Nacional, tabla final proyectada y goleadores. Simulá la temporada completa con un modelo Poisson y Monte Carlo.">
+<meta name="keywords" content="simulador primera nacional, ascenso, descenso, probabilidades, tabla, reducido, monte carlo, fútbol argentino, ascenso del interior">
+<meta name="author" content="El Gonza (@soydequilmes7) y Monti (@monti3dev)">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="theme-color" content="#0A1410">
+<link rel="canonical" href="https://simuladorprimerab.xyz/">
+<link rel="manifest" href="/site.webmanifest">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Simulador Primera Nacional">
+<meta property="og:locale" content="es_AR">
+<meta property="og:url" content="https://simuladorprimerab.xyz/">
+<meta property="og:title" content="Simulador Primera Nacional — Ascenso, Descenso y Tabla">
+<meta property="og:description" content="Probabilidades de ascenso y descenso de cada equipo, tabla proyectada y goleadores. Modelo Poisson + Monte Carlo.">
+<meta property="og:image" content="https://simuladorprimerab.xyz/favicon.png">
+<meta property="og:image:width" content="512">
+<meta property="og:image:height" content="512">
+<meta property="og:image:alt" content="Simulador Primera Nacional">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@soydequilmes7">
+<meta name="twitter:creator" content="@monti3dev">
+<meta name="twitter:title" content="Simulador Primera Nacional — Ascenso, Descenso y Tabla">
+<meta name="twitter:description" content="Probabilidades de ascenso y descenso de cada equipo, tabla proyectada y goleadores. Modelo Poisson + Monte Carlo.">
+<meta name="twitter:image" content="https://simuladorprimerab.xyz/favicon.png">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -13,8 +40,9 @@
 </script>
 <script defer src="/_vercel/insights/script.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
   :root{
     --bg: #0A1410;
@@ -180,6 +208,16 @@
   .section-head h2{ font-family:'Oswald'; text-transform:uppercase; letter-spacing:0.03em; font-size:24px; font-weight:600; }
   .section-head .rule{ flex:1; height:1px; background: var(--line); }
   .section-note{ color:var(--ink-dim); font-size:14px; margin-bottom:22px; max-width:65ch; }
+
+  /* ---------- FAQ ---------- */
+  .faq{ display:flex; flex-direction:column; gap:12px; max-width:760px; }
+  .faq details{ background:var(--bg-panel); border:1px solid var(--line); border-radius:10px; padding:0 18px; }
+  .faq summary{ list-style:none; cursor:pointer; padding:16px 0; font-family:'Oswald', sans-serif; text-transform:uppercase; letter-spacing:0.02em; font-size:15px; color:var(--ink); display:flex; justify-content:space-between; align-items:center; gap:12px; }
+  .faq summary::-webkit-details-marker{ display:none; }
+  .faq summary::after{ content:"+"; color:var(--amber); font-family:'JetBrains Mono', monospace; font-size:20px; line-height:1; }
+  .faq details[open] summary::after{ content:"−"; }
+  .faq details[open] summary{ border-bottom:1px solid var(--line); }
+  .faq .faq-a{ color:var(--ink-dim); font-size:14px; line-height:1.65; padding:14px 0 18px; }
 
   /* ---------- STANDINGS TABLE ---------- */
   .table-wrap{ border:1px solid var(--line); border-radius:10px; overflow:hidden; }
@@ -376,6 +414,77 @@
     thead th, tbody td{ padding:8px 6px; font-size:12px; }
   }
 </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://simuladorprimerab.xyz/#website",
+      "url": "https://simuladorprimerab.xyz/",
+      "name": "Simulador Primera Nacional",
+      "description": "Probabilidades de ascenso y descenso de la Primera Nacional, tabla proyectada y goleadores.",
+      "inLanguage": "es-AR",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://simuladorprimerab.xyz/?equipo={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
+    },
+    {
+      "@type": "WebApplication",
+      "name": "Simulador Primera Nacional",
+      "url": "https://simuladorprimerab.xyz/",
+      "description": "Simulá la temporada completa de la Primera Nacional de Argentina con un modelo Poisson y Monte Carlo para ver las probabilidades de ascenso y descenso de cada equipo, la tabla proyectada y los goleadores.",
+      "applicationCategory": "SportsApplication",
+      "operatingSystem": "Web",
+      "inLanguage": "es-AR",
+      "browserRequirements": "Requires JavaScript",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "ARS" },
+      "author": [
+        { "@type": "Person", "name": "El Gonza", "url": "https://x.com/soydequilmes7" },
+        { "@type": "Person", "name": "Monti", "url": "https://x.com/monti3dev" }
+      ]
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "¿Qué es el Simulador de la Primera Nacional?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Es una herramienta que simula miles de veces la temporada completa de la Primera Nacional para estimar las probabilidades de ascenso y descenso de cada equipo, la tabla final proyectada y los goleadores." }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Cómo se calculan las probabilidades de ascenso y descenso?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Usamos un modelo de Poisson que estima los goles de cada equipo según su ataque y defensa (como local y como visitante), ajustado por la forma reciente y con la corrección de Dixon-Coles. Sobre ese modelo corremos una simulación de Monte Carlo de toda la temporada miles de veces." }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Cada cuánto se actualizan los datos?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Los resultados se actualizan con los partidos jugados que se toman de Promiedos, y cada actualización vuelve a correr la simulación con la tabla al día." }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Cuántos equipos ascienden y descienden?",
+      "acceptedAnswer": { "@type": "Answer", "text": "La Primera Nacional se divide en 2 zonas. Hay 2 ascensos: el primero lo define el puntero de cada zona y el segundo sale del Reducido. Además hay 4 descensos por temporada." }
+    },
+    {
+      "@type": "Question",
+      "name": "¿El simulador es gratis?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Sí, es completamente gratuito. Podés correr nuevas simulaciones y buscar a tu equipo para ver su probabilidad de ascenso o descenso." }
+    }
+  ]
+}
+</script>
 </head>
 <body>
 
@@ -505,6 +614,33 @@
         <thead><tr><th>#</th><th>Jugador</th><th>Equipo</th><th>Goles</th><th>Proy.</th></tr></thead>
         <tbody id="goleadores-body"></tbody>
       </table>
+    </div>
+  </section>
+
+  <section id="sec-como-funciona">
+    <div class="section-head"><span class="idx">06</span><h2>¿Cómo funciona?</h2><div class="rule"></div></div>
+    <p class="section-note">Todo lo que hay detrás del simulador: el modelo, los datos y las reglas del torneo.</p>
+    <div class="faq">
+      <details>
+        <summary>¿Qué es el Simulador de la Primera Nacional?</summary>
+        <div class="faq-a">Es una herramienta que simula miles de veces la temporada completa de la Primera Nacional para estimar las probabilidades de ascenso y descenso de cada equipo, la tabla final proyectada y los goleadores.</div>
+      </details>
+      <details>
+        <summary>¿Cómo se calculan las probabilidades de ascenso y descenso?</summary>
+        <div class="faq-a">Usamos un modelo de Poisson que estima los goles de cada equipo según su ataque y defensa (como local y como visitante), ajustado por la forma reciente y con la corrección de Dixon-Coles. Sobre ese modelo corremos una simulación de Monte Carlo de toda la temporada miles de veces.</div>
+      </details>
+      <details>
+        <summary>¿Cada cuánto se actualizan los datos?</summary>
+        <div class="faq-a">Los resultados se actualizan con los partidos jugados que se toman de Promiedos, y cada actualización vuelve a correr la simulación con la tabla al día.</div>
+      </details>
+      <details>
+        <summary>¿Cuántos equipos ascienden y descienden?</summary>
+        <div class="faq-a">La Primera Nacional se divide en 2 zonas. Hay 2 ascensos: el primero lo define el puntero de cada zona y el segundo sale del Reducido. Además hay 4 descensos por temporada.</div>
+      </details>
+      <details>
+        <summary>¿El simulador es gratis?</summary>
+        <div class="faq-a">Sí, es completamente gratuito. Podés correr nuevas simulaciones y buscar a tu equipo para ver su probabilidad de ascenso o descenso.</div>
+      </details>
     </div>
   </section>
 
