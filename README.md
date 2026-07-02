@@ -141,9 +141,9 @@ uvicorn api.index:app --reload
 Endpoints:
 
 - `GET /api/health`
-- `POST /api/simular` — body opcional `{"n_sims": 1000}` (50-5000). Corre la
+- `POST /api/simular` — body opcional `{"n_sims": 500}` (50-1000). Corre la
   simulación y devuelve el resultado en la respuesta.
-- `POST /api/actualizar` — body opcional `{"n_sims": 1000}`. Scrapea
+- `POST /api/actualizar` — body opcional `{"n_sims": 500}`. Scrapea
   Promiedos, actualiza `datos/` y re-simula si hay partidos nuevos.
 - `POST /api/simular-lpf`
 - `POST /api/actualizar-lpf`

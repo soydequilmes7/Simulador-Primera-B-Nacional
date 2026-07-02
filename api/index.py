@@ -52,14 +52,12 @@ PYSIM_SOURCE_FILES = [
 # lee y cachea una sola vez.
 _pysim_source_cache = None
 
-N_SIMULACIONES = 1000
-# La simulación de LPF es más pesada por corrida (playoffs + tabla anual +
-# descensos dentro del Monte Carlo), por eso el default es más bajo.
-N_SIMULACIONES_LPF = 300
+N_SIMULACIONES = 500
+N_SIMULACIONES_LPF = 500
 # Mismos límites que usaba servidor.py: evitan que un valor mal formado
 # o abusivo tumbe la función o la haga correr durante horas.
 N_SIMULACIONES_MIN = 50
-N_SIMULACIONES_MAX = 5000
+N_SIMULACIONES_MAX = 1000
 
 # Límites para "simular hasta que un equipo ascienda" (/api/simular-campeon),
 # iguales a los que usaba servidor.py.

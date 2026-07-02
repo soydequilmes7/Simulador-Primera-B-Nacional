@@ -35,12 +35,12 @@ from actualizar_resultados_lpf import actualizar as actualizar_lpf
 
 PUERTO = 8000
 CARPETA_WEB = "public"
-N_SIMULACIONES = 1000
+N_SIMULACIONES = 500
 
 # Límites para el valor de n_sims que puede pedir la página (evita que un
 # valor mal formado o abusivo tumbe el servidor o lo cuelgue por horas).
 N_SIMULACIONES_MIN = 50
-N_SIMULACIONES_MAX = 5000
+N_SIMULACIONES_MAX = 1000
 
 # Límites para "simular hasta que un equipo ascienda" (/api/simular-campeon).
 # Cada intento es una sola temporada (mucho más liviano que un Monte Carlo

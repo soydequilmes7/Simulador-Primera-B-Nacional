@@ -798,7 +798,7 @@
     </div>
     <div class="eyebrow" id="hero-eyebrow">SIMULACIÓN MONTE CARLO — <span id="hero-n">0</span> CORRIDAS</div>
     <h1 class="display">SIMULADOR <span id="hero-title-span">PRIMERA NACIONAL</span></h1>
-    <p class="sub" id="hero-sub">Probabilidades de ascenso y descenso calculadas simulando la temporada completa miles de veces con un modelo Poisson ajustado por forma reciente y corrección Dixon-Coles.</p>
+    <p class="sub" id="hero-sub">Probabilidades de ascenso y descenso calculadas simulando la temporada completa hasta mil veces con un modelo Poisson ajustado por forma reciente y corrección Dixon-Coles.</p>
     <div class="meta">
       <div><div class="num mono" id="meta-equipos">—</div><div class="lbl">Equipos</div></div>
       <div><div class="num mono" id="meta-zonas">2</div><div class="lbl">Zonas</div></div>
@@ -809,8 +809,8 @@
     <div class="sim-control" id="sim-control-nacional">
       <div class="sim-select-row">
         <label for="sim-count">Cantidad de simulaciones</label>
-        <input type="number" id="sim-count" value="1000" min="50" max="5000" step="1">
-        <span class="rango">(50–5000)</span>
+        <input type="number" id="sim-count" value="500" min="50" max="1000" step="1">
+        <span class="rango">(50–1000)</span>
       </div>
       <div class="btn-row">
         <button id="btn-simular" class="btn-simular">▶ Correr nueva simulación</button>
@@ -823,8 +823,8 @@
     <div class="sim-control" id="sim-control-lpf" style="display:none">
       <div class="sim-select-row">
         <label for="sim-count-lpf">Cantidad de simulaciones</label>
-        <input type="number" id="sim-count-lpf" value="300" min="50" max="5000" step="1">
-        <span class="rango">(50–5000)</span>
+        <input type="number" id="sim-count-lpf" value="500" min="50" max="1000" step="1">
+        <span class="rango">(50–1000)</span>
       </div>
       <div class="btn-row">
         <button id="btn-simular-lpf" class="btn-simular">▶ Correr nueva simulación (Clausura + playoffs)</button>
@@ -933,7 +933,7 @@
 
   <section id="sec-goleadores">
     <div class="section-head"><span class="idx">05</span><h2>Goleadores</h2><div class="rule"></div></div>
-    <p class="section-note">Proyección por simulación: partimos de los goles ya convertidos y corremos miles de simulaciones de los partidos que le quedan al equipo del jugador. El ritmo de cada uno se ajusta hacia el promedio de la liga mientras tiene pocos partidos jugados (para que una racha corta no dispare la proyección), y cada partido simulado tiene una probabilidad genérica de que no lo juegue —no sabemos si es lesión, suspensión o rotación, solo lo tratamos como riesgo—. Por eso el número que ves es un promedio entre un rango posible, no una cifra exacta.</p>
+    <p class="section-note">Proyección por simulación: partimos de los goles ya convertidos y corremos hasta mil simulaciones de los partidos que le quedan al equipo del jugador. El ritmo de cada uno se ajusta hacia el promedio de la liga mientras tiene pocos partidos jugados (para que una racha corta no dispare la proyección), y cada partido simulado tiene una probabilidad genérica de que no lo juegue —no sabemos si es lesión, suspensión o rotación, solo lo tratamos como riesgo—. Por eso el número que ves es un promedio entre un rango posible, no una cifra exacta.</p>
     <div class="table-wrap">
       <table>
         <thead><tr><th>#</th><th>Jugador</th><th>Equipo</th><th>Goles</th><th>Proy.</th></tr></thead>
@@ -948,11 +948,11 @@
     <div class="faq">
       <details>
         <summary>¿Qué es el Simulador de la Primera Nacional?</summary>
-        <div class="faq-a">Es una herramienta que simula miles de veces la temporada completa de la Primera Nacional para estimar las probabilidades de ascenso y descenso de cada equipo, la tabla final proyectada y los goleadores.</div>
+        <div class="faq-a">Es una herramienta que simula hasta mil veces la temporada completa de la Primera Nacional para estimar las probabilidades de ascenso y descenso de cada equipo, la tabla final proyectada y los goleadores.</div>
       </details>
       <details>
         <summary>¿Cómo se calculan las probabilidades de ascenso y descenso?</summary>
-        <div class="faq-a">Usamos un modelo de Poisson que estima los goles de cada equipo según su ataque y defensa (como local y como visitante), ajustado por la forma reciente y con la corrección de Dixon-Coles. Sobre ese modelo corremos una simulación de Monte Carlo de toda la temporada miles de veces.</div>
+        <div class="faq-a">Usamos un modelo de Poisson que estima los goles de cada equipo según su ataque y defensa (como local y como visitante), ajustado por la forma reciente y con la corrección de Dixon-Coles. Sobre ese modelo corremos una simulación de Monte Carlo de toda la temporada hasta mil veces.</div>
       </details>
       <details>
         <summary>¿Cada cuánto se actualizan los datos?</summary>
@@ -1038,7 +1038,7 @@
 
   <section id="sec-lpf-mc">
     <div class="section-head"><span class="idx">04</span><h2>Monte Carlo — Probabilidades del Clausura</h2><div class="rule"></div></div>
-    <p class="section-note">Resultado de simular el Clausura y los playoffs miles de veces. % playoffs = veces que terminó entre los primeros 8 de su zona. % campeón = veces que salió campeón del Clausura.</p>
+    <p class="section-note">Resultado de simular el Clausura y los playoffs hasta mil veces. % playoffs = veces que terminó entre los primeros 8 de su zona. % campeón = veces que salió campeón del Clausura.</p>
     <div id="mc-list-lpf"></div>
     <div class="table-wrap" style="margin-top:20px">
       <table>
@@ -1106,11 +1106,11 @@
     <div class="faq">
       <details>
         <summary>¿Qué es el Simulador de la Liga Profesional?</summary>
-        <div class="faq-a">Es una herramienta que simula miles de veces el Clausura y los Playoffs de la Liga Profesional para estimar las probabilidades de playoffs y de título de cada equipo, además de la Tabla Anual, los descensos y los cupos a copas internacionales.</div>
+        <div class="faq-a">Es una herramienta que simula hasta mil veces el Clausura y los Playoffs de la Liga Profesional para estimar las probabilidades de playoffs y de título de cada equipo, además de la Tabla Anual, los descensos y los cupos a copas internacionales.</div>
       </details>
       <details>
         <summary>¿Cómo se calculan las probabilidades de playoffs y de título?</summary>
-        <div class="faq-a">Usamos un modelo de Poisson que estima los goles de cada equipo según su ataque y defensa (como local y como visitante), ajustado por la forma reciente y con la corrección de Dixon-Coles. Sobre ese modelo corremos una simulación de Monte Carlo del Clausura y los Playoffs miles de veces.</div>
+        <div class="faq-a">Usamos un modelo de Poisson que estima los goles de cada equipo según su ataque y defensa (como local y como visitante), ajustado por la forma reciente y con la corrección de Dixon-Coles. Sobre ese modelo corremos una simulación de Monte Carlo del Clausura y los Playoffs hasta mil veces.</div>
       </details>
       <details>
         <summary>¿Cada cuánto se actualizan los datos?</summary>
@@ -1311,8 +1311,8 @@ document.getElementById('btn-simular').addEventListener('click', correrSimulacio
 function leerNSims(){
     const input = document.getElementById('sim-count');
     let n = parseInt(input.value, 10);
-    if (!Number.isFinite(n)) n = 1000;
-    n = Math.max(50, Math.min(5000, n));
+    if (!Number.isFinite(n)) n = 500;
+    n = Math.max(50, Math.min(1000, n));
     input.value = n; // refleja el valor ya corregido si el usuario puso algo fuera de rango
     return n;
 }
@@ -2128,8 +2128,8 @@ function renderTrofeoLPF(){
 function leerNSimsLPF(){
   const input = document.getElementById('sim-count-lpf');
   let n = parseInt(input.value, 10);
-  if (!Number.isFinite(n)) n = 300;
-  n = Math.max(50, Math.min(5000, n));
+  if (!Number.isFinite(n)) n = 500;
+  n = Math.max(50, Math.min(1000, n));
   input.value = n; // refleja el valor ya corregido si el usuario puso algo fuera de rango
   return n;
 }
@@ -2502,7 +2502,7 @@ const HERO_TEXTOS = {
   nacional: {
     eyebrow: () => `SIMULACIÓN MONTE CARLO — <span id="hero-n">${(DATA && DATA.n_simulaciones) || 0}</span> CORRIDAS`,
     titulo: "PRIMERA NACIONAL",
-    sub: "Probabilidades de ascenso y descenso calculadas simulando la temporada completa miles de veces con un modelo Poisson ajustado por forma reciente y corrección Dixon-Coles.",
+    sub: "Probabilidades de ascenso y descenso calculadas simulando la temporada completa hasta mil veces con un modelo Poisson ajustado por forma reciente y corrección Dixon-Coles.",
     ascensosLbl: "Ascensos por edición",
   },
   lpf: {

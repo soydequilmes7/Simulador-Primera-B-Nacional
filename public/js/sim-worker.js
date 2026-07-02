@@ -122,10 +122,10 @@ async function ejecutar(tarea, payload) {
   let kwargs;
   switch (tarea) {
     case "simular":
-      kwargs = { n_sims: clamp(payload.n_sims, 50, 5000, 1000) };
+      kwargs = { n_sims: clamp(payload.n_sims, 50, 1000, 500) };
       break;
     case "simular-lpf":
-      kwargs = { n_sims: clamp(payload.n_sims, 50, 5000, 300) };
+      kwargs = { n_sims: clamp(payload.n_sims, 50, 1000, 500) };
       break;
     case "simular-campeon":
     case "simular-campeon-lpf": {
