@@ -1,5 +1,5 @@
 {
-  "outputDirectory": "public",
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "redirects": [
     { "source": "/", "destination": "/index.html", "permanent": false },
     { "source": "/template.html", "destination": "/", "permanent": true }

@@ -152,8 +152,17 @@ vercel deploy        # preview
 vercel deploy --prod # producción
 ```
 
-`vercel.json` ya enruta `/api/*` a `api/index.py` y sirve `public/`
-como sitio estático (el dashboard).
+`vercel.json` enruta `/api/*` a `api/index.py`. Vercel detecta FastAPI
+desde `requirements.txt`, carga la variable `app`, y sirve los archivos
+de `public/` como sitio estático (el dashboard). La versión de Python
+queda fijada en `.python-version`.
+
+Para validar el build local antes de subir:
+
+```bash
+vercel pull --yes --environment preview  # solo si el proyecto no está linkeado
+vercel build
+```
 
 ### ⚠️ Limitación importante: persistencia en Vercel
 
