@@ -1141,6 +1141,8 @@
 
 <script>
 const API_BASE_URL = "https://simulador-primera-nacional-backend.onrender.com";
+const API_TIMEOUT_MS = 120000;
+
 function apiUrl(path){
   return API_BASE_URL + path;
 }
@@ -1154,8 +1156,25 @@ function apiResponseError(respuesta, cuerpo){
   return error;
 }
 
+async function apiFetch(url, options = {}){
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } catch (error) {
+    if (error.name === 'AbortError'){
+      const timeoutError = new Error("Render tardó más de 2 minutos en responder. Probá de nuevo en unos segundos.");
+      timeoutError.timeout = true;
+      throw timeoutError;
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
 function apiErrorSuffix(error){
-  return error.status === 409 ? "" : " — revisá que la API esté disponible.";
+  return error.status === 409 || error.timeout ? "" : " — revisá que la API esté disponible.";
 }
 
 function setApiErrorStatus(status, prefix, error){
@@ -1257,7 +1276,7 @@ async function correrSimulacion(){
     status.textContent = `Corriendo ${nSims} simulaciones — puede tardar 1-2 minutos, no cierres esta pestaña.`;
 
     try {
-        const respuesta = await fetch(apiUrl("/api/simular"), {
+        const respuesta = await apiFetch(apiUrl("/api/simular"), {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ n_sims: Number(nSims) })
@@ -1314,7 +1333,7 @@ async function correrActualizacion(){
     status.textContent = "Consultando Promiedos y re-simulando si hay partidos nuevos — puede tardar 1-2 minutos.";
 
     try {
-        const respuesta = await fetch(apiUrl("/api/actualizar"), {
+        const respuesta = await apiFetch(apiUrl("/api/actualizar"), {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ n_sims: Number(nSims) })
@@ -1715,7 +1734,7 @@ async function simularHastaCampeon(){
   resultado.innerHTML = "";
 
   try {
-    const respuesta = await fetch(apiUrl("/api/simular-campeon"), {
+    const respuesta = await apiFetch(apiUrl("/api/simular-campeon"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ equipo })
@@ -2130,7 +2149,7 @@ async function correrSimulacionLPF(){
   status.textContent = `Corriendo Clausura + playoffs + tabla anual (${nSims} simulaciones) — puede tardar unos segundos.`;
 
   try {
-    const respuesta = await fetch(apiUrl("/api/simular-lpf"), {
+    const respuesta = await apiFetch(apiUrl("/api/simular-lpf"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ n_sims: Number(nSims) })
@@ -2170,7 +2189,7 @@ async function correrActualizacionLPF(){
   status.textContent = "Consultando Promiedos y re-simulando si hay partidos nuevos — puede tardar unos segundos.";
 
   try {
-    const respuesta = await fetch(apiUrl("/api/actualizar-lpf"), {
+    const respuesta = await apiFetch(apiUrl("/api/actualizar-lpf"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ n_sims: Number(nSims) })
@@ -2378,7 +2397,7 @@ async function simularHastaCampeonLPF(){
   resultado.innerHTML = "";
 
   try {
-    const respuesta = await fetch(apiUrl("/api/simular-campeon-lpf"), {
+    const respuesta = await apiFetch(apiUrl("/api/simular-campeon-lpf"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ equipo })
