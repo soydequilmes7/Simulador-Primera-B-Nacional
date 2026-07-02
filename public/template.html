@@ -739,8 +739,11 @@
   footer p{ margin-top:6px; }
 
   /* ---------- COAUTORES (X) ---------- */
+  /* Ancladas al hero (position:relative) en vez de position:fixed: así
+     se desplazan junto con el hero y no compiten por el mismo hueco
+     que el theme-toggle cuando la barra .liga-tabs queda sticky arriba. */
   .coauthors{
-    position:fixed; top:16px; right:16px; z-index:100;
+    position:absolute; top:16px; right:16px; z-index:2;
     display:flex; gap:10px;
   }
   .coauthors a{
@@ -775,16 +778,15 @@
 </head>
 <body>
 
-  <div class="coauthors">
-    <a href="https://x.com/monti3dev" target="_blank" rel="noopener noreferrer" title="@monti3dev en X" aria-label="@monti3dev en X">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-    </a>
-    <a href="https://x.com/soydequilmes7" target="_blank" rel="noopener noreferrer" title="@soydequilmes7 en X" aria-label="@soydequilmes7 en X">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-    </a>
-  </div>
-
   <div class="hero">
+    <div class="coauthors">
+      <a href="https://x.com/monti3dev" target="_blank" rel="noopener noreferrer" title="@monti3dev en X" aria-label="@monti3dev en X">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      </a>
+      <a href="https://x.com/soydequilmes7" target="_blank" rel="noopener noreferrer" title="@soydequilmes7 en X" aria-label="@soydequilmes7 en X">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      </a>
+    </div>
     <div class="eyebrow" id="hero-eyebrow">SIMULACIÓN MONTE CARLO — <span id="hero-n">0</span> CORRIDAS</div>
     <h1 class="display">SIMULADOR <span id="hero-title-span">PRIMERA NACIONAL</span></h1>
     <p class="sub" id="hero-sub">Probabilidades de ascenso y descenso calculadas simulando la temporada completa miles de veces con un modelo Poisson ajustado por forma reciente y corrección Dixon-Coles.</p>
