@@ -1212,6 +1212,128 @@ function endApiAction(){
   setApiActionsDisabled(false);
 }
 
+/* ---------- SIMULADOR LOCAL (Pyodide, corre en el navegador) ----------
+ * Las simulaciones corren en un Web Worker con Pyodide, usando el mismo
+ * código Python que el backend (ver public/js/sim-worker.js y
+ * pysim_dispatch.py). Si el worker no está listo, tarda demasiado, o
+ * falla, cada función de simulación cae de vuelta a apiFetch() contra el
+ * backend, igual que antes. */
+const PYSIM_TIMEOUT_INIT_MS = 45000;  // tiempo máx. para que cargue Pyodide + numpy/pandas + código
+const PYSIM_TIMEOUT_RUN_MS = 180000;  // tiempo máx. por corrida dentro del worker
+
+let simWorker = null;
+let simWorkerState = "idle"; // idle | loading | ready | error
+let simWorkerReadyWaiters = [];
+let simWorkerRequestId = 0;
+const simWorkerPendientes = new Map();
+
+function iniciarSimWorker(){
+  if (simWorker) return;
+  try {
+    simWorker = new Worker('./js/sim-worker.js');
+  } catch (e) {
+    simWorkerState = "error";
+    return;
+  }
+  simWorkerState = "loading";
+
+  simWorker.onmessage = (event) => {
+    const msg = event.data || {};
+    if (msg.type === "status"){
+      if (msg.phase === "ready"){
+        simWorkerState = "ready";
+        simWorkerReadyWaiters.splice(0).forEach(resolve => resolve(true));
+      } else if (msg.phase === "error"){
+        simWorkerState = "error";
+        simWorkerReadyWaiters.splice(0).forEach(resolve => resolve(false));
+      }
+      return;
+    }
+    if (msg.type === "result"){
+      const pendiente = simWorkerPendientes.get(msg.id);
+      if (!pendiente) return;
+      simWorkerPendientes.delete(msg.id);
+      if (msg.ok) {
+        pendiente.resolve(msg.data);
+      } else {
+        pendiente.reject(Object.assign(new Error(msg.error || "Error en el simulador local"), { status: msg.status }));
+      }
+    }
+  };
+  simWorker.onerror = () => {
+    simWorkerState = "error";
+    simWorkerReadyWaiters.splice(0).forEach(resolve => resolve(false));
+  };
+
+  simWorker.postMessage({ type: "init", apiBase: API_BASE_URL });
+}
+
+function esperarSimWorkerListo(timeoutMs){
+  if (simWorkerState === "ready") return Promise.resolve(true);
+  if (simWorkerState === "error") return Promise.resolve(false);
+  return new Promise((resolve) => {
+    const timer = setTimeout(() => resolve(false), timeoutMs);
+    simWorkerReadyWaiters.push((ok) => { clearTimeout(timer); resolve(ok); });
+  });
+}
+
+function correrEnSimWorker(tarea, payload, timeoutMs){
+  return new Promise((resolve, reject) => {
+    const id = ++simWorkerRequestId;
+    const timer = setTimeout(() => {
+      simWorkerPendientes.delete(id);
+      reject(Object.assign(new Error("El simulador local tardó demasiado"), { timeout: true }));
+    }, timeoutMs);
+    simWorkerPendientes.set(id, {
+      resolve: (data) => { clearTimeout(timer); resolve(data); },
+      reject: (err) => { clearTimeout(timer); reject(err); },
+    });
+    simWorker.postMessage({ type: "run", id, tarea, payload });
+  });
+}
+
+// Arranca el worker en segundo plano apenas carga la página, para que ya
+// esté listo (o se sepa que falló) cuando el usuario apriete algún botón.
+iniciarSimWorker();
+
+/**
+ * Intenta correr la tarea en el simulador local (Pyodide). Si la
+ * infraestructura del worker no está disponible (no cargó, tardó
+ * demasiado, se cayó), cae al backend. Si en cambio el worker respondió
+ * con un error de negocio (ej: equipo inválido, status 400), ese error se
+ * propaga tal cual -- no tiene sentido reintentar contra el backend
+ * porque va a fallar por la misma razón.
+ */
+async function ejecutarSimulacion(tarea, payload, backendPath, statusEl){
+  iniciarSimWorker();
+  if (statusEl) statusEl.textContent = "Cargando simulador local (puede tardar unos segundos la primera vez)…";
+  const listo = await esperarSimWorkerListo(PYSIM_TIMEOUT_INIT_MS);
+
+  if (listo) {
+    try {
+      if (statusEl) statusEl.textContent = "Simulando en tu navegador…";
+      return await correrEnSimWorker(tarea, payload, PYSIM_TIMEOUT_RUN_MS);
+    } catch (errorLocal) {
+      if (typeof errorLocal.status === "number") {
+        // Error de negocio: el simulador local corrió bien y devolvió un
+        // error esperado (ej: equipo inexistente). No hay que reintentar.
+        throw errorLocal;
+      }
+      // Infra del worker falló a mitad de camino (timeout, crash) -> sigue al fallback de abajo.
+    }
+  }
+
+  if (statusEl) statusEl.textContent = "Simulador local no disponible — usando el servidor, puede tardar más…";
+  const respuesta = await apiFetch(apiUrl(backendPath), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+  const cuerpo = await respuesta.json().catch(() => ({}));
+  if (!respuesta.ok) throw apiResponseError(respuesta, cuerpo);
+  return cuerpo;
+}
+
 let DATA;
 
 async function cargarDatos() {
@@ -1276,20 +1398,10 @@ async function correrSimulacion(){
     status.textContent = `Corriendo ${nSims} simulaciones — puede tardar 1-2 minutos, no cierres esta pestaña.`;
 
     try {
-        const respuesta = await apiFetch(apiUrl("/api/simular"), {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ n_sims: Number(nSims) })
-        });
+        const cuerpo = await ejecutarSimulacion("simular", { n_sims: Number(nSims) }, "/api/simular", status);
 
-        const cuerpo = await respuesta.json().catch(() => ({}));
-
-        if (!respuesta.ok) {
-            throw apiResponseError(respuesta, cuerpo);
-        }
-
-        // La API devuelve el mismo contenido que data.json directo en la
-        // respuesta, así que renderizamos desde ahí en vez de volver a
+        // El simulador local (Pyodide) y la API devuelven el mismo shape
+        // que data.json, así que renderizamos desde ahí en vez de volver a
         // pedir data.json.
         DATA = cuerpo;
         iniciar();
@@ -1734,16 +1846,7 @@ async function simularHastaCampeon(){
   resultado.innerHTML = "";
 
   try {
-    const respuesta = await apiFetch(apiUrl("/api/simular-campeon"), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ equipo })
-    });
-    const cuerpo = await respuesta.json().catch(() => ({}));
-
-    if (!respuesta.ok) {
-      throw apiResponseError(respuesta, cuerpo);
-    }
+    const cuerpo = await ejecutarSimulacion("simular-campeon", { equipo }, "/api/simular-campeon", status);
 
     if (!cuerpo.logrado) {
       status.classList.add('error');
@@ -2149,14 +2252,7 @@ async function correrSimulacionLPF(){
   status.textContent = `Corriendo Clausura + playoffs + tabla anual (${nSims} simulaciones) — puede tardar unos segundos.`;
 
   try {
-    const respuesta = await apiFetch(apiUrl("/api/simular-lpf"), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ n_sims: Number(nSims) })
-    });
-    const cuerpo = await respuesta.json().catch(() => ({}));
-
-    if (!respuesta.ok) throw apiResponseError(respuesta, cuerpo);
+    const cuerpo = await ejecutarSimulacion("simular-lpf", { n_sims: Number(nSims) }, "/api/simular-lpf", status);
 
     DATA_LPF = cuerpo;
     iniciarLPF();
@@ -2397,16 +2493,7 @@ async function simularHastaCampeonLPF(){
   resultado.innerHTML = "";
 
   try {
-    const respuesta = await apiFetch(apiUrl("/api/simular-campeon-lpf"), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ equipo })
-    });
-    const cuerpo = await respuesta.json().catch(() => ({}));
-
-    if (!respuesta.ok) {
-      throw apiResponseError(respuesta, cuerpo);
-    }
+    const cuerpo = await ejecutarSimulacion("simular-campeon-lpf", { equipo }, "/api/simular-campeon-lpf", status);
 
     if (!cuerpo.logrado) {
       status.classList.add('error');
