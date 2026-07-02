@@ -35,19 +35,20 @@ Los resultados de las simulaciones se exportan a archivos JSON y se presentan me
 
 ```
 .
-├── public/                  # Dashboard web (se sirve estático en Vercel)
+├── public/                  # Dashboard web
 ├── api/
-│   └── index.py             # API FastAPI, deployable como Vercel Function
+│   └── index.py             # API FastAPI, deployable en Render/Vercel
 ├── datos/                   # Bases de datos y archivos auxiliares
 ├── modelos/                 # Modelos estadísticos
 ├── main.py                  # Programa principal
 ├── servidor.py              # Servidor local (uso manual/dev, sin FastAPI)
-├── rutas.py                 # Resuelve rutas de datos (local vs Vercel)
+├── rutas.py                 # Resuelve rutas de datos (local/Render/Vercel)
 ├── calcular_tabla.py
 ├── actualizar_datos.py
 ├── actualizar_resultados.py
 ├── scraper_promedios.py
 ├── mapeo_equipos.py
+├── render.yaml
 ├── vercel.json
 ├── requirements.txt
 └── README.md
@@ -125,11 +126,11 @@ http://localhost:8000
 
 ---
 
-## API (FastAPI) y despliegue en Vercel
+## API (FastAPI)
 
 Además de `servidor.py` (servidor local simple), el backend está expuesto
-como una API FastAPI en `api/index.py`, pensada para desplegarse como
-Vercel Function.
+como una API FastAPI en `api/index.py`. En Render, ese mismo proceso también
+sirve el dashboard de `public/`.
 
 ### Correrla en local
 
@@ -144,6 +145,50 @@ Endpoints:
   simulación y devuelve el resultado en la respuesta.
 - `POST /api/actualizar` — body opcional `{"n_sims": 1000}`. Scrapea
   Promiedos, actualiza `datos/` y re-simula si hay partidos nuevos.
+- `POST /api/simular-lpf`
+- `POST /api/actualizar-lpf`
+- `POST /api/simular-campeon`
+- `POST /api/simular-campeon-lpf`
+
+### Desplegar en Render
+
+El repo incluye `render.yaml` para crear un Web Service de Python con:
+
+- Build Command: `pip install -r requirements.txt`
+- Start Command: `uvicorn api.index:app --host 0.0.0.0 --port $PORT`
+- Health Check Path: `/api/health`
+- Persistent Disk: `/var/data`
+- Variables: `PYTHON_VERSION=3.12`, `RENDER=true`,
+  `SIMULADOR_STATE_DIR=/var/data`
+
+Pasos:
+
+```bash
+git push origin <tu-rama>
+```
+
+Luego en Render:
+
+1. New > Blueprint.
+2. Seleccionar este repositorio.
+3. Confirmar el servicio `simulador-primera-nacional-backend`.
+4. Desplegar.
+
+Render va a exponer el backend y el dashboard en la URL `*.onrender.com`.
+`/api/health` debe responder `{"ok": true}` cuando el deploy esté listo.
+
+#### Persistencia en Render
+
+`/api/actualizar` y `/api/actualizar-lpf` escriben CSV, logs y los JSON del
+dashboard. Para que esos cambios sobrevivan reinicios y redeploys, el servicio
+usa `SIMULADOR_STATE_DIR=/var/data` y monta ahí un Persistent Disk.
+
+En el primer arranque con el disk vacío, `rutas.py` copia `datos/` y `public/`
+desde el repo a `/var/data`. Después de eso, Render lee y escribe contra esas
+copias persistentes.
+
+Si querés correr el servicio en Render Free sin disk, quitá `disk` y cambiá
+`plan: free` en `render.yaml`, pero las actualizaciones dejarán de ser durables.
 
 ### Desplegar en Vercel
 

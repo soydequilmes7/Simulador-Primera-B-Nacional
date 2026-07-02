@@ -35,10 +35,6 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-<script>
-  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-</script>
-<script defer src="/_vercel/insights/script.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -726,9 +722,8 @@ async function correrSimulacion(){
         }
 
         // La API devuelve el mismo contenido que data.json directo en la
-        // respuesta (en Vercel no hay filesystem escribible para
-        // regenerar el data.json estático), así que renderizamos desde
-        // ahí en vez de volver a pedir data.json.
+        // respuesta, así que renderizamos desde ahí en vez de volver a
+        // pedir data.json.
         DATA = cuerpo;
         iniciar();
 
@@ -783,8 +778,7 @@ async function correrActualizacion(){
 
         if (cuerpo.actualizado) {
             // Igual que en correrSimulacion: usamos el JSON que ya vino en
-            // la respuesta en vez de re-pedir data.json (en Vercel ese
-            // archivo estático nunca cambia).
+            // la respuesta en vez de re-pedir data.json.
             DATA = cuerpo.datos;
             iniciar();
             status.classList.add('ok');

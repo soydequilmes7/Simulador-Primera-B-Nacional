@@ -195,9 +195,8 @@ def actualizar(n_sims=1000, imprimir=True):
     # de que main.py esté disponible en el path
     from main import correr_simulacion
     # En Vercel no tiene sentido escribir public/data.json (filesystem
-    # de solo lectura): el endpoint devuelve "datos" directo en la
-    # respuesta y el frontend lo usa de ahí. Local sigue guardando el
-    # archivo como siempre.
+    # de solo lectura). Local y Render sí lo guardan en la carpeta public
+    # activa resuelta por rutas.py.
     datos = correr_simulacion(n_sims=n_sims, imprimir=imprimir, guardar_json=not rutas.en_vercel())
 
     _guardar_log(ahora, cargados, sin_matchear, simulacion_corrida=True)

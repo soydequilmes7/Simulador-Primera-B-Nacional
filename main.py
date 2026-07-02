@@ -1,7 +1,7 @@
 import json
 import datetime
-from pathlib import Path
 
+import rutas
 from modelos import estadisticas
 from modelos.estadisticas import Estadisticas
 
@@ -12,10 +12,9 @@ def correr_simulacion(n_sims=1000, imprimir=True, guardar_json=True):
     True (default), además lo guarda en public/data.json. La usan tanto
     main.py (línea de comandos) y servidor.py (botón "Correr nueva
     simulación" de la página web) -- con guardar_json=True, para que la
-    página estática quede al día -- como api/index.py (Vercel Function),
-    con guardar_json=False: ese filesystem es de solo lectura, así que el
-    resultado se devuelve directo en la respuesta HTTP en vez de escribirse
-    a disco."""
+    página estática quede al día -- como api/index.py, que puede usar
+    guardar_json=False cuando el resultado se devuelve directo en la
+    respuesta HTTP."""
 
     if imprimir:
         print("=" * 45)
@@ -144,7 +143,7 @@ def correr_simulacion(n_sims=1000, imprimir=True, guardar_json=True):
 
     # Guardar en la carpeta public
     if guardar_json:
-        ruta_data_json = Path(__file__).resolve().parent / "public" / "data.json"
+        ruta_data_json = rutas.public_dir() / "data.json"
         try:
             with open(ruta_data_json, "w", encoding="utf-8") as file:
                 json.dump(datos_web, file, ensure_ascii=False, indent=4)
