@@ -22,6 +22,21 @@ def _tabla_a_lista(tabla_df):
     return filas
 
 
+def _tabla_promedios_a_lista(tabla_promedios_df):
+    """DataFrame de calcular_tabla_promedios() -> lista de dicts para el
+    frontend (equipo/puntos/partidos jugados/promedio, ya ordenada de
+    mejor a peor)."""
+    filas = []
+    for _, fila in tabla_promedios_df.reset_index(drop=True).iterrows():
+        filas.append({
+            "equipo": fila["equipo"],
+            "puntos": int(fila["puntos_totales"]),
+            "partidos_jugados": int(fila["partidos_totales"]),
+            "promedio": round(float(fila["promedio"]), 3),
+        })
+    return filas
+
+
 def _apertura_a_zonas(apertura_df):
     """tablalpf.csv (con columna zona y posicion) -> {"A": [...], "B": [...]}
     ya ordenado por posición real del Apertura."""
@@ -96,7 +111,7 @@ def _rachas_lpf(e, n_partidos=5):
 
 
 def armar_datos_web_lpf(e, tablas_clausura, campeon_clausura, detalle_playoffs,
-                         tabla_anual, descensos, copas, trofeo,
+                         tabla_anual, tabla_promedios, descensos, copas, trofeo,
                          n_sims, resumen_mc, tabla_esperada_mc):
     """Arma el dict con la forma que espera template.html (sección LPF) y
     que se puede tirar directo a JSON."""
@@ -116,6 +131,7 @@ def armar_datos_web_lpf(e, tablas_clausura, campeon_clausura, detalle_playoffs,
         "playoffs": detalle_playoffs,
         "campeon_clausura": campeon_clausura,
         "tabla_anual": _tabla_a_lista(tabla_anual),
+        "tabla_promedios": _tabla_promedios_a_lista(tabla_promedios),
         "tabla_actual": _tabla_actual_clausura(e),
         "rachas": _rachas_lpf(e),
         "descensos": descensos,
@@ -176,7 +192,12 @@ def correr_simulacion_lpf(imprimir=True, guardar_json=True, n_sims=300):
         print("\n--- Tabla Anual 2026 (Apertura + Clausura) ---")
         print(tabla_anual.to_string())
 
-    descensos = e.calcular_descensos(tabla_anual)
+    tabla_promedios = e.calcular_tabla_promedios(tabla_anual)
+    if imprimir:
+        print("\n--- Tabla de promedios ---")
+        print(tabla_promedios.to_string())
+
+    descensos = e.calcular_descensos(tabla_anual, tabla_promedios)
     if imprimir:
         print(f"\nDESCIENDEN: {descensos}")
 
@@ -200,7 +221,7 @@ def correr_simulacion_lpf(imprimir=True, guardar_json=True, n_sims=300):
 
     datos_web = armar_datos_web_lpf(
         e, tablas_clausura, campeon_clausura, detalle_playoffs,
-        tabla_anual, descensos, copas, trofeo,
+        tabla_anual, tabla_promedios, descensos, copas, trofeo,
         n_sims, resumen_mc, tabla_esperada_mc,
     )
 
