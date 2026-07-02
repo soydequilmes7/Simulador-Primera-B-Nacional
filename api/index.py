@@ -63,11 +63,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Evita que se pisen dos simulaciones/actualizaciones al mismo tiempo
-# DENTRO de una misma instancia tibia. No protege entre instancias
-# concurrentes distintas (cada una corre en su propio proceso) -- eso
-# ya requeriría coordinación externa (lock en una base de datos, etc.).
-_lock_simulacion = threading.Lock()
+# Evita que se pisen dos simulaciones/actualizaciones del mismo torneo
+# dentro de una instancia. Los locks separados impiden que LPF bloquee
+# innecesariamente a Primera Nacional, y el timeout evita rechazos por
+# clicks casi simultaneos.
+LOCK_WAIT_SECONDS = 25
+_lock_nacional = threading.Lock()
+_lock_lpf = threading.Lock()
 
 
 class SimularBody(BaseModel):
@@ -91,6 +93,19 @@ def _clamp_max_intentos(max_intentos: int) -> int:
     return max(MAX_INTENTOS_CAMPEON_MIN, min(MAX_INTENTOS_CAMPEON_MAX, max_intentos))
 
 
+def _adquirir_lock(lock: threading.Lock, mensaje: str):
+    if lock.acquire(timeout=LOCK_WAIT_SECONDS):
+        return None
+    return JSONResponse(
+        status_code=409,
+        content={
+            "error": mensaje,
+            "busy": True,
+            "retry_after": LOCK_WAIT_SECONDS,
+        },
+    )
+
+
 @app.get("/api/health")
 def health():
     return {"ok": True}
@@ -107,18 +122,19 @@ def simular(body: SimularBody = SimularBody()):
     resultado directo en la respuesta."""
     n_sims = _clamp_n_sims(body.n_sims)
 
-    if not _lock_simulacion.acquire(blocking=False):
-        return JSONResponse(
-            status_code=409,
-            content={"error": "Ya hay una simulación corriendo, esperá a que termine"},
-        )
+    ocupado = _adquirir_lock(
+        _lock_nacional,
+        "Hay otra operación de Primera Nacional en curso. Esperá unos segundos y probá de nuevo.",
+    )
+    if ocupado:
+        return ocupado
     try:
         datos = correr_simulacion(n_sims=n_sims, imprimir=False, guardar_json=False)
         return datos
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
     finally:
-        _lock_simulacion.release()
+        _lock_nacional.release()
 
 
 @app.post("/api/simular-campeon")
@@ -133,11 +149,12 @@ def simular_campeon(body: SimularCampeonBody):
 
     max_intentos = _clamp_max_intentos(body.max_intentos)
 
-    if not _lock_simulacion.acquire(blocking=False):
-        return JSONResponse(
-            status_code=409,
-            content={"error": "Ya hay una simulación corriendo, esperá a que termine"},
-        )
+    ocupado = _adquirir_lock(
+        _lock_nacional,
+        "Hay otra operación de Primera Nacional en curso. Esperá unos segundos y probá de nuevo.",
+    )
+    if ocupado:
+        return ocupado
     try:
         resultado = simular_hasta_campeon(equipo_objetivo, max_intentos=max_intentos, imprimir=False)
         if resultado is None:
@@ -150,7 +167,7 @@ def simular_campeon(body: SimularCampeonBody):
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
     finally:
-        _lock_simulacion.release()
+        _lock_nacional.release()
 
 
 @app.post("/api/simular-lpf")
@@ -160,18 +177,19 @@ def simular_lpf(body: SimularLPFBody = SimularLPFBody()):
     directo en la respuesta."""
     n_sims = _clamp_n_sims(body.n_sims)
 
-    if not _lock_simulacion.acquire(blocking=False):
-        return JSONResponse(
-            status_code=409,
-            content={"error": "Ya hay una simulación corriendo, esperá a que termine"},
-        )
+    ocupado = _adquirir_lock(
+        _lock_lpf,
+        "Hay otra operación de Liga Profesional en curso. Esperá unos segundos y probá de nuevo.",
+    )
+    if ocupado:
+        return ocupado
     try:
         datos = correr_simulacion_lpf(imprimir=False, guardar_json=False, n_sims=n_sims)
         return datos
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
     finally:
-        _lock_simulacion.release()
+        _lock_lpf.release()
 
 
 @app.post("/api/actualizar-lpf")
@@ -180,18 +198,19 @@ def actualizar_lpf_endpoint(body: SimularLPFBody = SimularLPFBody()):
     y re-simula con correr_simulacion_lpf."""
     n_sims = _clamp_n_sims(body.n_sims)
 
-    if not _lock_simulacion.acquire(blocking=False):
-        return JSONResponse(
-            status_code=409,
-            content={"error": "Ya hay una simulación/actualización corriendo, esperá a que termine"},
-        )
+    ocupado = _adquirir_lock(
+        _lock_lpf,
+        "Hay otra operación de Liga Profesional en curso. Esperá unos segundos y probá de nuevo.",
+    )
+    if ocupado:
+        return ocupado
     try:
         resultado = actualizar_lpf(n_sims=n_sims, correr_simulacion_fn=correr_simulacion_lpf, imprimir=False)
         return resultado
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
     finally:
-        _lock_simulacion.release()
+        _lock_lpf.release()
 
 
 @app.post("/api/simular-campeon-lpf")
@@ -204,11 +223,12 @@ def simular_campeon_lpf(body: SimularCampeonBody):
 
     max_intentos = _clamp_max_intentos(body.max_intentos)
 
-    if not _lock_simulacion.acquire(blocking=False):
-        return JSONResponse(
-            status_code=409,
-            content={"error": "Ya hay una simulación corriendo, esperá a que termine"},
-        )
+    ocupado = _adquirir_lock(
+        _lock_lpf,
+        "Hay otra operación de Liga Profesional en curso. Esperá unos segundos y probá de nuevo.",
+    )
+    if ocupado:
+        return ocupado
     try:
         resultado = simular_hasta_campeon_lpf(equipo_objetivo, max_intentos=max_intentos, imprimir=False)
         if resultado is None:
@@ -219,7 +239,7 @@ def simular_campeon_lpf(body: SimularCampeonBody):
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
     finally:
-        _lock_simulacion.release()
+        _lock_lpf.release()
 
 
 @app.post("/api/actualizar")
@@ -228,18 +248,19 @@ def actualizar_endpoint(body: SimularBody = SimularBody()):
     tabla/goleadores y re-simula."""
     n_sims = _clamp_n_sims(body.n_sims)
 
-    if not _lock_simulacion.acquire(blocking=False):
-        return JSONResponse(
-            status_code=409,
-            content={"error": "Ya hay una simulación/actualización corriendo, esperá a que termine"},
-        )
+    ocupado = _adquirir_lock(
+        _lock_nacional,
+        "Hay otra operación de Primera Nacional en curso. Esperá unos segundos y probá de nuevo.",
+    )
+    if ocupado:
+        return ocupado
     try:
         resultado = actualizar(n_sims=n_sims, imprimir=False)
         return resultado
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
     finally:
-        _lock_simulacion.release()
+        _lock_nacional.release()
 
 
 # En Render este mismo proceso sirve el dashboard de public/. En Vercel,

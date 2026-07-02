@@ -1140,6 +1140,50 @@
   </footer>
 
 <script>
+const API_BASE_URL = "https://simulador-primera-nacional-backend.onrender.com";
+function apiUrl(path){
+  return API_BASE_URL + path;
+}
+
+let API_REQUEST_IN_PROGRESS = false;
+
+function apiResponseError(respuesta, cuerpo){
+  const error = new Error(cuerpo.error || `El servidor respondió con error ${respuesta.status}`);
+  error.status = respuesta.status;
+  error.busy = Boolean(cuerpo.busy);
+  return error;
+}
+
+function apiErrorSuffix(error){
+  return error.status === 409 ? "" : " — revisá que la API esté disponible.";
+}
+
+function setApiActionsDisabled(disabled){
+  document.querySelectorAll('.btn-simular, .btn-actualizar').forEach(btn => {
+    btn.disabled = disabled;
+  });
+  document.querySelectorAll('#sim-count, #sim-count-lpf, #campeon-equipo, #campeon-equipo-lpf').forEach(control => {
+    control.disabled = disabled;
+  });
+}
+
+function beginApiAction(status){
+  if (API_REQUEST_IN_PROGRESS){
+    status.classList.remove('ok');
+    status.classList.add('error');
+    status.textContent = "Ya hay una acción en curso en esta pestaña. Esperá a que termine.";
+    return false;
+  }
+  API_REQUEST_IN_PROGRESS = true;
+  setApiActionsDisabled(true);
+  return true;
+}
+
+function endApiAction(){
+  API_REQUEST_IN_PROGRESS = false;
+  setApiActionsDisabled(false);
+}
+
 let DATA;
 
 async function cargarDatos() {
@@ -1195,6 +1239,8 @@ async function correrSimulacion(){
     const input = document.getElementById('sim-count');
     const nSims = leerNSims();
 
+    if (!beginApiAction(status)) return;
+
     btn.disabled = true;
     input.disabled = true;
     btn.textContent = "Simulando…";
@@ -1202,7 +1248,7 @@ async function correrSimulacion(){
     status.textContent = `Corriendo ${nSims} simulaciones — puede tardar 1-2 minutos, no cierres esta pestaña.`;
 
     try {
-        const respuesta = await fetch("/api/simular", {
+        const respuesta = await fetch(apiUrl("/api/simular"), {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ n_sims: Number(nSims) })
@@ -1211,7 +1257,7 @@ async function correrSimulacion(){
         const cuerpo = await respuesta.json().catch(() => ({}));
 
         if (!respuesta.ok) {
-            throw new Error(cuerpo.error || `El servidor respondió con error ${respuesta.status}`);
+            throw apiResponseError(respuesta, cuerpo);
         }
 
         // La API devuelve el mismo contenido que data.json directo en la
@@ -1224,12 +1270,12 @@ async function correrSimulacion(){
         status.textContent = "✓ Simulación actualizada (" + (DATA.generado || "") + ")";
     } catch (e) {
         status.classList.add('error');
-        status.textContent = "No se pudo correr la simulación: " + e.message +
-            " — revisá que la API esté disponible.";
+        status.textContent = "No se pudo correr la simulación: " + e.message + apiErrorSuffix(e);
     } finally {
         btn.disabled = false;
         input.disabled = false;
         btn.textContent = "▶ Correr nueva simulación";
+        endApiAction();
     }
 }
 
@@ -1251,6 +1297,8 @@ async function correrActualizacion(){
     const input = document.getElementById('sim-count');
     const nSims = leerNSims();
 
+    if (!beginApiAction(status)) return;
+
     btn.disabled = true;
     input.disabled = true;
     btn.textContent = "Buscando resultados…";
@@ -1258,7 +1306,7 @@ async function correrActualizacion(){
     status.textContent = "Consultando Promiedos y re-simulando si hay partidos nuevos — puede tardar 1-2 minutos.";
 
     try {
-        const respuesta = await fetch("/api/actualizar", {
+        const respuesta = await fetch(apiUrl("/api/actualizar"), {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ n_sims: Number(nSims) })
@@ -1266,7 +1314,7 @@ async function correrActualizacion(){
         const cuerpo = await respuesta.json().catch(() => ({}));
 
         if (!respuesta.ok) {
-            throw new Error(cuerpo.error || `El servidor respondió con error ${respuesta.status}`);
+            throw apiResponseError(respuesta, cuerpo);
         }
 
         if (cuerpo.actualizado) {
@@ -1288,12 +1336,12 @@ async function correrActualizacion(){
         lastUpdate.textContent = "Última consulta a Promiedos: " + new Date().toLocaleString('es-AR');
     } catch (e) {
         status.classList.add('error');
-        status.textContent = "No se pudo actualizar: " + e.message +
-            " — revisá que la API esté disponible.";
+        status.textContent = "No se pudo actualizar: " + e.message + apiErrorSuffix(e);
     } finally {
         btn.disabled = false;
         input.disabled = false;
         btn.textContent = "⟳ Actualizar desde Promiedos";
+        endApiAction();
     }
 }
 
@@ -1651,6 +1699,8 @@ async function simularHastaCampeon(){
     return;
   }
 
+  if (!beginApiAction(status)) return;
+
   btn.disabled = true;
   sel.disabled = true;
   btn.textContent = "Simulando…";
@@ -1658,7 +1708,7 @@ async function simularHastaCampeon(){
   resultado.innerHTML = "";
 
   try {
-    const respuesta = await fetch("/api/simular-campeon", {
+    const respuesta = await fetch(apiUrl("/api/simular-campeon"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ equipo })
@@ -1666,7 +1716,7 @@ async function simularHastaCampeon(){
     const cuerpo = await respuesta.json().catch(() => ({}));
 
     if (!respuesta.ok) {
-      throw new Error(cuerpo.error || `El servidor respondió con error ${respuesta.status}`);
+      throw apiResponseError(respuesta, cuerpo);
     }
 
     if (!cuerpo.logrado) {
@@ -1680,11 +1730,12 @@ async function simularHastaCampeon(){
     status.textContent = `✓ Encontrado en el intento N° ${cuerpo.intentos}`;
   } catch (e) {
     status.classList.add('error');
-    status.textContent = "No se pudo simular: " + e.message + " — revisá que la API esté disponible.";
+    status.textContent = "No se pudo simular: " + e.message + apiErrorSuffix(e);
   } finally {
     btn.disabled = false;
     sel.disabled = false;
     btn.textContent = "🏆 Simular hasta el ascenso";
+    endApiAction();
   }
 }
 
@@ -2064,6 +2115,8 @@ async function correrSimulacionLPF(){
   const input = document.getElementById('sim-count-lpf');
   const nSims = leerNSimsLPF();
 
+  if (!beginApiAction(status)) return;
+
   btn.disabled = true;
   input.disabled = true;
   btn.textContent = "Simulando…";
@@ -2071,14 +2124,14 @@ async function correrSimulacionLPF(){
   status.textContent = `Corriendo Clausura + playoffs + tabla anual (${nSims} simulaciones) — puede tardar unos segundos.`;
 
   try {
-    const respuesta = await fetch("/api/simular-lpf", {
+    const respuesta = await fetch(apiUrl("/api/simular-lpf"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ n_sims: Number(nSims) })
     });
     const cuerpo = await respuesta.json().catch(() => ({}));
 
-    if (!respuesta.ok) throw new Error(cuerpo.error || `El servidor respondió con error ${respuesta.status}`);
+    if (!respuesta.ok) throw apiResponseError(respuesta, cuerpo);
 
     DATA_LPF = cuerpo;
     iniciarLPF();
@@ -2087,11 +2140,12 @@ async function correrSimulacionLPF(){
     status.textContent = "✓ Simulación actualizada (" + (DATA_LPF.generado || "") + ")";
   } catch (e) {
     status.classList.add('error');
-    status.textContent = "No se pudo simular: " + e.message + " — revisá que la API esté disponible.";
+    status.textContent = "No se pudo simular: " + e.message + apiErrorSuffix(e);
   } finally {
     btn.disabled = false;
     input.disabled = false;
     btn.textContent = "▶ Correr nueva simulación (Clausura + playoffs)";
+    endApiAction();
   }
 }
 
@@ -2102,6 +2156,8 @@ async function correrActualizacionLPF(){
   const input = document.getElementById('sim-count-lpf');
   const nSims = leerNSimsLPF();
 
+  if (!beginApiAction(status)) return;
+
   btn.disabled = true;
   input.disabled = true;
   btn.textContent = "Buscando resultados…";
@@ -2109,14 +2165,14 @@ async function correrActualizacionLPF(){
   status.textContent = "Consultando Promiedos y re-simulando si hay partidos nuevos — puede tardar unos segundos.";
 
   try {
-    const respuesta = await fetch("/api/actualizar-lpf", {
+    const respuesta = await fetch(apiUrl("/api/actualizar-lpf"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ n_sims: Number(nSims) })
     });
     const cuerpo = await respuesta.json().catch(() => ({}));
 
-    if (!respuesta.ok) throw new Error(cuerpo.error || `El servidor respondió con error ${respuesta.status}`);
+    if (!respuesta.ok) throw apiResponseError(respuesta, cuerpo);
 
     if (cuerpo.actualizado) {
       DATA_LPF = cuerpo.datos;
@@ -2135,11 +2191,12 @@ async function correrActualizacionLPF(){
     lastUpdate.textContent = "Última consulta a Promiedos: " + new Date().toLocaleString('es-AR');
   } catch (e) {
     status.classList.add('error');
-    status.textContent = "No se pudo actualizar: " + e.message + " — revisá que la API esté disponible.";
+    status.textContent = "No se pudo actualizar: " + e.message + apiErrorSuffix(e);
   } finally {
     btn.disabled = false;
     input.disabled = false;
     btn.textContent = "⟳ Actualizar desde Promiedos";
+    endApiAction();
   }
 }
 
@@ -2308,6 +2365,8 @@ async function simularHastaCampeonLPF(){
     return;
   }
 
+  if (!beginApiAction(status)) return;
+
   btn.disabled = true;
   sel.disabled = true;
   btn.textContent = "Simulando…";
@@ -2315,7 +2374,7 @@ async function simularHastaCampeonLPF(){
   resultado.innerHTML = "";
 
   try {
-    const respuesta = await fetch("/api/simular-campeon-lpf", {
+    const respuesta = await fetch(apiUrl("/api/simular-campeon-lpf"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ equipo })
@@ -2323,7 +2382,7 @@ async function simularHastaCampeonLPF(){
     const cuerpo = await respuesta.json().catch(() => ({}));
 
     if (!respuesta.ok) {
-      throw new Error(cuerpo.error || `El servidor respondió con error ${respuesta.status}`);
+      throw apiResponseError(respuesta, cuerpo);
     }
 
     if (!cuerpo.logrado) {
@@ -2337,11 +2396,12 @@ async function simularHastaCampeonLPF(){
     status.textContent = `✓ Encontrado en el intento N° ${cuerpo.intentos}`;
   } catch (e) {
     status.classList.add('error');
-    status.textContent = "No se pudo simular: " + e.message + " — revisá que la API esté disponible.";
+    status.textContent = "No se pudo simular: " + e.message + apiErrorSuffix(e);
   } finally {
     btn.disabled = false;
     sel.disabled = false;
     btn.textContent = "🏆 Simular hasta el título";
+    endApiAction();
   }
 }
 
