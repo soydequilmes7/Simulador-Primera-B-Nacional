@@ -1,0 +1,31 @@
+zona,posicion,equipo,partidos_jugados,ganados,empatados,perdidos,gf,gc,dg,puntos
+A,1,Estudiantes,16,9,4,3,19,7,12,31
+A,2,Boca Jrs.,16,8,6,2,22,9,13,30
+A,3,Vélez,16,7,7,2,18,12,6,28
+A,4,Talleres,16,7,5,4,17,13,4,26
+A,5,Independiente,16,6,6,4,24,20,4,24
+A,6,Lanús,16,6,6,4,18,15,3,24
+A,7,San Lorenzo,16,5,7,4,14,14,0,22
+A,8,Unión,16,5,6,5,24,20,4,21
+A,9,Instituto,16,6,3,7,17,17,0,21
+A,10,Defensa,16,4,7,5,18,21,-3,19
+A,11,Gimnasia (M),16,5,4,7,14,22,-8,19
+A,12,Platense,16,3,7,6,10,15,-5,16
+A,13,Central Córdoba,16,4,4,8,11,21,-10,16
+A,14,Newell's,16,3,6,7,15,27,-12,15
+A,15,Riestra,16,1,8,7,5,12,-7,11
+B,1,Independiente Riv.,16,10,4,2,29,15,14,34
+B,2,River,16,9,2,5,22,12,10,29
+B,3,Argentinos,16,8,5,3,17,13,4,29
+B,4,Central,16,8,4,4,20,16,4,28
+B,5,Belgrano,16,7,5,4,17,13,4,26
+B,6,Gimnasia,16,8,2,6,19,19,0,26
+B,7,Huracán,16,5,7,4,17,13,4,22
+B,8,Racing,16,5,6,5,17,15,2,21
+B,9,Barracas,16,5,6,5,15,15,0,21
+B,10,Tigre,16,4,8,4,18,15,3,20
+B,11,Sarmiento,16,6,1,9,13,20,-7,19
+B,12,Banfield,16,5,3,8,17,19,-2,18
+B,13,Atl. Tucumán,16,3,5,8,15,20,-5,14
+B,14,Aldosivi,16,0,8,8,6,19,-13,8
+B,15,Estudiantes RC,16,1,2,13,5,24,-19,5

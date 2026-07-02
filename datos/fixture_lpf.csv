@@ -1,0 +1,241 @@
+fecha,jornada,equipo_local,equipo_visitante
+,1,Deportivo Riestra,Boca Juniors
+,1,Estudiantes de La Plata,Independiente
+,1,Newell's Old Boys,Talleres de Córdoba
+,1,Vélez Sarsfield,Instituto
+,1,Platense,Unión de Santa Fe
+,1,Lanús,San Lorenzo
+,1,Gimnasia de Mendoza,Central Córdoba SdE
+,1,River Plate,Barracas Central
+,1,Racing Club,Gimnasia La Plata
+,1,Belgrano,Rosario Central
+,1,Estudiantes RC,Tigre
+,1,Sarmiento Junín,Argentinos Juniors
+,1,Huracán,Banfield
+,1,Atlético Tucumán,Independiente Rivadavia
+,1,Defensa y Justicia,Aldosivi
+,2,San Lorenzo,Gimnasia de Mendoza
+,2,Unión de Santa Fe,Lanús
+,2,Instituto,Platense
+,2,Talleres de Córdoba,Vélez Sarsfield
+,2,Independiente,Newell's Old Boys
+,2,Boca Juniors,Estudiantes de La Plata
+,2,Defensa y Justicia,Deportivo Riestra
+,2,Independiente Rivadavia,Huracán
+,2,Banfield,Sarmiento Junín
+,2,Argentinos Juniors,Estudiantes RC
+,2,Tigre,Belgrano
+,2,Rosario Central,Racing Club
+,2,Gimnasia La Plata,River Plate
+,2,Barracas Central,Aldosivi
+,2,Central Córdoba SdE,Atlético Tucumán
+,3,Estudiantes de La Plata,Defensa y Justicia
+,3,Newell's Old Boys,Boca Juniors
+,3,Vélez Sarsfield,Independiente
+,3,Platense,Talleres de Córdoba
+,3,Lanús,Instituto
+,3,Gimnasia de Mendoza,Unión de Santa Fe
+,3,Central Córdoba SdE,San Lorenzo
+,3,Aldosivi,Gimnasia La Plata
+,3,River Plate,Rosario Central
+,3,Racing Club,Tigre
+,3,Belgrano,Argentinos Juniors
+,3,Estudiantes RC,Banfield
+,3,Sarmiento Junín,Independiente Rivadavia
+,3,Huracán,Atlético Tucumán
+,3,Deportivo Riestra,Barracas Central
+,4,Unión de Santa Fe,Central Córdoba SdE
+,4,Instituto,Gimnasia de Mendoza
+,4,Talleres de Córdoba,Lanús
+,4,Independiente,Platense
+,4,Boca Juniors,Vélez Sarsfield
+,4,Defensa y Justicia,Newell's Old Boys
+,4,Deportivo Riestra,Estudiantes de La Plata
+,4,Atlético Tucumán,Sarmiento Junín
+,4,Independiente Rivadavia,Estudiantes RC
+,4,Banfield,Belgrano
+,4,Argentinos Juniors,Racing Club
+,4,Tigre,River Plate
+,4,Rosario Central,Aldosivi
+,4,Gimnasia La Plata,Barracas Central
+,4,San Lorenzo,Huracán
+,5,Newell's Old Boys,Deportivo Riestra
+,5,Vélez Sarsfield,Defensa y Justicia
+,5,Platense,Boca Juniors
+,5,Lanús,Independiente
+,5,Gimnasia de Mendoza,Talleres de Córdoba
+,5,Central Córdoba SdE,Instituto
+,5,San Lorenzo,Unión de Santa Fe
+,5,Barracas Central,Rosario Central
+,5,Aldosivi,Tigre
+,5,River Plate,Argentinos Juniors
+,5,Racing Club,Banfield
+,5,Belgrano,Independiente Rivadavia
+,5,Estudiantes RC,Atlético Tucumán
+,5,Sarmiento Junín,Huracán
+,5,Estudiantes de La Plata,Gimnasia La Plata
+,6,River Plate,Vélez Sarsfield
+,6,Barracas Central,Platense
+,6,Talleres de Córdoba,Rosario Central
+,6,Sarmiento Junín,Estudiantes de La Plata
+,6,Belgrano,Defensa y Justicia
+,6,Lanús,Argentinos Juniors
+,6,Racing Club,Boca Juniors
+,6,Independiente,Independiente Rivadavia
+,6,Aldosivi,Unión de Santa Fe
+,6,Atlético Tucumán,Instituto
+,6,Estudiantes RC,San Lorenzo
+,6,Gimnasia La Plata,Gimnasia de Mendoza
+,6,Tigre,Central Córdoba SdE
+,6,Huracán,Deportivo Riestra
+,6,Newell's Old Boys,Banfield
+,7,Instituto,San Lorenzo
+,7,Talleres de Córdoba,Central Córdoba SdE
+,7,Independiente,Gimnasia de Mendoza
+,7,Boca Juniors,Lanús
+,7,Defensa y Justicia,Platense
+,7,Deportivo Riestra,Vélez Sarsfield
+,7,Estudiantes de La Plata,Newell's Old Boys
+,7,Huracán,Estudiantes RC
+,7,Atlético Tucumán,Belgrano
+,7,Independiente Rivadavia,Racing Club
+,7,Banfield,River Plate
+,7,Argentinos Juniors,Aldosivi
+,7,Tigre,Barracas Central
+,7,Rosario Central,Gimnasia La Plata
+,7,Unión de Santa Fe,Sarmiento Junín
+,8,Vélez Sarsfield,Estudiantes de La Plata
+,8,Platense,Deportivo Riestra
+,8,Lanús,Defensa y Justicia
+,8,Gimnasia de Mendoza,Boca Juniors
+,8,Central Córdoba SdE,Independiente
+,8,San Lorenzo,Talleres de Córdoba
+,8,Unión de Santa Fe,Instituto
+,8,Gimnasia La Plata,Tigre
+,8,Barracas Central,Argentinos Juniors
+,8,Aldosivi,Banfield
+,8,River Plate,Independiente Rivadavia
+,8,Racing Club,Atlético Tucumán
+,8,Belgrano,Huracán
+,8,Estudiantes RC,Sarmiento Junín
+,8,Rosario Central,Newell's Old Boys
+,9,Talleres de Córdoba,Unión de Santa Fe
+,9,Independiente,San Lorenzo
+,9,Boca Juniors,Central Córdoba SdE
+,9,Defensa y Justicia,Gimnasia de Mendoza
+,9,Deportivo Riestra,Lanús
+,9,Estudiantes de La Plata,Platense
+,9,Newell's Old Boys,Vélez Sarsfield
+,9,Sarmiento Junín,Belgrano
+,9,Huracán,Racing Club
+,9,Atlético Tucumán,River Plate
+,9,Independiente Rivadavia,Aldosivi
+,9,Banfield,Barracas Central
+,9,Argentinos Juniors,Gimnasia La Plata
+,9,Tigre,Rosario Central
+,9,Instituto,Estudiantes RC
+,10,Platense,Newell's Old Boys
+,10,Lanús,Estudiantes de La Plata
+,10,Gimnasia de Mendoza,Deportivo Riestra
+,10,Central Córdoba SdE,Defensa y Justicia
+,10,San Lorenzo,Boca Juniors
+,10,Unión de Santa Fe,Independiente
+,10,Instituto,Talleres de Córdoba
+,10,Rosario Central,Argentinos Juniors
+,10,Gimnasia La Plata,Banfield
+,10,Barracas Central,Independiente Rivadavia
+,10,Aldosivi,Atlético Tucumán
+,10,River Plate,Huracán
+,10,Racing Club,Sarmiento Junín
+,10,Belgrano,Estudiantes RC
+,10,Vélez Sarsfield,Tigre
+,11,Independiente,Instituto
+,11,Boca Juniors,Unión de Santa Fe
+,11,Defensa y Justicia,San Lorenzo
+,11,Deportivo Riestra,Central Córdoba SdE
+,11,Estudiantes de La Plata,Gimnasia de Mendoza
+,11,Newell's Old Boys,Lanús
+,11,Vélez Sarsfield,Platense
+,11,Estudiantes RC,Racing Club
+,11,Sarmiento Junín,River Plate
+,11,Huracán,Aldosivi
+,11,Atlético Tucumán,Barracas Central
+,11,Independiente Rivadavia,Gimnasia La Plata
+,11,Banfield,Rosario Central
+,11,Argentinos Juniors,Tigre
+,11,Talleres de Córdoba,Belgrano
+,12,Lanús,Vélez Sarsfield
+,12,Gimnasia de Mendoza,Newell's Old Boys
+,12,Central Córdoba SdE,Estudiantes de La Plata
+,12,San Lorenzo,Deportivo Riestra
+,12,Unión de Santa Fe,Defensa y Justicia
+,12,Instituto,Boca Juniors
+,12,Talleres de Córdoba,Independiente
+,12,Tigre,Banfield
+,12,Rosario Central,Independiente Rivadavia
+,12,Gimnasia La Plata,Atlético Tucumán
+,12,Barracas Central,Huracán
+,12,Aldosivi,Sarmiento Junín
+,12,River Plate,Estudiantes RC
+,12,Racing Club,Belgrano
+,12,Platense,Argentinos Juniors
+,13,Boca Juniors,Talleres de Córdoba
+,13,Defensa y Justicia,Instituto
+,13,Deportivo Riestra,Unión de Santa Fe
+,13,Estudiantes de La Plata,San Lorenzo
+,13,Newell's Old Boys,Central Córdoba SdE
+,13,Vélez Sarsfield,Gimnasia de Mendoza
+,13,Platense,Lanús
+,13,Belgrano,River Plate
+,13,Estudiantes RC,Aldosivi
+,13,Sarmiento Junín,Barracas Central
+,13,Huracán,Gimnasia La Plata
+,13,Atlético Tucumán,Rosario Central
+,13,Independiente Rivadavia,Tigre
+,13,Banfield,Argentinos Juniors
+,13,Racing Club,Independiente
+,14,Gimnasia de Mendoza,Platense
+,14,Central Córdoba SdE,Vélez Sarsfield
+,14,San Lorenzo,Newell's Old Boys
+,14,Unión de Santa Fe,Estudiantes de La Plata
+,14,Instituto,Deportivo Riestra
+,14,Talleres de Córdoba,Defensa y Justicia
+,14,Independiente,Boca Juniors
+,14,Argentinos Juniors,Independiente Rivadavia
+,14,Tigre,Atlético Tucumán
+,14,Rosario Central,Huracán
+,14,Gimnasia La Plata,Sarmiento Junín
+,14,Barracas Central,Estudiantes RC
+,14,Aldosivi,Belgrano
+,14,River Plate,Racing Club
+,14,Banfield,Lanús
+,15,Defensa y Justicia,Independiente
+,15,Deportivo Riestra,Talleres de Córdoba
+,15,Estudiantes de La Plata,Instituto
+,15,Newell's Old Boys,Unión de Santa Fe
+,15,Vélez Sarsfield,San Lorenzo
+,15,Platense,Central Córdoba SdE
+,15,Lanús,Gimnasia de Mendoza
+,15,Racing Club,Aldosivi
+,15,Belgrano,Barracas Central
+,15,Estudiantes RC,Gimnasia La Plata
+,15,Sarmiento Junín,Rosario Central
+,15,Huracán,Tigre
+,15,Atlético Tucumán,Argentinos Juniors
+,15,Independiente Rivadavia,Banfield
+,15,Boca Juniors,River Plate
+,16,Central Córdoba SdE,Lanús
+,16,San Lorenzo,Platense
+,16,Unión de Santa Fe,Vélez Sarsfield
+,16,Instituto,Newell's Old Boys
+,16,Talleres de Córdoba,Estudiantes de La Plata
+,16,Independiente,Deportivo Riestra
+,16,Boca Juniors,Defensa y Justicia
+,16,Banfield,Atlético Tucumán
+,16,Argentinos Juniors,Huracán
+,16,Tigre,Sarmiento Junín
+,16,Rosario Central,Estudiantes RC
+,16,Gimnasia La Plata,Belgrano
+,16,Barracas Central,Racing Club
+,16,Aldosivi,River Plate
+,16,Gimnasia de Mendoza,Independiente Rivadavia

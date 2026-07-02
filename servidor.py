@@ -29,6 +29,7 @@ import traceback
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
 from main import correr_simulacion, simular_hasta_campeon
+from main_lpf import correr_simulacion_lpf
 from actualizar_resultados import actualizar
 
 PUERTO = 8000
@@ -74,6 +75,8 @@ class Handler(SimpleHTTPRequestHandler):
             self._manejar_actualizar()
         elif self.path == "/api/simular-campeon":
             self._manejar_simular_campeon()
+        elif self.path == "/api/simular-lpf":
+            self._manejar_simular_lpf()
         else:
             self._responder_json(404, {"error": "Ruta no encontrada"})
 
@@ -121,6 +124,25 @@ class Handler(SimpleHTTPRequestHandler):
             self._responder_json(200, resultado)
         except Exception as e:
             print(f">>> ERROR al actualizar: {e}")
+            self._responder_json(500, {"error": str(e)})
+        finally:
+            lock_simulacion.release()
+
+    def _manejar_simular_lpf(self):
+        """Corre una simulación completa de la LPF (Clausura + playoffs +
+        tabla anual + descensos + copas + Trofeo de Campeones) pedida
+        desde el selector de liga de la web. Por ahora es una corrida
+        única (sin Monte Carlo todavía), así que no lee n_sims."""
+        if not lock_simulacion.acquire(blocking=False):
+            self._responder_json(409, {"error": "Ya hay una simulación corriendo, esperá a que termine"})
+            return
+        try:
+            print("\n>>> Corriendo nueva simulación de LPF pedida desde la web...")
+            datos = correr_simulacion_lpf(imprimir=True)
+            print(">>> Simulación de LPF terminada y data_lpf.json actualizado.\n")
+            self._responder_json(200, datos)
+        except Exception as e:
+            print(f">>> ERROR al simular LPF: {e}")
             self._responder_json(500, {"error": str(e)})
         finally:
             lock_simulacion.release()

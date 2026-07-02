@@ -16,128 +16,312 @@
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
+  /* =====================================================================
+     DOS IDENTIDADES VISUALES
+     — Primera Nacional (default): institucional AFA. Azul institucional,
+       blanco, grises. Plano, sobrio, bordes simples, casi sin degradados.
+     — Liga Profesional (body.liga-lpf): branding moderno LPF. Azul oscuro,
+       celeste brillante, blanco, acentos dorados. Cards redondeadas,
+       sombras suaves, gradientes discretos, look "premium" televisivo.
+     Mismos nombres de variables que la versión anterior: el JS que inyecta
+     estilos inline (var(--zone-a), var(--bg-panel), etc.) sigue funcionando
+     sin tocar una línea de lógica.
+     ===================================================================== */
+
   :root{
-    --bg: #0A1410;
-    --bg-panel: #0F2018;
-    --bg-panel-2: #122419;
-    --line: #213A2C;
-    --ink: #EDEAE0;
-    --ink-dim: #9FB0A6;
-    --muted: #6F8079;
-    --amber: #FFB627;
-    --amber-dim: #8a6b22;
-    --zone-a: #36A187;
-    --zone-a-dim: #1c4a3e;
-    --zone-b: #D9743A;
-    --zone-b-dim: #5c351c;
-    --danger: #C24343;
-    --danger-dim: #4a2222;
-    --azul: #4A9FE0;
-    --azul-dim: #1c3a52;
+    /* ---- PRIMERA NACIONAL · institucional (Torneo Nacional 2026) ---- */
+    --bg: linear-gradient(180deg, #121A2B 0%, #182847 55%, #203A63 100%);
+    --bg-panel: #182847;
+    --bg-panel-2: #203A63;
+    --line: rgba(216,165,59,0.28);
+    --ink: #FFFFFF;
+    --ink-dim: #C7CEDB;
+    --muted: #8B96AC;
+
+    /* acento principal: dorado institucional */
+    --amber: #D8A53B;
+    --amber-dim: rgba(216,165,59,0.16);
+
+    --zone-a: #2FAE7B;
+    --zone-a-dim: rgba(47,174,123,0.16);
+    --zone-b: #D89A4B;
+    --zone-b-dim: rgba(216,154,75,0.16);
+    --danger: #E2564C;
+    --danger-dim: rgba(226,86,76,0.16);
+    --azul: #4E7FC4;
+    --azul-dim: rgba(78,127,196,0.16);
+
+    /* tokens de forma: planos y sobrios */
+    --radius: 4px;
+    --radius-sm: 3px;
+    --card-shadow: 0 2px 10px rgba(5,10,20,0.35);
+    --card-shadow-hover: 0 4px 16px rgba(5,10,20,0.45);
+    --card-grad: none;
+    --hero-bg: linear-gradient(160deg, #121A2B 0%, #182847 55%, #203A63 100%);
+    --hero-ink: #FFFFFF;
+    --hero-dim: #C7CEDB;
+    --hero-accent: #D8A53B;
+    --tabs-bg: rgba(18,26,43,0.92);
+    --btn-grad: #182847;
+    --btn-ink: #FFFFFF;
+    --table-head-bg: #203A63;
+    --hover-lift: none;
   }
+
+  /* Botones institucionales: borde dorado, sin celeste */
+  body:not(.liga-lpf) .btn-simular,
+  body:not(.liga-lpf) .btn-actualizar{
+    border: 1px solid var(--amber);
+  }
+  body:not(.liga-lpf) .btn-simular:hover:not(:disabled),
+  body:not(.liga-lpf) .btn-actualizar:hover:not(:disabled){
+    background: #203A63;
+  }
+
+  body.liga-lpf{
+    /* ---- LIGA PROFESIONAL · premium ---- */
+    --bg: #F6F9FF;
+    --bg-panel: #FFFFFF;
+    --bg-panel-2: #EEF4FF;
+    --line: #DBE5F6;
+    --ink: #0A1E4E;
+    --ink-dim: #3D538A;
+    --muted: #7688AE;
+
+    /* acento dorado, solo detalles */
+    --amber: #B8860B;
+    --amber-dim: #F6ECD2;
+
+    --zone-a: #0E86D4;          /* celeste brillante */
+    --zone-a-dim: #DCEFFB;
+    --zone-b: #1D3FA8;          /* azul profundo */
+    --zone-b-dim: #DEE4F8;
+    --danger: #D14545;
+    --danger-dim: #FBE3E3;
+    --azul: #0E86D4;
+    --azul-dim: #DCEFFB;
+
+    /* tokens de forma: redondeado, sombra suave, gradientes discretos */
+    --radius: 16px;
+    --radius-sm: 10px;
+    --card-shadow: 0 4px 18px rgba(10,30,78,0.07);
+    --card-shadow-hover: 0 10px 28px rgba(10,30,78,0.13);
+    --card-grad: linear-gradient(180deg, #FFFFFF 0%, #F8FBFF 100%);
+    --hero-bg: linear-gradient(160deg, #071238 0%, #0C2B7A 55%, #114BB4 100%);
+    --hero-ink: #FFFFFF;
+    --hero-dim: #A8C2F0;
+    --hero-accent: #4FC3F7;
+    --tabs-bg: rgba(255,255,255,0.92);
+    --btn-grad: linear-gradient(135deg, #114BB4 0%, #0E86D4 100%);
+    --btn-ink: #FFFFFF;
+    --table-head-bg: linear-gradient(180deg, #F0F5FF, #E7EFFD);
+    --hover-lift: translateY(-2px);
+  }
+
+  /* ---------- MODO OSCURO GLOBAL ---------- */
+  body.dark:not(.liga-lpf){
+    /* ---- PRIMERA NACIONAL · oscuro ---- */
+    --bg: #0B1220;
+    --bg-panel: #16233B;
+    --bg-panel-2: #1C2C48;
+    --line: rgba(216,165,59,0.24);
+    --ink: #F5F7FA;
+    --ink-dim: #C7CEDB;
+    --muted: #8993A8;
+    --amber: #D8A53B;
+    --amber-dim: rgba(216,165,59,0.14);
+    --hero-bg: linear-gradient(160deg, #0B1220 0%, #16233B 60%, #1C2C48 100%);
+    --hero-ink: #F5F7FA;
+    --hero-dim: #C7CEDB;
+    --hero-accent: #D8A53B;
+    --tabs-bg: rgba(11,18,32,0.92);
+    --btn-grad: #16233B;
+    --btn-ink: #F5F7FA;
+    --table-head-bg: #1C2C48;
+    --card-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    --card-shadow-hover: 0 4px 16px rgba(0,0,0,0.6);
+  }
+
+  body.dark.liga-lpf{
+    /* ---- LIGA PROFESIONAL · oscuro ---- */
+    --bg: #081426;
+    --bg-panel: #102544;
+    --bg-panel-2: #16305A;
+    --line: rgba(57,184,255,0.22);
+    --ink: #F5F7FA;
+    --ink-dim: #AEB8CC;
+    --muted: #7688AE;
+    --zone-a: #39B8FF;
+    --zone-a-dim: rgba(57,184,255,0.16);
+    --azul: #39B8FF;
+    --azul-dim: rgba(57,184,255,0.16);
+    --hero-bg: linear-gradient(160deg, #040A18 0%, #081426 55%, #102544 100%);
+    --hero-ink: #F5F7FA;
+    --hero-dim: #AEB8CC;
+    --hero-accent: #39B8FF;
+    --tabs-bg: rgba(8,20,38,0.92);
+    --btn-grad: linear-gradient(135deg, #0B2A57 0%, #123A66 100%);
+    --btn-ink: #F5F7FA;
+    --table-head-bg: linear-gradient(180deg, #0F2038, #0B1A30);
+    --card-shadow: 0 4px 18px rgba(0,0,0,0.45);
+    --card-shadow-hover: 0 10px 28px rgba(0,0,0,0.55);
+  }
+
+  /* transición suave y coherente entre torneos y entre modo claro/oscuro */
+  body, .hero, .liga-tabs, .zone-tabs, .table-wrap, .copa-card, .descenso-card,
+  .ascenso-card, .match, .team-card, .mc-row, #mc-list, #mc-list-lpf,
+  .trofeo-especial, thead th, tbody td, tbody tr, .search-box input,
+  #campeon-equipo, #sim-count, .tc-stat, .btn-simular, .btn-actualizar,
+  .liga-tab, .zone-tab, .liga-tabs .group, .zone-tabs .group, .racha-badge,
+  .tc-share button{
+    transition: background 0.4s ease, background-color 0.4s ease,
+      border-color 0.4s ease, color 0.4s ease, box-shadow 0.4s ease;
+  }
+
   *{box-sizing:border-box; margin:0; padding:0;}
+  html{ scroll-behavior:smooth; }
   body{
-    background:
-      radial-gradient(1200px 600px at 50% -200px, rgba(255,182,39,0.06), transparent 60%),
-      var(--bg);
+    background: var(--bg);
     color: var(--ink);
     font-family: 'Inter', sans-serif;
     line-height: 1.5;
     padding-bottom: 80px;
+    transition: background 0.45s ease, color 0.45s ease;
   }
-  ::selection{ background: var(--amber); color: #14210f; }
+  ::selection{ background: var(--amber); color: #fff; }
 
   .display{ font-family:'Oswald', sans-serif; text-transform:uppercase; letter-spacing:0.04em; }
   .mono{ font-family:'JetBrains Mono', monospace; }
 
-  a{ color: var(--amber); }
+  a{ color: var(--azul); }
 
   /* ---------- HERO ---------- */
   .hero{
     position:relative;
-    padding: 64px 24px 40px;
+    padding: 64px 24px 44px;
     text-align:center;
-    border-bottom: 1px solid var(--line);
     overflow:hidden;
+    background: var(--hero-bg);
+    color: var(--hero-ink);
+    transition: background 0.45s ease;
   }
-  .hero::before{
+  /* LPF: brillo celeste discreto + trama sutil. Nacional: banda plana. */
+  body.liga-lpf .hero::before{
     content:"";
     position:absolute; inset:0;
-    background-image: repeating-linear-gradient(transparent, transparent 3px, rgba(255,255,255,0.012) 4px);
+    background:
+      radial-gradient(900px 420px at 50% -160px, rgba(79,195,247,0.22), transparent 65%),
+      repeating-linear-gradient(transparent, transparent 3px, rgba(255,255,255,0.015) 4px);
     pointer-events:none;
+  }
+  .hero::after{
+    content:"";
+    position:absolute; left:0; right:0; bottom:0; height:3px;
+    background: var(--hero-accent);
+    opacity:0.9;
+  }
+  body.liga-lpf .hero::after{
+    height:4px;
+    background: linear-gradient(90deg, transparent, #4FC3F7 20%, #B8860B 50%, #4FC3F7 80%, transparent);
   }
   .hero .eyebrow{
     font-family:'JetBrains Mono', monospace;
     font-size: 12px;
     letter-spacing: 0.3em;
-    color: var(--amber);
+    color: var(--hero-dim);
     margin-bottom: 18px;
     opacity:0;
-    animation: flicker-in 0.6s ease forwards 0.1s;
+    animation: fade-in 0.6s ease forwards 0.1s;
   }
+  body.liga-lpf .hero .eyebrow{ color: var(--hero-accent); animation: flicker-in 0.7s ease forwards 0.1s; }
   .hero h1{
     font-size: clamp(34px, 7vw, 64px);
     font-weight: 700;
     letter-spacing: 0.01em;
-    color: var(--ink);
-    text-shadow: 0 0 24px rgba(255,182,39,0.18);
+    color: var(--hero-ink);
     opacity:0;
+    animation: fade-in 0.7s ease forwards 0.25s;
+  }
+  body.liga-lpf .hero h1{
+    text-shadow: 0 0 28px rgba(79,195,247,0.35);
     animation: flicker-in 0.8s ease forwards 0.3s;
   }
-  .hero h1 span{ color: var(--amber); }
+  .hero h1 span{ color: var(--hero-accent); }
+  body.liga-lpf .hero h1 span{
+    background: linear-gradient(90deg, #4FC3F7, #9BDCFF);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; color: #4FC3F7;
+  }
   .hero p.sub{
     margin-top:14px;
-    color: var(--ink-dim);
+    color: var(--hero-dim);
     font-size: 15px;
     max-width: 540px;
     margin-left:auto; margin-right:auto;
     opacity:0;
-    animation: fade-in 0.8s ease forwards 0.6s;
+    animation: fade-in 0.8s ease forwards 0.5s;
   }
   .hero .meta{
     margin-top: 28px;
-    display:flex; justify-content:center; gap: 28px; flex-wrap:wrap;
+    display:flex; justify-content:center; gap: 14px; flex-wrap:wrap;
     opacity:0;
-    animation: fade-in 0.8s ease forwards 0.8s;
+    animation: fade-in 0.8s ease forwards 0.7s;
   }
-  .hero .meta div{ text-align:center; }
-  .hero .meta .num{ font-family:'JetBrains Mono'; font-size:22px; color:var(--amber); font-weight:700; }
-  .hero .meta .lbl{ font-size:11px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-top:2px; }
+  .hero .meta div{
+    text-align:center;
+    padding: 10px 18px;
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: var(--radius-sm);
+    min-width: 108px;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+  body.liga-lpf .hero .meta div{
+    background: rgba(255,255,255,0.07);
+    backdrop-filter: blur(4px);
+    border-color: rgba(255,255,255,0.18);
+  }
+  body.liga-lpf .hero .meta div:hover{ background: rgba(255,255,255,0.13); transform: var(--hover-lift); }
+  .hero .meta .num{ font-family:'JetBrains Mono'; font-size:22px; color:var(--hero-accent); font-weight:700; }
+  body.liga-lpf .hero .meta .num{ color:#FFD86B; }
+  .hero .meta .lbl{ font-size:11px; color:var(--hero-dim); letter-spacing:0.08em; text-transform:uppercase; margin-top:2px; }
 
   .sim-control{ margin-top:30px; display:flex; flex-direction:column; align-items:center; gap:10px; }
   .btn-simular{
     font-family:'JetBrains Mono'; font-size:13px; font-weight:600; letter-spacing:0.04em;
-    color:#14210f; background: var(--amber); border:none; border-radius:8px;
-    padding: 12px 26px; cursor:pointer; transition: filter 0.15s, transform 0.1s;
+    color: var(--btn-ink); background: var(--btn-grad); border:none; border-radius: var(--radius-sm);
+    padding: 12px 26px; cursor:pointer;
+    transition: filter 0.15s, transform 0.15s, box-shadow 0.2s;
   }
-  .btn-simular:hover:not(:disabled){ filter:brightness(1.08); }
+  body.liga-lpf .btn-simular{ box-shadow: 0 6px 18px rgba(14,134,212,0.35); border-radius: 999px; }
+  .btn-simular:hover:not(:disabled){ filter:brightness(1.1); transform: var(--hover-lift); }
   .btn-simular:active:not(:disabled){ transform:scale(0.98); }
-  .btn-simular:disabled{ cursor:wait; filter:grayscale(0.4) brightness(0.85); }
+  .btn-simular:disabled{ cursor:wait; filter:grayscale(0.4) brightness(0.9); }
   .btn-row{ display:flex; gap:10px; flex-wrap:wrap; justify-content:center; }
   .btn-actualizar{
     font-family:'JetBrains Mono'; font-size:13px; font-weight:600; letter-spacing:0.04em;
-    color: var(--azul); background: transparent; border:1px solid var(--azul); border-radius:8px;
-    padding: 12px 26px; cursor:pointer; transition: filter 0.15s, transform 0.1s, background 0.15s;
+    color: #fff; background: transparent; border:1px solid rgba(255,255,255,0.55); border-radius: var(--radius-sm);
+    padding: 12px 26px; cursor:pointer; transition: background 0.15s, transform 0.15s, border-color 0.15s;
   }
-  .btn-actualizar:hover:not(:disabled){ background: rgba(74,159,224,0.1); }
+  body.liga-lpf .btn-actualizar{ border-radius: 999px; border-color: rgba(79,195,247,0.6); color:#9BDCFF; }
+  .btn-actualizar:hover:not(:disabled){ background: rgba(255,255,255,0.12); border-color:#fff; }
   .btn-actualizar:active:not(:disabled){ transform:scale(0.98); }
   .btn-actualizar:disabled{ cursor:wait; opacity:0.5; }
   .sim-select-row{ display:flex; align-items:center; gap:8px; }
-  .sim-select-row label{ font-family:'JetBrains Mono'; font-size:11px; color:var(--muted); letter-spacing:0.04em; text-transform:uppercase; }
+  .sim-select-row label{ font-family:'JetBrains Mono'; font-size:11px; color:var(--hero-dim); letter-spacing:0.04em; text-transform:uppercase; }
   #sim-count{
-    font-family:'JetBrains Mono'; font-size:13px; font-weight:600; color: var(--ink);
-    background: var(--bg-panel-2); border:1px solid var(--line); border-radius:8px;
+    font-family:'JetBrains Mono'; font-size:13px; font-weight:600; color: #fff;
+    background: rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.35); border-radius: var(--radius-sm);
     padding: 8px 10px; width:90px; text-align:center; outline:none; transition: border-color 0.15s, opacity 0.15s;
   }
-  #sim-count:hover:not(:disabled){ border-color: var(--amber); }
-  #sim-count:focus{ border-color: var(--amber); }
+  #sim-count:hover:not(:disabled){ border-color: #fff; }
+  #sim-count:focus{ border-color: var(--hero-accent); }
   #sim-count:disabled{ cursor:wait; opacity:0.5; }
   #sim-count::-webkit-inner-spin-button, #sim-count::-webkit-outer-spin-button{ opacity:0.6; }
-  .sim-select-row .rango{ font-family:'JetBrains Mono'; font-size:10px; color:var(--muted); }
-  .last-update{ font-family:'JetBrains Mono'; font-size:10px; color:var(--muted); text-align:center; }
-  .sim-status{ font-family:'JetBrains Mono'; font-size:12px; color:var(--ink-dim); min-height:16px; text-align:center; }
-  .sim-status.error{ color:var(--danger); }
-  .sim-status.ok{ color:var(--zone-a); }
+  .sim-select-row .rango{ font-family:'JetBrains Mono'; font-size:10px; color:var(--hero-dim); }
+  .last-update{ font-family:'JetBrains Mono'; font-size:10px; color:var(--hero-dim); text-align:center; }
+  .sim-status{ font-family:'JetBrains Mono'; font-size:12px; color:var(--hero-dim); min-height:16px; text-align:center; }
+  .sim-status.error{ color:#FF9E9E; }
+  .sim-status.ok{ color:#8FE3B0; }
 
   @keyframes flicker-in{
     0%{ opacity:0; }
@@ -149,69 +333,183 @@
     100%{ opacity:1; }
   }
   @keyframes fade-in{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+  @keyframes view-in{ from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+  @keyframes bar-grow{ from{ transform:scaleX(0); } to{ transform:scaleX(1); } }
+  @keyframes row-in{ from{opacity:0; transform:translateY(5px);} to{opacity:1; transform:translateY(0);} }
   @media (prefers-reduced-motion: reduce){
     .hero .eyebrow, .hero h1, .hero p.sub, .hero .meta{ animation:none; opacity:1; }
+    #vista-nacional, #vista-lpf, .mc-row, .mc-bar-fill, .desc-bar-fill, .team-card{ animation:none !important; }
+  }
+
+  /* Transición suave al cambiar de torneo (se re-dispara al togglear display) */
+  #vista-nacional, #vista-lpf{ animation: view-in 0.4s ease; }
+
+  /* ---------- LIGA TABS ---------- */
+  .liga-tabs{
+    position: sticky; top:0; z-index: 60;
+    display:flex; justify-content:center; align-items:center; gap:12px;
+    background: var(--tabs-bg);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+    padding: 12px 16px;
+    transition: background 0.45s ease;
+  }
+  .theme-toggle{
+    position:absolute; right:16px; top:50%; transform:translateY(-50%);
+    display:flex; align-items:center; gap:6px;
+    font-family:'JetBrains Mono'; font-size:12px; font-weight:600; letter-spacing:0.03em;
+    color: var(--ink-dim); background: var(--bg-panel); border:1px solid var(--line);
+    border-radius: 999px; padding:8px 14px; cursor:pointer;
+    transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease, transform 0.15s ease;
+  }
+  .theme-toggle:hover{ color: var(--amber); border-color: var(--amber); }
+  .theme-toggle:active{ transform: translateY(-50%) scale(0.96); }
+  @media (max-width:600px){
+    .theme-toggle{ position:static; transform:none; order:2; }
+    .liga-tabs{ flex-wrap:wrap; }
+  }
+  .liga-tabs .group{
+    display:flex; border:1px solid var(--line); border-radius: var(--radius-sm); overflow:hidden;
+    background: var(--bg-panel);
+  }
+  body.liga-lpf .liga-tabs .group{ border-radius:999px; box-shadow: var(--card-shadow); }
+  .liga-tab{
+    font-family:'Oswald', sans-serif; font-size:14px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em;
+    padding: 11px 26px; cursor:pointer; background:transparent; border:none; color:var(--muted);
+    transition: background 0.25s ease, color 0.25s ease;
+  }
+  .liga-tab.active{ background: var(--amber-dim); color: var(--amber); }
+  body.liga-lpf .liga-tab.active{
+    background: linear-gradient(135deg, #114BB4, #0E86D4);
+    color:#fff;
+  }
+  .liga-tab:not(.active):hover{ color: var(--ink-dim); background: var(--bg-panel-2); }
+
+  /* ---------- COPAS / DESCENSOS CARDS (LPF) ---------- */
+  .copas-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:18px; }
+  @media (max-width:600px){ .copas-grid{ grid-template-columns: 1fr; } }
+  .copa-card{
+    border:1px solid var(--line); border-radius: var(--radius); padding:18px 20px;
+    background: var(--card-grad, var(--bg-panel));
+    background-color: var(--bg-panel);
+    box-shadow: var(--card-shadow);
+    transition: box-shadow 0.25s ease, transform 0.25s ease;
+  }
+  .copa-card:hover{ box-shadow: var(--card-shadow-hover); transform: var(--hover-lift); }
+  .copa-card .copa-title{ font-family:'JetBrains Mono'; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:12px; }
+  .copa-card.libertadores{ border-top: 3px solid var(--azul); }
+  .copa-card.sudamericana{ border-top: 3px solid var(--zone-b); }
+  .copa-card.libertadores .copa-title{ color: var(--azul); }
+  .copa-card.sudamericana .copa-title{ color: var(--zone-b); }
+  .copa-card ol{ list-style:none; counter-reset:copa; }
+  .copa-card li{ counter-increment:copa; display:flex; gap:10px; padding:6px 0; border-bottom:1px solid var(--line); font-size:13px; }
+  .copa-card li:last-child{ border-bottom:none; }
+  .copa-card li::before{
+    content: counter(copa); font-family:'JetBrains Mono'; font-size:11px; color:var(--muted);
+    width:18px; flex-shrink:0;
+  }
+  .copa-card li.no-simulado{ color:var(--muted); font-style:italic; }
+
+  .descensos-grid{ display:flex; gap:14px; flex-wrap:wrap; justify-content:center; }
+  .descenso-card{
+    border:1px solid var(--danger); border-radius: var(--radius); padding:16px 26px;
+    background: var(--danger-dim);
+    font-family:'Oswald'; text-transform:uppercase; letter-spacing:0.02em; font-size:17px; color: var(--danger);
+    display:flex; align-items:center; gap:10px;
+    box-shadow: var(--card-shadow);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .descenso-card:hover{ transform: var(--hover-lift); box-shadow: var(--card-shadow-hover); }
+  .descenso-card .arrow{ color: var(--danger); font-size:20px; }
+
+  .trofeo-especial{
+    border:1px dashed var(--line); border-radius: var(--radius); padding:20px 24px; background: var(--bg-panel);
+    color: var(--ink-dim); font-size:14px; line-height:1.6; text-align:center;
+    box-shadow: var(--card-shadow);
   }
 
   /* ---------- ZONE TABS ---------- */
   .zone-tabs{
-    position: sticky; top:0; z-index: 50;
+    position: sticky; top: var(--liga-h, 63px); z-index: 50;
     display:flex; justify-content:center; gap:0;
-    background: rgba(10,20,16,0.92);
-    backdrop-filter: blur(6px);
+    background: var(--tabs-bg);
+    backdrop-filter: blur(8px);
     border-bottom: 1px solid var(--line);
     padding: 10px 16px;
+    transition: background 0.45s ease;
   }
-  .zone-tabs .group{ display:flex; border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+  .zone-tabs .group{ display:flex; border:1px solid var(--line); border-radius: var(--radius-sm); overflow:hidden; background: var(--bg-panel); }
+  body.liga-lpf .zone-tabs .group{ border-radius:999px; }
   .zone-tab{
     font-family:'JetBrains Mono'; font-size:13px; font-weight:600;
     padding: 9px 22px; cursor:pointer; background:transparent; border:none; color:var(--muted);
-    transition: background 0.15s, color 0.15s;
+    transition: background 0.25s ease, color 0.25s ease;
     letter-spacing:0.05em;
   }
   .zone-tab.active[data-zone="A"]{ background: var(--zone-a-dim); color: var(--zone-a); }
   .zone-tab.active[data-zone="B"]{ background: var(--zone-b-dim); color: var(--zone-b); }
+  .zone-tab.active[data-zona="A"]{ background: var(--zone-a-dim); color: var(--zone-a); }
+  .zone-tab.active[data-zona="B"]{ background: var(--zone-b-dim); color: var(--zone-b); }
   .zone-tab:not(.active):hover{ color: var(--ink-dim); }
 
   /* ---------- SECTIONS ---------- */
   section{ max-width: 920px; margin: 0 auto; padding: 56px 24px 0; }
   .section-head{ display:flex; align-items:baseline; gap:12px; margin-bottom:22px; }
   .section-head .idx{ font-family:'JetBrains Mono'; color:var(--muted); font-size:13px; }
-  .section-head h2{ font-family:'Oswald'; text-transform:uppercase; letter-spacing:0.03em; font-size:24px; font-weight:600; }
+  body.liga-lpf .section-head .idx{ color: var(--amber); font-weight:700; }
+  .section-head h2{ font-family:'Oswald'; text-transform:uppercase; letter-spacing:0.03em; font-size:24px; font-weight:600; color: var(--ink); }
   .section-head .rule{ flex:1; height:1px; background: var(--line); }
+  body.liga-lpf .section-head .rule{ background: linear-gradient(90deg, var(--line), transparent); }
   .section-note{ color:var(--ink-dim); font-size:14px; margin-bottom:22px; max-width:65ch; }
 
   /* ---------- STANDINGS TABLE ---------- */
-  .table-wrap{ border:1px solid var(--line); border-radius:10px; overflow:hidden; }
+  .table-wrap{
+    border:1px solid var(--line); border-radius: var(--radius); overflow:hidden;
+    background: var(--bg-panel);
+    box-shadow: var(--card-shadow);
+    transition: box-shadow 0.25s ease;
+  }
+  .table-wrap:hover{ box-shadow: var(--card-shadow-hover); }
   table{ width:100%; border-collapse:collapse; font-size:14px; }
   thead th{
     font-family:'JetBrains Mono'; font-size:11px; letter-spacing:0.06em; text-transform:uppercase;
-    color: var(--muted); text-align:right; padding:10px 12px; background: var(--bg-panel-2);
+    color: var(--ink-dim); text-align:right; padding:10px 12px;
+    background: var(--table-head-bg);
     border-bottom:1px solid var(--line);
   }
   thead th:first-child, thead th:nth-child(2){ text-align:left; }
-  tbody td{ padding:9px 12px; text-align:right; border-bottom:1px solid var(--line); font-family:'JetBrains Mono'; font-size:13px; }
+  tbody td{ padding:9px 12px; text-align:right; border-bottom:1px solid var(--line); font-family:'JetBrains Mono'; font-size:13px; color: var(--ink-dim); }
   tbody td:first-child{ text-align:left; color:var(--muted); width:32px; }
   tbody td:nth-child(2){ text-align:left; font-family:'Inter'; font-weight:500; color:var(--ink); }
+  tbody tr{ transition: background 0.15s ease; }
+  tbody tr:hover{ background: var(--bg-panel-2); }
   tbody tr:last-child td{ border-bottom:none; }
-  tbody tr.punta{ background: rgba(255,182,39,0.08); }
+  tbody tr.punta{ background: var(--amber-dim); }
+  tbody tr.punta:hover{ background: var(--amber-dim); filter: brightness(0.98); }
   tbody tr.punta td:nth-child(2){ color: var(--amber); font-weight:700; }
   tbody tr.punta{ box-shadow: inset 3px 0 0 var(--amber); }
-  tbody tr.reducido{ background: rgba(74,159,224,0.07); }
+  tbody tr.reducido{ background: var(--azul-dim); }
+  tbody tr.reducido:hover{ filter: brightness(0.98); }
   tbody tr.reducido td:nth-child(2){ color: var(--azul); font-weight:600; }
   tbody tr.reducido{ box-shadow: inset 3px 0 0 var(--azul); }
-  tbody tr.descenso{ background: rgba(194,67,67,0.06); }
-  tbody tr.descenso td:nth-child(2){ color: #e08a8a; }
+  tbody tr.descenso{ background: var(--danger-dim); }
+  tbody tr.descenso:hover{ filter: brightness(0.98); }
+  tbody tr.descenso td:nth-child(2){ color: var(--danger); }
   tbody tr.descenso{ box-shadow: inset 3px 0 0 var(--danger); }
 
   /* ---------- ASCENSO CARD ---------- */
   .ascenso-card{
-    border:1px solid var(--line); border-radius:10px; padding:22px 24px;
-    background: var(--bg-panel); margin-bottom: 10px;
+    border:1px solid var(--line); border-radius: var(--radius); padding:22px 24px;
+    background: var(--card-grad, var(--bg-panel));
+    background-color: var(--bg-panel);
+    margin-bottom: 10px;
+    box-shadow: var(--card-shadow);
+    transition: box-shadow 0.25s ease, transform 0.25s ease;
   }
+  .ascenso-card:hover{ box-shadow: var(--card-shadow-hover); transform: var(--hover-lift); }
   .ascenso-card .label{ font-family:'JetBrains Mono'; font-size:11px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:10px; }
   .ascenso-score{ display:flex; align-items:center; justify-content:center; gap:18px; font-family:'JetBrains Mono'; font-size:20px; flex-wrap:wrap; }
-  .ascenso-score .team{ font-size:16px; }
+  .ascenso-score .team{ font-size:16px; color: var(--ink-dim); }
   .ascenso-score .team.win{ color:var(--amber); font-weight:700; }
   .ascenso-score .gscore{ font-size:28px; font-weight:700; color:var(--ink); }
   .ascenso-footer{ text-align:center; margin-top:14px; color:var(--ink-dim); font-size:13px; }
@@ -219,24 +517,29 @@
 
   /* ---------- BRACKET ---------- */
   .bracket-scroll{ overflow-x:auto; padding: 10px 4px 18px; }
-  .bracket{ display:flex; gap: 30px; min-width: 760px; align-items:stretch; }
-  .round{ display:flex; flex-direction:column; flex:1; }
+  .bracket{ display:flex; gap: clamp(8px, 2vw, 28px); align-items:stretch; width:100%; }
+  .round{ display:flex; flex-direction:column; flex:1 1 0; min-width:0; }
   .round-title{ font-family:'JetBrains Mono'; font-size:10px; color:var(--muted); text-align:center; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:14px; flex-shrink:0; }
   .round-body{ display:flex; flex-direction:column; justify-content:center; flex:1; gap:14px; }
   .match{
-    position:relative; border:1px solid var(--line); border-radius:8px; background:var(--bg-panel);
+    position:relative; border:1px solid var(--line); border-radius: var(--radius-sm);
+    background: var(--bg-panel);
     font-family:'JetBrains Mono'; font-size:12px; padding:8px 10px; flex-shrink:0;
+    box-shadow: var(--card-shadow);
+    transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
   }
-  .match .row{ display:flex; justify-content:space-between; padding:3px 0; }
+  .match:hover{ box-shadow: var(--card-shadow-hover); border-color: var(--azul); }
+  .match .row{ display:flex; justify-content:space-between; padding:3px 0; color: var(--ink-dim); }
   .match .row.winner{ color:var(--amber); font-weight:700; }
-  .match .row span:first-child{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:120px; }
+  .match .row span:first-child{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:100%; min-width:0; }
   .match::after{
     content:""; position:absolute; right:-16px; top:50%; width:16px; height:1px; background:var(--line);
   }
   .round:last-child .match::after{ display:none; }
-  .match.note{ font-size:10px; color:var(--muted); border-style:dashed; }
+  .match.note{ font-size:10px; color:var(--muted); border-style:dashed; box-shadow:none; }
   .final-col .round-body{ align-items:center; }
   .final-col .match{ width:100%; }
+  body.liga-lpf .final-col .match{ border-color: var(--amber); box-shadow: 0 4px 18px rgba(184,134,11,0.15); }
   .final-col .row span:first-child{ max-width:none; }
   .final-col .leg-detail{
     margin-top:8px; padding-top:8px; border-top:1px dashed var(--line);
@@ -248,15 +551,35 @@
   }
 
   /* ---------- MONTE CARLO BARS ---------- */
-  .mc-row{ display:grid; grid-template-columns: 26px 1fr 86px; gap:14px; align-items:center; padding:10px 0; border-bottom:1px solid var(--line); }
+  .mc-row{
+    display:grid; grid-template-columns: 26px 1fr 86px; gap:14px; align-items:center;
+    padding:10px 12px; border-bottom:1px solid var(--line);
+    background: var(--bg-panel);
+    animation: row-in 0.35s ease backwards;
+    transition: background 0.15s ease;
+  }
+  .mc-row:hover{ background: var(--bg-panel-2); }
+  /* aparición escalonada de estadísticas */
+  .mc-row:nth-child(1){ animation-delay: 0.02s; } .mc-row:nth-child(2){ animation-delay: 0.05s; }
+  .mc-row:nth-child(3){ animation-delay: 0.08s; } .mc-row:nth-child(4){ animation-delay: 0.11s; }
+  .mc-row:nth-child(5){ animation-delay: 0.14s; } .mc-row:nth-child(6){ animation-delay: 0.17s; }
+  .mc-row:nth-child(7){ animation-delay: 0.20s; } .mc-row:nth-child(8){ animation-delay: 0.23s; }
+  .mc-row:nth-child(n+9){ animation-delay: 0.26s; }
+  #mc-list, #mc-list-lpf{
+    border:1px solid var(--line); border-radius: var(--radius); overflow:hidden;
+    box-shadow: var(--card-shadow);
+  }
   .mc-row:last-child{ border-bottom:none; }
   .mc-row .pos{ font-family:'JetBrains Mono'; font-size:11px; color:var(--muted); }
-  .mc-row .name{ font-size:13px; font-weight:500; margin-bottom:5px; display:flex; justify-content:space-between; gap:8px;}
+  .mc-row .name{ font-size:13px; font-weight:500; margin-bottom:5px; display:flex; justify-content:space-between; gap:8px; color: var(--ink); }
   .mc-row .name .pct{ font-family:'JetBrains Mono'; font-weight:700; }
   .mc-bar-track{ position:relative; height:7px; background:var(--bg-panel-2); border-radius:4px; overflow:hidden; }
-  .mc-bar-fill{ position:absolute; top:0; bottom:0; height:100%; }
+  .mc-bar-fill{
+    position:absolute; top:0; bottom:0; height:100%;
+    transform-origin:left; animation: bar-grow 0.6s cubic-bezier(0.22,1,0.36,1) backwards 0.15s;
+  }
   .mc-bar-fill.directo{ left:0; }
-  .mc-bar-fill.reducido{ opacity:0.5; }
+  .mc-bar-fill.reducido{ opacity:0.45; }
   .mc-sub{ display:flex; gap:14px; margin-top:5px; font-family:'JetBrains Mono'; font-size:10px; color:var(--ink-dim); }
   .mc-sub .dot{ display:inline-block; width:6px; height:6px; border-radius:50%; margin-right:5px; }
   .mc-desc{ text-align:right; }
@@ -264,7 +587,10 @@
   .mc-desc .desc-pct.high{ color: var(--danger); }
   .mc-desc .desc-lbl{ font-size:9px; letter-spacing:0.06em; text-transform:uppercase; color:var(--muted); margin-top:1px; }
   .mc-desc .desc-bar-track{ height:5px; background:var(--bg-panel-2); border-radius:3px; overflow:hidden; margin-top:5px; }
-  .mc-desc .desc-bar-fill{ height:100%; background:var(--danger); border-radius:3px; }
+  .mc-desc .desc-bar-fill{
+    height:100%; background:var(--danger); border-radius:3px;
+    transform-origin:left; animation: bar-grow 0.6s cubic-bezier(0.22,1,0.36,1) backwards 0.2s;
+  }
   .legend{ display:flex; gap:18px; font-size:12px; color:var(--ink-dim); margin-bottom:16px; flex-wrap:wrap; }
   .legend span{ display:inline-flex; align-items:center; gap:6px; }
   .legend i{ width:10px; height:10px; border-radius:2px; display:inline-block; }
@@ -273,11 +599,13 @@
   .search-section{ padding: 36px 24px 0; max-width: 720px; margin: 0 auto; }
   .search-box{ position:relative; }
   .search-box input{
-    width:100%; background: var(--bg-panel); border:1px solid var(--line); border-radius:10px;
+    width:100%; background: var(--bg-panel); border:1px solid var(--line); border-radius: var(--radius);
     padding: 14px 16px 14px 42px; color: var(--ink); font-family:'Inter'; font-size:14px;
-    outline:none; transition: border-color 0.15s;
+    outline:none; transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: var(--card-shadow);
   }
-  .search-box input:focus{ border-color: var(--amber); }
+  body.liga-lpf .search-box input{ border-radius:999px; }
+  .search-box input:focus{ border-color: var(--azul); box-shadow: 0 0 0 3px var(--azul-dim); }
   .search-box input::placeholder{ color: var(--muted); }
   .search-box::before{
     content:"⌕"; position:absolute; left:15px; top:50%; transform:translateY(-50%) scaleX(1.3);
@@ -289,29 +617,44 @@
   .campeon-controls{ display:flex; gap:10px; flex-wrap:wrap; justify-content:center; align-items:center; margin-bottom:6px; }
   #campeon-equipo{
     font-family:'JetBrains Mono'; font-size:13px; font-weight:600; color: var(--ink);
-    background: var(--bg-panel-2); border:1px solid var(--line); border-radius:8px;
+    background: var(--bg-panel); border:1px solid var(--line); border-radius: var(--radius-sm);
     padding: 10px 12px; outline:none; transition: border-color 0.15s, opacity 0.15s; min-width:220px;
   }
-  #campeon-equipo:hover:not(:disabled){ border-color: var(--amber); }
-  #campeon-equipo:focus{ border-color: var(--amber); }
+  #campeon-equipo:hover:not(:disabled){ border-color: var(--azul); }
+  #campeon-equipo:focus{ border-color: var(--azul); }
   #campeon-equipo:disabled{ cursor:wait; opacity:0.5; }
+  /* estos controles viven fuera del hero: botón en versión "de contenido" */
+  #campeon-section .btn-simular{ background: var(--btn-grad); color: var(--btn-ink); }
+  #campeon-section .sim-status{ color: var(--ink-dim); }
+  #campeon-section .sim-status.error{ color: var(--danger); }
+  #campeon-section .sim-status.ok{ color: var(--zone-a); }
   .campeon-summary{
     font-family:'JetBrains Mono'; font-size:13px; color:var(--ink-dim); text-align:center;
-    padding:14px; background:var(--bg-panel); border:1px solid var(--line); border-radius:10px;
+    padding:14px; background:var(--bg-panel); border:1px solid var(--line); border-radius: var(--radius);
+    box-shadow: var(--card-shadow);
   }
   .campeon-summary b{ color:var(--amber); }
 
   .team-card{
-    margin-top:18px; border:1px solid var(--line); border-radius:12px; background: var(--bg-panel);
+    margin-top:18px; border:1px solid var(--line); border-radius: var(--radius);
+    background: var(--card-grad, var(--bg-panel));
+    background-color: var(--bg-panel);
     padding: 20px; animation: fade-in 0.35s ease forwards;
+    box-shadow: var(--card-shadow);
+    transition: box-shadow 0.25s ease;
   }
+  .team-card:hover{ box-shadow: var(--card-shadow-hover); }
   .team-card .tc-head{ display:flex; align-items:baseline; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-bottom:16px; }
-  .team-card .tc-name{ font-family:'Oswald'; font-size:22px; text-transform:uppercase; letter-spacing:0.02em; }
-  .team-card .tc-zone{ font-family:'JetBrains Mono'; font-size:11px; letter-spacing:0.08em; padding:4px 10px; border-radius:6px; }
+  .team-card .tc-name{ font-family:'Oswald'; font-size:22px; text-transform:uppercase; letter-spacing:0.02em; color: var(--ink); }
+  .team-card .tc-zone{ font-family:'JetBrains Mono'; font-size:11px; letter-spacing:0.08em; padding:4px 10px; border-radius: var(--radius-sm); }
   .team-card .tc-pos{ font-family:'JetBrains Mono'; font-size:12px; color:var(--ink-dim); }
   .team-card .tc-pos b{ color:var(--ink); }
   .team-card .tc-grid{ display:grid; grid-template-columns: repeat(4, 1fr); gap:12px; margin-bottom:18px; }
-  .team-card .tc-stat{ text-align:center; padding:10px 4px; background: var(--bg-panel-2); border-radius:8px; }
+  .team-card .tc-stat{
+    text-align:center; padding:10px 4px; background: var(--bg-panel-2); border-radius: var(--radius-sm);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .team-card .tc-stat:hover{ transform: var(--hover-lift); box-shadow: var(--card-shadow-hover); }
   .team-card .tc-stat .v{ font-family:'JetBrains Mono'; font-size:17px; font-weight:700; color:var(--ink); }
   .team-card .tc-stat .l{ font-size:9px; letter-spacing:0.06em; text-transform:uppercase; color:var(--muted); margin-top:3px; }
   .team-card .tc-mc-title{ font-family:'JetBrains Mono'; font-size:11px; color:var(--muted); letter-spacing:0.06em; text-transform:uppercase; margin-bottom:10px; }
@@ -322,15 +665,17 @@
   .tc-racha-title{ font-family:'JetBrains Mono'; font-size:11px; color:var(--muted); letter-spacing:0.06em; text-transform:uppercase; margin-bottom:10px; }
   .tc-racha-row{ display:flex; gap:6px; flex-wrap:wrap; }
   .racha-badge{
-    width:28px; height:28px; border-radius:6px; display:flex; align-items:center; justify-content:center;
+    width:28px; height:28px; border-radius: var(--radius-sm); display:flex; align-items:center; justify-content:center;
     font-family:'JetBrains Mono'; font-size:12px; font-weight:700; color:#fff; cursor:default; position:relative;
+    transition: transform 0.15s ease;
   }
+  .racha-badge:hover{ transform: scale(1.12); }
   .racha-badge.v{ background: var(--zone-a); }
   .racha-badge.e{ background: var(--muted); }
   .racha-badge.d{ background: var(--danger); }
   .racha-badge[title]:hover::after{
     content: attr(title); position:absolute; bottom:130%; left:50%; transform:translateX(-50%);
-    background: var(--bg-panel-2); border:1px solid var(--line); color:var(--ink);
+    background: var(--ink); border:1px solid var(--line); color:#fff;
     font-size:11px; padding:5px 8px; border-radius:6px; white-space:nowrap; z-index:5;
   }
   .tc-racha-empty{ font-family:'JetBrains Mono'; font-size:11px; color:var(--muted); }
@@ -338,11 +683,11 @@
   /* ---- Compartir ficha ---- */
   .tc-share{ display:flex; gap:8px; margin-top:16px; padding-top:16px; border-top:1px solid var(--line); }
   .tc-share button{
-    flex:1; padding:8px 10px; border-radius:8px; border:1px solid var(--line); background: var(--bg-panel-2);
+    flex:1; padding:8px 10px; border-radius: var(--radius-sm); border:1px solid var(--line); background: var(--bg-panel-2);
     color: var(--ink-dim); font-family:'JetBrains Mono'; font-size:11px; letter-spacing:0.04em;
     text-transform:uppercase; cursor:pointer; transition: all 0.15s ease;
   }
-  .tc-share button:hover{ color: var(--ink); border-color: var(--amber-dim); }
+  .tc-share button:hover{ color: var(--ink); border-color: var(--azul); transform: var(--hover-lift); }
   .tc-share button.copied{ color: var(--zone-a); border-color: var(--zone-a); }
 
   @media (max-width: 600px){
@@ -359,11 +704,12 @@
   }
   .coauthors a{
     display:flex; align-items:center; justify-content:center;
-    width:34px; height:34px; border-radius:8px;
-    background: var(--bg-panel); border:1px solid var(--line);
-    color: var(--ink-dim); transition: color 0.15s, border-color 0.15s, background 0.15s;
+    width:34px; height:34px; border-radius: var(--radius-sm);
+    background: rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.3);
+    color: #fff; transition: color 0.15s, border-color 0.15s, background 0.15s, transform 0.15s;
+    backdrop-filter: blur(4px);
   }
-  .coauthors a:hover{ color: var(--ink); border-color: var(--amber-dim); background: var(--bg-panel-2); }
+  .coauthors a:hover{ background: rgba(255,255,255,0.25); border-color:#fff; transform: var(--hover-lift); }
   .coauthors svg{ width:16px; height:16px; fill:currentColor; }
   @media (max-width: 600px){
     .coauthors{ top:10px; right:10px; gap:8px; }
@@ -374,6 +720,15 @@
     .hero{ padding:48px 16px 32px; }
     section{ padding: 44px 16px 0; }
     thead th, tbody td{ padding:8px 6px; font-size:12px; }
+  }
+
+  /* ---------- BRACKET RESPONSIVE (stack vertical, sin scroll manual) ---------- */
+  @media (max-width: 760px){
+    .bracket-scroll{ overflow-x:hidden; }
+    .bracket{ flex-direction: column; gap: 22px; }
+    .round{ width:100%; }
+    .match::after{ display:none; }
+    .round-body{ gap:10px; }
   }
 </style>
 </head>
@@ -389,16 +744,17 @@
   </div>
 
   <div class="hero">
-    <div class="eyebrow">SIMULACIÓN MONTE CARLO — <span id="hero-n">0</span> CORRIDAS</div>
-    <h1 class="display">SIMULADOR <span>PRIMERA NACIONAL</span></h1>
-    <p class="sub">Probabilidades de ascenso y descenso calculadas simulando la temporada completa miles de veces con un modelo Poisson ajustado por forma reciente y corrección Dixon-Coles.</p>
+    <div class="eyebrow" id="hero-eyebrow">SIMULACIÓN MONTE CARLO — <span id="hero-n">0</span> CORRIDAS</div>
+    <h1 class="display">SIMULADOR <span id="hero-title-span">PRIMERA NACIONAL</span></h1>
+    <p class="sub" id="hero-sub">Probabilidades de ascenso y descenso calculadas simulando la temporada completa miles de veces con un modelo Poisson ajustado por forma reciente y corrección Dixon-Coles.</p>
     <div class="meta">
       <div><div class="num mono" id="meta-equipos">—</div><div class="lbl">Equipos</div></div>
       <div><div class="num mono" id="meta-zonas">2</div><div class="lbl">Zonas</div></div>
-      <div><div class="num mono" id="meta-ascensos">2</div><div class="lbl">Ascensos por edición</div></div>
+      <div><div class="num mono" id="meta-ascensos">2</div><div class="lbl" id="meta-ascensos-lbl">Ascensos por edición</div></div>
       <div><div class="num mono" id="meta-descensos">4</div><div class="lbl">Descensos por edición</div></div>
     </div>
-    <div class="sim-control">
+
+    <div class="sim-control" id="sim-control-nacional">
       <div class="sim-select-row">
         <label for="sim-count">Cantidad de simulaciones</label>
         <input type="number" id="sim-count" value="1000" min="50" max="5000" step="1">
@@ -411,7 +767,27 @@
       <div id="sim-status" class="sim-status"></div>
       <div id="last-update" class="last-update"></div>
     </div>
+
+    <div class="sim-control" id="sim-control-lpf" style="display:none">
+      <div class="btn-row">
+        <button id="btn-simular-lpf" class="btn-simular">▶ Correr nueva simulación (Clausura + playoffs)</button>
+      </div>
+      <div id="sim-status-lpf" class="sim-status"></div>
+      <div id="last-update-lpf" class="last-update"></div>
+    </div>
   </div>
+
+  <div class="liga-tabs">
+    <div class="group">
+      <button class="liga-tab" data-liga="lpf">Liga Profesional</button>
+      <button class="liga-tab active" data-liga="nacional">Primera Nacional</button>
+    </div>
+    <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Cambiar entre modo claro y oscuro">
+      <span id="theme-toggle-icon">🌙</span><span id="theme-toggle-label">Oscuro</span>
+    </button>
+  </div>
+
+  <div id="vista-nacional">
 
   <div class="search-section">
     <div class="search-box">
@@ -439,7 +815,7 @@
     <div id="campeon-resultado"></div>
   </div>
 
-  <div class="zone-tabs">
+  <div class="zone-tabs" id="zone-tabs-nacional">
     <div class="group">
       <button class="zone-tab active" data-zone="A">ZONA A</button>
       <button class="zone-tab" data-zone="B">ZONA B</button>
@@ -507,6 +883,106 @@
       </table>
     </div>
   </section>
+
+  </div><!-- /vista-nacional -->
+
+  <div id="vista-lpf" style="display:none">
+
+  <div class="zone-tabs" id="zone-tabs-lpf">
+    <div class="group">
+      <button class="zone-tab active" data-zona="A">ZONA A</button>
+      <button class="zone-tab" data-zona="B">ZONA B</button>
+    </div>
+  </div>
+
+  <section id="sec-lpf-apertura">
+    <div class="section-head"><span class="idx">01</span><h2>Tabla final — Apertura 2026</h2><div class="rule"></div></div>
+    <p class="section-note">Torneo ya jugado (dato real). <b style="color:var(--amber)">Belgrano</b> salió campeón y ya tiene su lugar en la Copa Libertadores 2027.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>GF</th><th>GC</th><th>DG</th></tr></thead>
+        <tbody id="apertura-lpf-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="sec-lpf-clausura">
+    <div class="section-head"><span class="idx">02</span><h2>Tabla del Clausura (simulada)</h2><div class="rule"></div></div>
+    <p class="section-note">Resultado de una corrida puntual del Clausura: se simulan los partidos pendientes del fixture. Los primeros 8 de cada zona clasifican a los Playoffs cruzados.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>GF</th><th>GC</th><th>DG</th></tr></thead>
+        <tbody id="clausura-lpf-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="sec-lpf-playoffs">
+    <div class="section-head"><span class="idx">03</span><h2>Playoffs del Clausura</h2><div class="rule"></div></div>
+    <p class="section-note">Los 8 mejores de cada zona se cruzan desde Octavos de Final a partido único. Las llaves se definen en la cancha del equipo mejor posicionado, reservando la cancha neutral únicamente para la Final. Todas las instancias cuentan con alargue y penales en caso de empate.</p>
+    <div class="bracket-scroll">
+      <div class="bracket" id="bracket-lpf"></div>
+    </div>
+  </section>
+
+  <section id="sec-lpf-mc">
+    <div class="section-head"><span class="idx">04</span><h2>Monte Carlo — Probabilidades del Clausura</h2><div class="rule"></div></div>
+    <p class="section-note">Resultado de simular el Clausura y los playoffs miles de veces. % playoffs = veces que terminó entre los primeros 8 de su zona. % campeón = veces que salió campeón del Clausura.</p>
+    <div id="mc-list-lpf"></div>
+    <div class="table-wrap" style="margin-top:20px">
+      <table>
+        <thead><tr><th>#</th><th>Equipo</th><th>Pts prom.</th><th>Pos. prom.</th></tr></thead>
+        <tbody id="esperada-body-lpf"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="sec-lpf-anual">
+    <div class="section-head"><span class="idx">04</span><h2>Tabla Anual 2026</h2><div class="rule"></div></div>
+    <p class="section-note">Suma de puntos, GF y GC del Apertura (real) más el Clausura (simulado), sin distinguir zona. Define al Campeón de Liga, los cupos a copas internacionales y los descensos.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>GF</th><th>GC</th><th>DG</th></tr></thead>
+        <tbody id="anual-lpf-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="sec-lpf-descensos">
+    <div class="section-head"><span class="idx">05</span><h2>Descensos</h2><div class="rule"></div></div>
+    <p class="section-note">Últimos dos puestos de la Tabla Anual 2026 <span style="opacity:0.7">(simplificación: el reglamento real combina esto con promedios históricos de 3 temporadas, que este simulador todavía no carga)</span>.</p>
+    <div class="descensos-grid" id="descensos-lpf"></div>
+  </section>
+
+  <section id="sec-lpf-copas">
+    <div class="section-head"><span class="idx">06</span><h2>Copas internacionales 2027</h2><div class="rule"></div></div>
+    <p class="section-note">Cupos a Libertadores y Sudamericana según la Tabla Anual, más los campeones de Apertura y Clausura. El cupo del campeón de Copa Argentina no está simulado.</p>
+    <div class="copas-grid">
+      <div class="copa-card libertadores">
+        <div class="copa-title">Copa Libertadores 2027</div>
+        <ol id="libertadores-lpf"></ol>
+      </div>
+      <div class="copa-card sudamericana">
+        <div class="copa-title">Copa Sudamericana 2027</div>
+        <ol id="sudamericana-lpf"></ol>
+      </div>
+    </div>
+  </section>
+
+  <section id="sec-lpf-trofeo">
+    <div class="section-head"><span class="idx">07</span><h2>Trofeo de Campeones</h2><div class="rule"></div></div>
+    <p class="section-note">Campeón del Apertura vs. campeón del Clausura, partido único a cancha neutral (con alargue y penales si hace falta).</p>
+    <div id="trofeo-lpf-normal">
+      <div class="ascenso-card">
+        <div class="label">Apertura vs. Clausura</div>
+        <div class="ascenso-score" id="trofeo-lpf-score"></div>
+        <div class="ascenso-footer" id="trofeo-lpf-footer"></div>
+      </div>
+    </div>
+    <div id="trofeo-lpf-especial" class="trofeo-especial" style="display:none"></div>
+  </section>
+
+  </div><!-- /vista-lpf -->
 
   <footer>
     <p>Generado a partir de <span id="foot-n">0</span> simulaciones — modelo Poisson (ataque/defensa local-visitante, decay por antigüedad, regresión a la media, corrección Dixon-Coles)</p>
@@ -834,7 +1310,7 @@ function renderGoleadores(){
 
 function setZone(zona){
   zonaActual = zona;
-  document.querySelectorAll('.zone-tab').forEach(b => b.classList.toggle('active', b.dataset.zone === zona));
+  document.querySelectorAll('#zone-tabs-nacional .zone-tab').forEach(b => b.classList.toggle('active', b.dataset.zone === zona));
   renderTabla(zona);
   renderMC(zona);
   renderEsperada(zona);
@@ -1152,8 +1628,319 @@ function renderCampeonResultado(r){
 
 document.getElementById('btn-campeon').addEventListener('click', simularHastaCampeon);
 
-document.querySelectorAll('.zone-tab').forEach(btn => {
+document.querySelectorAll('#zone-tabs-nacional .zone-tab').forEach(btn => {
   btn.addEventListener('click', () => setZone(btn.dataset.zone));
 });
+
+/* =====================================================================
+   LIGA PROFESIONAL (LPF)
+   ===================================================================== */
+let DATA_LPF;
+let zonaActualLPF = "A";
+
+async function cargarDatosLPF(){
+  try {
+    const respuesta = await fetch("./data_lpf.json?t=" + Date.now());
+    if (!respuesta.ok) throw new Error("No se pudo cargar data_lpf.json");
+    DATA_LPF = await respuesta.json();
+    iniciarLPF();
+  } catch (e) {
+    const cont = document.getElementById('vista-lpf');
+    if (cont) cont.innerHTML = `<div style="padding:24px 24px 0; max-width:720px; margin:0 auto; text-align:center; color:var(--muted); font-family:'JetBrains Mono'; font-size:13px;">
+      No se pudo cargar data_lpf.json todavía (${e.message}). Corré <code>python main_lpf.py</code> una vez, o apretá "Correr nueva simulación" acá arriba.
+    </div>`;
+  }
+}
+
+function iniciarLPF(){
+  document.getElementById('last-update-lpf').textContent = DATA_LPF.generado ? ("Última corrida: " + DATA_LPF.generado) : "";
+  setZonaLPF(zonaActualLPF);
+  renderPlayoffsLPF();
+  renderTablaAnualLPF();
+  renderDescensosLPF();
+  renderCopasLPF();
+  renderTrofeoLPF();
+}
+
+function filaTablaLPFHTML(f, i, totalFilas, marcarPlayoffs){
+  const clases = [];
+  if (i === 0) clases.push('punta');
+  else if (marcarPlayoffs && i <= 7) clases.push('reducido'); // top 8 clasifican a playoffs
+  return `<tr class="${clases.join(' ')}">
+    <td>${i + 1}</td><td>${f.equipo}</td><td>${f.puntos}</td><td>${f.gf}</td><td>${f.gc}</td><td>${f.dg > 0 ? '+' + f.dg : f.dg}</td>
+  </tr>`;
+}
+
+function renderTablaZonaLPF(tipo, zona){
+  const bodyId = tipo === 'apertura' ? 'apertura-lpf-body' : 'clausura-lpf-body';
+  const body = document.getElementById(bodyId);
+  if (!body) return;
+  const filas = (tipo === 'apertura' ? DATA_LPF.apertura : DATA_LPF.tablas_clausura)[zona];
+  body.innerHTML = filas.map((f, i) => filaTablaLPFHTML(f, i, filas.length, tipo === 'clausura')).join('');
+}
+
+function setZonaLPF(zona){
+  zonaActualLPF = zona;
+  document.querySelectorAll('#zone-tabs-lpf .zone-tab').forEach(b => b.classList.toggle('active', b.dataset.zona === zona));
+  renderTablaZonaLPF('apertura', zona);
+  renderTablaZonaLPF('clausura', zona);
+  renderMCLPF(zona);
+  renderEsperadaLPF(zona);
+}
+
+function renderMCLPF(zona){
+  const list = document.getElementById('mc-list-lpf');
+  if (!list || !DATA_LPF.monte_carlo) return;
+  list.innerHTML = "";
+  const filas = DATA_LPF.monte_carlo[zona];
+  const zoneColor = zona === 'A' ? 'var(--zone-a)' : 'var(--zone-b)';
+  filas.forEach((f, i) => {
+    const row = document.createElement('div');
+    row.className = 'mc-row';
+    const descClass = f.descenso >= 25 ? 'high' : '';
+    row.innerHTML = `
+      <div class="pos">${i+1}</div>
+      <div>
+        <div class="name"><span>${f.equipo}</span><span class="pct" style="color:${zoneColor}">${f['%campeon_clausura']}% campeón</span></div>
+        <div class="mc-bar-track">
+          <div class="mc-bar-fill directo" style="width:${f['%playoffs']}%; background:${zoneColor}"></div>
+        </div>
+        <div class="mc-sub">
+          <span><i class="dot" style="background:${zoneColor}"></i>${f['%playoffs']}% playoffs</span>
+        </div>
+      </div>
+      <div class="mc-desc">
+        <div class="desc-pct ${descClass}">${f.descenso}%</div>
+        <div class="desc-lbl">descenso</div>
+        <div class="desc-bar-track"><div class="desc-bar-fill" style="width:${Math.min(f.descenso, 100)}%"></div></div>
+      </div>
+    `;
+    list.appendChild(row);
+  });
+}
+
+function renderEsperadaLPF(zona){
+  const body = document.getElementById('esperada-body-lpf');
+  if (!body || !DATA_LPF.tabla_esperada) return;
+  body.innerHTML = "";
+  DATA_LPF.tabla_esperada[zona].forEach((f, i) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${i+1}</td><td>${f.equipo}</td><td>${f.puntos_prom}</td><td>${f.posicion_prom}</td>`;
+    body.appendChild(tr);
+  });
+}
+
+function renderPlayoffsLPF(){
+  const p = DATA_LPF.playoffs;
+  const bracket = document.getElementById('bracket-lpf');
+  if (!bracket) return;
+  let html = "";
+
+  html += `<div class="round">
+    <div class="round-title">Octavos</div>
+    <div class="round-body">${p.octavos.map(m => matchHTML(m)).join("")}</div>
+  </div>`;
+
+  html += `<div class="round">
+    <div class="round-title">Cuartos</div>
+    <div class="round-body">${p.cuartos.map(m => matchHTML(m)).join("")}</div>
+  </div>`;
+
+  html += `<div class="round">
+    <div class="round-title">Semifinal</div>
+    <div class="round-body">${p.semis.map(m => matchHTML(m)).join("")}</div>
+  </div>`;
+
+  const campeon = p.campeon_clausura;
+  html += `<div class="round final-col">
+    <div class="round-title">Final</div>
+    <div class="round-body">
+      <div class="match">
+        ${p.semis.map(m => {
+          const equipo = m.avanza;
+          const esCampeon = equipo === campeon;
+          return `<div class="row ${esCampeon ? 'winner' : ''}"><span>${equipo}</span></div>`;
+        }).join("")}
+        <div class="leg-detail">${p.final.texto}</div>
+      </div>
+      <div class="campeon">▲ ${campeon}</div>
+    </div>
+  </div>`;
+
+  bracket.innerHTML = html;
+}
+
+function renderTablaAnualLPF(){
+  const body = document.getElementById('anual-lpf-body');
+  if (!body) return;
+  const filas = DATA_LPF.tabla_anual;
+  body.innerHTML = filas.map((f, i) => {
+    const clases = [];
+    if (i === 0) clases.push('punta');
+    if (i >= filas.length - 2) clases.push('descenso');
+    return `<tr class="${clases.join(' ')}">
+      <td>${i + 1}</td><td>${f.equipo}</td><td>${f.puntos}</td><td>${f.gf}</td><td>${f.gc}</td><td>${f.dg > 0 ? '+' + f.dg : f.dg}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderDescensosLPF(){
+  const cont = document.getElementById('descensos-lpf');
+  if (!cont) return;
+  cont.innerHTML = DATA_LPF.descensos.map(equipo =>
+    `<div class="descenso-card"><span class="arrow">▼</span>${equipo}</div>`
+  ).join('');
+}
+
+function renderCopasLPF(){
+  const libertadores = document.getElementById('libertadores-lpf');
+  const sudamericana = document.getElementById('sudamericana-lpf');
+  if (!libertadores || !sudamericana) return;
+  libertadores.innerHTML = DATA_LPF.copas.libertadores_2027.map(equipo => {
+    const noSimulado = equipo.includes('no simulado');
+    return `<li class="${noSimulado ? 'no-simulado' : ''}">${equipo}</li>`;
+  }).join('');
+  sudamericana.innerHTML = DATA_LPF.copas.sudamericana_2027.map(equipo => `<li>${equipo}</li>`).join('');
+}
+
+function renderTrofeoLPF(){
+  const t = DATA_LPF.trofeo;
+  const normal = document.getElementById('trofeo-lpf-normal');
+  const especial = document.getElementById('trofeo-lpf-especial');
+  if (!normal || !especial) return;
+
+  if (t.situacion_especial){
+    normal.style.display = 'none';
+    especial.style.display = 'block';
+    especial.textContent = t.mensaje;
+    return;
+  }
+
+  normal.style.display = 'block';
+  especial.style.display = 'none';
+
+  document.getElementById('trofeo-lpf-score').innerHTML = `
+    <span class="team ${t.campeon_trofeo === t.campeon_apertura ? 'win' : ''}">${t.campeon_apertura}</span>
+    <span class="gscore">${t.marcador[0]} - ${t.marcador[1]}</span>
+    <span class="team ${t.campeon_trofeo === t.campeon_clausura ? 'win' : ''}">${t.campeon_clausura}</span>
+  `;
+  document.getElementById('trofeo-lpf-footer').innerHTML = `Campeón del Trofeo de Campeones: <b>${t.campeon_trofeo}</b>`;
+}
+
+async function correrSimulacionLPF(){
+  const btn = document.getElementById('btn-simular-lpf');
+  const status = document.getElementById('sim-status-lpf');
+
+  btn.disabled = true;
+  btn.textContent = "Simulando…";
+  status.classList.remove('error', 'ok');
+  status.textContent = "Corriendo Clausura + playoffs + tabla anual — puede tardar unos segundos.";
+
+  try {
+    const respuesta = await fetch("/api/simular-lpf", { method: "POST" });
+    const cuerpo = await respuesta.json().catch(() => ({}));
+
+    if (!respuesta.ok) throw new Error(cuerpo.error || `El servidor respondió con error ${respuesta.status}`);
+
+    DATA_LPF = cuerpo;
+    iniciarLPF();
+
+    status.classList.add('ok');
+    status.textContent = "✓ Simulación actualizada (" + (DATA_LPF.generado || "") + ")";
+  } catch (e) {
+    status.classList.add('error');
+    status.textContent = "No se pudo simular: " + e.message + " — revisá que la API esté disponible.";
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "▶ Correr nueva simulación (Clausura + playoffs)";
+  }
+}
+
+document.getElementById('btn-simular-lpf').addEventListener('click', correrSimulacionLPF);
+
+document.querySelectorAll('#zone-tabs-lpf .zone-tab').forEach(btn => {
+  btn.addEventListener('click', () => setZonaLPF(btn.dataset.zona));
+});
+
+/* ---------- SELECTOR DE LIGA ---------- */
+const HERO_TEXTOS = {
+  nacional: {
+    eyebrow: () => `SIMULACIÓN MONTE CARLO — <span id="hero-n">${(DATA && DATA.n_simulaciones) || 0}</span> CORRIDAS`,
+    titulo: "PRIMERA NACIONAL",
+    sub: "Probabilidades de ascenso y descenso calculadas simulando la temporada completa miles de veces con un modelo Poisson ajustado por forma reciente y corrección Dixon-Coles.",
+    ascensosLbl: "Ascensos por edición",
+  },
+  lpf: {
+    eyebrow: () => `TEMPORADA 2026 — CLAUSURA SIMULADO`,
+    titulo: "LIGA PROFESIONAL",
+    sub: "Apertura 2026 ya jugado (dato real) + Clausura simulado con el mismo modelo Poisson — playoffs cruzados, Tabla Anual, copas internacionales y Trofeo de Campeones.",
+    ascensosLbl: "Playoffs (equipos)",
+  }
+};
+
+function actualizarHero(liga){
+  const t = HERO_TEXTOS[liga];
+  document.getElementById('hero-eyebrow').innerHTML = t.eyebrow();
+  document.getElementById('hero-title-span').textContent = t.titulo;
+  document.getElementById('hero-sub').textContent = t.sub;
+  document.getElementById('meta-ascensos-lbl').textContent = t.ascensosLbl;
+  if (liga === 'lpf'){
+    document.getElementById('meta-equipos').textContent = 30;
+    document.getElementById('meta-ascensos').textContent = 16;
+    document.getElementById('meta-descensos').textContent = 2;
+  } else if (DATA) {
+    document.getElementById('meta-equipos').textContent = DATA.tablas.A.length + DATA.tablas.B.length;
+    document.getElementById('meta-ascensos').textContent = 2;
+    document.getElementById('meta-descensos').textContent = 4;
+  }
+}
+
+function setLiga(liga){
+  document.querySelectorAll('.liga-tab').forEach(b => b.classList.toggle('active', b.dataset.liga === liga));
+  document.getElementById('vista-nacional').style.display = liga === 'nacional' ? '' : 'none';
+  document.getElementById('vista-lpf').style.display = liga === 'lpf' ? '' : 'none';
+  document.getElementById('sim-control-nacional').style.display = liga === 'nacional' ? '' : 'none';
+  document.getElementById('sim-control-lpf').style.display = liga === 'lpf' ? '' : 'none';
+  document.body.classList.toggle('liga-lpf', liga === 'lpf');
+  actualizarHero(liga);
+}
+
+function ajustarOffsetLigaTabs(){
+  const ligaTabs = document.querySelector('.liga-tabs');
+  if (ligaTabs) document.documentElement.style.setProperty('--liga-h', ligaTabs.offsetHeight + 'px');
+}
+window.addEventListener('resize', ajustarOffsetLigaTabs);
+window.addEventListener('load', ajustarOffsetLigaTabs);
+ajustarOffsetLigaTabs();
+
+document.querySelectorAll('.liga-tab').forEach(btn => {
+  btn.addEventListener('click', () => setLiga(btn.dataset.liga));
+});
+
+/* ---------- MODO CLARO / OSCURO ---------- */
+function aplicarTema(tema){
+  document.body.classList.toggle('dark', tema === 'dark');
+  const icon = document.getElementById('theme-toggle-icon');
+  const label = document.getElementById('theme-toggle-label');
+  if (icon) icon.textContent = tema === 'dark' ? '☀️' : '🌙';
+  if (label) label.textContent = tema === 'dark' ? 'Claro' : 'Oscuro';
+  try { localStorage.setItem('tema-app', tema); } catch (e) {}
+}
+
+function toggleTema(){
+  const actual = document.body.classList.contains('dark') ? 'dark' : 'light';
+  aplicarTema(actual === 'dark' ? 'light' : 'dark');
+}
+
+(function initTema(){
+  let guardado = 'light';
+  try { guardado = localStorage.getItem('tema-app') || 'light'; } catch (e) {}
+  aplicarTema(guardado);
+})();
+
+const themeToggleBtn = document.getElementById('theme-toggle');
+if (themeToggleBtn) themeToggleBtn.addEventListener('click', toggleTema);
+
+cargarDatosLPF();
 
 </script>

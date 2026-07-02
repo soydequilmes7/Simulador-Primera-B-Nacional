@@ -1,0 +1,1140 @@
+{
+  "liga": "lpf",
+  "generado": "2026-07-02 15:44",
+  "n_simulaciones": 300,
+  "campeon_apertura": "Belgrano",
+  "apertura": {
+    "A": [
+      {
+        "equipo": "Estudiantes de La Plata",
+        "puntos": 31,
+        "gf": 19,
+        "gc": 7,
+        "dg": 12
+      },
+      {
+        "equipo": "Boca Juniors",
+        "puntos": 30,
+        "gf": 22,
+        "gc": 9,
+        "dg": 13
+      },
+      {
+        "equipo": "Vélez Sarsfield",
+        "puntos": 28,
+        "gf": 18,
+        "gc": 12,
+        "dg": 6
+      },
+      {
+        "equipo": "Talleres de Córdoba",
+        "puntos": 26,
+        "gf": 17,
+        "gc": 13,
+        "dg": 4
+      },
+      {
+        "equipo": "Independiente",
+        "puntos": 24,
+        "gf": 24,
+        "gc": 20,
+        "dg": 4
+      },
+      {
+        "equipo": "Lanús",
+        "puntos": 24,
+        "gf": 18,
+        "gc": 15,
+        "dg": 3
+      },
+      {
+        "equipo": "San Lorenzo",
+        "puntos": 22,
+        "gf": 14,
+        "gc": 14,
+        "dg": 0
+      },
+      {
+        "equipo": "Unión de Santa Fe",
+        "puntos": 21,
+        "gf": 24,
+        "gc": 20,
+        "dg": 4
+      },
+      {
+        "equipo": "Instituto",
+        "puntos": 21,
+        "gf": 17,
+        "gc": 17,
+        "dg": 0
+      },
+      {
+        "equipo": "Defensa y Justicia",
+        "puntos": 19,
+        "gf": 18,
+        "gc": 21,
+        "dg": -3
+      },
+      {
+        "equipo": "Gimnasia de Mendoza",
+        "puntos": 19,
+        "gf": 14,
+        "gc": 22,
+        "dg": -8
+      },
+      {
+        "equipo": "Platense",
+        "puntos": 16,
+        "gf": 10,
+        "gc": 15,
+        "dg": -5
+      },
+      {
+        "equipo": "Central Córdoba SdE",
+        "puntos": 16,
+        "gf": 11,
+        "gc": 21,
+        "dg": -10
+      },
+      {
+        "equipo": "Newell's Old Boys",
+        "puntos": 15,
+        "gf": 15,
+        "gc": 27,
+        "dg": -12
+      },
+      {
+        "equipo": "Deportivo Riestra",
+        "puntos": 11,
+        "gf": 5,
+        "gc": 12,
+        "dg": -7
+      }
+    ],
+    "B": [
+      {
+        "equipo": "Independiente Rivadavia",
+        "puntos": 34,
+        "gf": 29,
+        "gc": 15,
+        "dg": 14
+      },
+      {
+        "equipo": "River Plate",
+        "puntos": 29,
+        "gf": 22,
+        "gc": 12,
+        "dg": 10
+      },
+      {
+        "equipo": "Argentinos Juniors",
+        "puntos": 29,
+        "gf": 17,
+        "gc": 13,
+        "dg": 4
+      },
+      {
+        "equipo": "Rosario Central",
+        "puntos": 28,
+        "gf": 20,
+        "gc": 16,
+        "dg": 4
+      },
+      {
+        "equipo": "Belgrano",
+        "puntos": 26,
+        "gf": 17,
+        "gc": 13,
+        "dg": 4
+      },
+      {
+        "equipo": "Gimnasia La Plata",
+        "puntos": 26,
+        "gf": 19,
+        "gc": 19,
+        "dg": 0
+      },
+      {
+        "equipo": "Huracán",
+        "puntos": 22,
+        "gf": 17,
+        "gc": 13,
+        "dg": 4
+      },
+      {
+        "equipo": "Racing Club",
+        "puntos": 21,
+        "gf": 17,
+        "gc": 15,
+        "dg": 2
+      },
+      {
+        "equipo": "Barracas Central",
+        "puntos": 21,
+        "gf": 15,
+        "gc": 15,
+        "dg": 0
+      },
+      {
+        "equipo": "Tigre",
+        "puntos": 20,
+        "gf": 18,
+        "gc": 15,
+        "dg": 3
+      },
+      {
+        "equipo": "Sarmiento Junín",
+        "puntos": 19,
+        "gf": 13,
+        "gc": 20,
+        "dg": -7
+      },
+      {
+        "equipo": "Banfield",
+        "puntos": 18,
+        "gf": 17,
+        "gc": 19,
+        "dg": -2
+      },
+      {
+        "equipo": "Atlético Tucumán",
+        "puntos": 14,
+        "gf": 15,
+        "gc": 20,
+        "dg": -5
+      },
+      {
+        "equipo": "Aldosivi",
+        "puntos": 8,
+        "gf": 6,
+        "gc": 19,
+        "dg": -13
+      },
+      {
+        "equipo": "Estudiantes RC",
+        "puntos": 5,
+        "gf": 5,
+        "gc": 24,
+        "dg": -19
+      }
+    ]
+  },
+  "tablas_clausura": {
+    "A": [
+      {
+        "equipo": "Independiente",
+        "puntos": 30,
+        "gf": 24,
+        "gc": 18,
+        "dg": 6
+      },
+      {
+        "equipo": "Boca Juniors",
+        "puntos": 25,
+        "gf": 23,
+        "gc": 14,
+        "dg": 9
+      },
+      {
+        "equipo": "Lanús",
+        "puntos": 25,
+        "gf": 18,
+        "gc": 10,
+        "dg": 8
+      },
+      {
+        "equipo": "Estudiantes de La Plata",
+        "puntos": 24,
+        "gf": 13,
+        "gc": 10,
+        "dg": 3
+      },
+      {
+        "equipo": "Instituto",
+        "puntos": 22,
+        "gf": 23,
+        "gc": 19,
+        "dg": 4
+      },
+      {
+        "equipo": "Talleres de Córdoba",
+        "puntos": 22,
+        "gf": 18,
+        "gc": 15,
+        "dg": 3
+      },
+      {
+        "equipo": "Vélez Sarsfield",
+        "puntos": 22,
+        "gf": 17,
+        "gc": 14,
+        "dg": 3
+      },
+      {
+        "equipo": "San Lorenzo",
+        "puntos": 22,
+        "gf": 19,
+        "gc": 22,
+        "dg": -3
+      },
+      {
+        "equipo": "Newell's Old Boys",
+        "puntos": 22,
+        "gf": 19,
+        "gc": 23,
+        "dg": -4
+      },
+      {
+        "equipo": "Unión de Santa Fe",
+        "puntos": 21,
+        "gf": 16,
+        "gc": 18,
+        "dg": -2
+      },
+      {
+        "equipo": "Defensa y Justicia",
+        "puntos": 19,
+        "gf": 18,
+        "gc": 19,
+        "dg": -1
+      },
+      {
+        "equipo": "Platense",
+        "puntos": 19,
+        "gf": 11,
+        "gc": 19,
+        "dg": -8
+      },
+      {
+        "equipo": "Gimnasia de Mendoza",
+        "puntos": 16,
+        "gf": 13,
+        "gc": 21,
+        "dg": -8
+      },
+      {
+        "equipo": "Deportivo Riestra",
+        "puntos": 13,
+        "gf": 11,
+        "gc": 18,
+        "dg": -7
+      },
+      {
+        "equipo": "Central Córdoba SdE",
+        "puntos": 11,
+        "gf": 14,
+        "gc": 25,
+        "dg": -11
+      }
+    ],
+    "B": [
+      {
+        "equipo": "Rosario Central",
+        "puntos": 30,
+        "gf": 23,
+        "gc": 14,
+        "dg": 9
+      },
+      {
+        "equipo": "Huracán",
+        "puntos": 29,
+        "gf": 29,
+        "gc": 17,
+        "dg": 12
+      },
+      {
+        "equipo": "River Plate",
+        "puntos": 28,
+        "gf": 26,
+        "gc": 15,
+        "dg": 11
+      },
+      {
+        "equipo": "Tigre",
+        "puntos": 25,
+        "gf": 20,
+        "gc": 13,
+        "dg": 7
+      },
+      {
+        "equipo": "Independiente Rivadavia",
+        "puntos": 24,
+        "gf": 27,
+        "gc": 29,
+        "dg": -2
+      },
+      {
+        "equipo": "Sarmiento Junín",
+        "puntos": 23,
+        "gf": 20,
+        "gc": 17,
+        "dg": 3
+      },
+      {
+        "equipo": "Barracas Central",
+        "puntos": 22,
+        "gf": 20,
+        "gc": 16,
+        "dg": 4
+      },
+      {
+        "equipo": "Gimnasia La Plata",
+        "puntos": 22,
+        "gf": 20,
+        "gc": 21,
+        "dg": -1
+      },
+      {
+        "equipo": "Racing Club",
+        "puntos": 21,
+        "gf": 20,
+        "gc": 19,
+        "dg": 1
+      },
+      {
+        "equipo": "Atlético Tucumán",
+        "puntos": 21,
+        "gf": 19,
+        "gc": 23,
+        "dg": -4
+      },
+      {
+        "equipo": "Argentinos Juniors",
+        "puntos": 20,
+        "gf": 13,
+        "gc": 12,
+        "dg": 1
+      },
+      {
+        "equipo": "Aldosivi",
+        "puntos": 18,
+        "gf": 14,
+        "gc": 13,
+        "dg": 1
+      },
+      {
+        "equipo": "Belgrano",
+        "puntos": 16,
+        "gf": 14,
+        "gc": 19,
+        "dg": -5
+      },
+      {
+        "equipo": "Banfield",
+        "puntos": 15,
+        "gf": 15,
+        "gc": 27,
+        "dg": -12
+      },
+      {
+        "equipo": "Estudiantes RC",
+        "puntos": 7,
+        "gf": 4,
+        "gc": 21,
+        "dg": -17
+      }
+    ]
+  },
+  "playoffs": {
+    "octavos": [
+      {
+        "local": "Independiente",
+        "visitante": "Gimnasia La Plata",
+        "golesLocal": 1,
+        "golesVisitante": 0,
+        "avanza": "Independiente"
+      },
+      {
+        "local": "Rosario Central",
+        "visitante": "San Lorenzo",
+        "golesLocal": 0,
+        "golesVisitante": 0,
+        "avanza": "Rosario Central"
+      },
+      {
+        "local": "Boca Juniors",
+        "visitante": "Barracas Central",
+        "golesLocal": 0,
+        "golesVisitante": 0,
+        "avanza": "Boca Juniors"
+      },
+      {
+        "local": "Huracán",
+        "visitante": "Vélez Sarsfield",
+        "golesLocal": 2,
+        "golesVisitante": 0,
+        "avanza": "Huracán"
+      },
+      {
+        "local": "Lanús",
+        "visitante": "Sarmiento Junín",
+        "golesLocal": 0,
+        "golesVisitante": 0,
+        "avanza": "Lanús"
+      },
+      {
+        "local": "River Plate",
+        "visitante": "Talleres de Córdoba",
+        "golesLocal": 2,
+        "golesVisitante": 0,
+        "avanza": "River Plate"
+      },
+      {
+        "local": "Estudiantes de La Plata",
+        "visitante": "Independiente Rivadavia",
+        "golesLocal": 0,
+        "golesVisitante": 0,
+        "avanza": "Estudiantes de La Plata"
+      },
+      {
+        "local": "Tigre",
+        "visitante": "Instituto",
+        "golesLocal": 0,
+        "golesVisitante": 0,
+        "avanza": "Tigre"
+      }
+    ],
+    "cuartos": [
+      {
+        "local": "Rosario Central",
+        "visitante": "Estudiantes de La Plata",
+        "golesLocal": 4,
+        "golesVisitante": 2,
+        "avanza": "Rosario Central"
+      },
+      {
+        "local": "Independiente",
+        "visitante": "Tigre",
+        "golesLocal": 1,
+        "golesVisitante": 1,
+        "avanza": "Independiente"
+      },
+      {
+        "local": "Huracán",
+        "visitante": "Lanús",
+        "golesLocal": 3,
+        "golesVisitante": 1,
+        "avanza": "Huracán"
+      },
+      {
+        "local": "River Plate",
+        "visitante": "Boca Juniors",
+        "golesLocal": 1,
+        "golesVisitante": 1,
+        "avanza": "River Plate"
+      }
+    ],
+    "semis": [
+      {
+        "local": "Rosario Central",
+        "visitante": "River Plate",
+        "golesLocal": 2,
+        "golesVisitante": 1,
+        "avanza": "Rosario Central"
+      },
+      {
+        "local": "Independiente",
+        "visitante": "Huracán",
+        "golesLocal": 0,
+        "golesVisitante": 2,
+        "avanza": "Huracán"
+      }
+    ],
+    "final": {
+      "marcador": [
+        1,
+        0
+      ],
+      "texto": "Rosario Central 1 - 0 Huracán"
+    },
+    "campeon_clausura": "Rosario Central",
+    "subcampeon_clausura": "Huracán"
+  },
+  "campeon_clausura": "Rosario Central",
+  "tabla_anual": [
+    {
+      "equipo": "Rosario Central",
+      "puntos": 58,
+      "gf": 43,
+      "gc": 30,
+      "dg": 13
+    },
+    {
+      "equipo": "Independiente Rivadavia",
+      "puntos": 58,
+      "gf": 56,
+      "gc": 44,
+      "dg": 12
+    },
+    {
+      "equipo": "River Plate",
+      "puntos": 57,
+      "gf": 48,
+      "gc": 27,
+      "dg": 21
+    },
+    {
+      "equipo": "Boca Juniors",
+      "puntos": 55,
+      "gf": 45,
+      "gc": 23,
+      "dg": 22
+    },
+    {
+      "equipo": "Estudiantes de La Plata",
+      "puntos": 55,
+      "gf": 32,
+      "gc": 17,
+      "dg": 15
+    },
+    {
+      "equipo": "Independiente",
+      "puntos": 54,
+      "gf": 48,
+      "gc": 38,
+      "dg": 10
+    },
+    {
+      "equipo": "Huracán",
+      "puntos": 51,
+      "gf": 46,
+      "gc": 30,
+      "dg": 16
+    },
+    {
+      "equipo": "Vélez Sarsfield",
+      "puntos": 50,
+      "gf": 35,
+      "gc": 26,
+      "dg": 9
+    },
+    {
+      "equipo": "Lanús",
+      "puntos": 49,
+      "gf": 36,
+      "gc": 25,
+      "dg": 11
+    },
+    {
+      "equipo": "Argentinos Juniors",
+      "puntos": 49,
+      "gf": 30,
+      "gc": 25,
+      "dg": 5
+    },
+    {
+      "equipo": "Talleres de Córdoba",
+      "puntos": 48,
+      "gf": 35,
+      "gc": 28,
+      "dg": 7
+    },
+    {
+      "equipo": "Gimnasia La Plata",
+      "puntos": 48,
+      "gf": 39,
+      "gc": 40,
+      "dg": -1
+    },
+    {
+      "equipo": "Tigre",
+      "puntos": 45,
+      "gf": 38,
+      "gc": 28,
+      "dg": 10
+    },
+    {
+      "equipo": "San Lorenzo",
+      "puntos": 44,
+      "gf": 33,
+      "gc": 36,
+      "dg": -3
+    },
+    {
+      "equipo": "Instituto",
+      "puntos": 43,
+      "gf": 40,
+      "gc": 36,
+      "dg": 4
+    },
+    {
+      "equipo": "Barracas Central",
+      "puntos": 43,
+      "gf": 35,
+      "gc": 31,
+      "dg": 4
+    },
+    {
+      "equipo": "Racing Club",
+      "puntos": 42,
+      "gf": 37,
+      "gc": 34,
+      "dg": 3
+    },
+    {
+      "equipo": "Unión de Santa Fe",
+      "puntos": 42,
+      "gf": 40,
+      "gc": 38,
+      "dg": 2
+    },
+    {
+      "equipo": "Belgrano",
+      "puntos": 42,
+      "gf": 31,
+      "gc": 32,
+      "dg": -1
+    },
+    {
+      "equipo": "Sarmiento Junín",
+      "puntos": 42,
+      "gf": 33,
+      "gc": 37,
+      "dg": -4
+    },
+    {
+      "equipo": "Defensa y Justicia",
+      "puntos": 38,
+      "gf": 36,
+      "gc": 40,
+      "dg": -4
+    },
+    {
+      "equipo": "Newell's Old Boys",
+      "puntos": 37,
+      "gf": 34,
+      "gc": 50,
+      "dg": -16
+    },
+    {
+      "equipo": "Atlético Tucumán",
+      "puntos": 35,
+      "gf": 34,
+      "gc": 43,
+      "dg": -9
+    },
+    {
+      "equipo": "Platense",
+      "puntos": 35,
+      "gf": 21,
+      "gc": 34,
+      "dg": -13
+    },
+    {
+      "equipo": "Gimnasia de Mendoza",
+      "puntos": 35,
+      "gf": 27,
+      "gc": 43,
+      "dg": -16
+    },
+    {
+      "equipo": "Banfield",
+      "puntos": 33,
+      "gf": 32,
+      "gc": 46,
+      "dg": -14
+    },
+    {
+      "equipo": "Central Córdoba SdE",
+      "puntos": 27,
+      "gf": 25,
+      "gc": 46,
+      "dg": -21
+    },
+    {
+      "equipo": "Aldosivi",
+      "puntos": 26,
+      "gf": 20,
+      "gc": 32,
+      "dg": -12
+    },
+    {
+      "equipo": "Deportivo Riestra",
+      "puntos": 24,
+      "gf": 16,
+      "gc": 30,
+      "dg": -14
+    },
+    {
+      "equipo": "Estudiantes RC",
+      "puntos": 12,
+      "gf": 9,
+      "gc": 45,
+      "dg": -36
+    }
+  ],
+  "descensos": [
+    "Deportivo Riestra",
+    "Estudiantes RC"
+  ],
+  "copas": {
+    "libertadores_2027": [
+      "Belgrano",
+      "Rosario Central",
+      "(Campeón Copa Argentina -- no simulado)",
+      "Independiente Rivadavia",
+      "River Plate",
+      "Boca Juniors"
+    ],
+    "sudamericana_2027": [
+      "Estudiantes de La Plata",
+      "Independiente",
+      "Huracán",
+      "Vélez Sarsfield",
+      "Lanús",
+      "Argentinos Juniors"
+    ]
+  },
+  "trofeo": {
+    "marcador": [
+      2,
+      1
+    ],
+    "texto": "Belgrano 2 - 1 Rosario Central",
+    "campeon_apertura": "Belgrano",
+    "campeon_clausura": "Rosario Central",
+    "campeon_trofeo": "Belgrano"
+  },
+  "monte_carlo": {
+    "A": [
+      {
+        "equipo": "Boca Juniors",
+        "%playoffs": 91.3,
+        "%campeon_clausura": 17.7,
+        "descenso": 0.0
+      },
+      {
+        "equipo": "Estudiantes de La Plata",
+        "%playoffs": 91.0,
+        "%campeon_clausura": 14.3,
+        "descenso": 0.0
+      },
+      {
+        "equipo": "Vélez Sarsfield",
+        "%playoffs": 75.0,
+        "%campeon_clausura": 5.0,
+        "descenso": 0.0
+      },
+      {
+        "equipo": "Talleres de Córdoba",
+        "%playoffs": 70.3,
+        "%campeon_clausura": 3.3,
+        "descenso": 0.0
+      },
+      {
+        "equipo": "Unión de Santa Fe",
+        "%playoffs": 70.0,
+        "%campeon_clausura": 2.0,
+        "descenso": 0.0
+      },
+      {
+        "equipo": "Lanús",
+        "%playoffs": 68.0,
+        "%campeon_clausura": 2.3,
+        "descenso": 0.0
+      },
+      {
+        "equipo": "Independiente",
+        "%playoffs": 65.0,
+        "%campeon_clausura": 3.0,
+        "descenso": 0.0
+      },
+      {
+        "equipo": "Instituto",
+        "%playoffs": 57.7,
+        "%campeon_clausura": 0.0,
+        "descenso": 0.0
+      },
+      {
+        "equipo": "San Lorenzo",
+        "%playoffs": 57.0,
+        "%campeon_clausura": 1.0,
+        "descenso": 0.0
+      },
+      {
+        "equipo": "Defensa y Justicia",
+        "%playoffs": 47.0,
+        "%campeon_clausura": 1.7,
+        "descenso": 0.7
+      },
+      {
+        "equipo": "Platense",
+        "%playoffs": 26.3,
+        "%campeon_clausura": 0.0,
+        "descenso": 1.3
+      },
+      {
+        "equipo": "Gimnasia de Mendoza",
+        "%playoffs": 25.3,
+        "%campeon_clausura": 0.7,
+        "descenso": 0.3
+      },
+      {
+        "equipo": "Deportivo Riestra",
+        "%playoffs": 20.7,
+        "%campeon_clausura": 0.0,
+        "descenso": 17.0
+      },
+      {
+        "equipo": "Newell's Old Boys",
+        "%playoffs": 19.0,
+        "%campeon_clausura": 0.0,
+        "descenso": 7.3
+      },
+      {
+        "equipo": "Central Córdoba SdE",
+        "%playoffs": 16.3,
+        "%campeon_clausura": 0.3,
+        "descenso": 4.7
+      }
+    ],
+    "B": [
+      {
+        "equipo": "Independiente Rivadavia",
+        "%playoffs": 88.7,
+        "%campeon_clausura": 16.0,
+        "descenso": 0.0
+      },
+      {
+        "equipo": "River Plate",
+        "%playoffs": 84.0,
+        "%campeon_clausura": 7.3,
+        "descenso": 0.0
+      },
+      {
+        "equipo": "Belgrano",
+        "%playoffs": 68.3,
+        "%campeon_clausura": 3.0,
+        "descenso": 0.0
+      },
+      {
+        "equipo": "Argentinos Juniors",
+        "%playoffs": 67.3,
+        "%campeon_clausura": 3.7,
+        "descenso": 0.0
+      },
+      {
+        "equipo": "Rosario Central",
+        "%playoffs": 66.0,
+        "%campeon_clausura": 4.7,
+        "descenso": 0.0
+      },
+      {
+        "equipo": "Tigre",
+        "%playoffs": 65.7,
+        "%campeon_clausura": 2.7,
+        "descenso": 0.0
+      },
+      {
+        "equipo": "Huracán",
+        "%playoffs": 63.3,
+        "%campeon_clausura": 2.7,
+        "descenso": 0.0
+      },
+      {
+        "equipo": "Barracas Central",
+        "%playoffs": 59.3,
+        "%campeon_clausura": 1.3,
+        "descenso": 0.0
+      },
+      {
+        "equipo": "Racing Club",
+        "%playoffs": 56.3,
+        "%campeon_clausura": 3.3,
+        "descenso": 0.0
+      },
+      {
+        "equipo": "Gimnasia La Plata",
+        "%playoffs": 55.3,
+        "%campeon_clausura": 1.7,
+        "descenso": 0.0
+      },
+      {
+        "equipo": "Banfield",
+        "%playoffs": 52.0,
+        "%campeon_clausura": 1.7,
+        "descenso": 0.3
+      },
+      {
+        "equipo": "Atlético Tucumán",
+        "%playoffs": 35.7,
+        "%campeon_clausura": 0.3,
+        "descenso": 1.3
+      },
+      {
+        "equipo": "Sarmiento Junín",
+        "%playoffs": 25.7,
+        "%campeon_clausura": 0.3,
+        "descenso": 0.7
+      },
+      {
+        "equipo": "Aldosivi",
+        "%playoffs": 8.7,
+        "%campeon_clausura": 0.0,
+        "descenso": 71.3
+      },
+      {
+        "equipo": "Estudiantes RC",
+        "%playoffs": 3.7,
+        "%campeon_clausura": 0.0,
+        "descenso": 95.0
+      }
+    ]
+  },
+  "tabla_esperada": {
+    "A": [
+      {
+        "equipo": "Boca Juniors",
+        "puntos_prom": 27.9,
+        "posicion_prom": 3.8
+      },
+      {
+        "equipo": "Estudiantes de La Plata",
+        "puntos_prom": 27.4,
+        "posicion_prom": 4.0
+      },
+      {
+        "equipo": "Vélez Sarsfield",
+        "puntos_prom": 24.4,
+        "posicion_prom": 6.0
+      },
+      {
+        "equipo": "Unión de Santa Fe",
+        "puntos_prom": 24.2,
+        "posicion_prom": 6.2
+      },
+      {
+        "equipo": "Talleres de Córdoba",
+        "puntos_prom": 23.9,
+        "posicion_prom": 6.5
+      },
+      {
+        "equipo": "Independiente",
+        "puntos_prom": 23.5,
+        "posicion_prom": 6.7
+      },
+      {
+        "equipo": "Lanús",
+        "puntos_prom": 23.1,
+        "posicion_prom": 7.0
+      },
+      {
+        "equipo": "San Lorenzo",
+        "puntos_prom": 22.3,
+        "posicion_prom": 7.6
+      },
+      {
+        "equipo": "Instituto",
+        "puntos_prom": 22.1,
+        "posicion_prom": 7.7
+      },
+      {
+        "equipo": "Defensa y Justicia",
+        "puntos_prom": 20.6,
+        "posicion_prom": 8.8
+      },
+      {
+        "equipo": "Platense",
+        "puntos_prom": 18.6,
+        "posicion_prom": 10.4
+      },
+      {
+        "equipo": "Gimnasia de Mendoza",
+        "puntos_prom": 18.0,
+        "posicion_prom": 10.8
+      },
+      {
+        "equipo": "Deportivo Riestra",
+        "puntos_prom": 17.1,
+        "posicion_prom": 11.4
+      },
+      {
+        "equipo": "Newell's Old Boys",
+        "puntos_prom": 16.7,
+        "posicion_prom": 11.6
+      },
+      {
+        "equipo": "Central Córdoba SdE",
+        "puntos_prom": 16.7,
+        "posicion_prom": 11.7
+      }
+    ],
+    "B": [
+      {
+        "equipo": "Independiente Rivadavia",
+        "puntos_prom": 27.9,
+        "posicion_prom": 3.8
+      },
+      {
+        "equipo": "River Plate",
+        "puntos_prom": 26.0,
+        "posicion_prom": 4.9
+      },
+      {
+        "equipo": "Belgrano",
+        "puntos_prom": 23.7,
+        "posicion_prom": 6.4
+      },
+      {
+        "equipo": "Rosario Central",
+        "puntos_prom": 23.5,
+        "posicion_prom": 6.6
+      },
+      {
+        "equipo": "Tigre",
+        "puntos_prom": 23.5,
+        "posicion_prom": 6.7
+      },
+      {
+        "equipo": "Huracán",
+        "puntos_prom": 23.0,
+        "posicion_prom": 7.0
+      },
+      {
+        "equipo": "Argentinos Juniors",
+        "puntos_prom": 22.8,
+        "posicion_prom": 7.1
+      },
+      {
+        "equipo": "Racing Club",
+        "puntos_prom": 22.5,
+        "posicion_prom": 7.5
+      },
+      {
+        "equipo": "Barracas Central",
+        "puntos_prom": 22.4,
+        "posicion_prom": 7.5
+      },
+      {
+        "equipo": "Gimnasia La Plata",
+        "puntos_prom": 21.8,
+        "posicion_prom": 8.0
+      },
+      {
+        "equipo": "Banfield",
+        "puntos_prom": 21.4,
+        "posicion_prom": 8.2
+      },
+      {
+        "equipo": "Atlético Tucumán",
+        "puntos_prom": 19.5,
+        "posicion_prom": 9.6
+      },
+      {
+        "equipo": "Sarmiento Junín",
+        "puntos_prom": 18.3,
+        "posicion_prom": 10.6
+      },
+      {
+        "equipo": "Aldosivi",
+        "puntos_prom": 15.1,
+        "posicion_prom": 12.6
+      },
+      {
+        "equipo": "Estudiantes RC",
+        "puntos_prom": 12.9,
+        "posicion_prom": 13.6
+      }
+    ]
+  }
+}
