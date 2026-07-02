@@ -31,10 +31,26 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 import rutas
-from main import correr_simulacion, simular_hasta_campeon
-from main_lpf import correr_simulacion_lpf, simular_hasta_campeon_lpf
+import pysim_dispatch
+from main_lpf import correr_simulacion_lpf
 from actualizar_resultados import actualizar
 from actualizar_resultados_lpf import actualizar as actualizar_lpf
+
+# Archivos de código fuente que necesita el simulador corriendo en el
+# navegador (Pyodide/Web Worker, ver public/js/sim-worker.js). Se sirven
+# tal cual están en el repo -- sin duplicar lógica -- vía /api/pysim-source.
+PYSIM_SOURCE_FILES = [
+    "rutas.py",
+    "main.py",
+    "main_lpf.py",
+    "pysim_dispatch.py",
+    "modelos/equipo.py",
+    "modelos/estadisticas.py",
+    "modelos/estadisticas_lpf.py",
+]
+# El código fuente no cambia mientras el proceso está corriendo, así que se
+# lee y cachea una sola vez.
+_pysim_source_cache = None
 
 N_SIMULACIONES = 1000
 # La simulación de LPF es más pesada por corrida (playoffs + tabla anual +
@@ -174,6 +190,82 @@ def health():
     return {"ok": True}
 
 
+@app.get("/api/pysim-source")
+def pysim_source():
+    """Devuelve el código fuente que corre la simulación (rutas.py,
+    main.py, main_lpf.py, modelos/*), para que el Web Worker con Pyodide
+    lo cargue en su filesystem virtual y lo importe tal cual. Así el
+    navegador corre exactamente el mismo código que el backend, sin
+    mantener una copia aparte."""
+    global _pysim_source_cache
+    if _pysim_source_cache is None:
+        archivos = {}
+        for nombre_relativo in PYSIM_SOURCE_FILES:
+            ruta = rutas.REPO_DIR / nombre_relativo
+            archivos[nombre_relativo] = ruta.read_text(encoding="utf-8")
+        _pysim_source_cache = archivos
+    return {"files": _pysim_source_cache}
+
+
+@app.get("/api/datos-nacional")
+def datos_nacional():
+    """Devuelve el contenido actual de los CSV de Primera Nacional
+    (resultados/fixture/tabla/goleadores), para que el simulador en el
+    navegador arranque con los mismos datos que usaría el backend."""
+    ocupado = _adquirir_lectura(
+        _lock_nacional,
+        "Hay una actualización de Primera Nacional en curso. Esperá unos segundos y probá de nuevo.",
+    )
+    if ocupado:
+        return ocupado
+    try:
+        datos_dir = rutas.datos_dir()
+        archivos = {}
+        for nombre, requerido in [
+            ("resultados.csv", True),
+            ("fixture.csv", True),
+            ("tabla.csv", True),
+            ("goleadores.csv", False),
+        ]:
+            ruta = datos_dir / nombre
+            if ruta.exists():
+                archivos[nombre] = ruta.read_text(encoding="utf-8")
+            elif requerido:
+                return JSONResponse(status_code=500, content={"error": f"Falta {nombre} en datos/"})
+            else:
+                archivos[nombre] = ""
+        return {"files": archivos}
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
+    finally:
+        _lock_nacional.release_read()
+
+
+@app.get("/api/datos-lpf")
+def datos_lpf():
+    """Igual que /api/datos-nacional pero con los CSV de la LPF (apertura,
+    fixture, resultados, promedios históricos)."""
+    ocupado = _adquirir_lectura(
+        _lock_lpf,
+        "Hay una actualización de Liga Profesional en curso. Esperá unos segundos y probá de nuevo.",
+    )
+    if ocupado:
+        return ocupado
+    try:
+        datos_dir = rutas.datos_dir()
+        archivos = {}
+        for nombre in ["tablalpf.csv", "fixture_lpf.csv", "resultados_lpf.csv", "promedios_lpf.csv"]:
+            ruta = datos_dir / nombre
+            if not ruta.exists():
+                return JSONResponse(status_code=500, content={"error": f"Falta {nombre} en datos/"})
+            archivos[nombre] = ruta.read_text(encoding="utf-8")
+        return {"files": archivos}
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
+    finally:
+        _lock_lpf.release_read()
+
+
 @app.get("/")
 def root():
     return RedirectResponse(url="/index.html")
@@ -192,7 +284,7 @@ def simular(body: SimularBody = SimularBody()):
     if ocupado:
         return ocupado
     try:
-        datos = correr_simulacion(n_sims=n_sims, imprimir=False, guardar_json=False)
+        datos = pysim_dispatch.simular(n_sims)
         return datos
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
@@ -219,10 +311,7 @@ def simular_campeon(body: SimularCampeonBody):
     if ocupado:
         return ocupado
     try:
-        resultado = simular_hasta_campeon(equipo_objetivo, max_intentos=max_intentos, imprimir=False)
-        if resultado is None:
-            return {"logrado": False, "equipo": equipo_objetivo, "max_intentos": max_intentos}
-        return {"logrado": True, **resultado}
+        return pysim_dispatch.simular_campeon(equipo_objetivo, max_intentos)
     except ValueError as e:
         # simular_hasta_campeon levanta ValueError si el nombre de equipo
         # no existe (con sugerencias si hay coincidencias parciales)
@@ -247,7 +336,7 @@ def simular_lpf(body: SimularLPFBody = SimularLPFBody()):
     if ocupado:
         return ocupado
     try:
-        datos = correr_simulacion_lpf(imprimir=False, guardar_json=False, n_sims=n_sims)
+        datos = pysim_dispatch.simular_lpf(n_sims)
         return datos
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
@@ -293,10 +382,7 @@ def simular_campeon_lpf(body: SimularCampeonBody):
     if ocupado:
         return ocupado
     try:
-        resultado = simular_hasta_campeon_lpf(equipo_objetivo, max_intentos=max_intentos, imprimir=False)
-        if resultado is None:
-            return {"logrado": False, "equipo": equipo_objetivo, "max_intentos": max_intentos}
-        return {"logrado": True, **resultado}
+        return pysim_dispatch.simular_campeon_lpf(equipo_objetivo, max_intentos)
     except ValueError as e:
         return JSONResponse(status_code=400, content={"error": str(e)})
     except Exception as e:
