@@ -1082,6 +1082,37 @@
     <div id="trofeo-lpf-especial" class="trofeo-especial" style="display:none"></div>
   </section>
 
+  <section id="sec-lpf-como-funciona">
+    <div class="section-head"><span class="idx">08</span><h2>¿Cómo funciona?</h2><div class="rule"></div></div>
+    <p class="section-note">Todo lo que hay detrás del simulador: el modelo, los datos y las reglas del torneo.</p>
+    <div class="faq">
+      <details>
+        <summary>¿Qué es el Simulador de la Liga Profesional?</summary>
+        <div class="faq-a">Es una herramienta que simula miles de veces el Clausura y los Playoffs de la Liga Profesional para estimar las probabilidades de playoffs y de título de cada equipo, además de la Tabla Anual, los descensos y los cupos a copas internacionales.</div>
+      </details>
+      <details>
+        <summary>¿Cómo se calculan las probabilidades de playoffs y de título?</summary>
+        <div class="faq-a">Usamos un modelo de Poisson que estima los goles de cada equipo según su ataque y defensa (como local y como visitante), ajustado por la forma reciente y con la corrección de Dixon-Coles. Sobre ese modelo corremos una simulación de Monte Carlo del Clausura y los Playoffs miles de veces.</div>
+      </details>
+      <details>
+        <summary>¿Cada cuánto se actualizan los datos?</summary>
+        <div class="faq-a">Los resultados se actualizan con los partidos jugados que se toman de Promiedos, y cada actualización vuelve a correr la simulación con la tabla al día.</div>
+      </details>
+      <details>
+        <summary>¿Cómo se define el Campeón de Liga?</summary>
+        <div class="faq-a">El Apertura ya se jugó (dato real) y lo salió campeón Belgrano. El Clausura se simula: los primeros 8 de cada zona clasifican a Playoffs cruzados a partido único hasta la final. El campeón del Apertura y el del Clausura definen además el Trofeo de Campeones.</div>
+      </details>
+      <details>
+        <summary>¿Cómo se arma la Tabla Anual y quién desciende?</summary>
+        <div class="faq-a">La Tabla Anual suma los puntos, goles a favor y en contra del Apertura (real) y el Clausura (simulado), sin distinguir zona. Los últimos dos puestos descienden; en la realidad esto se combina con promedios históricos de 3 temporadas, que este simulador todavía no carga.</div>
+      </details>
+      <details>
+        <summary>¿El simulador es gratis?</summary>
+        <div class="faq-a">Sí, es completamente gratuito. Podés correr nuevas simulaciones y buscar a tu equipo para ver sus chances de playoffs, título y descenso.</div>
+      </details>
+    </div>
+  </section>
+
   </div><!-- /vista-lpf -->
 
   <footer>
