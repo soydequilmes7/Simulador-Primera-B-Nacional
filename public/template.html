@@ -156,6 +156,12 @@
     --zone-a-dim: rgba(57,184,255,0.16);
     --azul: #39B8FF;
     --azul-dim: rgba(57,184,255,0.16);
+    --zone-b: #8C9EFF;
+    --zone-b-dim: rgba(140,158,255,0.16);
+    --amber: #E8C468;
+    --amber-dim: rgba(232,196,104,0.16);
+    --danger: #FF7A70;
+    --danger-dim: rgba(255,122,112,0.16);
     --hero-bg: linear-gradient(160deg, #040A18 0%, #081426 55%, #102544 100%);
     --hero-ink: #F5F7FA;
     --hero-dim: #AEB8CC;
@@ -521,7 +527,9 @@
   tbody tr.descenso td:nth-child(2){ color: var(--danger); }
   tbody tr.descenso{ box-shadow: inset 3px 0 0 var(--danger); }
 
-  /* Tabla Anual LPF: clasificados a copas internacionales */
+  /* Tabla Anual LPF: clasificados a copas internacionales.
+     Libertadores (campeón Apertura, Clausura, Copa Argentina + mejores 3 de tabla anual)
+     y Sudamericana (siguientes 6 mejores de tabla anual) llevan colores distintos. */
   tbody tr.libertadores{ background: var(--azul-dim); }
   tbody tr.libertadores:hover{ filter: brightness(0.98); }
   tbody tr.libertadores td:nth-child(2){ color: var(--azul); font-weight:600; }
@@ -1053,8 +1061,15 @@
 
   <section id="sec-lpf-descensos">
     <div class="section-head"><span class="idx">05</span><h2>Descensos</h2><div class="rule"></div></div>
-    <p class="section-note">Últimos dos puestos de la Tabla Anual 2026 <span style="opacity:0.7">(simplificación: el reglamento real combina esto con promedios históricos de 3 temporadas, que este simulador todavía no carga)</span>.</p>
-    <div class="descensos-grid" id="descensos-lpf"></div>
+    <p class="section-note">2 descensos: el último de la Tabla de Promedios y el último de la Tabla Anual. Si es el mismo equipo en ambas, ese cupo lo hereda el penúltimo de la Tabla Anual.</p>
+    <p class="section-note" style="margin-top:6px">Tabla de Promedios: puntos por partido jugado en las últimas ~3 temporadas (los recién ascendidos solo computan desde su ascenso).</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>PJ</th><th>Promedio</th></tr></thead>
+        <tbody id="promedios-lpf-body"></tbody>
+      </table>
+    </div>
+    <div class="descensos-grid" id="descensos-lpf" style="margin-top:20px"></div>
   </section>
 
   <section id="sec-lpf-copas">
@@ -1107,7 +1122,7 @@
       </details>
       <details>
         <summary>¿Cómo se arma la Tabla Anual y quién desciende?</summary>
-        <div class="faq-a">La Tabla Anual suma los puntos, goles a favor y en contra del Apertura (real) y el Clausura (simulado), sin distinguir zona. Los últimos dos puestos descienden; en la realidad esto se combina con promedios históricos de 3 temporadas, que este simulador todavía no carga.</div>
+        <div class="faq-a">La Tabla Anual suma los puntos, goles a favor y en contra del Apertura (real) y el Clausura (simulado), sin distinguir zona. Descienden 2 equipos: el último de la Tabla de Promedios (puntos por partido de las últimas ~3 temporadas, contando desde el ascenso para los equipos recién ascendidos) y el último de la Tabla Anual. Si el mismo equipo termina último en ambas tablas, ese cupo lo hereda el penúltimo de la Tabla Anual. Los empates en la posición que define un descenso no se resuelven por diferencia de gol: se juega un partido de desempate.</div>
       </details>
       <details>
         <summary>¿El simulador es gratis?</summary>
@@ -1793,6 +1808,7 @@ function iniciarLPF(){
   renderPlayoffsLPF();
   renderCopasLPF(); // primero: calcula quién clasifica a copas, lo usa la tabla anual
   renderTablaAnualLPF();
+  renderPromediosLPF();
   renderDescensosLPF();
   renderTrofeoLPF();
   poblarSelectEquiposLPF();
@@ -1948,10 +1964,14 @@ function renderTablaAnualLPF(){
   const body = document.getElementById('anual-lpf-body');
   if (!body) return;
   const filas = DATA_LPF.tabla_anual;
+  // El descenso NO es siempre la última posición: uno de los 2 cupos lo
+  // puede definir la Tabla de Promedios, que puede ser un equipo de mitad
+  // de tabla para arriba (ver DATA_LPF.descensos, calculado en el backend).
+  const descendidos = new Set(DATA_LPF.descensos || []);
   body.innerHTML = filas.map((f, i) => {
     const clases = [];
     if (i === 0) clases.push('punta');
-    else if (i >= filas.length - 2) clases.push('descenso');
+    else if (descendidos.has(f.equipo)) clases.push('descenso');
     else if (LPF_EQUIPOS_LIBERTADORES.has(f.equipo)) clases.push('libertadores');
     else if (LPF_EQUIPOS_SUDAMERICANA.has(f.equipo)) clases.push('sudamericana');
     return `<tr class="${clases.join(' ')}">
@@ -1966,6 +1986,18 @@ function renderDescensosLPF(){
   cont.innerHTML = DATA_LPF.descensos.map(equipo =>
     `<div class="descenso-card"><span class="arrow">▼</span>${equipo}</div>`
   ).join('');
+}
+
+function renderPromediosLPF(){
+  const body = document.getElementById('promedios-lpf-body');
+  if (!body || !DATA_LPF.tabla_promedios) return;
+  const descendidos = new Set(DATA_LPF.descensos || []);
+  body.innerHTML = DATA_LPF.tabla_promedios.map((f, i) => {
+    const clase = descendidos.has(f.equipo) ? 'descenso' : '';
+    return `<tr class="${clase}">
+      <td>${i + 1}</td><td>${f.equipo}</td><td>${f.puntos}</td><td>${f.partidos_jugados}</td><td>${f.promedio.toFixed(3)}</td>
+    </tr>`;
+  }).join('');
 }
 
 function renderCopasLPF(){

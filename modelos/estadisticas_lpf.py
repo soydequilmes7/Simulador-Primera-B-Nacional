@@ -80,6 +80,14 @@ class EstadisticasLPF(Estadisticas):
         self.fixture = pd.read_csv(datos_dir / "fixture_lpf.csv")
         self.resultados = pd.read_csv(datos_dir / "resultados_lpf.csv")
 
+        # Tabla de promedios (Art. 26 / Estatuto AFA art. 93): puntos y
+        # partidos jugados ACUMULADOS ANTES del Apertura 2026 (últimas ~3
+        # temporadas). Los recién ascendidos arrancan en 0/0 porque solo
+        # computan desde su ascenso. Se les suma la 2026 en
+        # calcular_tabla_promedios().
+        self.promedios_historicos = pd.read_csv(datos_dir / "promedios_lpf.csv")
+        self.promedios_historicos["equipo"] = self.promedios_historicos["equipo"].apply(normalizar)
+
         # self.tabla es lo que usa crear_equipos() (heredado de Estadisticas)
         # para inicializar cada Equipo. Para el Clausura arranca todo en
         # cero: los puntos/gf/gc de ZONA son solo del Clausura. El Apertura
@@ -119,6 +127,15 @@ class EstadisticasLPF(Estadisticas):
         mal_contados = conteo_fixture[conteo_fixture != 16]
         if not mal_contados.empty:
             raise ValueError(f"Estos equipos no tienen exactamente 16 partidos en fixture_lpf.csv:\n{mal_contados}")
+
+        equipos_promedios = set(self.promedios_historicos["equipo"])
+        if equipos_promedios != equipos_apertura:
+            raise ValueError(
+                "Nombres de equipo no coinciden entre promedios_lpf.csv y tablalpf.csv. "
+                f"Solo en promedios: {equipos_promedios - equipos_apertura or '-'} | "
+                f"Solo en Apertura: {equipos_apertura - equipos_promedios or '-'}. "
+                "Agregá el alias que falte a NORMALIZACION_NOMBRES."
+            )
 
         print("Validación de datos LPF OK.")
 
@@ -262,15 +279,79 @@ class EstadisticasLPF(Estadisticas):
         anual.index = anual.index + 1
         return anual[["equipo", "puntos", "gf", "gc", "dg"]]
 
-    def calcular_descensos(self, tabla_anual, n_descensos=2):
-        """SIMPLIFICACIÓN A REVISAR: el Art. 26 remite al art. 93 del
-        Estatuto de AFA, que en la práctica combina promedios históricos
-        (últimas 3 temporadas) con la Tabla Anual -- no tenemos cargados
-        los promedios de temporadas previas en este proyecto. Por ahora
-        tomamos directo los últimos n_descensos puestos de la Tabla Anual
-        2026 como criterio de descenso. Reemplazable sin tocar el resto
-        del pipeline el día que se carguen los promedios reales."""
-        return tabla_anual.tail(n_descensos)["equipo"].tolist()
+    def _partidos_2026_por_equipo(self):
+        """Partidos jugados en la temporada 2026 (Apertura + Clausura) por
+        equipo: se suman a los históricos de promedios_lpf.csv. El Clausura
+        cuenta los 16 partidos del fixture, ya jugados (resultados_lpf.csv)
+        o pendientes (fixture_lpf.csv, se simulan pero cuentan igual)."""
+        apertura_pj = self.apertura.set_index("equipo")["partidos_jugados"]
+        clausura_pj = pd.concat([
+            self.fixture["equipo_local"], self.fixture["equipo_visitante"],
+            self.resultados["equipo_local"], self.resultados["equipo_visitante"],
+        ]).value_counts()
+        return apertura_pj + clausura_pj.reindex(apertura_pj.index).fillna(0)
+
+    def calcular_tabla_promedios(self, tabla_anual):
+        """Tabla de promedios (Art. 26 / Estatuto AFA art. 93): puntos por
+        partido jugado en las últimas ~3 temporadas. Los recién ascendidos
+        (0 históricos en promedios_lpf.csv) solo computan desde su ascenso,
+        es decir desde el Apertura 2026 en adelante."""
+        partidos_2026 = self._partidos_2026_por_equipo()
+
+        prom = self.promedios_historicos.merge(tabla_anual[["equipo", "puntos"]], on="equipo")
+        prom["puntos_totales"] = prom["puntos_historicos"] + prom["puntos"]
+        prom["partidos_totales"] = prom["partidos_historicos"] + prom["equipo"].map(partidos_2026)
+        prom["promedio"] = prom["puntos_totales"] / prom["partidos_totales"]
+
+        prom = prom.sort_values("promedio", ascending=False).reset_index(drop=True)
+        prom.index = prom.index + 1
+        return prom[["equipo", "puntos_totales", "partidos_totales", "promedio"]]
+
+    def _definir_por_desempate(self, candidatos):
+        """El reglamento no desempata la posición que define un descenso por
+        diferencia de gol: se juega un partido de desempate. Con 2 equipos
+        empatados alcanza un partido único (cancha neutral, alargue y
+        penales si hace falta); con 3+ (caso raro, tipo "cuadrangular")
+        aproximamos con desempates sucesivos, cadena de único partido, hasta
+        aislar a un solo equipo. Devuelve el PERDEDOR (el que desciende)."""
+        if len(candidatos) == 1:
+            return candidatos[0]
+        peor = candidatos[0]
+        for siguiente in candidatos[1:]:
+            _, peor, _ = self.jugar_final_ascenso(peor, siguiente)
+        return peor
+
+    def calcular_descensos(self, tabla_anual, tabla_promedios):
+        """2 descensos (Art. 26 + Estatuto AFA art. 93):
+          1) el último de la tabla de promedios.
+          2) el último de la Tabla Anual.
+        Si es el mismo equipo en ambas, ese cupo lo hereda el penúltimo de
+        la Tabla Anual. Los empates en la posición que define un descenso
+        se resuelven con partido de desempate, no por diferencia de gol."""
+        peor_promedio = tabla_promedios["promedio"].min()
+        candidatos_promedios = tabla_promedios.loc[
+            tabla_promedios["promedio"] == peor_promedio, "equipo"
+        ].tolist()
+        descendido_promedios = self._definir_por_desempate(candidatos_promedios)
+
+        def ultimo_de_tabla_anual(tabla):
+            ultima = tabla.iloc[-1]
+            empatados = tabla.loc[
+                (tabla["puntos"] == ultima["puntos"]) &
+                (tabla["dg"] == ultima["dg"]) &
+                (tabla["gf"] == ultima["gf"]),
+                "equipo",
+            ].tolist()
+            return self._definir_por_desempate(empatados)
+
+        descendido_anual = ultimo_de_tabla_anual(tabla_anual)
+
+        if descendido_promedios == descendido_anual:
+            resto = tabla_anual[tabla_anual["equipo"] != descendido_anual]
+            segundo_descendido = ultimo_de_tabla_anual(resto)
+            return [descendido_promedios, segundo_descendido]
+
+        return [descendido_promedios, descendido_anual]
 
     def calcular_copas(self, tabla_anual, campeon_clausura):
         """Cupos a Libertadores 2027 (Art. 27) y Sudamericana 2027 (Art. 28).
@@ -320,7 +401,8 @@ class EstadisticasLPF(Estadisticas):
             contador[campeon_clausura]["campeon_clausura"] += 1
 
             tabla_anual = self.calcular_tabla_anual(tablas_clausura)
-            for descendido in self.calcular_descensos(tabla_anual):
+            tabla_promedios = self.calcular_tabla_promedios(tabla_anual)
+            for descendido in self.calcular_descensos(tabla_anual, tabla_promedios):
                 contador[descendido]["descenso"] += 1
 
             if (i + 1) % paso_reporte == 0:
