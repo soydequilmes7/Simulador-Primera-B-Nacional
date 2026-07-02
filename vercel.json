@@ -1,5 +1,9 @@
 {
   "outputDirectory": "public",
+  "redirects": [
+    { "source": "/", "destination": "/index.html", "permanent": false },
+    { "source": "/template.html", "destination": "/", "permanent": true }
+  ],
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/index" }
   ],
@@ -7,5 +11,13 @@
     "api/index.py": {
       "maxDuration": 300
     }
-  }
+  },
+  "headers": [
+    {
+      "source": "/(.*)\\.(ico|png|svg|webmanifest)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=2592000" }
+      ]
+    }
+  ]
 }
