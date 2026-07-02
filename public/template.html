@@ -409,6 +409,8 @@
     width:18px; flex-shrink:0;
   }
   .copa-card li.no-simulado{ color:var(--muted); font-style:italic; }
+  .copa-card li.inventado{ font-style:italic; }
+  .copa-card li.inventado::after{ content:" (elegido al azar)"; color:var(--muted); font-style:normal; font-size:11px; }
 
   .descensos-grid{ display:flex; gap:14px; flex-wrap:wrap; justify-content:center; }
   .descenso-card{
@@ -496,6 +498,16 @@
   tbody tr.descenso:hover{ filter: brightness(0.98); }
   tbody tr.descenso td:nth-child(2){ color: var(--danger); }
   tbody tr.descenso{ box-shadow: inset 3px 0 0 var(--danger); }
+
+  /* Tabla Anual LPF: clasificados a copas internacionales */
+  tbody tr.libertadores{ background: var(--azul-dim); }
+  tbody tr.libertadores:hover{ filter: brightness(0.98); }
+  tbody tr.libertadores td:nth-child(2){ color: var(--azul); font-weight:600; }
+  tbody tr.libertadores{ box-shadow: inset 3px 0 0 var(--azul); }
+  tbody tr.sudamericana{ background: var(--zone-b-dim); }
+  tbody tr.sudamericana:hover{ filter: brightness(0.98); }
+  tbody tr.sudamericana td:nth-child(2){ color: var(--zone-b); font-weight:600; }
+  tbody tr.sudamericana{ box-shadow: inset 3px 0 0 var(--zone-b); }
 
   /* ---------- ASCENSO CARD ---------- */
   .ascenso-card{
@@ -624,10 +636,18 @@
   #campeon-equipo:focus{ border-color: var(--azul); }
   #campeon-equipo:disabled{ cursor:wait; opacity:0.5; }
   /* estos controles viven fuera del hero: botón en versión "de contenido" */
-  #campeon-section .btn-simular{ background: var(--btn-grad); color: var(--btn-ink); }
-  #campeon-section .sim-status{ color: var(--ink-dim); }
-  #campeon-section .sim-status.error{ color: var(--danger); }
-  #campeon-section .sim-status.ok{ color: var(--zone-a); }
+  #campeon-section .btn-simular, #campeon-section-lpf .btn-simular{ background: var(--btn-grad); color: var(--btn-ink); }
+  #campeon-section .sim-status, #campeon-section-lpf .sim-status{ color: var(--ink-dim); }
+  #campeon-section .sim-status.error, #campeon-section-lpf .sim-status.error{ color: var(--danger); }
+  #campeon-section .sim-status.ok, #campeon-section-lpf .sim-status.ok{ color: var(--zone-a); }
+  #campeon-equipo-lpf{
+    font-family:'JetBrains Mono'; font-size:13px; font-weight:600; color: var(--ink);
+    background: var(--bg-panel); border:1px solid var(--line); border-radius: var(--radius-sm);
+    padding: 10px 12px; outline:none; transition: border-color 0.15s, opacity 0.15s; min-width:220px;
+  }
+  #campeon-equipo-lpf:hover:not(:disabled){ border-color: var(--azul); }
+  #campeon-equipo-lpf:focus{ border-color: var(--azul); }
+  #campeon-equipo-lpf:disabled{ cursor:wait; opacity:0.5; }
   .campeon-summary{
     font-family:'JetBrains Mono'; font-size:13px; color:var(--ink-dim); text-align:center;
     padding:14px; background:var(--bg-panel); border:1px solid var(--line); border-radius: var(--radius);
@@ -888,6 +908,23 @@
 
   <div id="vista-lpf" style="display:none">
 
+  <div class="search-section" id="campeon-section-lpf">
+    <div class="section-head" style="margin-bottom:14px;">
+      <span class="idx">🏆</span><h2 style="font-size:18px;">Simulá hasta que tu equipo salga campeón</h2><div class="rule"></div>
+    </div>
+    <p class="section-note" style="margin:0 0 16px; text-align:center; max-width:none;">
+      Elegí un equipo: el Apertura ya está jugado (dato real), así que corremos Clausura + Playoffs cruzados
+      una y otra vez hasta encontrar la primera corrida en la que se corona campeón del Clausura. Te mostramos
+      esa corrida puntual: cómo terminó el Clausura, el cruce de playoffs y la final.
+    </p>
+    <div class="campeon-controls">
+      <select id="campeon-equipo-lpf"><option value="">Elegí un equipo…</option></select>
+      <button id="btn-campeon-lpf" class="btn-simular">🏆 Simular hasta el título</button>
+    </div>
+    <div id="campeon-status-lpf" class="sim-status"></div>
+    <div id="campeon-resultado-lpf"></div>
+  </div>
+
   <div class="zone-tabs" id="zone-tabs-lpf">
     <div class="group">
       <button class="zone-tab active" data-zona="A">ZONA A</button>
@@ -919,7 +956,7 @@
 
   <section id="sec-lpf-playoffs">
     <div class="section-head"><span class="idx">03</span><h2>Playoffs del Clausura</h2><div class="rule"></div></div>
-    <p class="section-note">Los 8 mejores de cada zona se cruzan desde Octavos de Final a partido único. Las llaves se definen en la cancha del equipo mejor posicionado, reservando la cancha neutral únicamente para la Final. Todas las instancias cuentan con alargue y penales en caso de empate.</p>
+    <p class="section-note">Cruzados entre zonas desde Octavos de Final, todo a partido único a cancha neutral (con alargue y penales si hace falta).</p>
     <div class="bracket-scroll">
       <div class="bracket" id="bracket-lpf"></div>
     </div>
@@ -956,7 +993,7 @@
 
   <section id="sec-lpf-copas">
     <div class="section-head"><span class="idx">06</span><h2>Copas internacionales 2027</h2><div class="rule"></div></div>
-    <p class="section-note">Cupos a Libertadores y Sudamericana según la Tabla Anual, más los campeones de Apertura y Clausura. El cupo del campeón de Copa Argentina no está simulado.</p>
+    <p class="section-note">Cupos a Libertadores y Sudamericana según la Tabla Anual, más los campeones de Apertura y Clausura. La Copa Argentina no está simulada, así que el cupo que le corresponde se completa con un candidato elegido al azar entre los equipos de la Tabla Anual.</p>
     <div class="copas-grid">
       <div class="copa-card libertadores">
         <div class="copa-title">Copa Libertadores 2027</div>
@@ -1656,10 +1693,11 @@ function iniciarLPF(){
   document.getElementById('last-update-lpf').textContent = DATA_LPF.generado ? ("Última corrida: " + DATA_LPF.generado) : "";
   setZonaLPF(zonaActualLPF);
   renderPlayoffsLPF();
+  renderCopasLPF(); // primero: calcula quién clasifica a copas, lo usa la tabla anual
   renderTablaAnualLPF();
   renderDescensosLPF();
-  renderCopasLPF();
   renderTrofeoLPF();
+  poblarSelectEquiposLPF();
 }
 
 function filaTablaLPFHTML(f, i, totalFilas, marcarPlayoffs){
@@ -1770,6 +1808,34 @@ function renderPlayoffsLPF(){
   bracket.innerHTML = html;
 }
 
+/* ---------- CLASIFICACIONES A COPAS (para colorear la Tabla Anual) ---------- */
+let LPF_EQUIPOS_LIBERTADORES = new Set();
+let LPF_EQUIPOS_SUDAMERICANA = new Set();
+
+function normalizarEquipoLPF(str){
+  // saca anotaciones tipo "Belgrano (campeón Apertura)" -> "Belgrano"
+  return String(str).replace(/\s*\(.*?\)\s*/g, '').trim();
+}
+
+function hashStringLPF(str){
+  let h = 0;
+  for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) >>> 0;
+  return h;
+}
+
+function elegirCampeonCopaArgentinaInventado(){
+  // La Copa Argentina no está simulada: inventamos un campeón de forma determinística
+  // (misma corrida = mismo resultado) entre los equipos de mitad de tabla para arriba,
+  // salvo los que ya clasifican por tabla y los que están en zona de descenso.
+  const filas = DATA_LPF.tabla_anual;
+  if (!filas || !filas.length) return null;
+  const desde = 4, hasta = Math.max(desde + 1, filas.length - 2);
+  const candidatos = filas.slice(desde, hasta);
+  const pool = candidatos.length ? candidatos : filas;
+  const semilla = hashStringLPF((DATA_LPF.generado || '') + filas.map(f => f.equipo + f.puntos).join('|'));
+  return pool[semilla % pool.length].equipo;
+}
+
 function renderTablaAnualLPF(){
   const body = document.getElementById('anual-lpf-body');
   if (!body) return;
@@ -1777,7 +1843,9 @@ function renderTablaAnualLPF(){
   body.innerHTML = filas.map((f, i) => {
     const clases = [];
     if (i === 0) clases.push('punta');
-    if (i >= filas.length - 2) clases.push('descenso');
+    else if (i >= filas.length - 2) clases.push('descenso');
+    else if (LPF_EQUIPOS_LIBERTADORES.has(f.equipo)) clases.push('libertadores');
+    else if (LPF_EQUIPOS_SUDAMERICANA.has(f.equipo)) clases.push('sudamericana');
     return `<tr class="${clases.join(' ')}">
       <td>${i + 1}</td><td>${f.equipo}</td><td>${f.puntos}</td><td>${f.gf}</td><td>${f.gc}</td><td>${f.dg > 0 ? '+' + f.dg : f.dg}</td>
     </tr>`;
@@ -1796,11 +1864,27 @@ function renderCopasLPF(){
   const libertadores = document.getElementById('libertadores-lpf');
   const sudamericana = document.getElementById('sudamericana-lpf');
   if (!libertadores || !sudamericana) return;
-  libertadores.innerHTML = DATA_LPF.copas.libertadores_2027.map(equipo => {
-    const noSimulado = equipo.includes('no simulado');
-    return `<li class="${noSimulado ? 'no-simulado' : ''}">${equipo}</li>`;
+
+  const campeonCopaArgentina = elegirCampeonCopaArgentinaInventado();
+
+  const listaLibertadores = DATA_LPF.copas.libertadores_2027.map(equipo => {
+    if (equipo.toLowerCase().includes('no simulado') && campeonCopaArgentina){
+      return `${campeonCopaArgentina} — Campeón Copa Argentina 2026`;
+    }
+    return equipo;
+  });
+
+  libertadores.innerHTML = listaLibertadores.map(equipo => {
+    const esInventado = equipo.includes('Campeón Copa Argentina');
+    const noSimulado = !campeonCopaArgentina && equipo.toLowerCase().includes('no simulado');
+    return `<li class="${esInventado ? 'inventado' : ''} ${noSimulado ? 'no-simulado' : ''}">${equipo}</li>`;
   }).join('');
+
   sudamericana.innerHTML = DATA_LPF.copas.sudamericana_2027.map(equipo => `<li>${equipo}</li>`).join('');
+
+  // Guardamos los equipos clasificados (normalizados) para colorear la Tabla Anual
+  LPF_EQUIPOS_LIBERTADORES = new Set(listaLibertadores.map(normalizarEquipoLPF));
+  LPF_EQUIPOS_SUDAMERICANA = new Set(DATA_LPF.copas.sudamericana_2027.map(normalizarEquipoLPF));
 }
 
 function renderTrofeoLPF(){
@@ -1861,6 +1945,139 @@ document.getElementById('btn-simular-lpf').addEventListener('click', correrSimul
 document.querySelectorAll('#zone-tabs-lpf .zone-tab').forEach(btn => {
   btn.addEventListener('click', () => setZonaLPF(btn.dataset.zona));
 });
+
+/* ---------- SIMULAR HASTA CAMPEÓN (LPF) ---------- */
+function poblarSelectEquiposLPF(){
+  const sel = document.getElementById('campeon-equipo-lpf');
+  if (!sel || !DATA_LPF.tabla_anual) return;
+  const valorPrevio = sel.value;
+  const nombres = DATA_LPF.tabla_anual.map(f => f.equipo).sort();
+  sel.innerHTML = '<option value="">Elegí un equipo…</option>' +
+    nombres.map(n => `<option value="${n}">${n}</option>`).join('');
+  if (valorPrevio && nombres.includes(valorPrevio)) sel.value = valorPrevio;
+}
+
+async function simularHastaCampeonLPF(){
+  const btn = document.getElementById('btn-campeon-lpf');
+  const sel = document.getElementById('campeon-equipo-lpf');
+  const status = document.getElementById('campeon-status-lpf');
+  const resultado = document.getElementById('campeon-resultado-lpf');
+  const equipo = sel.value;
+
+  status.classList.remove('error', 'ok');
+
+  if (!equipo){
+    status.classList.add('error');
+    status.textContent = "Elegí un equipo primero.";
+    return;
+  }
+
+  btn.disabled = true;
+  sel.disabled = true;
+  btn.textContent = "Simulando…";
+  status.textContent = `Corriendo Clausura + playoffs hasta que ${equipo} salga campeón — puede tardar unos segundos.`;
+  resultado.innerHTML = "";
+
+  try {
+    const respuesta = await fetch("/api/simular-campeon-lpf", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ equipo })
+    });
+    const cuerpo = await respuesta.json().catch(() => ({}));
+
+    if (!respuesta.ok) {
+      throw new Error(cuerpo.error || `El servidor respondió con error ${respuesta.status}`);
+    }
+
+    if (!cuerpo.logrado) {
+      status.classList.add('error');
+      status.textContent = `No se logró el título de ${equipo} en ${cuerpo.max_intentos} intentos simulados. Probá de nuevo — el azar puede variar.`;
+      return;
+    }
+
+    renderCampeonResultadoLPF(cuerpo);
+    status.classList.add('ok');
+    status.textContent = `✓ Encontrado en el intento N° ${cuerpo.intentos}`;
+  } catch (e) {
+    status.classList.add('error');
+    status.textContent = "No se pudo simular: " + e.message + " — revisá que la API esté disponible.";
+  } finally {
+    btn.disabled = false;
+    sel.disabled = false;
+    btn.textContent = "🏆 Simular hasta el título";
+  }
+}
+
+function renderCampeonResultadoLPF(r){
+  const cont = document.getElementById('campeon-resultado-lpf');
+
+  function filasZonaHTML(filas, marcarPlayoffs){
+    let html = "";
+    filas.forEach((f, i) => {
+      const clases = [];
+      if (i === 0) clases.push('punta');
+      else if (marcarPlayoffs && i <= 7) clases.push('reducido');
+      const esObjetivo = f.equipo === r.equipo;
+      html += `<tr class="${clases.join(' ')}"${esObjetivo ? ' style="box-shadow: inset 3px 0 0 var(--amber);"' : ''}>
+        <td>${i + 1}</td><td>${f.equipo}${esObjetivo ? ' 🏆' : ''}</td><td>${f.puntos}</td><td>${f.gf}</td><td>${f.gc}</td><td>${f.dg > 0 ? '+' + f.dg : f.dg}</td>
+      </tr>`;
+    });
+    return html;
+  }
+
+  const tablasZonasHTML = ['A', 'B'].map(zona => `
+    <div style="margin-top:14px;">
+      <div class="label" style="font-family:'JetBrains Mono'; font-size:11px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:8px;">Zona ${zona}</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>GF</th><th>GC</th><th>DG</th></tr></thead>
+          <tbody>${filasZonaHTML(r.tablas_clausura[zona], true)}</tbody>
+        </table>
+      </div>
+    </div>
+  `).join("");
+
+  const p = r.playoffs;
+  const campeon = p.campeon_clausura;
+  let bracketHTML = "";
+  bracketHTML += `<div class="round">
+    <div class="round-title">Octavos</div>
+    <div class="round-body">${p.octavos.map(m => matchHTML(m)).join("")}</div>
+  </div>`;
+  bracketHTML += `<div class="round">
+    <div class="round-title">Cuartos</div>
+    <div class="round-body">${p.cuartos.map(m => matchHTML(m)).join("")}</div>
+  </div>`;
+  bracketHTML += `<div class="round">
+    <div class="round-title">Semifinal</div>
+    <div class="round-body">${p.semis.map(m => matchHTML(m)).join("")}</div>
+  </div>`;
+  bracketHTML += `<div class="round final-col">
+    <div class="round-title">Final</div>
+    <div class="round-body">
+      <div class="match">
+        ${p.semis.map(m => {
+          const nombreEquipo = m.avanza;
+          const esCampeon = nombreEquipo === campeon;
+          return `<div class="row ${esCampeon ? 'winner' : ''}"><span>${nombreEquipo}</span></div>`;
+        }).join("")}
+        <div class="leg-detail">${p.final.texto}</div>
+      </div>
+      <div class="campeon">▲ ${campeon}</div>
+    </div>
+  </div>`;
+
+  cont.innerHTML = `
+    <div class="campeon-summary">🏆 <b>${r.equipo}</b> sale campeón del Clausura en esta corrida simulada
+      (intento N° ${r.intentos} de una búsqueda al azar entre distintas corridas posibles)</div>
+    ${tablasZonasHTML}
+    <div class="label" style="font-family:'JetBrains Mono'; font-size:11px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin: 24px 0 4px;">Playoffs</div>
+    <div class="bracket-scroll"><div class="bracket">${bracketHTML}</div></div>
+  `;
+}
+
+document.getElementById('btn-campeon-lpf').addEventListener('click', simularHastaCampeonLPF);
 
 /* ---------- SELECTOR DE LIGA ---------- */
 const HERO_TEXTOS = {
