@@ -63,13 +63,66 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Evita que se pisen dos simulaciones/actualizaciones del mismo torneo
-# dentro de una instancia. Los locks separados impiden que LPF bloquee
-# innecesariamente a Primera Nacional, y el timeout evita rechazos por
-# clicks casi simultaneos.
+# Permite simulaciones concurrentes del mismo torneo y deja las
+# actualizaciones como operación exclusiva, porque actualizan archivos
+# compartidos en datos/ y public/.
 LOCK_WAIT_SECONDS = 25
-_lock_nacional = threading.Lock()
-_lock_lpf = threading.Lock()
+
+
+class ReadWriteLock:
+    def __init__(self):
+        self._cond = threading.Condition(threading.Lock())
+        self._readers = 0
+        self._writer = False
+        self._writers_waiting = 0
+
+    def acquire_read(self, timeout: float) -> bool:
+        end_time = threading.TIMEOUT_MAX if timeout is None else None
+        with self._cond:
+            if timeout is not None:
+                import time
+                end_time = time.monotonic() + timeout
+            while self._writer or self._writers_waiting:
+                if timeout is None:
+                    self._cond.wait()
+                    continue
+                remaining = end_time - time.monotonic()
+                if remaining <= 0:
+                    return False
+                self._cond.wait(remaining)
+            self._readers += 1
+            return True
+
+    def release_read(self) -> None:
+        with self._cond:
+            self._readers -= 1
+            if self._readers == 0:
+                self._cond.notify_all()
+
+    def acquire_write(self, timeout: float) -> bool:
+        import time
+        end_time = time.monotonic() + timeout
+        with self._cond:
+            self._writers_waiting += 1
+            try:
+                while self._writer or self._readers:
+                    remaining = end_time - time.monotonic()
+                    if remaining <= 0:
+                        return False
+                    self._cond.wait(remaining)
+                self._writer = True
+                return True
+            finally:
+                self._writers_waiting -= 1
+
+    def release_write(self) -> None:
+        with self._cond:
+            self._writer = False
+            self._cond.notify_all()
+
+
+_lock_nacional = ReadWriteLock()
+_lock_lpf = ReadWriteLock()
 
 
 class SimularBody(BaseModel):
@@ -93,9 +146,7 @@ def _clamp_max_intentos(max_intentos: int) -> int:
     return max(MAX_INTENTOS_CAMPEON_MIN, min(MAX_INTENTOS_CAMPEON_MAX, max_intentos))
 
 
-def _adquirir_lock(lock: threading.Lock, mensaje: str):
-    if lock.acquire(timeout=LOCK_WAIT_SECONDS):
-        return None
+def _lock_ocupado(mensaje: str):
     return JSONResponse(
         status_code=409,
         content={
@@ -104,6 +155,18 @@ def _adquirir_lock(lock: threading.Lock, mensaje: str):
             "retry_after": LOCK_WAIT_SECONDS,
         },
     )
+
+
+def _adquirir_lectura(lock: ReadWriteLock, mensaje: str):
+    if lock.acquire_read(timeout=LOCK_WAIT_SECONDS):
+        return None
+    return _lock_ocupado(mensaje)
+
+
+def _adquirir_escritura(lock: ReadWriteLock, mensaje: str):
+    if lock.acquire_write(timeout=LOCK_WAIT_SECONDS):
+        return None
+    return _lock_ocupado(mensaje)
 
 
 @app.get("/api/health")
@@ -122,9 +185,9 @@ def simular(body: SimularBody = SimularBody()):
     resultado directo en la respuesta."""
     n_sims = _clamp_n_sims(body.n_sims)
 
-    ocupado = _adquirir_lock(
+    ocupado = _adquirir_lectura(
         _lock_nacional,
-        "Hay otra operación de Primera Nacional en curso. Esperá unos segundos y probá de nuevo.",
+        "Hay una actualización de Primera Nacional en curso. Esperá unos segundos y probá de nuevo.",
     )
     if ocupado:
         return ocupado
@@ -134,7 +197,7 @@ def simular(body: SimularBody = SimularBody()):
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
     finally:
-        _lock_nacional.release()
+        _lock_nacional.release_read()
 
 
 @app.post("/api/simular-campeon")
@@ -149,9 +212,9 @@ def simular_campeon(body: SimularCampeonBody):
 
     max_intentos = _clamp_max_intentos(body.max_intentos)
 
-    ocupado = _adquirir_lock(
+    ocupado = _adquirir_lectura(
         _lock_nacional,
-        "Hay otra operación de Primera Nacional en curso. Esperá unos segundos y probá de nuevo.",
+        "Hay una actualización de Primera Nacional en curso. Esperá unos segundos y probá de nuevo.",
     )
     if ocupado:
         return ocupado
@@ -167,7 +230,7 @@ def simular_campeon(body: SimularCampeonBody):
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
     finally:
-        _lock_nacional.release()
+        _lock_nacional.release_read()
 
 
 @app.post("/api/simular-lpf")
@@ -177,9 +240,9 @@ def simular_lpf(body: SimularLPFBody = SimularLPFBody()):
     directo en la respuesta."""
     n_sims = _clamp_n_sims(body.n_sims)
 
-    ocupado = _adquirir_lock(
+    ocupado = _adquirir_lectura(
         _lock_lpf,
-        "Hay otra operación de Liga Profesional en curso. Esperá unos segundos y probá de nuevo.",
+        "Hay una actualización de Liga Profesional en curso. Esperá unos segundos y probá de nuevo.",
     )
     if ocupado:
         return ocupado
@@ -189,7 +252,7 @@ def simular_lpf(body: SimularLPFBody = SimularLPFBody()):
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
     finally:
-        _lock_lpf.release()
+        _lock_lpf.release_read()
 
 
 @app.post("/api/actualizar-lpf")
@@ -198,9 +261,9 @@ def actualizar_lpf_endpoint(body: SimularLPFBody = SimularLPFBody()):
     y re-simula con correr_simulacion_lpf."""
     n_sims = _clamp_n_sims(body.n_sims)
 
-    ocupado = _adquirir_lock(
+    ocupado = _adquirir_escritura(
         _lock_lpf,
-        "Hay otra operación de Liga Profesional en curso. Esperá unos segundos y probá de nuevo.",
+        "Hay simulaciones o una actualización de Liga Profesional en curso. Esperá unos segundos y probá de nuevo.",
     )
     if ocupado:
         return ocupado
@@ -210,7 +273,7 @@ def actualizar_lpf_endpoint(body: SimularLPFBody = SimularLPFBody()):
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
     finally:
-        _lock_lpf.release()
+        _lock_lpf.release_write()
 
 
 @app.post("/api/simular-campeon-lpf")
@@ -223,9 +286,9 @@ def simular_campeon_lpf(body: SimularCampeonBody):
 
     max_intentos = _clamp_max_intentos(body.max_intentos)
 
-    ocupado = _adquirir_lock(
+    ocupado = _adquirir_lectura(
         _lock_lpf,
-        "Hay otra operación de Liga Profesional en curso. Esperá unos segundos y probá de nuevo.",
+        "Hay una actualización de Liga Profesional en curso. Esperá unos segundos y probá de nuevo.",
     )
     if ocupado:
         return ocupado
@@ -239,7 +302,7 @@ def simular_campeon_lpf(body: SimularCampeonBody):
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
     finally:
-        _lock_lpf.release()
+        _lock_lpf.release_read()
 
 
 @app.post("/api/actualizar")
@@ -248,9 +311,9 @@ def actualizar_endpoint(body: SimularBody = SimularBody()):
     tabla/goleadores y re-simula."""
     n_sims = _clamp_n_sims(body.n_sims)
 
-    ocupado = _adquirir_lock(
+    ocupado = _adquirir_escritura(
         _lock_nacional,
-        "Hay otra operación de Primera Nacional en curso. Esperá unos segundos y probá de nuevo.",
+        "Hay simulaciones o una actualización de Primera Nacional en curso. Esperá unos segundos y probá de nuevo.",
     )
     if ocupado:
         return ocupado
@@ -260,7 +323,7 @@ def actualizar_endpoint(body: SimularBody = SimularBody()):
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
     finally:
-        _lock_nacional.release()
+        _lock_nacional.release_write()
 
 
 # En Render este mismo proceso sirve el dashboard de public/. En Vercel,
