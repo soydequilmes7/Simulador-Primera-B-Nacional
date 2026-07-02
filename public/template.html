@@ -464,6 +464,27 @@
   body.liga-lpf .section-head .rule{ background: linear-gradient(90deg, var(--line), transparent); }
   .section-note{ color:var(--ink-dim); font-size:14px; margin-bottom:22px; max-width:65ch; }
 
+  /* ---------- FAQ ---------- */
+  .faq{ display:flex; flex-direction:column; gap:12px; max-width:760px; }
+  .faq details{
+    background: var(--card-grad, var(--bg-panel));
+    background-color: var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius: var(--radius-sm);
+    padding:0 18px;
+    box-shadow: var(--card-shadow);
+  }
+  .faq summary{
+    list-style:none; cursor:pointer; padding:16px 0; font-family:'Oswald', sans-serif;
+    text-transform:uppercase; letter-spacing:0.02em; font-size:15px; color:var(--ink);
+    display:flex; justify-content:space-between; align-items:center; gap:12px;
+  }
+  .faq summary::-webkit-details-marker{ display:none; }
+  .faq summary::after{ content:"+"; color:var(--amber); font-family:'JetBrains Mono', monospace; font-size:20px; line-height:1; }
+  .faq details[open] summary::after{ content:"-"; }
+  .faq details[open] summary{ border-bottom:1px solid var(--line); }
+  .faq .faq-a{ color:var(--ink-dim); font-size:14px; line-height:1.65; padding:14px 0 18px; }
+
   /* ---------- STANDINGS TABLE ---------- */
   .table-wrap{
     border:1px solid var(--line); border-radius: var(--radius); overflow:hidden;
@@ -907,6 +928,33 @@
         <thead><tr><th>#</th><th>Jugador</th><th>Equipo</th><th>Goles</th><th>Proy.</th></tr></thead>
         <tbody id="goleadores-body"></tbody>
       </table>
+    </div>
+  </section>
+
+  <section id="sec-como-funciona">
+    <div class="section-head"><span class="idx">06</span><h2>¿Cómo funciona?</h2><div class="rule"></div></div>
+    <p class="section-note">Todo lo que hay detrás del simulador: el modelo, los datos y las reglas del torneo.</p>
+    <div class="faq">
+      <details>
+        <summary>¿Qué es el Simulador de la Primera Nacional?</summary>
+        <div class="faq-a">Es una herramienta que simula miles de veces la temporada completa de la Primera Nacional para estimar las probabilidades de ascenso y descenso de cada equipo, la tabla final proyectada y los goleadores.</div>
+      </details>
+      <details>
+        <summary>¿Cómo se calculan las probabilidades de ascenso y descenso?</summary>
+        <div class="faq-a">Usamos un modelo de Poisson que estima los goles de cada equipo según su ataque y defensa (como local y como visitante), ajustado por la forma reciente y con la corrección de Dixon-Coles. Sobre ese modelo corremos una simulación de Monte Carlo de toda la temporada miles de veces.</div>
+      </details>
+      <details>
+        <summary>¿Cada cuánto se actualizan los datos?</summary>
+        <div class="faq-a">Los resultados se actualizan con los partidos jugados que se toman de Promiedos, y cada actualización vuelve a correr la simulación con la tabla al día.</div>
+      </details>
+      <details>
+        <summary>¿Cuántos equipos ascienden y descienden?</summary>
+        <div class="faq-a">La Primera Nacional se divide en 2 zonas. Hay 2 ascensos: el primero lo define el puntero de cada zona y el segundo sale del Reducido. Además hay 4 descensos por temporada.</div>
+      </details>
+      <details>
+        <summary>¿El simulador es gratis?</summary>
+        <div class="faq-a">Sí, es completamente gratuito. Podés correr nuevas simulaciones y buscar a tu equipo para ver su probabilidad de ascenso o descenso.</div>
+      </details>
     </div>
   </section>
 
