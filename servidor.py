@@ -29,8 +29,9 @@ import traceback
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
 from main import correr_simulacion, simular_hasta_campeon
-from main_lpf import correr_simulacion_lpf
+from main_lpf import correr_simulacion_lpf, simular_hasta_campeon_lpf
 from actualizar_resultados import actualizar
+from actualizar_resultados_lpf import actualizar as actualizar_lpf
 
 PUERTO = 8000
 CARPETA_WEB = "public"
@@ -77,6 +78,10 @@ class Handler(SimpleHTTPRequestHandler):
             self._manejar_simular_campeon()
         elif self.path == "/api/simular-lpf":
             self._manejar_simular_lpf()
+        elif self.path == "/api/actualizar-lpf":
+            self._manejar_actualizar_lpf()
+        elif self.path == "/api/simular-campeon-lpf":
+            self._manejar_simular_campeon_lpf()
         else:
             self._responder_json(404, {"error": "Ruta no encontrada"})
 
@@ -131,18 +136,36 @@ class Handler(SimpleHTTPRequestHandler):
     def _manejar_simular_lpf(self):
         """Corre una simulación completa de la LPF (Clausura + playoffs +
         tabla anual + descensos + copas + Trofeo de Campeones) pedida
-        desde el selector de liga de la web. Por ahora es una corrida
-        única (sin Monte Carlo todavía), así que no lee n_sims."""
+        desde el selector de liga de la web, con el n_sims del body."""
+        n_sims = self._leer_n_sims()
         if not lock_simulacion.acquire(blocking=False):
             self._responder_json(409, {"error": "Ya hay una simulación corriendo, esperá a que termine"})
             return
         try:
-            print("\n>>> Corriendo nueva simulación de LPF pedida desde la web...")
-            datos = correr_simulacion_lpf(imprimir=True)
+            print(f"\n>>> Corriendo nueva simulación de LPF pedida desde la web ({n_sims} corridas)...")
+            datos = correr_simulacion_lpf(imprimir=True, n_sims=n_sims)
             print(">>> Simulación de LPF terminada y data_lpf.json actualizado.\n")
             self._responder_json(200, datos)
         except Exception as e:
             print(f">>> ERROR al simular LPF: {e}")
+            self._responder_json(500, {"error": str(e)})
+        finally:
+            lock_simulacion.release()
+
+    def _manejar_actualizar_lpf(self):
+        """Scrapea Promiedos (LPF) y, si hay partidos nuevos, actualiza los
+        CSV y re-simula con correr_simulacion_lpf."""
+        n_sims = self._leer_n_sims()
+        if not lock_simulacion.acquire(blocking=False):
+            self._responder_json(409, {"error": "Ya hay una simulación/actualización corriendo, esperá a que termine"})
+            return
+        try:
+            print(f"\n>>> Actualización LPF pedida desde la web (Promiedos), {n_sims} corridas si hay partidos nuevos...")
+            resultado = actualizar_lpf(n_sims=n_sims, correr_simulacion_fn=correr_simulacion_lpf, imprimir=True)
+            print(">>> Actualización LPF terminada.\n")
+            self._responder_json(200, resultado)
+        except Exception as e:
+            print(f">>> ERROR al actualizar LPF: {e}")
             self._responder_json(500, {"error": str(e)})
         finally:
             lock_simulacion.release()
@@ -193,6 +216,53 @@ class Handler(SimpleHTTPRequestHandler):
             self._responder_json(400, {"error": "Body inválido"})
         except Exception as e:
             print(f">>> ERROR al simular hasta campeón: {e}")
+            self._responder_json(500, {"error": str(e)})
+        finally:
+            lock_simulacion.release()
+
+    def _manejar_simular_campeon_lpf(self):
+        """Corre simular_hasta_campeon_lpf() del equipo pedido desde la web
+        y devuelve esa temporada completa (tablas del Clausura y bracket
+        de playoffs) en la respuesta. No toca data_lpf.json."""
+        if not lock_simulacion.acquire(blocking=False):
+            self._responder_json(409, {"error": "Ya hay una simulación corriendo, esperá a que termine"})
+            return
+        try:
+            largo = int(self.headers.get("Content-Length", 0))
+            cuerpo_raw = self.rfile.read(largo) if largo > 0 else b"{}"
+            datos = json.loads(cuerpo_raw) if cuerpo_raw else {}
+
+            equipo_objetivo = str(datos.get("equipo", "")).strip()
+            if not equipo_objetivo:
+                self._responder_json(400, {"error": "Falta indicar el equipo"})
+                return
+
+            try:
+                max_intentos = int(datos.get("max_intentos", MAX_INTENTOS_CAMPEON_DEFAULT))
+            except (ValueError, TypeError):
+                max_intentos = MAX_INTENTOS_CAMPEON_DEFAULT
+            max_intentos = max(MAX_INTENTOS_CAMPEON_MIN, min(MAX_INTENTOS_CAMPEON_MAX, max_intentos))
+
+            print(f"\n>>> Simulando hasta el título de {equipo_objetivo} (LPF) pedido desde la web ({max_intentos} intentos máx)...")
+            resultado = simular_hasta_campeon_lpf(equipo_objetivo, max_intentos=max_intentos, imprimir=True)
+
+            if resultado is None:
+                print(f">>> No se logró el título de {equipo_objetivo} en {max_intentos} intentos.\n")
+                self._responder_json(200, {
+                    "logrado": False,
+                    "equipo": equipo_objetivo,
+                    "max_intentos": max_intentos,
+                })
+                return
+
+            print(f">>> {equipo_objetivo} salió campeón en el intento {resultado['intentos']}.\n")
+            self._responder_json(200, {"logrado": True, **resultado})
+        except ValueError as e:
+            self._responder_json(400, {"error": str(e)})
+        except json.JSONDecodeError:
+            self._responder_json(400, {"error": "Body inválido"})
+        except Exception as e:
+            print(f">>> ERROR al simular hasta campeón LPF: {e}")
             self._responder_json(500, {"error": str(e)})
         finally:
             lock_simulacion.release()

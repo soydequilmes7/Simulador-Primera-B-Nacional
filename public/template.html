@@ -171,7 +171,7 @@
   body, .hero, .liga-tabs, .zone-tabs, .table-wrap, .copa-card, .descenso-card,
   .ascenso-card, .match, .team-card, .mc-row, #mc-list, #mc-list-lpf,
   .trofeo-especial, thead th, tbody td, tbody tr, .search-box input,
-  #campeon-equipo, #sim-count, .tc-stat, .btn-simular, .btn-actualizar,
+  #campeon-equipo, #sim-count, #sim-count-lpf, .tc-stat, .btn-simular, .btn-actualizar,
   .liga-tab, .zone-tab, .liga-tabs .group, .zone-tabs .group, .racha-badge,
   .tc-share button{
     transition: background 0.4s ease, background-color 0.4s ease,
@@ -308,15 +308,15 @@
   .btn-actualizar:disabled{ cursor:wait; opacity:0.5; }
   .sim-select-row{ display:flex; align-items:center; gap:8px; }
   .sim-select-row label{ font-family:'JetBrains Mono'; font-size:11px; color:var(--hero-dim); letter-spacing:0.04em; text-transform:uppercase; }
-  #sim-count{
+  #sim-count, #sim-count-lpf{
     font-family:'JetBrains Mono'; font-size:13px; font-weight:600; color: #fff;
     background: rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.35); border-radius: var(--radius-sm);
     padding: 8px 10px; width:90px; text-align:center; outline:none; transition: border-color 0.15s, opacity 0.15s;
   }
-  #sim-count:hover:not(:disabled){ border-color: #fff; }
-  #sim-count:focus{ border-color: var(--hero-accent); }
-  #sim-count:disabled{ cursor:wait; opacity:0.5; }
-  #sim-count::-webkit-inner-spin-button, #sim-count::-webkit-outer-spin-button{ opacity:0.6; }
+  #sim-count:hover:not(:disabled), #sim-count-lpf:hover:not(:disabled){ border-color: #fff; }
+  #sim-count:focus, #sim-count-lpf:focus{ border-color: var(--hero-accent); }
+  #sim-count:disabled, #sim-count-lpf:disabled{ cursor:wait; opacity:0.5; }
+  #sim-count::-webkit-inner-spin-button, #sim-count::-webkit-outer-spin-button, #sim-count-lpf::-webkit-inner-spin-button, #sim-count-lpf::-webkit-outer-spin-button{ opacity:0.6; }
   .sim-select-row .rango{ font-family:'JetBrains Mono'; font-size:10px; color:var(--hero-dim); }
   .last-update{ font-family:'JetBrains Mono'; font-size:10px; color:var(--hero-dim); text-align:center; }
   .sim-status{ font-family:'JetBrains Mono'; font-size:12px; color:var(--hero-dim); min-height:16px; text-align:center; }
@@ -789,8 +789,14 @@
     </div>
 
     <div class="sim-control" id="sim-control-lpf" style="display:none">
+      <div class="sim-select-row">
+        <label for="sim-count-lpf">Cantidad de simulaciones</label>
+        <input type="number" id="sim-count-lpf" value="300" min="50" max="5000" step="1">
+        <span class="rango">(50–5000)</span>
+      </div>
       <div class="btn-row">
         <button id="btn-simular-lpf" class="btn-simular">▶ Correr nueva simulación (Clausura + playoffs)</button>
+        <button id="btn-actualizar-lpf" class="btn-actualizar">⟳ Actualizar desde Promiedos</button>
       </div>
       <div id="sim-status-lpf" class="sim-status"></div>
       <div id="last-update-lpf" class="last-update"></div>
@@ -907,6 +913,15 @@
   </div><!-- /vista-nacional -->
 
   <div id="vista-lpf" style="display:none">
+
+  <div class="search-section">
+    <div class="search-box">
+      <input type="text" id="team-search-lpf" list="team-list-lpf" placeholder="Buscar equipo… (ej: River, Belgrano, Lanús)" autocomplete="off">
+      <datalist id="team-list-lpf"></datalist>
+    </div>
+    <div class="search-hint">Escribí el nombre del equipo para ver su tabla, chances de playoffs, título y descenso</div>
+    <div id="search-result-lpf"></div>
+  </div>
 
   <div class="search-section" id="campeon-section-lpf">
     <div class="section-head" style="margin-bottom:14px;">
@@ -1459,7 +1474,9 @@ function compartirLink(nombre, btn){
 }
 
 function compartirImagen(nombre, btn){
-  const card = document.querySelector('#search-result .team-card');
+  // btn.closest: funciona tanto para la ficha de Nacional (#search-result)
+  // como para la de LPF (#search-result-lpf) sin hardcodear el contenedor.
+  const card = btn.closest('.team-card');
   if (!card) return;
   const original = btn.textContent;
   btn.textContent = 'Generando…';
@@ -1471,12 +1488,11 @@ function compartirImagen(nombre, btn){
       // html2canvas re-dispara las animaciones CSS en el clon y saca la
       // foto antes de que terminen (fade-in arranca en opacity:0), por
       // eso la imagen salía "fantasma". Las anulamos solo en el clon.
-      const clonedCard = clonedDoc.querySelector('#search-result .team-card');
-      if (clonedCard){
+      clonedDoc.querySelectorAll('.team-card').forEach(clonedCard => {
         clonedCard.style.animation = 'none';
         clonedCard.style.opacity = '1';
         clonedCard.style.transform = 'none';
-      }
+      });
     }
   }).then(canvas => {
     const link = document.createElement('a');
@@ -1698,6 +1714,14 @@ function iniciarLPF(){
   renderDescensosLPF();
   renderTrofeoLPF();
   poblarSelectEquiposLPF();
+  TEAM_INDEX_LPF = buildTeamIndexLPF();
+  poblarDatalistLPF(TEAM_INDEX_LPF);
+  // Si había una ficha abierta, la refrescamos con los datos nuevos.
+  const busqueda = document.getElementById('team-search-lpf');
+  if (busqueda && busqueda.value) buscarEquipoLPF(busqueda.value);
+  abrirFichaLPFDesdeUrl();
+  // Refresca el eyebrow del hero (N corridas) si estamos parados en LPF.
+  if (document.body.classList.contains('liga-lpf')) actualizarHero('lpf');
 }
 
 function filaTablaLPFHTML(f, i, totalFilas, marcarPlayoffs){
@@ -1814,7 +1838,9 @@ let LPF_EQUIPOS_SUDAMERICANA = new Set();
 
 function normalizarEquipoLPF(str){
   // saca anotaciones tipo "Belgrano (campeón Apertura)" -> "Belgrano"
-  return String(str).replace(/\s*\(.*?\)\s*/g, '').trim();
+  // y sufijos tipo "River Plate — Campeón Copa Argentina 2026" -> "River Plate",
+  // para que el campeón de Copa Argentina también se pinte en la Tabla Anual.
+  return String(str).replace(/\s*\(.*?\)\s*/g, '').split('—')[0].trim();
 }
 
 function hashStringLPF(str){
@@ -1911,17 +1937,33 @@ function renderTrofeoLPF(){
   document.getElementById('trofeo-lpf-footer').innerHTML = `Campeón del Trofeo de Campeones: <b>${t.campeon_trofeo}</b>`;
 }
 
+function leerNSimsLPF(){
+  const input = document.getElementById('sim-count-lpf');
+  let n = parseInt(input.value, 10);
+  if (!Number.isFinite(n)) n = 300;
+  n = Math.max(50, Math.min(5000, n));
+  input.value = n; // refleja el valor ya corregido si el usuario puso algo fuera de rango
+  return n;
+}
+
 async function correrSimulacionLPF(){
   const btn = document.getElementById('btn-simular-lpf');
   const status = document.getElementById('sim-status-lpf');
+  const input = document.getElementById('sim-count-lpf');
+  const nSims = leerNSimsLPF();
 
   btn.disabled = true;
+  input.disabled = true;
   btn.textContent = "Simulando…";
   status.classList.remove('error', 'ok');
-  status.textContent = "Corriendo Clausura + playoffs + tabla anual — puede tardar unos segundos.";
+  status.textContent = `Corriendo Clausura + playoffs + tabla anual (${nSims} simulaciones) — puede tardar unos segundos.`;
 
   try {
-    const respuesta = await fetch("/api/simular-lpf", { method: "POST" });
+    const respuesta = await fetch("/api/simular-lpf", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ n_sims: Number(nSims) })
+    });
     const cuerpo = await respuesta.json().catch(() => ({}));
 
     if (!respuesta.ok) throw new Error(cuerpo.error || `El servidor respondió con error ${respuesta.status}`);
@@ -1936,15 +1978,197 @@ async function correrSimulacionLPF(){
     status.textContent = "No se pudo simular: " + e.message + " — revisá que la API esté disponible.";
   } finally {
     btn.disabled = false;
+    input.disabled = false;
     btn.textContent = "▶ Correr nueva simulación (Clausura + playoffs)";
   }
 }
 
+async function correrActualizacionLPF(){
+  const btn = document.getElementById('btn-actualizar-lpf');
+  const status = document.getElementById('sim-status-lpf');
+  const lastUpdate = document.getElementById('last-update-lpf');
+  const input = document.getElementById('sim-count-lpf');
+  const nSims = leerNSimsLPF();
+
+  btn.disabled = true;
+  input.disabled = true;
+  btn.textContent = "Buscando resultados…";
+  status.classList.remove('error', 'ok');
+  status.textContent = "Consultando Promiedos y re-simulando si hay partidos nuevos — puede tardar unos segundos.";
+
+  try {
+    const respuesta = await fetch("/api/actualizar-lpf", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ n_sims: Number(nSims) })
+    });
+    const cuerpo = await respuesta.json().catch(() => ({}));
+
+    if (!respuesta.ok) throw new Error(cuerpo.error || `El servidor respondió con error ${respuesta.status}`);
+
+    if (cuerpo.actualizado) {
+      DATA_LPF = cuerpo.datos;
+      iniciarLPF();
+      status.classList.add('ok');
+      status.textContent = `✓ Se cargaron ${cuerpo.cargados.length} partido(s) nuevo(s) y se re-simuló.`;
+    } else {
+      status.classList.add('ok');
+      status.textContent = "✓ Consultado — no había partidos nuevos jugados todavía.";
+    }
+
+    if (cuerpo.sin_matchear && cuerpo.sin_matchear.length){
+      status.textContent += ` (${cuerpo.sin_matchear.length} partido(s) de Promiedos no se pudieron identificar — revisar nombres)`;
+    }
+
+    lastUpdate.textContent = "Última consulta a Promiedos: " + new Date().toLocaleString('es-AR');
+  } catch (e) {
+    status.classList.add('error');
+    status.textContent = "No se pudo actualizar: " + e.message + " — revisá que la API esté disponible.";
+  } finally {
+    btn.disabled = false;
+    input.disabled = false;
+    btn.textContent = "⟳ Actualizar desde Promiedos";
+  }
+}
+
 document.getElementById('btn-simular-lpf').addEventListener('click', correrSimulacionLPF);
+document.getElementById('btn-actualizar-lpf').addEventListener('click', correrActualizacionLPF);
 
 document.querySelectorAll('#zone-tabs-lpf .zone-tab').forEach(btn => {
   btn.addEventListener('click', () => setZonaLPF(btn.dataset.zona));
 });
+
+/* ---------- BUSCADOR DE EQUIPOS (LPF) ---------- */
+let TEAM_INDEX_LPF = {};
+
+function buildTeamIndexLPF(){
+  const index = {};
+  ['A','B'].forEach(zona => {
+    // tabla_actual = posiciones reales del Clausura a HOY. Si data_lpf.json
+    // es viejo y no la trae, caemos a la tabla simulada para no romper.
+    const actual = (DATA_LPF.tabla_actual && DATA_LPF.tabla_actual[zona]) || DATA_LPF.tablas_clausura[zona];
+    const apertura = (DATA_LPF.apertura && DATA_LPF.apertura[zona]) || [];
+    const mc = (DATA_LPF.monte_carlo && DATA_LPF.monte_carlo[zona]) || [];
+    const esperada = (DATA_LPF.tabla_esperada && DATA_LPF.tabla_esperada[zona]) || [];
+    const rachasZona = (DATA_LPF.rachas && DATA_LPF.rachas[zona]) || {};
+    actual.forEach((f, i) => {
+      const mcRow = mc.find(m => m.equipo === f.equipo) || {};
+      const espRow = esperada.find(e => e.equipo === f.equipo) || {};
+      const posApertura = apertura.findIndex(a => a.equipo === f.equipo);
+      // Más reciente primero en la ficha (vienen en orden cronológico).
+      const ultimos5 = [...(rachasZona[f.equipo] || [])].reverse();
+      index[f.equipo] = {
+        equipo: f.equipo, zona, posicion: f.posicion ?? (i + 1), total: actual.length,
+        puntos: f.puntos, gf: f.gf, gc: f.gc, dg: f.dg,
+        pj: f.partidos_jugados ?? null,
+        pos_apertura: posApertura >= 0 ? posApertura + 1 : null,
+        playoffs: mcRow['%playoffs'] ?? 0,
+        campeon_clausura: mcRow['%campeon_clausura'] ?? 0,
+        descenso: mcRow['descenso'] ?? 0,
+        puntos_prom: espRow['puntos_prom'] ?? '—',
+        posicion_prom: espRow['posicion_prom'] ?? '—',
+        ultimos5
+      };
+    });
+  });
+  return index;
+}
+
+function poblarDatalistLPF(index){
+  const dl = document.getElementById('team-list-lpf');
+  if (!dl) return;
+  dl.innerHTML = Object.keys(index).sort().map(nombre => `<option value="${nombre}">`).join('');
+}
+
+function renderTeamCardLPF(t){
+  const zoneColor = t.zona === 'A' ? 'var(--zone-a)' : 'var(--zone-b)';
+  const zoneDim = t.zona === 'A' ? 'var(--zone-a-dim)' : 'var(--zone-b-dim)';
+  const descClass = t.descenso >= 25 ? 'high' : '';
+  const clausuraArranco = t.pj === null || t.pj > 0;
+  const posActualTxt = clausuraArranco
+    ? `Posición actual (Clausura): <b>${t.posicion}°</b> de ${t.total} — <b>${t.puntos}</b> pts (DG ${t.dg > 0 ? '+' + t.dg : t.dg})`
+    : `El Clausura todavía no arrancó — terminó <b>${t.pos_apertura ?? '—'}°</b> en el Apertura`;
+  return `
+    <div class="team-card">
+      <div class="tc-head">
+        <div class="tc-name">${t.equipo}</div>
+        <span class="tc-zone" style="background:${zoneDim}; color:${zoneColor}">ZONA ${t.zona}</span>
+      </div>
+      <div class="tc-pos">${posActualTxt}</div>
+      <div class="tc-grid" style="margin-top:16px;">
+        <div class="tc-stat"><div class="v" style="color:${zoneColor}">${t.pos_apertura ? t.pos_apertura + '°' : '—'}</div><div class="l">Apertura (real)</div></div>
+        <div class="tc-stat"><div class="v" style="color:${zoneColor}">${fmtPct(t.playoffs)}</div><div class="l">Clasifica a playoffs</div></div>
+        <div class="tc-stat"><div class="v" style="color:${zoneColor}">${fmtPct(t.campeon_clausura)}</div><div class="l">Campeón Clausura</div></div>
+        <div class="tc-stat"><div class="v ${descClass}" style="${t.descenso >= 25 ? 'color:var(--danger)' : ''}">${fmtPct(t.descenso)}</div><div class="l">Descenso (anual)</div></div>
+      </div>
+      <div class="tc-mc-title">Clasifica a playoffs en ${fmtPct(t.playoffs)} de las simulaciones</div>
+      <div class="mc-bar-track" style="margin-bottom:14px;">
+        <div class="mc-bar-fill directo" style="width:${t.playoffs}%; background:${zoneColor}"></div>
+      </div>
+      <div class="tc-pos">Posición final promedio (Clausura): <b>${t.posicion_prom}°</b> — Puntos promedio: <b>${t.puntos_prom}</b></div>
+      <div class="tc-racha">
+        <div class="tc-racha-title">Últimos partidos</div>
+        ${renderRacha(t.ultimos5)}
+      </div>
+      <div class="tc-share">
+        <button onclick="compartirLinkLPF('${t.equipo.replace(/'/g, "\\'")}', this)">🔗 Copiar link</button>
+        <button onclick="compartirImagen('${t.equipo.replace(/'/g, "\\'")}', this)">📷 Descargar imagen</button>
+      </div>
+    </div>
+  `;
+}
+
+function compartirLinkLPF(nombre, btn){
+  const url = new URL(window.location.href);
+  url.searchParams.delete('equipo');
+  url.searchParams.set('equipo_lpf', nombre);
+  navigator.clipboard.writeText(url.toString()).then(() => {
+    const original = btn.textContent;
+    btn.textContent = '✓ Copiado';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = original; btn.classList.remove('copied'); }, 1800);
+  }).catch(() => {
+    prompt('Copiá el link:', url.toString());
+  });
+}
+
+function buscarEquipoLPF(nombre){
+  const resultDiv = document.getElementById('search-result-lpf');
+  if (!resultDiv) return;
+  if (!nombre || !nombre.trim()){
+    resultDiv.innerHTML = "";
+    return;
+  }
+  const index = TEAM_INDEX_LPF;
+  const exacto = index[nombre];
+  if (exacto){
+    resultDiv.innerHTML = renderTeamCardLPF(exacto);
+    return;
+  }
+  const q = nombre.trim().toLowerCase();
+  const coincidencia = Object.values(index).find(t => t.equipo.toLowerCase().includes(q));
+  if (coincidencia){
+    resultDiv.innerHTML = renderTeamCardLPF(coincidencia);
+  } else {
+    resultDiv.innerHTML = `<div class="no-result">No se encontró ningún equipo llamado "${nombre}"</div>`;
+  }
+}
+
+document.getElementById('team-search-lpf').addEventListener('input', (e) => buscarEquipoLPF(e.target.value));
+
+// Link compartido con ?equipo_lpf=...: cambia a la pestaña LPF y abre la
+// ficha directo (equivalente al ?equipo= de Nacional). Solo la primera vez.
+let _fichaLPFDesdeUrlAbierta = false;
+function abrirFichaLPFDesdeUrl(){
+  if (_fichaLPFDesdeUrlAbierta) return;
+  const equipoUrl = new URLSearchParams(window.location.search).get('equipo_lpf');
+  if (!equipoUrl) return;
+  _fichaLPFDesdeUrlAbierta = true;
+  setLiga('lpf');
+  const input = document.getElementById('team-search-lpf');
+  if (input) input.value = equipoUrl;
+  buscarEquipoLPF(equipoUrl);
+}
 
 /* ---------- SIMULAR HASTA CAMPEÓN (LPF) ---------- */
 function poblarSelectEquiposLPF(){
@@ -2088,7 +2312,7 @@ const HERO_TEXTOS = {
     ascensosLbl: "Ascensos por edición",
   },
   lpf: {
-    eyebrow: () => `TEMPORADA 2026 — CLAUSURA SIMULADO`,
+    eyebrow: () => `SIMULACIÓN MONTE CARLO — <span id="hero-n">${(DATA_LPF && DATA_LPF.n_simulaciones) || 0}</span> CORRIDAS`,
     titulo: "LIGA PROFESIONAL",
     sub: "Apertura 2026 ya jugado (dato real) + Clausura simulado con el mismo modelo Poisson — playoffs cruzados, Tabla Anual, copas internacionales y Trofeo de Campeones.",
     ascensosLbl: "Playoffs (equipos)",

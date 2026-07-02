@@ -31,9 +31,14 @@ from fastapi.responses import JSONResponse, RedirectResponse
 from pydantic import BaseModel
 
 from main import correr_simulacion, simular_hasta_campeon
+from main_lpf import correr_simulacion_lpf, simular_hasta_campeon_lpf
 from actualizar_resultados import actualizar
+from actualizar_resultados_lpf import actualizar as actualizar_lpf
 
 N_SIMULACIONES = 1000
+# La simulación de LPF es más pesada por corrida (playoffs + tabla anual +
+# descensos dentro del Monte Carlo), por eso el default es más bajo.
+N_SIMULACIONES_LPF = 300
 # Mismos límites que usaba servidor.py: evitan que un valor mal formado
 # o abusivo tumbe la función o la haga correr durante horas.
 N_SIMULACIONES_MIN = 50
@@ -66,6 +71,10 @@ _lock_simulacion = threading.Lock()
 
 class SimularBody(BaseModel):
     n_sims: int = N_SIMULACIONES
+
+
+class SimularLPFBody(BaseModel):
+    n_sims: int = N_SIMULACIONES_LPF
 
 
 class SimularCampeonBody(BaseModel):
@@ -137,6 +146,77 @@ def simular_campeon(body: SimularCampeonBody):
     except ValueError as e:
         # simular_hasta_campeon levanta ValueError si el nombre de equipo
         # no existe (con sugerencias si hay coincidencias parciales)
+        return JSONResponse(status_code=400, content={"error": str(e)})
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
+    finally:
+        _lock_simulacion.release()
+
+
+@app.post("/api/simular-lpf")
+def simular_lpf(body: SimularLPFBody = SimularLPFBody()):
+    """Corre la simulación completa de la LPF (Clausura + playoffs + tabla
+    anual + copas + Trofeo) con el n_sims pedido y devuelve el resultado
+    directo en la respuesta (guardar_json=False: el filesystem de Vercel
+    es de solo lectura)."""
+    n_sims = _clamp_n_sims(body.n_sims)
+
+    if not _lock_simulacion.acquire(blocking=False):
+        return JSONResponse(
+            status_code=409,
+            content={"error": "Ya hay una simulación corriendo, esperá a que termine"},
+        )
+    try:
+        datos = correr_simulacion_lpf(imprimir=False, guardar_json=False, n_sims=n_sims)
+        return datos
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
+    finally:
+        _lock_simulacion.release()
+
+
+@app.post("/api/actualizar-lpf")
+def actualizar_lpf_endpoint(body: SimularLPFBody = SimularLPFBody()):
+    """Scrapea Promiedos (LPF) y, si hay partidos nuevos, actualiza los CSV
+    y re-simula con correr_simulacion_lpf. Igual que /api/actualizar: en
+    Vercel los cambios quedan en /tmp mientras la instancia esté tibia."""
+    n_sims = _clamp_n_sims(body.n_sims)
+
+    if not _lock_simulacion.acquire(blocking=False):
+        return JSONResponse(
+            status_code=409,
+            content={"error": "Ya hay una simulación/actualización corriendo, esperá a que termine"},
+        )
+    try:
+        resultado = actualizar_lpf(n_sims=n_sims, correr_simulacion_fn=correr_simulacion_lpf, imprimir=False)
+        return resultado
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
+    finally:
+        _lock_simulacion.release()
+
+
+@app.post("/api/simular-campeon-lpf")
+def simular_campeon_lpf(body: SimularCampeonBody):
+    """Corre simular_hasta_campeon_lpf() del equipo pedido y devuelve esa
+    temporada completa (tablas del Clausura y bracket de playoffs)."""
+    equipo_objetivo = body.equipo.strip()
+    if not equipo_objetivo:
+        return JSONResponse(status_code=400, content={"error": "Falta indicar el equipo"})
+
+    max_intentos = _clamp_max_intentos(body.max_intentos)
+
+    if not _lock_simulacion.acquire(blocking=False):
+        return JSONResponse(
+            status_code=409,
+            content={"error": "Ya hay una simulación corriendo, esperá a que termine"},
+        )
+    try:
+        resultado = simular_hasta_campeon_lpf(equipo_objetivo, max_intentos=max_intentos, imprimir=False)
+        if resultado is None:
+            return {"logrado": False, "equipo": equipo_objetivo, "max_intentos": max_intentos}
+        return {"logrado": True, **resultado}
+    except ValueError as e:
         return JSONResponse(status_code=400, content={"error": str(e)})
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
