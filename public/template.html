@@ -1158,6 +1158,15 @@ function apiErrorSuffix(error){
   return error.status === 409 ? "" : " — revisá que la API esté disponible.";
 }
 
+function setApiErrorStatus(status, prefix, error){
+  status.classList.add('error');
+  if (error.status === 409){
+    status.textContent = error.message;
+    return;
+  }
+  status.textContent = prefix + ": " + error.message + apiErrorSuffix(error);
+}
+
 function setApiActionsDisabled(disabled){
   document.querySelectorAll('.btn-simular, .btn-actualizar').forEach(btn => {
     btn.disabled = disabled;
@@ -1269,8 +1278,7 @@ async function correrSimulacion(){
         status.classList.add('ok');
         status.textContent = "✓ Simulación actualizada (" + (DATA.generado || "") + ")";
     } catch (e) {
-        status.classList.add('error');
-        status.textContent = "No se pudo correr la simulación: " + e.message + apiErrorSuffix(e);
+        setApiErrorStatus(status, "No se pudo correr la simulación", e);
     } finally {
         btn.disabled = false;
         input.disabled = false;
@@ -1335,8 +1343,7 @@ async function correrActualizacion(){
 
         lastUpdate.textContent = "Última consulta a Promiedos: " + new Date().toLocaleString('es-AR');
     } catch (e) {
-        status.classList.add('error');
-        status.textContent = "No se pudo actualizar: " + e.message + apiErrorSuffix(e);
+        setApiErrorStatus(status, "No se pudo actualizar", e);
     } finally {
         btn.disabled = false;
         input.disabled = false;
@@ -1729,8 +1736,7 @@ async function simularHastaCampeon(){
     status.classList.add('ok');
     status.textContent = `✓ Encontrado en el intento N° ${cuerpo.intentos}`;
   } catch (e) {
-    status.classList.add('error');
-    status.textContent = "No se pudo simular: " + e.message + apiErrorSuffix(e);
+    setApiErrorStatus(status, "No se pudo simular", e);
   } finally {
     btn.disabled = false;
     sel.disabled = false;
@@ -2139,8 +2145,7 @@ async function correrSimulacionLPF(){
     status.classList.add('ok');
     status.textContent = "✓ Simulación actualizada (" + (DATA_LPF.generado || "") + ")";
   } catch (e) {
-    status.classList.add('error');
-    status.textContent = "No se pudo simular: " + e.message + apiErrorSuffix(e);
+    setApiErrorStatus(status, "No se pudo simular", e);
   } finally {
     btn.disabled = false;
     input.disabled = false;
@@ -2190,8 +2195,7 @@ async function correrActualizacionLPF(){
 
     lastUpdate.textContent = "Última consulta a Promiedos: " + new Date().toLocaleString('es-AR');
   } catch (e) {
-    status.classList.add('error');
-    status.textContent = "No se pudo actualizar: " + e.message + apiErrorSuffix(e);
+    setApiErrorStatus(status, "No se pudo actualizar", e);
   } finally {
     btn.disabled = false;
     input.disabled = false;
@@ -2395,8 +2399,7 @@ async function simularHastaCampeonLPF(){
     status.classList.add('ok');
     status.textContent = `✓ Encontrado en el intento N° ${cuerpo.intentos}`;
   } catch (e) {
-    status.classList.add('error');
-    status.textContent = "No se pudo simular: " + e.message + apiErrorSuffix(e);
+    setApiErrorStatus(status, "No se pudo simular", e);
   } finally {
     btn.disabled = false;
     sel.disabled = false;
