@@ -4,21 +4,15 @@ rutas.py
 
 Resuelve dónde leer/escribir los archivos de datos según el entorno:
 
-- Local (servidor.py, CLI): lee y escribe directo en la carpeta del
-  repo, como siempre.
-- Vercel Functions: el filesystem del deploy es de solo lectura, así
-  que cualquier escritura (fixture.csv, resultados.csv, goleadores.csv,
-  tabla.csv, log_actualizaciones.json) se redirige a /tmp, sembrado con
-  una copia de datos/ la primera vez que se necesita.
+- Local (servidor.py, CLI): lee y escribe directo en la carpeta del repo.
+- Render: lee y escribe en SIMULADOR_STATE_DIR (por default /var/data si
+  está definida la variable RENDER), pensado para montar ahí un Persistent
+  Disk. La primera vez copia datos/ y public/ desde el repo.
+- Vercel Functions: mantiene el fallback viejo a /tmp, sembrado con una
+  copia de datos/ la primera vez que se necesita.
 
-IMPORTANTE - limitación de /tmp en Vercel: no persiste entre cold
-starts, no se comparte entre instancias, y se pierde en cada nuevo
-deploy. O sea, /api/actualizar funciona de punta a punta (scrapea,
-actualiza tabla/goleadores, re-simula) dentro de la misma instancia
-tibia, pero no es una base de datos durable. Para que los cambios
-sobrevivan hace falta correr actualizar_resultados.py en algún lado con
-filesystem persistente (local, o un job de CI que commitee los CSV
-actualizados) o migrar estos CSV a una base de datos real.
+IMPORTANTE - /tmp en Vercel no es durable. En Render, la persistencia real
+depende de que SIMULADOR_STATE_DIR apunte a un Persistent Disk.
 """
 import os
 import shutil
@@ -31,18 +25,49 @@ def en_vercel() -> bool:
     return bool(os.environ.get("VERCEL"))
 
 
+def en_render() -> bool:
+    return bool(os.environ.get("RENDER") or os.environ.get("RENDER_SERVICE_ID"))
+
+
 def base_escribible() -> Path:
-    return Path("/tmp") if en_vercel() else REPO_DIR
+    configurada = os.environ.get("SIMULADOR_STATE_DIR")
+    if configurada:
+        return Path(configurada)
+    if en_render():
+        return Path("/var/data")
+    if en_vercel():
+        return Path("/tmp")
+    return REPO_DIR
 
 
-def datos_dir() -> Path:
-    """Carpeta datos/ activa: la del repo en local, o una copia en /tmp
-    (creada la primera vez que se pide) cuando corre como Vercel Function."""
-    destino = base_escribible() / "datos"
-    if en_vercel() and not destino.exists():
-        shutil.copytree(REPO_DIR / "datos", destino)
+def _sembrar_directorio(nombre: str) -> Path:
+    base = base_escribible()
+    if base == REPO_DIR:
+        return REPO_DIR / nombre
+
+    destino = base / nombre
+    if not destino.exists():
+        origen = REPO_DIR / nombre
+        destino.parent.mkdir(parents=True, exist_ok=True)
+        if origen.exists():
+            shutil.copytree(origen, destino)
+        else:
+            destino.mkdir(parents=True, exist_ok=True)
     return destino
 
 
+def datos_dir() -> Path:
+    """Carpeta datos/ activa."""
+    return _sembrar_directorio("datos")
+
+
+def public_dir() -> Path:
+    """Carpeta public/ activa para estáticos y JSON generados."""
+    return _sembrar_directorio("public")
+
+
 def log_path() -> Path:
-    return base_escribible() / "log_actualizaciones.json"
+    base = base_escribible()
+    if base != REPO_DIR:
+        base.mkdir(parents=True, exist_ok=True)
+    return base / "log_actualizaciones.json"

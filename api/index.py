@@ -2,17 +2,16 @@
 """
 api/index.py
 
-Backend como Vercel Function (FastAPI/ASGI). Expone la misma
-funcionalidad que servidor.py (simular / actualizar) pero pensada para
-un filesystem de solo lectura -- ver rutas.py para el detalle de qué
-implica eso para /api/actualizar.
+Backend FastAPI/ASGI. Expone la misma funcionalidad que servidor.py
+(simular / actualizar) y también puede servir el dashboard estático en
+Render. Ver rutas.py para el manejo de datos persistentes.
 
 Local (con uvicorn instalado):
     uvicorn api.index:app --reload
     -> http://localhost:8000/api/health
 
-Vercel:
-    vercel.json enruta /api/* acá (ver "rewrites").
+Render:
+    uvicorn api.index:app --host 0.0.0.0 --port $PORT
 """
 import sys
 import threading
@@ -28,8 +27,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
+import rutas
 from main import correr_simulacion, simular_hasta_campeon
 from main_lpf import correr_simulacion_lpf, simular_hasta_campeon_lpf
 from actualizar_resultados import actualizar
@@ -102,9 +103,8 @@ def root():
 
 @app.post("/api/simular")
 def simular(body: SimularBody = SimularBody()):
-    """Corre la simulación con los datos ya presentes en el deploy y
-    devuelve el resultado directo en la respuesta (no se persiste nada:
-    ver guardar_json=False)."""
+    """Corre la simulación con los datos ya presentes y devuelve el
+    resultado directo en la respuesta."""
     n_sims = _clamp_n_sims(body.n_sims)
 
     if not _lock_simulacion.acquire(blocking=False):
@@ -157,8 +157,7 @@ def simular_campeon(body: SimularCampeonBody):
 def simular_lpf(body: SimularLPFBody = SimularLPFBody()):
     """Corre la simulación completa de la LPF (Clausura + playoffs + tabla
     anual + copas + Trofeo) con el n_sims pedido y devuelve el resultado
-    directo en la respuesta (guardar_json=False: el filesystem de Vercel
-    es de solo lectura)."""
+    directo en la respuesta."""
     n_sims = _clamp_n_sims(body.n_sims)
 
     if not _lock_simulacion.acquire(blocking=False):
@@ -178,8 +177,7 @@ def simular_lpf(body: SimularLPFBody = SimularLPFBody()):
 @app.post("/api/actualizar-lpf")
 def actualizar_lpf_endpoint(body: SimularLPFBody = SimularLPFBody()):
     """Scrapea Promiedos (LPF) y, si hay partidos nuevos, actualiza los CSV
-    y re-simula con correr_simulacion_lpf. Igual que /api/actualizar: en
-    Vercel los cambios quedan en /tmp mientras la instancia esté tibia."""
+    y re-simula con correr_simulacion_lpf."""
     n_sims = _clamp_n_sims(body.n_sims)
 
     if not _lock_simulacion.acquire(blocking=False):
@@ -227,9 +225,7 @@ def simular_campeon_lpf(body: SimularCampeonBody):
 @app.post("/api/actualizar")
 def actualizar_endpoint(body: SimularBody = SimularBody()):
     """Scrapea Promiedos y, si hay partidos nuevos, actualiza
-    tabla/goleadores y re-simula. Ver rutas.py: en Vercel esos cambios
-    quedan en /tmp (viven mientras la instancia esté tibia), no se
-    escriben de vuelta al deploy."""
+    tabla/goleadores y re-simula."""
     n_sims = _clamp_n_sims(body.n_sims)
 
     if not _lock_simulacion.acquire(blocking=False):
@@ -244,3 +240,9 @@ def actualizar_endpoint(body: SimularBody = SimularBody()):
         return JSONResponse(status_code=500, content={"error": str(e)})
     finally:
         _lock_simulacion.release()
+
+
+# En Render este mismo proceso sirve el dashboard de public/. En Vercel,
+# las rutas estáticas siguen siendo responsabilidad de Vercel y /api/*
+# llega a esta app por rewrite.
+app.mount("/", StaticFiles(directory=str(rutas.public_dir()), html=True), name="public")

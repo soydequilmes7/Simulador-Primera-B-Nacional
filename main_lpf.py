@@ -1,10 +1,10 @@
 import json
 from datetime import datetime
-from pathlib import Path
 
+import rutas
 from modelos.estadisticas_lpf import EstadisticasLPF
 
-RUTA_JSON_LPF = Path(__file__).parent / "public" / "data_lpf.json"
+RUTA_JSON_LPF = rutas.public_dir() / "data_lpf.json"
 
 
 def _tabla_a_lista(tabla_df):
