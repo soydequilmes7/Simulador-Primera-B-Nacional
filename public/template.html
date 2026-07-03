@@ -51,6 +51,17 @@
     --azul: #2C5DA8;
     --azul-dim: #DFE8F7;
 
+    /* tokens semánticos para tabla de posiciones */
+    --leader-bg: #F6ECD2;
+    --leader-accent: #B8860B;
+    --leader-text: #8A5F0A;
+    --qualified-bg: #DFE8F7;
+    --qualified-accent: #2C5DA8;
+    --qualified-text: #1D3F76;
+    --relegation-bg: #FBE1DF;
+    --relegation-accent: #C93B32;
+    --relegation-text: #9A2A24;
+
     /* tokens de forma: planos y sobrios */
     --radius: 4px;
     --radius-sm: 3px;
@@ -66,6 +77,8 @@
     --btn-ink: #FFFFFF;
     --table-head-bg: #EEF2F9;
     --hover-lift: none;
+    --bracket-line: #2C5DA8;
+    --bracket-line-glow: rgba(44, 93, 168, 0.22);
   }
 
   /* Botones institucionales: borde dorado, sin celeste */
@@ -101,6 +114,17 @@
     --azul: #0E86D4;
     --azul-dim: #DCEFFB;
 
+    /* tokens semánticos para tabla de posiciones */
+    --leader-bg: #F6ECD2;
+    --leader-accent: #B8860B;
+    --leader-text: #8A5F0A;
+    --qualified-bg: #DCEFFB;
+    --qualified-accent: #0E86D4;
+    --qualified-text: #084D7A;
+    --relegation-bg: #FBE3E3;
+    --relegation-accent: #D14545;
+    --relegation-text: #9C2A2A;
+
     /* tokens de forma: redondeado, sombra suave, gradientes discretos */
     --radius: 16px;
     --radius-sm: 10px;
@@ -116,6 +140,8 @@
     --btn-ink: #FFFFFF;
     --table-head-bg: linear-gradient(180deg, #F0F5FF, #E7EFFD);
     --hover-lift: translateY(-2px);
+    --bracket-line: #0E86D4;
+    --bracket-line-glow: rgba(14, 134, 212, 0.22);
   }
 
   /* ---------- MODO OSCURO GLOBAL ---------- */
@@ -128,8 +154,24 @@
     --ink: #F5F7FA;
     --ink-dim: #C7CEDB;
     --muted: #8993A8;
-    --amber: #D8A53B;
-    --amber-dim: rgba(216,165,59,0.14);
+    --amber: #E8C468;
+    --amber-dim: rgba(232,196,104,0.16);
+    --azul: #6FB6FF;
+    --azul-dim: rgba(111,182,255,0.16);
+    --danger: #FF7A70;
+    --danger-dim: rgba(255,122,112,0.16);
+
+    /* tokens semánticos para tabla de posiciones (fondos sólidos, integrados con el UI oscuro) */
+    --leader-bg: #352E1F;
+    --leader-accent: #E8AA19;
+    --leader-text: #FFD16B;
+    --qualified-bg: #101F38;
+    --qualified-accent: #4F8CFF;
+    --qualified-text: #8DB9FF;
+    --relegation-bg: #392126;
+    --relegation-accent: #EF5350;
+    --relegation-text: #FF9A96;
+
     --hero-bg: linear-gradient(160deg, #0B1220 0%, #16233B 60%, #1C2C48 100%);
     --hero-ink: #F5F7FA;
     --hero-dim: #C7CEDB;
@@ -140,6 +182,8 @@
     --table-head-bg: #1C2C48;
     --card-shadow: 0 2px 10px rgba(0,0,0,0.5);
     --card-shadow-hover: 0 4px 16px rgba(0,0,0,0.6);
+    --bracket-line: #E8C468;
+    --bracket-line-glow: rgba(216, 165, 59, 0.34);
   }
 
   body.dark.liga-lpf{
@@ -162,6 +206,18 @@
     --amber-dim: rgba(232,196,104,0.16);
     --danger: #FF7A70;
     --danger-dim: rgba(255,122,112,0.16);
+
+    /* tokens semánticos para tabla de posiciones */
+    --leader-bg: #352E1F;
+    --leader-accent: #E8AA19;
+    --leader-text: #FFD16B;
+    --qualified-bg: #163258;
+    --qualified-accent: #39B8FF;
+    --qualified-text: #85D0FF;
+    --relegation-bg: #3B2124;
+    --relegation-accent: #FF7A70;
+    --relegation-text: #FF9A96;
+
     --hero-bg: linear-gradient(160deg, #040A18 0%, #081426 55%, #102544 100%);
     --hero-ink: #F5F7FA;
     --hero-dim: #AEB8CC;
@@ -172,6 +228,8 @@
     --table-head-bg: linear-gradient(180deg, #0F2038, #0B1A30);
     --card-shadow: 0 4px 18px rgba(0,0,0,0.45);
     --card-shadow-hover: 0 10px 28px rgba(0,0,0,0.55);
+    --bracket-line: #39B8FF;
+    --bracket-line-glow: rgba(57, 184, 255, 0.34);
   }
 
   /* transición suave y coherente entre torneos y entre modo claro/oscuro */
@@ -193,6 +251,7 @@
     font-family: 'Inter', sans-serif;
     line-height: 1.5;
     padding-bottom: 80px;
+    overflow-x: clip;
     transition: background 0.45s ease, color 0.45s ease;
   }
   ::selection{ background: var(--amber); color: #fff; }
@@ -378,12 +437,14 @@
   .liga-tabs .group{
     display:flex; border:1px solid var(--line); border-radius: var(--radius-sm); overflow:hidden;
     background: var(--bg-panel);
+    max-width:100%;
   }
   body.liga-lpf .liga-tabs .group{ border-radius:999px; box-shadow: var(--card-shadow); }
   .liga-tab{
     font-family:'Oswald', sans-serif; font-size:14px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em;
     padding: 11px 26px; cursor:pointer; background:transparent; border:none; color:var(--muted);
     transition: background 0.25s ease, color 0.25s ease;
+    min-width:0;
   }
   .liga-tab.active{ background: var(--amber-dim); color: var(--amber); }
   body.liga-lpf .liga-tab.active{
@@ -494,7 +555,7 @@
 
   /* ---------- STANDINGS TABLE ---------- */
   .table-wrap{
-    border:1px solid var(--line); border-radius: var(--radius); overflow:hidden;
+    border:1px solid var(--line); border-radius: var(--radius); overflow:auto;
     background: var(--bg-panel);
     box-shadow: var(--card-shadow);
     transition: box-shadow 0.25s ease;
@@ -514,18 +575,39 @@
   tbody tr{ transition: background 0.15s ease; }
   tbody tr:hover{ background: var(--bg-panel-2); }
   tbody tr:last-child td{ border-bottom:none; }
-  tbody tr.punta{ background: var(--amber-dim); }
-  tbody tr.punta:hover{ background: var(--amber-dim); filter: brightness(0.98); }
-  tbody tr.punta td:nth-child(2){ color: var(--amber); font-weight:700; }
-  tbody tr.punta{ box-shadow: inset 3px 0 0 var(--amber); }
-  tbody tr.reducido{ background: var(--azul-dim); }
-  tbody tr.reducido:hover{ filter: brightness(0.98); }
-  tbody tr.reducido td:nth-child(2){ color: var(--azul); font-weight:600; }
-  tbody tr.reducido{ box-shadow: inset 3px 0 0 var(--azul); }
-  tbody tr.descenso{ background: var(--danger-dim); }
-  tbody tr.descenso:hover{ filter: brightness(0.98); }
-  tbody tr.descenso td:nth-child(2){ color: var(--danger); }
-  tbody tr.descenso{ box-shadow: inset 3px 0 0 var(--danger); }
+  /* ---------- Filas destacadas: tokens semánticos ----------
+     .punta = líder | .reducido = clasificados | .descenso = zona de descenso
+     Cada estado combina fondo teñido + borde izquierdo 3px + nombre semántico.
+     Los números (PTS/GF/GC/DG) siempre usan --ink para conservar legibilidad. */
+  tbody tr.punta{ background: var(--leader-bg); box-shadow: inset 3px 0 0 var(--leader-accent); }
+  tbody tr.punta:hover{ background: var(--leader-bg); }
+  tbody tr.punta td{ color: var(--ink); }
+  tbody tr.punta td:first-child{ color: var(--muted); }
+  tbody tr.punta td:nth-child(2){ color: var(--leader-text); font-weight:700; }
+
+  tbody tr.reducido{ background: var(--qualified-bg); box-shadow: inset 3px 0 0 var(--qualified-accent); }
+  tbody tr.reducido:hover{ background: var(--qualified-bg); }
+  tbody tr.reducido td{ color: var(--ink); }
+  tbody tr.reducido td:first-child{ color: var(--muted); }
+  tbody tr.reducido td:nth-child(2){ color: var(--qualified-text); font-weight:600; }
+
+  tbody tr.descenso{ background: var(--relegation-bg); box-shadow: inset 3px 0 0 var(--relegation-accent); }
+  tbody tr.descenso:hover{ background: var(--relegation-bg); }
+  tbody tr.descenso td{ color: var(--ink); }
+  tbody tr.descenso td:first-child{ color: var(--muted); }
+  tbody tr.descenso td:nth-child(2){ color: var(--relegation-text); font-weight:600; }
+
+  body.dark:not(.liga-lpf) #sec-tabla{
+    --leader-bg: linear-gradient(90deg, rgba(76,55,24,0.84) 0%, rgba(48,40,29,0.78) 48%, rgba(22,35,59,0.48) 100%);
+    --leader-accent: #C89124;
+    --leader-text: #DDB35A;
+    --qualified-bg: linear-gradient(90deg, rgba(21,50,83,0.86) 0%, rgba(18,42,71,0.78) 48%, rgba(22,35,59,0.48) 100%);
+    --qualified-accent: #3F78C8;
+    --qualified-text: #7FA9DE;
+    --relegation-bg: linear-gradient(90deg, rgba(82,34,38,0.86) 0%, rgba(58,31,36,0.78) 48%, rgba(22,35,59,0.48) 100%);
+    --relegation-accent: #C44F49;
+    --relegation-text: #DE817B;
+  }
 
   /* Tabla Anual LPF: clasificados a copas internacionales.
      Libertadores (campeón Apertura, Clausura, Copa Argentina + mejores 3 de tabla anual)
@@ -558,11 +640,60 @@
   .ascenso-footer b{ color: var(--amber); }
 
   /* ---------- BRACKET ---------- */
+  .bracket-wrap{ position:relative; }
+  /* Los cuadros pueden tener mucha más altura que la pantalla (una ronda
+     con muchos cruces), así que las flechas se anclan al centro vertical
+     de la ventana (sticky) en vez de al centro de todo el cuadro. */
+  .bracket-nav-anchor{ position:sticky; top:50vh; height:0; width:100%; z-index:5; }
+  .bracket-nav{
+    position:absolute; top:0; transform:translateY(-50%);
+    width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    background:var(--bg-panel); border:1px solid var(--line); box-shadow:var(--card-shadow);
+    color:var(--ink); font-size:16px; line-height:1; cursor:pointer;
+    transition:opacity 0.15s ease, border-color 0.15s ease;
+  }
+  .bracket-nav:hover{ border-color:var(--azul); }
+  .bracket-nav-prev{ left:-12px; }
+  .bracket-nav-next{ right:-12px; }
+  .bracket-nav.is-hidden{ opacity:0; pointer-events:none; }
+  .bracket-wrap:not(.scrollable) .bracket-nav{ display:none; }
+  @media (max-width:760px){ .bracket-nav{ display:none; } }
   .bracket-scroll{ overflow-x:auto; padding: 10px 4px 18px; }
-  .bracket{ display:flex; gap: clamp(8px, 2vw, 28px); align-items:stretch; width:100%; }
-  .round{ display:flex; flex-direction:column; flex:1 1 0; min-width:0; }
+  /* Copa Argentina: se pidió sacar la barra de scroll nativa (se veía como
+     una franja gris con una flechita al final) — el cuadro se sigue
+     pudiendo deslizar con el dedo/trackpad, y para navegar con mouse
+     quedan las flechas ‹ › (.bracket-nav) ya presentes en todos los
+     cuadros. */
+  #sec-copa-cuadro .bracket-scroll,
+  #campeon-section-copa .bracket-scroll{
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Edge/IE viejo */
+  }
+  #sec-copa-cuadro .bracket-scroll::-webkit-scrollbar,
+  #campeon-section-copa .bracket-scroll::-webkit-scrollbar{
+    display: none; /* Chrome/Safari/Edge nuevo */
+  }
+  .bracket{ position:relative; display:flex; gap: clamp(8px, 2vw, 28px); align-items:stretch; width:100%; }
+  .bracket-lines{ position:absolute; top:0; left:0; z-index:4; overflow:visible; pointer-events:none; }
+  .bracket-lines path{
+    fill:none; stroke:var(--bracket-line); stroke-width:4;
+    stroke-linecap:round; stroke-linejoin:round;
+    filter: drop-shadow(0 0 5px var(--bracket-line-glow));
+  }
+  .round{ position:relative; z-index:2; display:flex; flex-direction:column; flex:1 1 0; min-width:0; }
   .round-title{ font-family:'JetBrains Mono'; font-size:10px; color:var(--muted); text-align:center; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:14px; flex-shrink:0; }
-  .round-body{ display:flex; flex-direction:column; justify-content:center; flex:1; gap:14px; }
+  .round-body{ display:flex; flex-direction:column; justify-content:center; flex:1; gap:14px; position:relative; }
+  /* A partir de la 2da ronda, cada partido se reubica por JS a la altura
+     media de los dos partidos de los que sale (ver buildBracketLines):
+     con space-around/center puro, una ronda con pocos partidos (semis,
+     final) quedaba repartida en TODO el alto del cuadro (fijado por la
+     ronda con más partidos), y la línea que conecta terminaba siendo
+     gigante e invisible en pantalla. */
+  /* .js-positioned se aplica tanto a los .match reubicados como a
+     elementos "extra" del round-body (el cartel .campeon de la final,
+     o el .match.note de "+X entra directo") que deben acompañar el
+     movimiento del último partido real de su ronda — ver buildBracketLines. */
+  .round-body > .js-positioned{ position:absolute; left:0; right:0; margin:0; }
   .match{
     position:relative; border:1px solid var(--line); border-radius: var(--radius-sm);
     background: var(--bg-panel);
@@ -574,10 +705,7 @@
   .match .row{ display:flex; justify-content:space-between; padding:3px 0; color: var(--ink-dim); }
   .match .row.winner{ color:var(--amber); font-weight:700; }
   .match .row span:first-child{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:100%; min-width:0; }
-  .match::after{
-    content:""; position:absolute; right:-16px; top:50%; width:16px; height:1px; background:var(--line);
-  }
-  .round:last-child .match::after{ display:none; }
+  .match .row span:last-child{ flex:0 0 auto; min-width:2ch; margin-left:8px; text-align:right; }
   .match.note{ font-size:10px; color:var(--muted); border-style:dashed; box-shadow:none; }
   .final-col .round-body{ align-items:center; }
   .final-col .match{ width:100%; }
@@ -590,6 +718,18 @@
   .final-col .campeon{
     margin-top:14px; font-family:'Oswald'; color:var(--amber); font-size:16px;
     text-transform:uppercase; letter-spacing:0.02em; text-align:center;
+  }
+  /* Cartel del campeón como pie de página del cuadro completo, en vez de
+     vivir DENTRO del round-body de la final: ese último se reposiciona
+     por JS junto con los demás partidos (ver buildBracketLines) y,
+     apenas el cuadro tiene varias rondas, terminaba quedando muy lejos
+     del partido final. Como pie, siempre está justo debajo de todo el
+     cuadro, sin depender de ningún cálculo de altura. */
+  .campeon-anuncio-wrap:empty{ display:none; }
+  .campeon-anuncio{
+    margin-top:18px; padding-top:16px; border-top:1px dashed var(--line);
+    font-family:'Oswald'; color:var(--amber); font-size:18px;
+    text-transform:uppercase; letter-spacing:0.03em; text-align:center;
   }
 
   /* ---------- MONTE CARLO BARS ---------- */
@@ -657,6 +797,15 @@
 
   /* ---------- SIMULAR HASTA CAMPEÓN ---------- */
   .campeon-controls{ display:flex; gap:10px; flex-wrap:wrap; justify-content:center; align-items:center; margin-bottom:6px; }
+  /* Bordecito propio para la sección "Simulá hasta el título" de Liga
+     Profesional, para que se distinga del fondo como una tarjeta —el
+     mismo peso visual (color y grosor) que ya usa el select "Elegí un
+     equipo"— en vez de quedar flotando sin límites como el resto de
+     .search-section en esta liga. */
+  #campeon-section-lpf{
+    border: 1px solid var(--line); border-radius: var(--radius);
+    padding-bottom: 28px;
+  }
   #campeon-equipo{
     font-family:'JetBrains Mono'; font-size:13px; font-weight:600; color: var(--ink);
     background: var(--bg-panel); border:1px solid var(--line); border-radius: var(--radius-sm);
@@ -772,7 +921,57 @@
   @media (max-width: 600px){
     .hero{ padding:48px 16px 32px; }
     section{ padding: 44px 16px 0; }
+    table{ min-width:520px; }
     thead th, tbody td{ padding:8px 6px; font-size:12px; }
+    .liga-tabs{
+      align-items:stretch;
+      gap:10px;
+      padding:10px 12px;
+    }
+    .liga-tabs .group{
+      width:100%;
+      flex:1 1 100%;
+    }
+    .liga-tab{
+      flex:1 1 0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      min-height:54px;
+      padding:9px 8px;
+      font-size:13px;
+      line-height:1.15;
+      letter-spacing:0.02em;
+      text-align:center;
+      white-space:normal;
+      overflow-wrap:anywhere;
+    }
+    .theme-toggle{
+      margin:0 auto;
+      min-height:42px;
+    }
+    .zone-tabs{
+      padding:10px 12px;
+    }
+    .zone-tabs .group{
+      width:min(100%, 360px);
+    }
+    .zone-tab{
+      flex:1 1 0;
+      padding:10px 8px;
+      text-align:center;
+    }
+    .mc-row{
+      grid-template-columns: 22px minmax(0, 1fr);
+      gap:10px;
+    }
+    .mc-desc{
+      grid-column:2;
+      text-align:left;
+    }
+    .mc-desc .desc-bar-track{
+      max-width:180px;
+    }
   }
 
   /* ---------- BRACKET RESPONSIVE (stack vertical, sin scroll manual) ---------- */
@@ -780,8 +979,21 @@
     .bracket-scroll{ overflow-x:hidden; }
     .bracket{ flex-direction: column; gap: 22px; }
     .round{ width:100%; }
-    .match::after{ display:none; }
-    .round-body{ gap:10px; }
+    .round-body{ gap:10px; justify-content:flex-start; }
+    .bracket-lines{ display:none; }
+    .round-body > .js-positioned{
+      position:relative;
+      top:auto !important;
+      left:auto;
+      right:auto;
+    }
+    .match{
+      width:100%;
+      padding:10px 12px;
+    }
+    .match.note{
+      text-align:center;
+    }
   }
 
   /* ============================================================
@@ -826,6 +1038,8 @@
     --btn-ink: #FFFFFF;
     --table-head-bg: rgba(110,193,228,0.14);
     --hover-lift: translateY(-2px);
+    --bracket-line: #1E8FC9;
+    --bracket-line-glow: rgba(30, 143, 201, 0.26);
 
     /* vidrio del tema (lo usan las tarjetas de abajo) */
     --copa-glass: linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(245,250,254,0.82) 100%);
@@ -859,6 +1073,8 @@
     --card-grad: linear-gradient(180deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.02) 100%);
     --tabs-bg: rgba(15,28,51,0.88);
     --table-head-bg: rgba(110,193,228,0.1);
+    --bracket-line: #8DE3FF;
+    --bracket-line-glow: rgba(110, 193, 228, 0.5);
 
     --copa-glass: linear-gradient(180deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.025) 100%);
     --copa-glass-border: rgba(110,193,228,0.16);
@@ -907,6 +1123,13 @@
   body.liga-copa .mc-row:hover,
   body.liga-copa .match:hover{ border-color: var(--copa-glass-border-hover); }
 
+  /* Como acá .search-section tiene fondo/borde propio (tarjeta de vidrio),
+     dos tarjetas seguidas (buscador + "Simulá hasta el título") quedaban
+     pegadas borde con borde sin el margen que en Nacional/LPF no hace
+     falta (ahí las secciones son transparentes, así que el padding solo
+     ya se ve como espacio suficiente). Acá sí necesitan separación extra. */
+  body.liga-copa .search-section + .search-section{ margin-top: 28px; }
+
   /* Botones: degradado celeste→azul, forma pill, glow al pasar */
   body.liga-copa .btn-simular{
     border-radius: 999px;
@@ -952,17 +1175,17 @@
 
   /* Cruces mejor organizados: columnas legibles con scroll horizontal,
      alineación de árbol (cada ronda repartida a la altura de la
-     anterior), títulos que se quedan pegados al hacer scroll, y
-     distinción clara entre resultado real y simulado */
+     anterior), y distinción clara entre resultado real y simulado.
+     El título de ronda va en flujo normal (no sticky): al ser sticky
+     dentro de cada columna se despegaba de su round-body al scrollear
+     la página y terminaba superpuesto sobre los partidos. */
   body.liga-copa .bracket{ align-items: stretch; }
   body.liga-copa .bracket .round{ min-width: 220px; }
   body.liga-copa .bracket .round-body{ justify-content: space-around; gap: 10px; }
   body.liga-copa .round-title{
-    position: sticky; top: calc(var(--liga-h, 52px) + 6px); z-index: 2;
     background: var(--copa-glass);
     border: 1px solid var(--copa-glass-border);
     border-radius: 999px; padding: 6px 10px;
-    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
   }
   body.liga-copa .match.real{ border-left: 3px solid var(--zone-a); }
   body.liga-copa .match.sim{
@@ -1119,6 +1342,7 @@
     <div class="bracket-scroll">
       <div class="bracket" id="bracket"></div>
     </div>
+    <div class="campeon-anuncio-wrap" id="campeon-anuncio-reducido"></div>
   </section>
 
   <section id="sec-mc">
@@ -1248,6 +1472,7 @@
     <div class="bracket-scroll">
       <div class="bracket" id="bracket-lpf"></div>
     </div>
+    <div class="campeon-anuncio-wrap" id="campeon-anuncio-lpf"></div>
   </section>
 
   <section id="sec-lpf-mc">
@@ -1379,6 +1604,7 @@
     <div class="section-head"><span class="idx">01</span><h2>El cuadro, cruce por cruce</h2><div class="rule"></div></div>
     <p class="section-note">Los resultados reales quedan fijos; los cruces pendientes se simulan (partido único, cancha neutral, con alargue y penales). Cada corrida nueva puede dar un camino distinto.</p>
     <div class="bracket-scroll"><div class="bracket" id="bracket-copa"></div></div>
+    <div class="campeon-anuncio-wrap" id="campeon-anuncio-copa"></div>
   </section>
 
   <section id="sec-copa-mc">
@@ -1480,6 +1706,128 @@ function endApiAction(){
   setApiActionsDisabled(false);
 }
 
+/* ---------- SIMULADOR LOCAL (Pyodide, corre en el navegador) ----------
+ * Las simulaciones corren en un Web Worker con Pyodide, usando el mismo
+ * código Python que el backend (ver public/js/sim-worker.js y
+ * pysim_dispatch.py). Si el worker no está listo, tarda demasiado, o
+ * falla, cada función de simulación cae de vuelta a apiFetch() contra el
+ * backend, igual que antes. */
+const PYSIM_TIMEOUT_INIT_MS = 45000;  // tiempo máx. para que cargue Pyodide + numpy/pandas + código
+const PYSIM_TIMEOUT_RUN_MS = 180000;  // tiempo máx. por corrida dentro del worker
+
+let simWorker = null;
+let simWorkerState = "idle"; // idle | loading | ready | error
+let simWorkerReadyWaiters = [];
+let simWorkerRequestId = 0;
+const simWorkerPendientes = new Map();
+
+function iniciarSimWorker(){
+  if (simWorker) return;
+  try {
+    simWorker = new Worker('./js/sim-worker.js');
+  } catch (e) {
+    simWorkerState = "error";
+    return;
+  }
+  simWorkerState = "loading";
+
+  simWorker.onmessage = (event) => {
+    const msg = event.data || {};
+    if (msg.type === "status"){
+      if (msg.phase === "ready"){
+        simWorkerState = "ready";
+        simWorkerReadyWaiters.splice(0).forEach(resolve => resolve(true));
+      } else if (msg.phase === "error"){
+        simWorkerState = "error";
+        simWorkerReadyWaiters.splice(0).forEach(resolve => resolve(false));
+      }
+      return;
+    }
+    if (msg.type === "result"){
+      const pendiente = simWorkerPendientes.get(msg.id);
+      if (!pendiente) return;
+      simWorkerPendientes.delete(msg.id);
+      if (msg.ok) {
+        pendiente.resolve(msg.data);
+      } else {
+        pendiente.reject(Object.assign(new Error(msg.error || "Error en el simulador local"), { status: msg.status }));
+      }
+    }
+  };
+  simWorker.onerror = () => {
+    simWorkerState = "error";
+    simWorkerReadyWaiters.splice(0).forEach(resolve => resolve(false));
+  };
+
+  simWorker.postMessage({ type: "init", apiBase: API_BASE_URL });
+}
+
+function esperarSimWorkerListo(timeoutMs){
+  if (simWorkerState === "ready") return Promise.resolve(true);
+  if (simWorkerState === "error") return Promise.resolve(false);
+  return new Promise((resolve) => {
+    const timer = setTimeout(() => resolve(false), timeoutMs);
+    simWorkerReadyWaiters.push((ok) => { clearTimeout(timer); resolve(ok); });
+  });
+}
+
+function correrEnSimWorker(tarea, payload, timeoutMs){
+  return new Promise((resolve, reject) => {
+    const id = ++simWorkerRequestId;
+    const timer = setTimeout(() => {
+      simWorkerPendientes.delete(id);
+      reject(Object.assign(new Error("El simulador local tardó demasiado"), { timeout: true }));
+    }, timeoutMs);
+    simWorkerPendientes.set(id, {
+      resolve: (data) => { clearTimeout(timer); resolve(data); },
+      reject: (err) => { clearTimeout(timer); reject(err); },
+    });
+    simWorker.postMessage({ type: "run", id, tarea, payload });
+  });
+}
+
+// Arranca el worker en segundo plano apenas carga la página, para que ya
+// esté listo (o se sepa que falló) cuando el usuario apriete algún botón.
+iniciarSimWorker();
+
+/**
+ * Intenta correr la tarea en el simulador local (Pyodide). Si la
+ * infraestructura del worker no está disponible (no cargó, tardó
+ * demasiado, se cayó), cae al backend. Si en cambio el worker respondió
+ * con un error de negocio (ej: equipo inválido, status 400), ese error se
+ * propaga tal cual -- no tiene sentido reintentar contra el backend
+ * porque va a fallar por la misma razón.
+ */
+async function ejecutarSimulacion(tarea, payload, backendPath, statusEl){
+  iniciarSimWorker();
+  if (statusEl) statusEl.textContent = "Cargando simulador local (puede tardar unos segundos la primera vez)…";
+  const listo = await esperarSimWorkerListo(PYSIM_TIMEOUT_INIT_MS);
+
+  if (listo) {
+    try {
+      if (statusEl) statusEl.textContent = "Simulando en tu navegador…";
+      return await correrEnSimWorker(tarea, payload, PYSIM_TIMEOUT_RUN_MS);
+    } catch (errorLocal) {
+      if (typeof errorLocal.status === "number") {
+        // Error de negocio: el simulador local corrió bien y devolvió un
+        // error esperado (ej: equipo inexistente). No hay que reintentar.
+        throw errorLocal;
+      }
+      // Infra del worker falló a mitad de camino (timeout, crash) -> sigue al fallback de abajo.
+    }
+  }
+
+  if (statusEl) statusEl.textContent = "Simulador local no disponible — usando el servidor, puede tardar más…";
+  const respuesta = await apiFetch(apiUrl(backendPath), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+  const cuerpo = await respuesta.json().catch(() => ({}));
+  if (!respuesta.ok) throw apiResponseError(respuesta, cuerpo);
+  return cuerpo;
+}
+
 let DATA;
 
 async function cargarDatos() {
@@ -1544,20 +1892,10 @@ async function correrSimulacion(){
     status.textContent = `Corriendo ${nSims} simulaciones — puede tardar 1-2 minutos, no cierres esta pestaña.`;
 
     try {
-        const respuesta = await apiFetch(apiUrl("/api/simular"), {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ n_sims: Number(nSims) })
-        });
+        const cuerpo = await ejecutarSimulacion("simular", { n_sims: Number(nSims) }, "/api/simular", status);
 
-        const cuerpo = await respuesta.json().catch(() => ({}));
-
-        if (!respuesta.ok) {
-            throw apiResponseError(respuesta, cuerpo);
-        }
-
-        // La API devuelve el mismo contenido que data.json directo en la
-        // respuesta, así que renderizamos desde ahí en vez de volver a
+        // El simulador local (Pyodide) y la API devuelven el mismo shape
+        // que data.json, así que renderizamos desde ahí en vez de volver a
         // pedir data.json.
         DATA = cuerpo;
         iniciar();
@@ -1691,6 +2029,17 @@ function escudoHTML(nombre){
   return `<img class="escudo" src="escudos/${archivo}.png" alt="" loading="lazy" onerror="this.remove()">`;
 }
 
+// Cartel del campeón como pie del cuadro completo (ver .campeon-anuncio en
+// el CSS): antes vivía DENTRO del round-body de la final y dependía del
+// reposicionamiento por JS de esa ronda, lo que lo dejaba muy lejos del
+// partido final en cuadros con varias rondas. Ahora es un bloque aparte,
+// simple, que va siempre pegado debajo de todo el cuadro.
+function campeonAnuncioHTML(campeon, simbolo){
+  if (!campeon) return '';
+  return `<div class="campeon-anuncio">${simbolo || '▲'} ${escudoHTML(campeon)}${campeon}</div>`;
+}
+
+
 function renderTabla(zona){
   const body = document.getElementById('tabla-body');
   body.innerHTML = "";
@@ -1733,7 +2082,7 @@ function renderAscenso(){
 
 function matchHTML(m, roundLabel){
   const winnerIsLocal = m.avanza === m.local;
-  return `<div class="match">
+  return `<div class="match" data-local="${m.local}" data-visitante="${m.visitante}" data-avanza="${m.avanza || ''}">
     <div class="row ${winnerIsLocal ? 'winner':''}"><span>${escudoHTML(m.local)}${m.local}</span><span>${m.golesLocal}</span></div>
     <div class="row ${!winnerIsLocal ? 'winner':''}"><span>${escudoHTML(m.visitante)}${m.visitante}</span><span>${m.golesVisitante}</span></div>
   </div>`;
@@ -1765,19 +2114,20 @@ function renderBracket(){
   html += `<div class="round final-col">
     <div class="round-title">Final (ida y vuelta)</div>
     <div class="round-body">
-      <div class="match">
+      <div class="match" data-local="${r.semis[0] ? r.semis[0].avanza : ''}" data-visitante="${r.semis[1] ? r.semis[1].avanza : ''}">
         ${r.semis.map(m => {
           const equipo = m.avanza;
           const esCampeon = equipo === r.final.campeon;
-          return `<div class="row ${esCampeon ? 'winner' : ''}"><span>${equipo}</span></div>`;
+          return `<div class="row ${esCampeon ? 'winner' : ''}"><span>${escudoHTML(equipo)}${equipo}</span></div>`;
         }).join("")}
         <div class="leg-detail">${r.final.detalle}</div>
       </div>
-      <div class="campeon">▲ ${escudoHTML(r.final.campeon)}${r.final.campeon}</div>
     </div>
   </div>`;
 
   bracket.innerHTML = html;
+  const anuncio = document.getElementById('campeon-anuncio-reducido');
+  if (anuncio) anuncio.innerHTML = campeonAnuncioHTML(r.final.campeon, '▲');
 }
 
 function renderMC(zona){
@@ -2048,16 +2398,7 @@ async function simularHastaCampeon(){
   resultado.innerHTML = "";
 
   try {
-    const respuesta = await apiFetch(apiUrl("/api/simular-campeon"), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ equipo })
-    });
-    const cuerpo = await respuesta.json().catch(() => ({}));
-
-    if (!respuesta.ok) {
-      throw apiResponseError(respuesta, cuerpo);
-    }
+    const cuerpo = await ejecutarSimulacion("simular-campeon", { equipo }, "/api/simular-campeon", status);
 
     if (!cuerpo.logrado) {
       status.classList.add('error');
@@ -2138,7 +2479,7 @@ function renderCampeonResultado(r){
   bracketHTML += `<div class="round final-col">
     <div class="round-title">Final (ida y vuelta)</div>
     <div class="round-body">
-      <div class="match">
+      <div class="match" data-local="${red.semis[0] ? red.semis[0].avanza : ''}" data-visitante="${red.semis[1] ? red.semis[1].avanza : ''}">
         ${red.semis.map(m => {
           const nombreEquipo = m.avanza;
           const esCampeon = nombreEquipo === red.final.campeon;
@@ -2146,7 +2487,6 @@ function renderCampeonResultado(r){
         }).join("")}
         <div class="leg-detail">${red.final.detalle}</div>
       </div>
-      <div class="campeon">▲ ${escudoHTML(red.final.campeon)}${red.final.campeon}</div>
     </div>
   </div>`;
 
@@ -2161,6 +2501,7 @@ function renderCampeonResultado(r){
     </div>
     <div class="label" style="font-family:'JetBrains Mono'; font-size:11px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin: 24px 0 4px;">Reducido — 2° ascenso</div>
     <div class="bracket-scroll"><div class="bracket">${bracketHTML}</div></div>
+    <div class="campeon-anuncio-wrap">${campeonAnuncioHTML(red.final.campeon, '▲')}</div>
   `;
 }
 
@@ -2303,19 +2644,20 @@ function renderPlayoffsLPF(){
   html += `<div class="round final-col">
     <div class="round-title">Final</div>
     <div class="round-body">
-      <div class="match">
+      <div class="match" data-local="${p.semis[0] ? p.semis[0].avanza : ''}" data-visitante="${p.semis[1] ? p.semis[1].avanza : ''}">
         ${p.semis.map(m => {
           const equipo = m.avanza;
           const esCampeon = equipo === campeon;
-          return `<div class="row ${esCampeon ? 'winner' : ''}"><span>${equipo}</span></div>`;
+          return `<div class="row ${esCampeon ? 'winner' : ''}"><span>${escudoHTML(equipo)}${equipo}</span></div>`;
         }).join("")}
         <div class="leg-detail">${p.final.texto}</div>
       </div>
-      <div class="campeon">▲ ${escudoHTML(campeon)}${campeon}</div>
     </div>
   </div>`;
 
   bracket.innerHTML = html;
+  const anuncio = document.getElementById('campeon-anuncio-lpf');
+  if (anuncio) anuncio.innerHTML = campeonAnuncioHTML(campeon, '▲');
 }
 
 /* ---------- CLASIFICACIONES A COPAS (para colorear la Tabla Anual) ---------- */
@@ -2463,14 +2805,7 @@ async function correrSimulacionLPF(){
   status.textContent = `Corriendo Clausura + playoffs + tabla anual (${nSims} simulaciones) — puede tardar unos segundos.`;
 
   try {
-    const respuesta = await apiFetch(apiUrl("/api/simular-lpf"), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ n_sims: Number(nSims) })
-    });
-    const cuerpo = await respuesta.json().catch(() => ({}));
-
-    if (!respuesta.ok) throw apiResponseError(respuesta, cuerpo);
+    const cuerpo = await ejecutarSimulacion("simular-lpf", { n_sims: Number(nSims) }, "/api/simular-lpf", status);
 
     DATA_LPF = cuerpo;
     iniciarLPF();
@@ -2711,16 +3046,7 @@ async function simularHastaCampeonLPF(){
   resultado.innerHTML = "";
 
   try {
-    const respuesta = await apiFetch(apiUrl("/api/simular-campeon-lpf"), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ equipo })
-    });
-    const cuerpo = await respuesta.json().catch(() => ({}));
-
-    if (!respuesta.ok) {
-      throw apiResponseError(respuesta, cuerpo);
-    }
+    const cuerpo = await ejecutarSimulacion("simular-campeon-lpf", { equipo }, "/api/simular-campeon-lpf", status);
 
     if (!cuerpo.logrado) {
       status.classList.add('error');
@@ -2788,7 +3114,7 @@ function renderCampeonResultadoLPF(r){
   bracketHTML += `<div class="round final-col">
     <div class="round-title">Final</div>
     <div class="round-body">
-      <div class="match">
+      <div class="match" data-local="${p.semis[0] ? p.semis[0].avanza : ''}" data-visitante="${p.semis[1] ? p.semis[1].avanza : ''}">
         ${p.semis.map(m => {
           const nombreEquipo = m.avanza;
           const esCampeon = nombreEquipo === campeon;
@@ -2796,7 +3122,6 @@ function renderCampeonResultadoLPF(r){
         }).join("")}
         <div class="leg-detail">${p.final.texto}</div>
       </div>
-      <div class="campeon">▲ ${escudoHTML(campeon)}${campeon}</div>
     </div>
   </div>`;
 
@@ -2806,6 +3131,7 @@ function renderCampeonResultadoLPF(r){
     ${tablasZonasHTML}
     <div class="label" style="font-family:'JetBrains Mono'; font-size:11px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin: 24px 0 4px;">Playoffs</div>
     <div class="bracket-scroll"><div class="bracket">${bracketHTML}</div></div>
+    <div class="campeon-anuncio-wrap">${campeonAnuncioHTML(campeon, '▲')}</div>
   `;
 }
 
@@ -2866,6 +3192,10 @@ function setLiga(liga){
   document.body.classList.toggle('liga-lpf', liga === 'lpf');
   document.body.classList.toggle('liga-copa', liga === 'copa');
   actualizarHero(liga);
+  // El cuadro recién visible puede haber quedado con medidas en 0 (display:none
+  // no dispara el MutationObserver de los brackets), así que se refresca a mano.
+  refreshAllBracketNavs();
+  refreshAllBracketLines();
 }
 
 function ajustarOffsetLigaTabs(){
@@ -2904,6 +3234,24 @@ function toggleTema(){
 const themeToggleBtn = document.getElementById('theme-toggle');
 if (themeToggleBtn) themeToggleBtn.addEventListener('click', toggleTema);
 
+/* ---------- PLACEHOLDERS RESPONSIVE ---------- */
+const SEARCH_PLACEHOLDERS = [
+  ['team-search', 'Buscar equipo…', 'Buscar equipo… (ej: Morón, Ferro, Colón)'],
+  ['team-search-lpf', 'Buscar equipo…', 'Buscar equipo… (ej: River, Belgrano, Lanús)'],
+  ['team-search-copa', 'Buscar equipo…', 'Buscar equipo… (ej: River, Instituto, Midland)'],
+];
+
+function aplicarPlaceholdersResponsive(){
+  const usarCorto = window.matchMedia('(max-width: 600px)').matches;
+  SEARCH_PLACEHOLDERS.forEach(([id, corto, largo]) => {
+    const input = document.getElementById(id);
+    if (input) input.placeholder = usarCorto ? corto : largo;
+  });
+}
+
+window.addEventListener('resize', aplicarPlaceholdersResponsive);
+aplicarPlaceholdersResponsive();
+
 /* ---------- COPA ARGENTINA ---------- */
 let DATA_COPA = null;
 const RONDAS_COPA = [
@@ -2927,6 +3275,8 @@ function iniciarCopa(){
   if (!DATA_COPA) return;
   document.getElementById('last-update-copa').textContent = DATA_COPA.generado ? ("Última corrida: " + DATA_COPA.generado) : "";
   document.getElementById('bracket-copa').innerHTML = bracketCopaHTML(DATA_COPA.rondas, DATA_COPA.campeon);
+  const anuncioCopa = document.getElementById('campeon-anuncio-copa');
+  if (anuncioCopa) anuncioCopa.innerHTML = campeonAnuncioHTML(DATA_COPA.campeon, '🏆');
   renderMCCopa();
   poblarSelectEquiposCopa();
   TEAM_INDEX_COPA = buildTeamIndexCopa();
@@ -3059,7 +3409,7 @@ function matchCopaHTML(m){
   let nota = "";
   if (!m.jugado) nota = m.penales ? "simulado — por penales" : "simulado";
   else if (m.penales) nota = "definido por penales (dato real)";
-  return `<div class="match ${m.jugado ? 'real' : 'sim'}">
+  return `<div class="match ${m.jugado ? 'real' : 'sim'}" data-local="${m.local}" data-visitante="${m.visitante}" data-avanza="${m.avanza || ''}">
     <div class="row ${winLocal ? 'winner' : ''}"><span>${escudoHTML(m.local)}${m.local}</span><span>${m.golesLocal ?? ''}</span></div>
     <div class="row ${!winLocal ? 'winner' : ''}"><span>${escudoHTML(m.visitante)}${m.visitante}</span><span>${m.golesVisitante ?? ''}</span></div>
     ${nota ? `<div class="leg-detail">${nota}</div>` : ''}
@@ -3074,7 +3424,6 @@ function bracketCopaHTML(rondas, campeon){
       <div class="round-title">${titulo}</div>
       <div class="round-body">
         ${(rondas[clave] || []).map(matchCopaHTML).join("")}
-        ${esFinal ? `<div class="campeon">🏆 ${escudoHTML(campeon)}${campeon}</div>` : ''}
       </div>
     </div>`;
   });
@@ -3130,14 +3479,8 @@ function leerNSimsCopa(){
 }
 
 async function copaEjecutar(tarea, payload, path, status){
-  const respuesta = await apiFetch(apiUrl(path), {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
-  });
-  const cuerpo = await respuesta.json().catch(() => ({}));
-  if (!respuesta.ok) throw apiResponseError(respuesta, cuerpo);
-  return cuerpo;
+  // Igual que las otras ligas: intenta el worker con Pyodide y cae a la API.
+  return ejecutarSimulacion(tarea, payload, path, status);
 }
 
 async function correrSimulacionCopa(){
@@ -3252,6 +3595,7 @@ async function simularHastaCampeonCopa(){
       <div class="campeon-summary">🏆 <b>${cuerpo.equipo}</b> levanta la Copa Argentina en esta corrida simulada
         (intento N° ${cuerpo.intentos} de una búsqueda al azar entre distintas Copas posibles)</div>
       <div class="bracket-scroll" style="margin-top:14px;"><div class="bracket">${bracketCopaHTML(cuerpo.rondas, campeonCorrida)}</div></div>
+      <div class="campeon-anuncio-wrap">${campeonAnuncioHTML(campeonCorrida, '🏆')}</div>
     `;
   } catch (e) {
     setApiErrorStatus(status, "No se pudo simular", e);
@@ -3269,5 +3613,273 @@ document.getElementById('btn-campeon-copa').addEventListener('click', simularHas
 
 cargarDatosLPF();
 cargarDatosCopa();
+
+// Flechas de navegación para los cuadros (brackets): evitan tener que
+// arrastrar la barra de scroll horizontal para ver las rondas siguientes.
+// Se agregan por JS porque el contenido de cada .bracket-scroll se genera
+// dinámicamente (a veces mucho después de cargar la página).
+function updateBracketNav(scrollEl){
+  const wrap = scrollEl.parentElement;
+  if (!wrap || !wrap.classList.contains('bracket-wrap')) return;
+  const scrollable = scrollEl.scrollWidth > scrollEl.clientWidth + 4;
+  wrap.classList.toggle('scrollable', scrollable);
+  if (!scrollable) return;
+  const prev = wrap.querySelector('.bracket-nav-prev');
+  const next = wrap.querySelector('.bracket-nav-next');
+  prev.classList.toggle('is-hidden', scrollEl.scrollLeft <= 4);
+  next.classList.toggle('is-hidden', scrollEl.scrollLeft + scrollEl.clientWidth >= scrollEl.scrollWidth - 4);
+}
+
+function setupBracketNav(scrollEl){
+  if (scrollEl.dataset.navReady){ updateBracketNav(scrollEl); return; }
+  scrollEl.dataset.navReady = '1';
+
+  const wrap = document.createElement('div');
+  wrap.className = 'bracket-wrap';
+  scrollEl.parentNode.insertBefore(wrap, scrollEl);
+  wrap.appendChild(scrollEl);
+
+  const scrollByRound = (dir) => {
+    const round = scrollEl.querySelector('.round');
+    const delta = round ? round.getBoundingClientRect().width + 24 : scrollEl.clientWidth * 0.6;
+    scrollEl.scrollBy({ left: dir * delta, behavior: 'smooth' });
+  };
+
+  const anchor = document.createElement('div');
+  anchor.className = 'bracket-nav-anchor';
+  wrap.insertBefore(anchor, scrollEl);
+
+  [-1, 1].forEach(dir => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = `bracket-nav ${dir < 0 ? 'bracket-nav-prev' : 'bracket-nav-next'}`;
+    btn.setAttribute('aria-label', dir < 0 ? 'Ver rondas anteriores' : 'Ver rondas siguientes');
+    btn.textContent = dir < 0 ? '‹' : '›';
+    btn.addEventListener('click', () => scrollByRound(dir));
+    anchor.appendChild(btn);
+  });
+
+  scrollEl.addEventListener('scroll', () => updateBracketNav(scrollEl));
+  updateBracketNav(scrollEl);
+}
+
+function refreshAllBracketNavs(){
+  document.querySelectorAll('.bracket-scroll').forEach(setupBracketNav);
+}
+
+// Líneas que conectan cada partido con el cruce del que sale y con el
+// cruce siguiente al que avanza. Se arman por nombre de equipo (buscando,
+// en la ronda anterior, qué partido tiene ese nombre como "avanza") en vez
+// de por posición, porque algunos cuadros (el Reducido) empatan partidos
+// de forma salteada, no secuencial.
+//
+// La 1ra ronda queda como cae por CSS (flex, bien repartida porque tiene
+// muchos partidos). Desde la 2da ronda en adelante, cada partido se
+// reubica (position:absolute, top calculado) a la altura media de sus
+// dos partidos de origen — si lo dejáramos con justify-content:center/
+// space-around, una ronda con pocos partidos (semis, final) quedaba
+// repartida en TODO el alto del cuadro (el de la ronda con más partidos),
+// y la línea que conecta terminaba con un tramo vertical de miles de
+// píxeles, invisible en pantalla.
+function buildBracketLines(bracketEl){
+  const ns = 'http://www.w3.org/2000/svg';
+  const rounds = [...bracketEl.querySelectorAll(':scope > .round')];
+  let svg = bracketEl.querySelector(':scope > svg.bracket-lines');
+
+  const resetPositionedItems = () => {
+    bracketEl.querySelectorAll('.js-positioned').forEach(el => {
+      el.classList.remove('js-positioned');
+      el.style.top = '';
+    });
+  };
+
+  if (window.matchMedia('(max-width: 760px)').matches || getComputedStyle(bracketEl).flexDirection === 'column'){
+    resetPositionedItems();
+    if (svg) svg.remove();
+    return;
+  }
+
+  if (rounds.length < 2){
+    resetPositionedItems();
+    if (svg) svg.remove();
+    return;
+  }
+  if (!svg){
+    svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('class', 'bracket-lines');
+    bracketEl.insertBefore(svg, bracketEl.firstChild);
+  }
+  svg.innerHTML = '';
+
+  // Antes de medir, deshacemos cualquier reposicionamiento de una corrida
+  // anterior de esta misma función (partidos Y "extras" — ver más abajo):
+  // si no, getBoundingClientRect() mediría la posición ya corregida en vez
+  // del flujo natural, y en corridas sucesivas (resize, nueva simulación)
+  // el cálculo se iría desviando en vez de partir siempre del mismo lugar.
+  resetPositionedItems();
+
+  const bracketRect = bracketEl.getBoundingClientRect();
+
+  // yCenter: centro vertical (en coordenadas locales del .bracket) de
+  // cada partido ya resuelto — arranca con la 1ra ronda tal cual cayó.
+  const yCenter = new Map();
+  rounds[0].querySelectorAll(':scope > .round-body > .match:not(.note)').forEach(m => {
+    const r = m.getBoundingClientRect();
+    yCenter.set(m, r.top - bracketRect.top + r.height / 2);
+  });
+
+  for (let r = 1; r < rounds.length; r++){
+    const roundBody = rounds[r].querySelector(':scope > .round-body');
+    const roundBodyTop = roundBody.getBoundingClientRect().top - bracketRect.top;
+    const prevMatches = [...rounds[r - 1].querySelectorAll(':scope > .round-body > .match:not(.note)')];
+
+    // Separamos los partidos "reales" (se reubican según sus partidos de
+    // origen) de cualquier elemento "extra" al final del round-body —el
+    // cartel del campeón (.campeon) en la final, o la nota "+X entra
+    // directo" (.match.note) en Cuartos—. Esos extras no tienen partidos
+    // de origen propios, así que sin ayuda el flex los recentra solos en
+    // toda la altura de la ronda apenas los partidos reales salen del
+    // flujo: eso era justo lo que producía la superposición reportada.
+    const children = [...roundBody.children];
+    const matchEls = children.filter(el => el.classList.contains('match') && !el.classList.contains('note'));
+    const extraEls = children.filter(el => !matchEls.includes(el));
+
+    // Paso 1: medir todo ANTES de mover nada (si vamos posicionando de a
+    // uno, sacar un partido del flujo normal corre a sus hermanos todavía
+    // no procesados y las medidas siguientes quedan mal).
+    const info = matchEls.map(match => ({
+      match,
+      rect: match.getBoundingClientRect(),
+      sources: [...new Set([match.dataset.local, match.dataset.visitante]
+        .map(name => name && prevMatches.find(pm => pm.dataset.avanza === name))
+        .filter(Boolean))]
+    }));
+    const extraInfo = extraEls.map(el => ({ el, rect: el.getBoundingClientRect() }));
+
+    // Paso 2: calcular la posición "cruda" de cada partido (promedio de
+    // sus fuentes, o su propia posición si no tiene fuentes) antes de
+    // resolver superposiciones.
+    info.forEach(item => {
+      item.targetX = item.rect.left - bracketRect.left;
+      item.targetY = item.sources.length
+        ? item.sources.reduce((sum, s) => sum + yCenter.get(s), 0) / item.sources.length
+        : item.rect.top - bracketRect.top + item.rect.height / 2;
+    });
+
+    // Paso 3: evitar que dos partidos de la MISMA ronda se superpongan.
+    // OJO: en sorteos reales (Copa Argentina) los cruces de una ronda no
+    // necesariamente quedan en el mismo orden vertical que sus partidos de
+    // origen (ej: partido 1 puede cruzar con el partido 8, y el partido 2
+    // con el partido 6) — el orden del DOM no es un orden por altura. Si
+    // resolvíamos colisiones recorriendo en orden de DOM, cada empuje hacia
+    // abajo se acumulaba sobre el anterior aunque el target "crudo" de ese
+    // partido fuera más arriba, arrastrando toda la ronda muy abajo (el bug
+    // reportado en Liga Profesional / Copa Argentina). La solución: resolver
+    // colisiones ordenando por posición real (targetY), no por orden del
+    // DOM, y después recentrar el bloque resultante para que no quede todo
+    // desplazado hacia abajo respecto de su posición cruda original.
+    const MIN_GAP = 14; // mismo valor que .round-body{ gap:14px }
+    const bySpot = [...info].sort((a, b) => a.targetY - b.targetY);
+    bySpot.forEach(item => { item.rawTargetY = item.targetY; });
+    for (let i = 1; i < bySpot.length; i++){
+      const prev = bySpot[i - 1];
+      const cur = bySpot[i];
+      const minDist = prev.rect.height / 2 + MIN_GAP + cur.rect.height / 2;
+      if (cur.targetY - prev.targetY < minDist){
+        cur.targetY = prev.targetY + minDist;
+      }
+    }
+    // Recentramos: el desplazamiento acumulado por los empujes (comparando
+    // la posición cruda vs. la ya resuelta del último elemento) se reparte
+    // mitad arriba, mitad abajo entre TODOS los elementos del bloque, para
+    // que quede centrado sobre su rango original en vez de anclado por el
+    // primer empuje hacia abajo.
+    if (bySpot.length){
+      const last = bySpot[bySpot.length - 1];
+      const drift = last.targetY - last.rawTargetY;
+      if (drift > 0){
+        const shift = drift / 2;
+        bySpot.forEach(item => { item.targetY -= shift; });
+      }
+    }
+
+    // dy del último partido real reposicionado: los extras lo copian para
+    // moverse junto con él conservando su distancia original.
+    let lastDy = null;
+
+    info.forEach(({ match, rect, sources, targetX, targetY }) => {
+      if (sources.length){
+        match.classList.add('js-positioned');
+        match.style.top = (targetY - roundBodyTop - rect.height / 2) + 'px';
+        lastDy = targetY - (rect.top - bracketRect.top + rect.height / 2);
+      }
+      yCenter.set(match, targetY);
+      if (!sources.length) return;
+
+      const path = document.createElementNS(ns, 'path');
+      if (sources.length === 2){
+        const y1 = yCenter.get(sources[0]);
+        const y2 = yCenter.get(sources[1]);
+        const x1 = sources[0].getBoundingClientRect().right - bracketRect.left;
+        const x2 = sources[1].getBoundingClientRect().right - bracketRect.left;
+        const xSource = Math.max(x1, x2);
+        const xMid = xSource + (targetX - xSource) / 2;
+        path.setAttribute('d', [
+          `M${x1},${y1} H${xMid} V${targetY} H${targetX}`,
+          `M${x2},${y2} H${xMid} V${targetY} H${targetX}`
+        ].join(' '));
+      } else {
+        const y0 = yCenter.get(sources[0]);
+        const x0 = sources[0].getBoundingClientRect().right - bracketRect.left;
+        const xMid = x0 + (targetX - x0) / 2;
+        path.setAttribute('d', `M${x0},${y0} H${xMid} V${targetY} H${targetX}`);
+      }
+      svg.appendChild(path);
+    });
+
+    // Paso 4: acompañamos a los extras (campeón / nota) con el mismo
+    // desplazamiento del último partido real, para que queden pegados
+    // a él en vez de flotar solos por todo el alto de la ronda.
+    if (lastDy !== null){
+      extraInfo.forEach(({ el, rect }) => {
+        const originalTopLocal = rect.top - bracketRect.top - roundBodyTop;
+        el.classList.add('js-positioned');
+        el.style.top = (originalTopLocal + lastDy) + 'px';
+      });
+    }
+  }
+
+  svg.setAttribute('width', bracketEl.scrollWidth);
+  svg.setAttribute('height', bracketEl.scrollHeight);
+}
+
+function refreshAllBracketLines(){
+  document.querySelectorAll('.bracket').forEach(buildBracketLines);
+}
+
+// El propio refresh reescribe el DOM (líneas, flechas), así que hay que
+// desconectar el observer mientras corre para no disparar un loop infinito
+// de mutación → refresh → mutación.
+let bracketRefreshQueued = false;
+const bracketObserver = new MutationObserver(() => {
+  if (bracketRefreshQueued) return;
+  bracketRefreshQueued = true;
+  requestAnimationFrame(() => {
+    bracketRefreshQueued = false;
+    bracketObserver.disconnect();
+    refreshAllBracketNavs();
+    refreshAllBracketLines();
+    bracketObserver.observe(document.body, { childList: true, subtree: true });
+  });
+});
+bracketObserver.observe(document.body, { childList: true, subtree: true });
+
+window.addEventListener('resize', () => {
+  refreshAllBracketNavs();
+  refreshAllBracketLines();
+});
+
+refreshAllBracketNavs();
+refreshAllBracketLines();
 
 </script>

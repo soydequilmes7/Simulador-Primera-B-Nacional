@@ -710,7 +710,9 @@
   .final-col .round-body{ align-items:center; }
   .final-col .match{ width:100%; }
   body.liga-lpf .final-col .match{ border-color: var(--amber); box-shadow: 0 4px 18px rgba(184,134,11,0.15); }
-  .final-col .row span:first-child{ max-width:none; }
+  .final-col .row{ align-items:flex-start; }
+  .final-col .row span:first-child{ max-width:none; white-space:normal; overflow:visible; text-overflow:clip; }
+  .final-col .row span:last-child{ padding-top:1px; }
   .final-col .leg-detail{
     margin-top:8px; padding-top:8px; border-top:1px dashed var(--line);
     font-size:10px; color:var(--muted); text-align:center; letter-spacing:0.02em;
@@ -797,6 +799,15 @@
 
   /* ---------- SIMULAR HASTA CAMPEÓN ---------- */
   .campeon-controls{ display:flex; gap:10px; flex-wrap:wrap; justify-content:center; align-items:center; margin-bottom:6px; }
+  /* Bordecito propio para la sección "Simulá hasta el título" de Liga
+     Profesional, para que se distinga del fondo como una tarjeta —el
+     mismo peso visual (color y grosor) que ya usa el select "Elegí un
+     equipo"— en vez de quedar flotando sin límites como el resto de
+     .search-section en esta liga. */
+  #campeon-section-lpf{
+    border: 1px solid var(--line); border-radius: var(--radius);
+    padding-bottom: 28px;
+  }
   #campeon-equipo{
     font-family:'JetBrains Mono'; font-size:13px; font-weight:600; color: var(--ink);
     background: var(--bg-panel); border:1px solid var(--line); border-radius: var(--radius-sm);
@@ -1113,6 +1124,13 @@
   }
   body.liga-copa .mc-row:hover,
   body.liga-copa .match:hover{ border-color: var(--copa-glass-border-hover); }
+
+  /* Como acá .search-section tiene fondo/borde propio (tarjeta de vidrio),
+     dos tarjetas seguidas (buscador + "Simulá hasta el título") quedaban
+     pegadas borde con borde sin el margen que en Nacional/LPF no hace
+     falta (ahí las secciones son transparentes, así que el padding solo
+     ya se ve como espacio suficiente). Acá sí necesitan separación extra. */
+  body.liga-copa .search-section + .search-section{ margin-top: 28px; }
 
   /* Botones: degradado celeste→azul, forma pill, glow al pasar */
   body.liga-copa .btn-simular{
@@ -2102,7 +2120,7 @@ function renderBracket(){
         ${r.semis.map(m => {
           const equipo = m.avanza;
           const esCampeon = equipo === r.final.campeon;
-          return `<div class="row ${esCampeon ? 'winner' : ''}"><span>${equipo}</span></div>`;
+          return `<div class="row ${esCampeon ? 'winner' : ''}"><span>${escudoHTML(equipo)}${equipo}</span></div>`;
         }).join("")}
         <div class="leg-detail">${r.final.detalle}</div>
       </div>
@@ -2632,7 +2650,7 @@ function renderPlayoffsLPF(){
         ${p.semis.map(m => {
           const equipo = m.avanza;
           const esCampeon = equipo === campeon;
-          return `<div class="row ${esCampeon ? 'winner' : ''}"><span>${equipo}</span></div>`;
+          return `<div class="row ${esCampeon ? 'winner' : ''}"><span>${escudoHTML(equipo)}${equipo}</span></div>`;
         }).join("")}
         <div class="leg-detail">${p.final.texto}</div>
       </div>
@@ -3717,32 +3735,42 @@ function buildBracketLines(bracketEl){
     const roundBodyTop = roundBody.getBoundingClientRect().top - bracketRect.top;
     const prevMatches = [...rounds[r - 1].querySelectorAll(':scope > .round-body > .match:not(.note)')];
 
-    // Separamos los partidos "reales" (se reubican según sus partidos de
-    // origen) de cualquier elemento "extra" al final del round-body —el
-    // cartel del campeón (.campeon) en la final, o la nota "+X entra
-    // directo" (.match.note) en Cuartos—. Esos extras no tienen partidos
-    // de origen propios, así que sin ayuda el flex los recentra solos en
-    // toda la altura de la ronda apenas los partidos reales salen del
-    // flujo: eso era justo lo que producía la superposición reportada.
+    // Tratamos TODOS los hijos del round-body —partidos reales y
+    // elementos "extra" (el cartel del campeón .campeon en la final, o la
+    // nota "+X entra directo" en Cuartos)— como un único bloque que se
+    // ordena y separa por posición real. Antes los extras se movían
+    // copiando el desplazamiento de "el último partido real en el DOM",
+    // pero en Cuartos ese último partido en el DOM no es necesariamente
+    // el último visualmente (p. ej. cuando un equipo entra directo y su
+    // cruce depende de un solo partido de origen, puede quedar más abajo
+    // o más arriba que otros): eso hacía que la nota terminara pisada o
+    // saltada respecto del partido al que debía acompañar. Al incluir los
+    // extras en el mismo pase de colisión/orden por posición, conservan
+    // su lugar real entre los partidos que los rodean.
     const children = [...roundBody.children];
     const matchEls = children.filter(el => el.classList.contains('match') && !el.classList.contains('note'));
-    const extraEls = children.filter(el => !matchEls.includes(el));
 
     // Paso 1: medir todo ANTES de mover nada (si vamos posicionando de a
     // uno, sacar un partido del flujo normal corre a sus hermanos todavía
     // no procesados y las medidas siguientes quedan mal).
-    const info = matchEls.map(match => ({
-      match,
-      rect: match.getBoundingClientRect(),
-      sources: [...new Set([match.dataset.local, match.dataset.visitante]
-        .map(name => name && prevMatches.find(pm => pm.dataset.avanza === name))
-        .filter(Boolean))]
-    }));
-    const extraInfo = extraEls.map(el => ({ el, rect: el.getBoundingClientRect() }));
+    const info = children.map(el => {
+      const isMatch = matchEls.includes(el);
+      return {
+        el,
+        isMatch,
+        rect: el.getBoundingClientRect(),
+        sources: isMatch
+          ? [...new Set([el.dataset.local, el.dataset.visitante]
+              .map(name => name && prevMatches.find(pm => pm.dataset.avanza === name))
+              .filter(Boolean))]
+          : []
+      };
+    });
 
-    // Paso 2: calcular la posición "cruda" de cada partido (promedio de
-    // sus fuentes, o su propia posición si no tiene fuentes) antes de
-    // resolver superposiciones.
+    // Paso 2: calcular la posición "cruda" de cada elemento (promedio de
+    // sus fuentes si es un partido con partidos de origen, o su propia
+    // posición natural en el flujo si no —incluye extras y partidos sin
+    // fuente—) antes de resolver superposiciones.
     info.forEach(item => {
       item.targetX = item.rect.left - bracketRect.left;
       item.targetY = item.sources.length
@@ -3750,27 +3778,45 @@ function buildBracketLines(bracketEl){
         : item.rect.top - bracketRect.top + item.rect.height / 2;
     });
 
-    // Paso 3: evitar que dos partidos de la MISMA ronda se superpongan.
-    // OJO: en sorteos reales (Copa Argentina) los cruces de una ronda no
-    // necesariamente quedan en el mismo orden vertical que sus partidos de
-    // origen (ej: partido 1 puede cruzar con el partido 8, y el partido 2
-    // con el partido 6) — el orden del DOM no es un orden por altura. Si
-    // resolvíamos colisiones recorriendo en orden de DOM, cada empuje hacia
-    // abajo se acumulaba sobre el anterior aunque el target "crudo" de ese
-    // partido fuera más arriba, arrastrando toda la ronda muy abajo (el bug
-    // reportado en Liga Profesional / Copa Argentina). La solución: resolver
-    // colisiones ordenando por posición real (targetY), no por orden del
-    // DOM, y después recentrar el bloque resultante para que no quede todo
-    // desplazado hacia abajo respecto de su posición cruda original.
+    // Paso 3: evitar que dos partidos de la MISMA ronda se superpongan, y
+    // que la ronda no quede con huecos dispares (un partido muy separado
+    // de los demás mientras el resto queda apretado al mínimo). Esto
+    // último pasaba en sorteos reales (Liga Profesional, Copa Argentina):
+    // si un cruce sale de dos partidos de origen muy separados entre sí
+    // y el siguiente cruce sale de dos partidos muy cercanos, la posición
+    // "cruda" (promedio de las fuentes) da un hueco enorme seguido de
+    // huecos mínimos — aunque técnicamente no haya superposición, se ve
+    // inconsistente. La solución: una vez ordenados por posición real
+    // (no por orden del DOM — ver nota histórica más abajo), repartimos
+    // TODO el espacio disponible entre los huecos en partes iguales, en
+    // vez de dejar que cada uno conserve su distancia cruda individual.
+    //
+    // (Nota histórica: el orden del DOM no es un orden por altura, porque
+    // el partido 1 de una ronda puede cruzar con el partido 8 de la
+    // anterior, el partido 2 con el 6, etc. Resolver por orden de DOM
+    // acumulaba cada empuje hacia abajo sobre el anterior aunque el
+    // target crudo de ese partido fuera más arriba, arrastrando toda la
+    // ronda muy abajo. Por eso ordenamos por targetY antes de procesar.)
     const MIN_GAP = 14; // mismo valor que .round-body{ gap:14px }
     const bySpot = [...info].sort((a, b) => a.targetY - b.targetY);
     bySpot.forEach(item => { item.rawTargetY = item.targetY; });
-    for (let i = 1; i < bySpot.length; i++){
-      const prev = bySpot[i - 1];
-      const cur = bySpot[i];
-      const minDist = prev.rect.height / 2 + MIN_GAP + cur.rect.height / 2;
-      if (cur.targetY - prev.targetY < minDist){
-        cur.targetY = prev.targetY + minDist;
+    if (bySpot.length > 1){
+      const minDists = [];
+      for (let i = 1; i < bySpot.length; i++){
+        minDists.push(bySpot[i - 1].rect.height / 2 + MIN_GAP + bySpot[i].rect.height / 2);
+      }
+      const minSpan = minDists.reduce((a, b) => a + b, 0);
+      const rawSpan = bySpot[bySpot.length - 1].rawTargetY - bySpot[0].rawTargetY;
+      // Si el rango crudo (primero a último) alcanza para el mínimo,
+      // repartimos el margen extra en partes iguales entre los huecos;
+      // si no alcanza, todos los huecos quedan exactamente en el mínimo.
+      // En ambos casos el resultado son huecos parejos entre sí.
+      const extra = rawSpan > minSpan ? (rawSpan - minSpan) / (bySpot.length - 1) : 0;
+      let y = bySpot[0].rawTargetY;
+      bySpot[0].targetY = y;
+      for (let i = 1; i < bySpot.length; i++){
+        y += minDists[i - 1] + extra;
+        bySpot[i].targetY = y;
       }
     }
     // Recentramos: el desplazamiento acumulado por los empujes (comparando
@@ -3787,17 +3833,15 @@ function buildBracketLines(bracketEl){
       }
     }
 
-    // dy del último partido real reposicionado: los extras lo copian para
-    // moverse junto con él conservando su distancia original.
-    let lastDy = null;
-
-    info.forEach(({ match, rect, sources, targetX, targetY }) => {
-      if (sources.length){
-        match.classList.add('js-positioned');
-        match.style.top = (targetY - roundBodyTop - rect.height / 2) + 'px';
-        lastDy = targetY - (rect.top - bracketRect.top + rect.height / 2);
-      }
-      yCenter.set(match, targetY);
+    // Paso 4: aplicamos la posición final ya resuelta a cada elemento
+    // (partido o extra) directamente — cada uno usa su propio targetY, no
+    // el desplazamiento de otro elemento, así que quedan en el orden
+    // correcto entre sí sin importar el orden del DOM.
+    info.forEach(({ el, isMatch, rect, sources, targetX, targetY }) => {
+      el.classList.add('js-positioned');
+      el.style.top = (targetY - roundBodyTop - rect.height / 2) + 'px';
+      if (!isMatch) return;
+      yCenter.set(el, targetY);
       if (!sources.length) return;
 
       const path = document.createElementNS(ns, 'path');
@@ -3820,17 +3864,6 @@ function buildBracketLines(bracketEl){
       }
       svg.appendChild(path);
     });
-
-    // Paso 4: acompañamos a los extras (campeón / nota) con el mismo
-    // desplazamiento del último partido real, para que queden pegados
-    // a él en vez de flotar solos por todo el alto de la ronda.
-    if (lastDy !== null){
-      extraInfo.forEach(({ el, rect }) => {
-        const originalTopLocal = rect.top - bracketRect.top - roundBodyTop;
-        el.classList.add('js-positioned');
-        el.style.top = (originalTopLocal + lastDy) + 'px';
-      });
-    }
   }
 
   svg.setAttribute('width', bracketEl.scrollWidth);
