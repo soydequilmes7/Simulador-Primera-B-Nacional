@@ -72,15 +72,17 @@ async function inicializar() {
 }
 
 async function cargarCodigoYDatos() {
-  const [fuente, datosNacional, datosLpf] = await Promise.all([
+  const [fuente, datosNacional, datosLpf, datosCopa] = await Promise.all([
     fetchJson(`${apiBase}/api/pysim-source`),
     fetchJson(`${apiBase}/api/datos-nacional`),
     fetchJson(`${apiBase}/api/datos-lpf`),
+    fetchJson(`${apiBase}/api/datos-copa`),
   ]);
 
   escribirArchivos(fuente.files, "");
   escribirArchivos(datosNacional.files, "datos");
   escribirArchivos(datosLpf.files, "datos");
+  escribirArchivos(datosCopa.files, "datos");
 
   pyodide.runPython(
     "import sys\n" +

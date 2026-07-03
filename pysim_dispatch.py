@@ -20,6 +20,7 @@ import json
 
 from main import correr_simulacion, simular_hasta_campeon
 from main_lpf import correr_simulacion_lpf, simular_hasta_campeon_lpf
+from main_copa import correr_simulacion_copa, simular_hasta_campeon_copa
 
 
 def simular(n_sims):
@@ -41,6 +42,15 @@ def simular_campeon(equipo_objetivo, max_intentos):
     return _envolver_hasta_campeon(resultado, equipo_objetivo, max_intentos)
 
 
+def simular_copa(n_sims):
+    return correr_simulacion_copa(imprimir=False, guardar_json=False, n_sims=n_sims)
+
+
+def simular_campeon_copa(equipo_objetivo, max_intentos):
+    resultado = simular_hasta_campeon_copa(equipo_objetivo, max_intentos=max_intentos, imprimir=False)
+    return _envolver_hasta_campeon(resultado, equipo_objetivo, max_intentos)
+
+
 def simular_campeon_lpf(equipo_objetivo, max_intentos):
     resultado = simular_hasta_campeon_lpf(equipo_objetivo, max_intentos=max_intentos, imprimir=False)
     return _envolver_hasta_campeon(resultado, equipo_objetivo, max_intentos)
@@ -51,6 +61,8 @@ _TAREAS = {
     "simular-lpf": lambda kwargs: simular_lpf(kwargs["n_sims"]),
     "simular-campeon": lambda kwargs: simular_campeon(kwargs["equipo"], kwargs["max_intentos"]),
     "simular-campeon-lpf": lambda kwargs: simular_campeon_lpf(kwargs["equipo"], kwargs["max_intentos"]),
+    "simular-copa": lambda kwargs: simular_copa(kwargs["n_sims"]),
+    "simular-campeon-copa": lambda kwargs: simular_campeon_copa(kwargs["equipo"], kwargs["max_intentos"]),
 }
 
 

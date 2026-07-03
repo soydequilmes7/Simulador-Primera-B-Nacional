@@ -32,6 +32,8 @@ from main import correr_simulacion, simular_hasta_campeon
 from main_lpf import correr_simulacion_lpf, simular_hasta_campeon_lpf
 from actualizar_resultados import actualizar
 from actualizar_resultados_lpf import actualizar as actualizar_lpf
+from main_copa import correr_simulacion_copa, simular_hasta_campeon_copa
+from actualizar_resultados_copa import actualizar as actualizar_copa
 import rutas
 
 # Mismos archivos que sirve api/index.py en /api/pysim-source, para que
@@ -45,6 +47,8 @@ PYSIM_SOURCE_FILES = [
     "modelos/equipo.py",
     "modelos/estadisticas.py",
     "modelos/estadisticas_lpf.py",
+    "main_copa.py",
+    "modelos/estadisticas_copa.py",
 ]
 _pysim_source_cache = None
 
@@ -89,6 +93,8 @@ class Handler(SimpleHTTPRequestHandler):
             self._manejar_pysim_source()
         elif self.path == "/api/datos-nacional":
             self._manejar_datos_nacional()
+        elif self.path == "/api/datos-copa":
+            self._manejar_datos_csv(["copa_argentina.csv"])
         elif self.path == "/api/datos-lpf":
             self._manejar_datos_lpf()
         else:
@@ -127,6 +133,22 @@ class Handler(SimpleHTTPRequestHandler):
         except Exception as e:
             self._responder_json(500, {"error": str(e)})
 
+    def _manejar_datos_csv(self, nombres):
+        """Handler genérico: devuelve {files: {nombre: contenido}} para la
+        lista de CSVs pedida (lo usa /api/datos-copa)."""
+        try:
+            datos_dir = rutas.datos_dir()
+            archivos = {}
+            for nombre in nombres:
+                ruta = datos_dir / nombre
+                if not ruta.exists():
+                    self._responder_json(500, {"error": f"Falta {nombre} en datos/"})
+                    return
+                archivos[nombre] = ruta.read_text(encoding="utf-8")
+            self._responder_json(200, {"files": archivos})
+        except Exception as e:
+            self._responder_json(500, {"error": str(e)})
+
     def _manejar_datos_lpf(self):
         try:
             datos_dir = rutas.datos_dir()
@@ -154,6 +176,12 @@ class Handler(SimpleHTTPRequestHandler):
             self._manejar_actualizar_lpf()
         elif self.path == "/api/simular-campeon-lpf":
             self._manejar_simular_campeon_lpf()
+        elif self.path == "/api/simular-copa":
+            self._manejar_simular_copa()
+        elif self.path == "/api/actualizar-copa":
+            self._manejar_actualizar_copa()
+        elif self.path == "/api/simular-campeon-copa":
+            self._manejar_simular_campeon_copa()
         else:
             self._responder_json(404, {"error": "Ruta no encontrada"})
 
@@ -335,6 +363,81 @@ class Handler(SimpleHTTPRequestHandler):
             self._responder_json(400, {"error": "Body inválido"})
         except Exception as e:
             print(f">>> ERROR al simular hasta campeón LPF: {e}")
+            self._responder_json(500, {"error": str(e)})
+        finally:
+            lock_simulacion.release()
+
+    def _manejar_simular_copa(self):
+        """Simula el cuadro de la Copa Argentina (con Monte Carlo) pedido
+        desde la web, con el n_sims del body."""
+        n_sims = self._leer_n_sims()
+        if not lock_simulacion.acquire(blocking=False):
+            self._responder_json(409, {"error": "Ya hay una simulación corriendo, esperá a que termine"})
+            return
+        try:
+            print(f"\n>>> Corriendo simulación de Copa Argentina pedida desde la web ({n_sims} corridas)...")
+            datos = correr_simulacion_copa(imprimir=True, n_sims=n_sims)
+            print(">>> Simulación de Copa terminada y data_copa.json actualizado.\n")
+            self._responder_json(200, datos)
+        except Exception as e:
+            print(f">>> ERROR al simular Copa: {e}")
+            self._responder_json(500, {"error": str(e)})
+        finally:
+            lock_simulacion.release()
+
+    def _manejar_actualizar_copa(self):
+        """Scrapea Promiedos (Copa Argentina) y, si hay cruces nuevos,
+        actualiza el cuadro y re-simula."""
+        n_sims = self._leer_n_sims()
+        if not lock_simulacion.acquire(blocking=False):
+            self._responder_json(409, {"error": "Ya hay una simulación corriendo, esperá a que termine"})
+            return
+        try:
+            print(f"\n>>> Actualización de Copa Argentina pedida desde la web (Promiedos)...")
+            resultado = actualizar_copa(n_sims=n_sims, correr_simulacion_fn=correr_simulacion_copa, imprimir=True)
+            print(">>> Actualización de Copa terminada.\n")
+            self._responder_json(200, resultado)
+        except Exception as e:
+            print(f">>> ERROR al actualizar Copa: {e}")
+            self._responder_json(500, {"error": str(e)})
+        finally:
+            lock_simulacion.release()
+
+    def _manejar_simular_campeon_copa(self):
+        """Repite el cuadro hasta que el equipo pedido salga campeón de la
+        Copa y devuelve esa corrida completa."""
+        if not lock_simulacion.acquire(blocking=False):
+            self._responder_json(409, {"error": "Ya hay una simulación corriendo, esperá a que termine"})
+            return
+        try:
+            largo = int(self.headers.get("Content-Length", 0))
+            cuerpo_raw = self.rfile.read(largo) if largo > 0 else b"{}"
+            datos = json.loads(cuerpo_raw) if cuerpo_raw else {}
+
+            equipo_objetivo = str(datos.get("equipo", "")).strip()
+            if not equipo_objetivo:
+                self._responder_json(400, {"error": "Falta indicar el equipo"})
+                return
+
+            try:
+                max_intentos = int(datos.get("max_intentos", MAX_INTENTOS_CAMPEON_DEFAULT))
+            except (ValueError, TypeError):
+                max_intentos = MAX_INTENTOS_CAMPEON_DEFAULT
+            max_intentos = max(MAX_INTENTOS_CAMPEON_MIN, min(MAX_INTENTOS_CAMPEON_MAX, max_intentos))
+
+            print(f"\n>>> Simulando hasta el título de {equipo_objetivo} (Copa Argentina)...")
+            resultado = simular_hasta_campeon_copa(equipo_objetivo, max_intentos=max_intentos, imprimir=True)
+
+            if resultado is None:
+                self._responder_json(200, {"logrado": False, "equipo": equipo_objetivo, "max_intentos": max_intentos})
+                return
+            self._responder_json(200, {"logrado": True, **resultado})
+        except ValueError as e:
+            self._responder_json(400, {"error": str(e)})
+        except json.JSONDecodeError:
+            self._responder_json(400, {"error": "Body inválido"})
+        except Exception as e:
+            print(f">>> ERROR al simular hasta campeón Copa: {e}")
             self._responder_json(500, {"error": str(e)})
         finally:
             lock_simulacion.release()

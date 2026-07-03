@@ -35,6 +35,8 @@ import pysim_dispatch
 from main_lpf import correr_simulacion_lpf
 from actualizar_resultados import actualizar
 from actualizar_resultados_lpf import actualizar as actualizar_lpf
+from actualizar_resultados_copa import actualizar as actualizar_copa
+from main_copa import correr_simulacion_copa
 
 # Archivos de código fuente que necesita el simulador corriendo en el
 # navegador (Pyodide/Web Worker, ver public/js/sim-worker.js). Se sirven
@@ -47,6 +49,8 @@ PYSIM_SOURCE_FILES = [
     "modelos/equipo.py",
     "modelos/estadisticas.py",
     "modelos/estadisticas_lpf.py",
+    "main_copa.py",
+    "modelos/estadisticas_copa.py",
 ]
 # El código fuente no cambia mientras el proceso está corriendo, así que se
 # lee y cachea una sola vez.
@@ -137,6 +141,7 @@ class ReadWriteLock:
 
 _lock_nacional = ReadWriteLock()
 _lock_lpf = ReadWriteLock()
+_lock_copa = ReadWriteLock()
 
 
 class SimularBody(BaseModel):
@@ -145,6 +150,10 @@ class SimularBody(BaseModel):
 
 class SimularLPFBody(BaseModel):
     n_sims: int = N_SIMULACIONES_LPF
+
+
+class SimularCopaBody(BaseModel):
+    n_sims: int = N_SIMULACIONES
 
 
 class SimularCampeonBody(BaseModel):
@@ -237,6 +246,28 @@ def datos_nacional():
         return JSONResponse(status_code=500, content={"error": str(e)})
     finally:
         _lock_nacional.release_read()
+
+
+@app.get("/api/datos-copa")
+def datos_copa():
+    """Igual que /api/datos-nacional pero con el cuadro de la Copa
+    Argentina (lo único que necesita el simulador de Copa, además de los
+    CSV de liga que ya bajan los otros dos endpoints)."""
+    ocupado = _adquirir_lectura(
+        _lock_copa,
+        "Hay una actualización de Copa Argentina en curso. Esperá unos segundos y probá de nuevo.",
+    )
+    if ocupado:
+        return ocupado
+    try:
+        ruta = rutas.datos_dir() / "copa_argentina.csv"
+        if not ruta.exists():
+            return JSONResponse(status_code=500, content={"error": "Falta copa_argentina.csv en datos/"})
+        return {"files": {"copa_argentina.csv": ruta.read_text(encoding="utf-8")}}
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
+    finally:
+        _lock_copa.release_read()
 
 
 @app.get("/api/datos-lpf")
@@ -387,6 +418,73 @@ def simular_campeon_lpf(body: SimularCampeonBody):
         return JSONResponse(status_code=500, content={"error": str(e)})
     finally:
         _lock_lpf.release_read()
+
+
+@app.post("/api/simular-copa")
+def simular_copa_endpoint(body: SimularCopaBody = SimularCopaBody()):
+    """Simula el cuadro de la Copa Argentina (respetando los resultados
+    reales) + Monte Carlo de % por ronda, y lo devuelve en la respuesta."""
+    n_sims = _clamp_n_sims(body.n_sims)
+
+    ocupado = _adquirir_lectura(
+        _lock_copa,
+        "Hay una actualización de Copa Argentina en curso. Esperá unos segundos y probá de nuevo.",
+    )
+    if ocupado:
+        return ocupado
+    try:
+        return pysim_dispatch.simular_copa(n_sims)
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
+    finally:
+        _lock_copa.release_read()
+
+
+@app.post("/api/actualizar-copa")
+def actualizar_copa_endpoint(body: SimularCopaBody = SimularCopaBody()):
+    """Scrapea Promiedos (Copa Argentina) y, si hay cruces nuevos, actualiza
+    el cuadro y re-simula con correr_simulacion_copa."""
+    n_sims = _clamp_n_sims(body.n_sims)
+
+    ocupado = _adquirir_escritura(
+        _lock_copa,
+        "Hay simulaciones o una actualización de Copa Argentina en curso. Esperá unos segundos y probá de nuevo.",
+    )
+    if ocupado:
+        return ocupado
+    try:
+        resultado = actualizar_copa(n_sims=n_sims, correr_simulacion_fn=correr_simulacion_copa, imprimir=False)
+        return resultado
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
+    finally:
+        _lock_copa.release_write()
+
+
+@app.post("/api/simular-campeon-copa")
+def simular_campeon_copa_endpoint(body: SimularCampeonBody):
+    """Repite el cuadro hasta que el equipo pedido salga campeón de la Copa
+    y devuelve esa corrida completa (las 6 rondas del árbol)."""
+    equipo_objetivo = body.equipo.strip()
+    if not equipo_objetivo:
+        return JSONResponse(status_code=400, content={"error": "Falta indicar el equipo"})
+
+    max_intentos = _clamp_max_intentos(body.max_intentos)
+
+    ocupado = _adquirir_lectura(
+        _lock_copa,
+        "Hay una actualización de Copa Argentina en curso. Esperá unos segundos y probá de nuevo.",
+    )
+    if ocupado:
+        return ocupado
+    try:
+        return pysim_dispatch.simular_campeon_copa(equipo_objetivo, max_intentos)
+    except ValueError as e:
+        return JSONResponse(status_code=400, content={"error": str(e)})
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
+    finally:
+        _lock_copa.release_read()
 
 
 @app.post("/api/actualizar")

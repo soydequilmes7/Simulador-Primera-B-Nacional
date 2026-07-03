@@ -178,7 +178,7 @@
   body, .hero, .liga-tabs, .zone-tabs, .table-wrap, .copa-card, .descenso-card,
   .ascenso-card, .match, .team-card, .mc-row, #mc-list, #mc-list-lpf,
   .trofeo-especial, thead th, tbody td, tbody tr, .search-box input,
-  #campeon-equipo, #sim-count, #sim-count-lpf, .tc-stat, .btn-simular, .btn-actualizar,
+  #campeon-equipo, #sim-count, #sim-count-lpf, #sim-count-copa, .tc-stat, .btn-simular, .btn-actualizar,
   .liga-tab, .zone-tab, .liga-tabs .group, .zone-tabs .group, .racha-badge,
   .tc-share button{
     transition: background 0.4s ease, background-color 0.4s ease,
@@ -315,15 +315,15 @@
   .btn-actualizar:disabled{ cursor:wait; opacity:0.5; }
   .sim-select-row{ display:flex; align-items:center; gap:8px; }
   .sim-select-row label{ font-family:'JetBrains Mono'; font-size:11px; color:var(--hero-dim); letter-spacing:0.04em; text-transform:uppercase; }
-  #sim-count, #sim-count-lpf{
+  #sim-count, #sim-count-lpf, #sim-count-copa{
     font-family:'JetBrains Mono'; font-size:13px; font-weight:600; color: #fff;
     background: rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.35); border-radius: var(--radius-sm);
     padding: 8px 10px; width:90px; text-align:center; outline:none; transition: border-color 0.15s, opacity 0.15s;
   }
-  #sim-count:hover:not(:disabled), #sim-count-lpf:hover:not(:disabled){ border-color: #fff; }
-  #sim-count:focus, #sim-count-lpf:focus{ border-color: var(--hero-accent); }
-  #sim-count:disabled, #sim-count-lpf:disabled{ cursor:wait; opacity:0.5; }
-  #sim-count::-webkit-inner-spin-button, #sim-count::-webkit-outer-spin-button, #sim-count-lpf::-webkit-inner-spin-button, #sim-count-lpf::-webkit-outer-spin-button{ opacity:0.6; }
+  #sim-count:hover:not(:disabled), #sim-count-lpf:hover:not(:disabled), #sim-count-copa:hover:not(:disabled){ border-color: #fff; }
+  #sim-count:focus, #sim-count-lpf:focus, #sim-count-copa:focus{ border-color: var(--hero-accent); }
+  #sim-count:disabled, #sim-count-lpf:disabled, #sim-count-copa:disabled{ cursor:wait; opacity:0.5; }
+  #sim-count::-webkit-inner-spin-button, #sim-count::-webkit-outer-spin-button, #sim-count-lpf::-webkit-inner-spin-button, #sim-count-lpf::-webkit-outer-spin-button, #sim-count-copa::-webkit-inner-spin-button, #sim-count-copa::-webkit-outer-spin-button{ opacity:0.6; }
   .sim-select-row .rango{ font-family:'JetBrains Mono'; font-size:10px; color:var(--hero-dim); }
   .last-update{ font-family:'JetBrains Mono'; font-size:10px; color:var(--hero-dim); text-align:center; }
   .sim-status{ font-family:'JetBrains Mono'; font-size:12px; color:var(--hero-dim); min-height:16px; text-align:center; }
@@ -666,18 +666,18 @@
   #campeon-equipo:focus{ border-color: var(--azul); }
   #campeon-equipo:disabled{ cursor:wait; opacity:0.5; }
   /* estos controles viven fuera del hero: botón en versión "de contenido" */
-  #campeon-section .btn-simular, #campeon-section-lpf .btn-simular{ background: var(--btn-grad); color: var(--btn-ink); }
-  #campeon-section .sim-status, #campeon-section-lpf .sim-status{ color: var(--ink-dim); }
-  #campeon-section .sim-status.error, #campeon-section-lpf .sim-status.error{ color: var(--danger); }
-  #campeon-section .sim-status.ok, #campeon-section-lpf .sim-status.ok{ color: var(--zone-a); }
-  #campeon-equipo-lpf{
+  #campeon-section .btn-simular, #campeon-section-lpf .btn-simular, #campeon-section-copa .btn-simular{ background: var(--btn-grad); color: var(--btn-ink); }
+  #campeon-section .sim-status, #campeon-section-lpf .sim-status, #campeon-section-copa .sim-status{ color: var(--ink-dim); }
+  #campeon-section .sim-status.error, #campeon-section-lpf .sim-status.error, #campeon-section-copa .sim-status.error{ color: var(--danger); }
+  #campeon-section .sim-status.ok, #campeon-section-lpf .sim-status.ok, #campeon-section-copa .sim-status.ok{ color: var(--zone-a); }
+  #campeon-equipo-lpf, #campeon-equipo-copa{
     font-family:'JetBrains Mono'; font-size:13px; font-weight:600; color: var(--ink);
     background: var(--bg-panel); border:1px solid var(--line); border-radius: var(--radius-sm);
     padding: 10px 12px; outline:none; transition: border-color 0.15s, opacity 0.15s; min-width:220px;
   }
-  #campeon-equipo-lpf:hover:not(:disabled){ border-color: var(--azul); }
-  #campeon-equipo-lpf:focus{ border-color: var(--azul); }
-  #campeon-equipo-lpf:disabled{ cursor:wait; opacity:0.5; }
+  #campeon-equipo-lpf:hover:not(:disabled), #campeon-equipo-copa:hover:not(:disabled){ border-color: var(--azul); }
+  #campeon-equipo-lpf:focus, #campeon-equipo-copa:focus{ border-color: var(--azul); }
+  #campeon-equipo-lpf:disabled, #campeon-equipo-copa:disabled{ cursor:wait; opacity:0.5; }
   .campeon-summary{
     font-family:'JetBrains Mono'; font-size:13px; color:var(--ink-dim); text-align:center;
     padding:14px; background:var(--bg-panel); border:1px solid var(--line); border-radius: var(--radius);
@@ -784,6 +784,130 @@
     .round-body{ gap:10px; }
   }
 
+  /* ============================================================
+     COPA ARGENTINA · identidad propia
+     Celeste #6EC1E4 · Navy #0F1C33 · Blanco · Detalles dorados #F5C242.
+     Tema oscuro premium con glassmorphism sutil; pisa el tema del sitio
+     (claro u oscuro) solo mientras la pestaña Copa está activa.
+     ============================================================ */
+  body.liga-copa, body.dark.liga-copa{
+    --bg: radial-gradient(1100px 500px at 50% -140px, rgba(110,193,228,0.16), transparent 60%), #0F1C33;
+    --bg-panel: #16263F;
+    --bg-panel-2: #1B2E4C;
+    --line: rgba(110,193,228,0.18);
+    --ink: #FFFFFF;
+    --ink-dim: #C9DCEF;
+    --muted: #8FA6C4;
+
+    --amber: #F5C242;
+    --amber-dim: rgba(245,194,66,0.14);
+
+    --zone-a: #6EC1E4;
+    --zone-a-dim: rgba(110,193,228,0.14);
+    --zone-b: #4D8FD1;
+    --zone-b-dim: rgba(77,143,209,0.16);
+    --danger: #FF7A7A;
+    --danger-dim: rgba(255,122,122,0.12);
+    --azul: #6EC1E4;
+    --azul-dim: rgba(110,193,228,0.14);
+
+    --radius: 18px;
+    --radius-sm: 12px;
+    --card-shadow: 0 10px 34px rgba(2,10,26,0.45);
+    --card-shadow-hover: 0 16px 44px rgba(2,10,26,0.6);
+    --card-grad: linear-gradient(180deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.02) 100%);
+    --hero-bg: linear-gradient(165deg, #0A1426 0%, #0F1C33 45%, #17335F 100%);
+    --hero-ink: #FFFFFF;
+    --hero-dim: #9FBEDC;
+    --hero-accent: #F5C242;
+    --tabs-bg: rgba(15,28,51,0.88);
+    --btn-grad: linear-gradient(135deg, #6EC1E4 0%, #2C6FBF 100%);
+    --btn-ink: #FFFFFF;
+    --table-head-bg: rgba(110,193,228,0.10);
+    --hover-lift: translateY(-2px);
+  }
+
+  /* Hero propio: halo celeste, borde luminoso y título con baño dorado */
+  body.liga-copa .hero{
+    border: 1px solid rgba(110,193,228,0.28);
+    border-radius: 22px;
+    box-shadow: inset 0 0 90px rgba(110,193,228,0.09), 0 18px 50px rgba(2,10,26,0.55);
+    position: relative;
+    overflow: hidden;
+  }
+  body.liga-copa .hero::before{
+    content:""; position:absolute; inset:-40% -20% auto;
+    height: 70%; pointer-events:none;
+    background: radial-gradient(closest-side, rgba(110,193,228,0.22), transparent 70%);
+  }
+  body.liga-copa #hero-title-span{
+    background: linear-gradient(92deg, #F5C242 0%, #FFE18A 55%, #F5C242 100%);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; color: transparent;
+  }
+  body.liga-copa .eyebrow{ color:#F5C242; letter-spacing:0.22em; }
+  body.liga-copa .hero .meta > div{
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(110,193,228,0.2);
+    border-radius: 14px; padding: 10px 14px;
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  }
+
+  /* Tarjetas y paneles: vidrio sutil sobre el navy */
+  body.liga-copa .search-section,
+  body.liga-copa .table-wrap,
+  body.liga-copa .mc-row,
+  body.liga-copa .match,
+  body.liga-copa .ascenso-card{
+    background: linear-gradient(180deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.025) 100%);
+    border: 1px solid rgba(110,193,228,0.16);
+    border-radius: 18px;
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  }
+  body.liga-copa .mc-row:hover,
+  body.liga-copa .match:hover{ border-color: rgba(110,193,228,0.4); }
+
+  /* Botones: degradado celeste→azul, forma pill, glow al pasar */
+  body.liga-copa .btn-simular{
+    border-radius: 999px;
+    box-shadow: 0 8px 24px rgba(110,193,228,0.35);
+  }
+  body.liga-copa .btn-simular:hover:not(:disabled){
+    box-shadow: 0 10px 30px rgba(110,193,228,0.5);
+  }
+  body.liga-copa .btn-actualizar{
+    border-radius: 999px;
+    border-color: rgba(110,193,228,0.55); color: #9BDCFF;
+  }
+  body.liga-copa .btn-actualizar:hover:not(:disabled){
+    background: rgba(110,193,228,0.12); border-color:#6EC1E4;
+  }
+
+  /* Jerarquías del cuadro: rondas en celeste, ganadores y campeón dorados */
+  body.liga-copa .round-title{ color:#6EC1E4; letter-spacing:0.14em; }
+  body.liga-copa .match .row.winner{ color:#FFFFFF; font-weight:700; }
+  body.liga-copa .match .row.winner > span:last-child{ color:#F5C242; }
+  body.liga-copa .campeon{
+    color:#F5C242;
+    background: rgba(245,194,66,0.1);
+    border: 1px solid rgba(245,194,66,0.4);
+    border-radius: 999px; padding: 8px 16px;
+    box-shadow: 0 0 26px rgba(245,194,66,0.22);
+  }
+  body.liga-copa .section-head .idx{ color:#F5C242; }
+  body.liga-copa .section-head .rule{ background: linear-gradient(90deg, rgba(110,193,228,0.5), transparent); }
+  body.liga-copa .mc-bar-fill.directo{ background: linear-gradient(90deg, #6EC1E4, #2C6FBF) !important; }
+  body.liga-copa .leg-detail{ color:#8FA6C4; }
+
+  /* Controles sobre fondo oscuro del hero ya heredan bien; el select y el
+     input toman el vidrio del tema */
+  body.liga-copa #campeon-equipo-copa,
+  body.liga-copa #sim-count-copa{
+    background: rgba(255,255,255,0.07);
+    border-color: rgba(110,193,228,0.35);
+    color:#FFFFFF;
+  }
+
   /* ---- Escudos de equipos ---- */
   .escudo{ width:24px; height:24px; object-fit:contain; vertical-align:-6px; margin-right:8px; }
   .tc-name .escudo{ width:34px; height:34px; vertical-align:-8px; margin-right:10px; }
@@ -839,11 +963,26 @@
       <div id="sim-status-lpf" class="sim-status"></div>
       <div id="last-update-lpf" class="last-update"></div>
     </div>
+
+    <div class="sim-control" id="sim-control-copa" style="display:none">
+      <div class="sim-select-row">
+        <label for="sim-count-copa">Cantidad de simulaciones</label>
+        <input type="number" id="sim-count-copa" value="1000" min="50" max="5000" step="1">
+        <span class="rango">(50–5000)</span>
+      </div>
+      <div class="btn-row">
+        <button id="btn-simular-copa" class="btn-simular">▶ Correr nueva simulación del cuadro</button>
+        <button id="btn-actualizar-copa" class="btn-actualizar">⟳ Actualizar desde Promiedos</button>
+      </div>
+      <div id="sim-status-copa" class="sim-status"></div>
+      <div id="last-update-copa" class="last-update"></div>
+    </div>
   </div>
 
   <div class="liga-tabs">
     <div class="group">
       <button class="liga-tab" data-liga="lpf">Liga Profesional</button>
+      <button class="liga-tab" data-liga="copa">Copa Argentina</button>
       <button class="liga-tab active" data-liga="nacional">Primera Nacional</button>
     </div>
     <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Cambiar entre modo claro y oscuro">
@@ -1138,6 +1277,39 @@
   </section>
 
   </div><!-- /vista-lpf -->
+
+  <div id="vista-copa" style="display:none">
+
+  <div class="search-section" id="campeon-section-copa">
+    <div class="section-head" style="margin-bottom:14px;">
+      <span class="idx">🏆</span><h2 style="font-size:18px;">Simulá hasta que tu equipo levante la Copa</h2><div class="rule"></div>
+    </div>
+    <p class="section-note" style="margin:0 0 16px; text-align:center; max-width:none;">
+      Elegí un equipo todavía vivo en el cuadro: repetimos la Copa completa (respetando los resultados
+      reales ya jugados) una y otra vez hasta encontrar la primera corrida en la que se consagra campeón,
+      y te mostramos ese camino cruce por cruce.
+    </p>
+    <div class="campeon-controls">
+      <select id="campeon-equipo-copa"><option value="">Elegí un equipo…</option></select>
+      <button id="btn-campeon-copa" class="btn-simular">🏆 Simular hasta el título</button>
+    </div>
+    <div id="campeon-status-copa" class="sim-status"></div>
+    <div id="campeon-resultado-copa"></div>
+  </div>
+
+  <section id="sec-copa-cuadro">
+    <div class="section-head"><span class="idx">01</span><h2>El cuadro, cruce por cruce</h2><div class="rule"></div></div>
+    <p class="section-note">Los resultados reales quedan fijos; los cruces pendientes se simulan (partido único, cancha neutral, con alargue y penales). Cada corrida nueva puede dar un camino distinto.</p>
+    <div class="bracket-scroll"><div class="bracket" id="bracket-copa"></div></div>
+  </section>
+
+  <section id="sec-copa-mc">
+    <div class="section-head"><span class="idx">02</span><h2>Probabilidades — Monte Carlo</h2><div class="rule"></div></div>
+    <p class="section-note">Sobre los equipos que siguen vivos: en qué porcentaje de las corridas llega a cada instancia y sale campeón.</p>
+    <div class="mc-list" id="mc-list-copa"></div>
+  </section>
+
+  </div><!-- /vista-copa -->
 
   <footer>
     <p>Generado a partir de <span id="foot-n">0</span> simulaciones — modelo Poisson (ataque/defensa local-visitante, decay por antigüedad, regresión a la media, corrección Dixon-Coles)</p>
@@ -1523,6 +1695,11 @@ const ESCUDOS = {
   'Lanús':'lanus', "Newell's Old Boys":'newells', 'Platense':'platense', 'Racing Club':'racing',
   'River Plate':'river', 'Rosario Central':'rosariocentral', 'San Lorenzo':'sanlorenzo', 'Sarmiento Junín':'sarmiento',
   'Talleres de Córdoba':'talleres', 'Tigre':'tigre', 'Unión de Santa Fe':'union', 'Vélez Sarsfield':'velez',
+
+  // Alias con los nombres que usa el cuadro de la Copa Argentina
+  'Ciudad De Bolivar':'ciudad_bolivar', 'Deportivo Madryn':'deportivo_madryn', 'Deportivo Maipú':'depmaipu',
+  'Deportivo Morón':'moron', 'Gimnasia de Jujuy':'gimnasiajujuy', 'San Martín San Juan':'sanmartinsj',
+  'San Martín Tucumán':'sanmartintuc',
 };
 
 function escudoHTML(nombre){
@@ -2639,6 +2816,12 @@ const HERO_TEXTOS = {
     sub: "Probabilidades de ascenso y descenso calculadas simulando la temporada completa hasta cinco mil veces con un modelo Poisson ajustado por forma reciente y corrección Dixon-Coles.",
     ascensosLbl: "Ascensos por edición",
   },
+  copa: {
+    eyebrow: () => `SIMULACIÓN MONTE CARLO — <span id="hero-n">${(DATA_COPA && DATA_COPA.n_simulaciones) || 0}</span> CORRIDAS`,
+    titulo: "COPA ARGENTINA",
+    sub: "Cuadro real de 64 equipos: los cruces ya jugados quedan fijos y los pendientes se simulan a partido único en cancha neutral con el mismo modelo Poisson — alargue y penales incluidos.",
+    ascensosLbl: "Rondas",
+  },
   lpf: {
     eyebrow: () => `SIMULACIÓN MONTE CARLO — <span id="hero-n">${(DATA_LPF && DATA_LPF.n_simulaciones) || 0}</span> CORRIDAS`,
     titulo: "LIGA PROFESIONAL",
@@ -2653,7 +2836,12 @@ function actualizarHero(liga){
   document.getElementById('hero-title-span').textContent = t.titulo;
   document.getElementById('hero-sub').textContent = t.sub;
   document.getElementById('meta-ascensos-lbl').textContent = t.ascensosLbl;
-  if (liga === 'lpf'){
+  if (liga === 'copa'){
+    document.getElementById('meta-equipos').textContent = 64;
+    document.getElementById('meta-zonas').textContent = '—';
+    document.getElementById('meta-ascensos').textContent = 6;
+    document.getElementById('meta-descensos').textContent = '—';
+  } else if (liga === 'lpf'){
     document.getElementById('meta-equipos').textContent = 30;
     document.getElementById('meta-ascensos').textContent = 16;
     document.getElementById('meta-descensos').textContent = 2;
@@ -2668,9 +2856,12 @@ function setLiga(liga){
   document.querySelectorAll('.liga-tab').forEach(b => b.classList.toggle('active', b.dataset.liga === liga));
   document.getElementById('vista-nacional').style.display = liga === 'nacional' ? '' : 'none';
   document.getElementById('vista-lpf').style.display = liga === 'lpf' ? '' : 'none';
+  document.getElementById('vista-copa').style.display = liga === 'copa' ? '' : 'none';
   document.getElementById('sim-control-nacional').style.display = liga === 'nacional' ? '' : 'none';
   document.getElementById('sim-control-lpf').style.display = liga === 'lpf' ? '' : 'none';
+  document.getElementById('sim-control-copa').style.display = liga === 'copa' ? '' : 'none';
   document.body.classList.toggle('liga-lpf', liga === 'lpf');
+  document.body.classList.toggle('liga-copa', liga === 'copa');
   actualizarHero(liga);
 }
 
@@ -2710,6 +2901,242 @@ function toggleTema(){
 const themeToggleBtn = document.getElementById('theme-toggle');
 if (themeToggleBtn) themeToggleBtn.addEventListener('click', toggleTema);
 
+/* ---------- COPA ARGENTINA ---------- */
+let DATA_COPA = null;
+const RONDAS_COPA = [
+  ["32avos", "32avos de final"], ["16avos", "16avos de final"], ["octavos", "Octavos"],
+  ["cuartos", "Cuartos"], ["semis", "Semifinales"], ["final", "Final"]
+];
+
+async function cargarDatosCopa(){
+  try {
+    const respuesta = await fetch("./data_copa.json?t=" + Date.now());
+    if (!respuesta.ok) throw new Error("No se pudo cargar data_copa.json");
+    DATA_COPA = await respuesta.json();
+    iniciarCopa();
+  } catch (e) {
+    const cont = document.getElementById('bracket-copa');
+    if (cont) cont.innerHTML = `<div class="no-result">No se pudo cargar data_copa.json todavía (${e.message}). Corré <code>python main_copa.py</code> una vez, o apretá "Correr nueva simulación" acá arriba.</div>`;
+  }
+}
+
+function iniciarCopa(){
+  if (!DATA_COPA) return;
+  document.getElementById('last-update-copa').textContent = DATA_COPA.generado ? ("Última corrida: " + DATA_COPA.generado) : "";
+  document.getElementById('bracket-copa').innerHTML = bracketCopaHTML(DATA_COPA.rondas, DATA_COPA.campeon);
+  renderMCCopa();
+  poblarSelectEquiposCopa();
+  if (document.body.classList.contains('liga-copa')) actualizarHero('copa');
+}
+
+function matchCopaHTML(m){
+  const winLocal = m.avanza === m.local;
+  let nota = "";
+  if (!m.jugado) nota = m.penales ? "simulado — por penales" : "simulado";
+  else if (m.penales) nota = "definido por penales (dato real)";
+  return `<div class="match">
+    <div class="row ${winLocal ? 'winner' : ''}"><span>${escudoHTML(m.local)}${m.local}</span><span>${m.golesLocal ?? ''}</span></div>
+    <div class="row ${!winLocal ? 'winner' : ''}"><span>${escudoHTML(m.visitante)}${m.visitante}</span><span>${m.golesVisitante ?? ''}</span></div>
+    ${nota ? `<div class="leg-detail">${nota}</div>` : ''}
+  </div>`;
+}
+
+function bracketCopaHTML(rondas, campeon){
+  let html = "";
+  RONDAS_COPA.forEach(([clave, titulo], i) => {
+    const esFinal = clave === 'final';
+    html += `<div class="round ${esFinal ? 'final-col' : ''}">
+      <div class="round-title">${titulo}</div>
+      <div class="round-body">
+        ${(rondas[clave] || []).map(matchCopaHTML).join("")}
+        ${esFinal ? `<div class="campeon">🏆 ${escudoHTML(campeon)}${campeon}</div>` : ''}
+      </div>
+    </div>`;
+  });
+  return html;
+}
+
+function renderMCCopa(){
+  const list = document.getElementById('mc-list-copa');
+  if (!list || !DATA_COPA.monte_carlo) return;
+  list.innerHTML = "";
+  const color = 'var(--zone-a)';
+  DATA_COPA.monte_carlo.forEach((f, i) => {
+    const row = document.createElement('div');
+    row.className = 'mc-row';
+    row.innerHTML = `
+      <div class="pos">${i + 1}</div>
+      <div>
+        <div class="name"><span>${escudoHTML(f.equipo)}${f.equipo}</span><span class="pct" style="color:${color}">${f['%campeon']}% campeón</span></div>
+        <div class="mc-bar-track">
+          <div class="mc-bar-fill directo" style="width:${f['%campeon']}%; background:${color}"></div>
+        </div>
+        <div class="mc-sub">
+          <span><i class="dot" style="background:${color}"></i>${f['%final']}% llega a la final</span>
+          <span><i class="dot" style="background:${color}; opacity:0.5"></i>${f['%semis']}% semis</span>
+        </div>
+      </div>
+      <div class="mc-desc">
+        <div class="desc-pct">${f['%cuartos']}%</div>
+        <div class="desc-lbl">cuartos</div>
+        <div class="desc-bar-track"><div class="desc-bar-fill" style="width:${Math.min(f['%cuartos'], 100)}%"></div></div>
+      </div>
+    `;
+    list.appendChild(row);
+  });
+}
+
+function poblarSelectEquiposCopa(){
+  const sel = document.getElementById('campeon-equipo-copa');
+  if (!sel || !DATA_COPA.equipos_vivos) return;
+  const valorPrevio = sel.value;
+  sel.innerHTML = '<option value="">Elegí un equipo…</option>' +
+    DATA_COPA.equipos_vivos.map(n => `<option value="${n}">${n}</option>`).join('');
+  if (valorPrevio && DATA_COPA.equipos_vivos.includes(valorPrevio)) sel.value = valorPrevio;
+}
+
+function leerNSimsCopa(){
+  const input = document.getElementById('sim-count-copa');
+  let n = parseInt(input.value, 10);
+  if (!Number.isFinite(n)) n = 1000;
+  n = Math.max(50, Math.min(5000, n));
+  input.value = n;
+  return n;
+}
+
+async function copaEjecutar(tarea, payload, path, status){
+  // Igual que las otras ligas: intenta el worker con Pyodide y cae a la API.
+  return ejecutarSimulacion(tarea, payload, path, status);
+}
+
+async function correrSimulacionCopa(){
+  const btn = document.getElementById('btn-simular-copa');
+  const status = document.getElementById('sim-status-copa');
+  const input = document.getElementById('sim-count-copa');
+  const nSims = leerNSimsCopa();
+
+  if (!beginApiAction(status)) return;
+
+  btn.disabled = true;
+  input.disabled = true;
+  btn.textContent = "Simulando…";
+  status.classList.remove('error', 'ok');
+  status.textContent = `Corriendo el cuadro completo ${nSims} veces — puede tardar unos segundos.`;
+
+  try {
+    const cuerpo = await copaEjecutar("simular-copa", { n_sims: Number(nSims) }, "/api/simular-copa", status);
+    DATA_COPA = cuerpo;
+    iniciarCopa();
+    status.classList.add('ok');
+    status.textContent = "✓ Simulación actualizada (" + (DATA_COPA.generado || "") + ")";
+  } catch (e) {
+    setApiErrorStatus(status, "No se pudo simular", e);
+  } finally {
+    btn.disabled = false;
+    input.disabled = false;
+    btn.textContent = "▶ Correr nueva simulación del cuadro";
+    endApiAction();
+  }
+}
+
+async function correrActualizacionCopa(){
+  const btn = document.getElementById('btn-actualizar-copa');
+  const status = document.getElementById('sim-status-copa');
+  const lastUpdate = document.getElementById('last-update-copa');
+  const input = document.getElementById('sim-count-copa');
+  const nSims = leerNSimsCopa();
+
+  if (!beginApiAction(status)) return;
+
+  btn.disabled = true;
+  input.disabled = true;
+  btn.textContent = "Buscando resultados…";
+  status.classList.remove('error', 'ok');
+  status.textContent = "Consultando Promiedos y re-simulando si hay cruces nuevos — puede tardar unos segundos.";
+
+  try {
+    const respuesta = await apiFetch(apiUrl("/api/actualizar-copa"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ n_sims: Number(nSims) })
+    });
+    const cuerpo = await respuesta.json().catch(() => ({}));
+    if (!respuesta.ok) throw apiResponseError(respuesta, cuerpo);
+
+    if (cuerpo.actualizado) {
+      if (cuerpo.datos) { DATA_COPA = cuerpo.datos; iniciarCopa(); }
+      status.classList.add('ok');
+      status.textContent = `✓ Se cargaron ${cuerpo.cargados.length} cruce(s) nuevo(s) y se re-simuló.`;
+    } else {
+      status.classList.add('ok');
+      status.textContent = "✓ Consultado — no había cruces nuevos terminados.";
+    }
+    if (cuerpo.sin_ganador && cuerpo.sin_ganador.length){
+      status.textContent += ` (${cuerpo.sin_ganador.length} empate(s) sin ganador por penales detectable — revisar copa_argentina.csv)`;
+    }
+    lastUpdate.textContent = "Última consulta a Promiedos: " + new Date().toLocaleString('es-AR');
+  } catch (e) {
+    setApiErrorStatus(status, "No se pudo actualizar", e);
+  } finally {
+    btn.disabled = false;
+    input.disabled = false;
+    btn.textContent = "⟳ Actualizar desde Promiedos";
+    endApiAction();
+  }
+}
+
+async function simularHastaCampeonCopa(){
+  const sel = document.getElementById('campeon-equipo-copa');
+  const btn = document.getElementById('btn-campeon-copa');
+  const status = document.getElementById('campeon-status-copa');
+  const cont = document.getElementById('campeon-resultado-copa');
+  const equipo = sel.value;
+
+  if (!equipo){
+    status.classList.add('error');
+    status.textContent = "Elegí un equipo primero.";
+    return;
+  }
+  if (!beginApiAction(status)) return;
+
+  btn.disabled = true;
+  sel.disabled = true;
+  btn.textContent = "Simulando…";
+  status.classList.remove('error', 'ok');
+  status.textContent = `Repitiendo la Copa hasta que ${equipo} salga campeón — puede tardar unos segundos.`;
+  cont.innerHTML = "";
+
+  try {
+    const cuerpo = await copaEjecutar("simular-campeon-copa", { equipo }, "/api/simular-campeon-copa", status);
+
+    if (!cuerpo.logrado){
+      status.classList.add('error');
+      status.textContent = `No salió campeón en ${cuerpo.max_intentos} corridas — probá de nuevo.`;
+      return;
+    }
+    status.classList.add('ok');
+    status.textContent = `✓ Campeón en el intento N° ${cuerpo.intentos}`;
+    const campeonCorrida = cuerpo.rondas.final[0].avanza;
+    cont.innerHTML = `
+      <div class="campeon-summary">🏆 <b>${cuerpo.equipo}</b> levanta la Copa Argentina en esta corrida simulada
+        (intento N° ${cuerpo.intentos} de una búsqueda al azar entre distintas Copas posibles)</div>
+      <div class="bracket-scroll" style="margin-top:14px;"><div class="bracket">${bracketCopaHTML(cuerpo.rondas, campeonCorrida)}</div></div>
+    `;
+  } catch (e) {
+    setApiErrorStatus(status, "No se pudo simular", e);
+  } finally {
+    btn.disabled = false;
+    sel.disabled = false;
+    btn.textContent = "🏆 Simular hasta el título";
+    endApiAction();
+  }
+}
+
+document.getElementById('btn-simular-copa').addEventListener('click', correrSimulacionCopa);
+document.getElementById('btn-actualizar-copa').addEventListener('click', correrActualizacionCopa);
+document.getElementById('btn-campeon-copa').addEventListener('click', simularHastaCampeonCopa);
+
 cargarDatosLPF();
+cargarDatosCopa();
 
 </script>
