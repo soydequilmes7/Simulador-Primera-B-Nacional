@@ -51,6 +51,17 @@
     --azul: #2C5DA8;
     --azul-dim: #DFE8F7;
 
+    /* tokens semánticos para tabla de posiciones */
+    --leader-bg: #F6ECD2;
+    --leader-accent: #B8860B;
+    --leader-text: #8A5F0A;
+    --qualified-bg: #DFE8F7;
+    --qualified-accent: #2C5DA8;
+    --qualified-text: #1D3F76;
+    --relegation-bg: #FBE1DF;
+    --relegation-accent: #C93B32;
+    --relegation-text: #9A2A24;
+
     /* tokens de forma: planos y sobrios */
     --radius: 4px;
     --radius-sm: 3px;
@@ -101,6 +112,17 @@
     --azul: #0E86D4;
     --azul-dim: #DCEFFB;
 
+    /* tokens semánticos para tabla de posiciones */
+    --leader-bg: #F6ECD2;
+    --leader-accent: #B8860B;
+    --leader-text: #8A5F0A;
+    --qualified-bg: #DCEFFB;
+    --qualified-accent: #0E86D4;
+    --qualified-text: #084D7A;
+    --relegation-bg: #FBE3E3;
+    --relegation-accent: #D14545;
+    --relegation-text: #9C2A2A;
+
     /* tokens de forma: redondeado, sombra suave, gradientes discretos */
     --radius: 16px;
     --radius-sm: 10px;
@@ -128,8 +150,24 @@
     --ink: #F5F7FA;
     --ink-dim: #C7CEDB;
     --muted: #8993A8;
-    --amber: #D8A53B;
-    --amber-dim: rgba(216,165,59,0.14);
+    --amber: #E8C468;
+    --amber-dim: rgba(232,196,104,0.16);
+    --azul: #6FB6FF;
+    --azul-dim: rgba(111,182,255,0.16);
+    --danger: #FF7A70;
+    --danger-dim: rgba(255,122,112,0.16);
+
+    /* tokens semánticos para tabla de posiciones (fondos sólidos, integrados con el UI oscuro) */
+    --leader-bg: #352E1F;
+    --leader-accent: #E8AA19;
+    --leader-text: #FFD16B;
+    --qualified-bg: #101F38;
+    --qualified-accent: #4F8CFF;
+    --qualified-text: #8DB9FF;
+    --relegation-bg: #392126;
+    --relegation-accent: #EF5350;
+    --relegation-text: #FF9A96;
+
     --hero-bg: linear-gradient(160deg, #0B1220 0%, #16233B 60%, #1C2C48 100%);
     --hero-ink: #F5F7FA;
     --hero-dim: #C7CEDB;
@@ -162,6 +200,18 @@
     --amber-dim: rgba(232,196,104,0.16);
     --danger: #FF7A70;
     --danger-dim: rgba(255,122,112,0.16);
+
+    /* tokens semánticos para tabla de posiciones */
+    --leader-bg: #352E1F;
+    --leader-accent: #E8AA19;
+    --leader-text: #FFD16B;
+    --qualified-bg: #163258;
+    --qualified-accent: #39B8FF;
+    --qualified-text: #85D0FF;
+    --relegation-bg: #3B2124;
+    --relegation-accent: #FF7A70;
+    --relegation-text: #FF9A96;
+
     --hero-bg: linear-gradient(160deg, #040A18 0%, #081426 55%, #102544 100%);
     --hero-ink: #F5F7FA;
     --hero-dim: #AEB8CC;
@@ -514,18 +564,39 @@
   tbody tr{ transition: background 0.15s ease; }
   tbody tr:hover{ background: var(--bg-panel-2); }
   tbody tr:last-child td{ border-bottom:none; }
-  tbody tr.punta{ background: var(--amber-dim); }
-  tbody tr.punta:hover{ background: var(--amber-dim); filter: brightness(0.98); }
-  tbody tr.punta td:nth-child(2){ color: var(--amber); font-weight:700; }
-  tbody tr.punta{ box-shadow: inset 3px 0 0 var(--amber); }
-  tbody tr.reducido{ background: var(--azul-dim); }
-  tbody tr.reducido:hover{ filter: brightness(0.98); }
-  tbody tr.reducido td:nth-child(2){ color: var(--azul); font-weight:600; }
-  tbody tr.reducido{ box-shadow: inset 3px 0 0 var(--azul); }
-  tbody tr.descenso{ background: var(--danger-dim); }
-  tbody tr.descenso:hover{ filter: brightness(0.98); }
-  tbody tr.descenso td:nth-child(2){ color: var(--danger); }
-  tbody tr.descenso{ box-shadow: inset 3px 0 0 var(--danger); }
+  /* ---------- Filas destacadas: tokens semánticos ----------
+     .punta = líder | .reducido = clasificados | .descenso = zona de descenso
+     Cada estado combina fondo teñido + borde izquierdo 3px + nombre semántico.
+     Los números (PTS/GF/GC/DG) siempre usan --ink para conservar legibilidad. */
+  tbody tr.punta{ background: var(--leader-bg); box-shadow: inset 3px 0 0 var(--leader-accent); }
+  tbody tr.punta:hover{ background: var(--leader-bg); }
+  tbody tr.punta td{ color: var(--ink); }
+  tbody tr.punta td:first-child{ color: var(--muted); }
+  tbody tr.punta td:nth-child(2){ color: var(--leader-text); font-weight:700; }
+
+  tbody tr.reducido{ background: var(--qualified-bg); box-shadow: inset 3px 0 0 var(--qualified-accent); }
+  tbody tr.reducido:hover{ background: var(--qualified-bg); }
+  tbody tr.reducido td{ color: var(--ink); }
+  tbody tr.reducido td:first-child{ color: var(--muted); }
+  tbody tr.reducido td:nth-child(2){ color: var(--qualified-text); font-weight:600; }
+
+  tbody tr.descenso{ background: var(--relegation-bg); box-shadow: inset 3px 0 0 var(--relegation-accent); }
+  tbody tr.descenso:hover{ background: var(--relegation-bg); }
+  tbody tr.descenso td{ color: var(--ink); }
+  tbody tr.descenso td:first-child{ color: var(--muted); }
+  tbody tr.descenso td:nth-child(2){ color: var(--relegation-text); font-weight:600; }
+
+  body.dark:not(.liga-lpf) #sec-tabla{
+    --leader-bg: linear-gradient(90deg, rgba(76,55,24,0.84) 0%, rgba(48,40,29,0.78) 48%, rgba(22,35,59,0.48) 100%);
+    --leader-accent: #C89124;
+    --leader-text: #DDB35A;
+    --qualified-bg: linear-gradient(90deg, rgba(21,50,83,0.86) 0%, rgba(18,42,71,0.78) 48%, rgba(22,35,59,0.48) 100%);
+    --qualified-accent: #3F78C8;
+    --qualified-text: #7FA9DE;
+    --relegation-bg: linear-gradient(90deg, rgba(82,34,38,0.86) 0%, rgba(58,31,36,0.78) 48%, rgba(22,35,59,0.48) 100%);
+    --relegation-accent: #C44F49;
+    --relegation-text: #DE817B;
+  }
 
   /* Tabla Anual LPF: clasificados a copas internacionales.
      Libertadores (campeón Apertura, Clausura, Copa Argentina + mejores 3 de tabla anual)
