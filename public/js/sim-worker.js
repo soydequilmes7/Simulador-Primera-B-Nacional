@@ -1,13 +1,13 @@
 // sim-worker.js
 //
-// Web Worker que corre las simulaciones (Primera Nacional y LPF) adentro
+// Web Worker que corre las simulaciones (Primera Nacional, LPF y Copa) adentro
 // del navegador con Pyodide, para no pegarle al backend cada vez que el
 // usuario aprieta "Correr nueva simulación". Usa exactamente el mismo
 // código Python que el backend (main.py, main_lpf.py, modelos/,
 // pysim_dispatch.py): lo pide vía /api/pysim-source y lo escribe en el
 // filesystem virtual de Pyodide, junto con los CSV actuales
-// (/api/datos-nacional y /api/datos-lpf). No reimplementa ninguna lógica
-// de simulación en JS.
+// (/api/datos-nacional, /api/datos-lpf y /api/datos-copa). No reimplementa
+// ninguna lógica de simulación en JS.
 //
 // Protocolo de mensajes (postMessage):
 //   main -> worker: { type: "init", apiBase: string }
@@ -129,8 +129,12 @@ async function ejecutar(tarea, payload) {
     case "simular-lpf":
       kwargs = { n_sims: clamp(payload.n_sims, 50, 5000, 500) };
       break;
+    case "simular-copa":
+      kwargs = { n_sims: clamp(payload.n_sims, 50, 5000, 500) };
+      break;
     case "simular-campeon":
-    case "simular-campeon-lpf": {
+    case "simular-campeon-lpf":
+    case "simular-campeon-copa": {
       const equipo = String(payload.equipo || "").trim();
       if (!equipo) throw Object.assign(new Error("Falta indicar el equipo"), { status: 400 });
       kwargs = { equipo, max_intentos: clamp(payload.max_intentos, 100, 20000, 5000) };

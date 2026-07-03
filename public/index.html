@@ -1399,7 +1399,12 @@
 const API_RENDER_URL = "https://simulador-primera-nacional-backend.onrender.com";
 const API_BASE_URL = (() => {
   const host = window.location.hostname;
-  if (host === "localhost" || host === "127.0.0.1" || host.endsWith(".onrender.com")) {
+  const sameOriginHosts = new Set(["localhost", "127.0.0.1", "simuladorprimerab.xyz"]);
+  if (
+    sameOriginHosts.has(host) ||
+    host.endsWith(".onrender.com") ||
+    host.endsWith(".vercel.app")
+  ) {
     return "";
   }
   return API_RENDER_URL;
@@ -1453,7 +1458,7 @@ function setApiActionsDisabled(disabled){
   document.querySelectorAll('.btn-simular, .btn-actualizar').forEach(btn => {
     btn.disabled = disabled;
   });
-  document.querySelectorAll('#sim-count, #sim-count-lpf, #campeon-equipo, #campeon-equipo-lpf').forEach(control => {
+  document.querySelectorAll('#sim-count, #sim-count-lpf, #sim-count-copa, #campeon-equipo, #campeon-equipo-lpf, #campeon-equipo-copa').forEach(control => {
     control.disabled = disabled;
   });
 }
