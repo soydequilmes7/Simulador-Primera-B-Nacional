@@ -192,6 +192,16 @@ class EstadisticasLPF(Estadisticas):
         con SOLO los puntos/gf/gc del Clausura (arranca de cero)."""
         return self.simular_fase_regular()
 
+    def _simular_clausura_vectorizado(self, n_simulaciones):
+        """Igual que simular_clausura() pero para las n_simulaciones de
+        Monte Carlo de una sola vez, reusando
+        _simular_fase_regular_vectorizado() heredado de Estadisticas (mismo
+        modelo, estadísticamente equivalente a simular partido por
+        partido). Devuelve el dict {equipo: {puntos, gf, gc}} de arrays
+        (n_simulaciones,), SIN armar todavía las tablas por zona (eso se
+        arma por-simulación solo donde hace falta, ej. playoffs)."""
+        return self._simular_fase_regular_vectorizado(n_simulaciones)
+
     # ------------------------------------------------------------------
     # Playoffs del Clausura: cruzados entre zonas desde Octavos
     # (Reglamento Art. 14.2 a 14.5)
@@ -199,18 +209,24 @@ class EstadisticasLPF(Estadisticas):
     def jugar_playoffs(self, tablas_clausura):
         tabla_a, tabla_b = tablas_clausura["A"], tablas_clausura["B"]
 
-        def equipo(tabla, posicion):
-            return tabla.iloc[posicion - 1]["equipo"]
+        # Listas planas en vez de .iloc[...]["equipo"] repetido (cada
+        # llamada arma una Series de pandas entera solo para leer un
+        # valor); mismo motivo que en Estadisticas.jugar_reducido().
+        equipos_a = tabla_a["equipo"].tolist()
+        equipos_b = tabla_b["equipo"].tolist()
+
+        def equipo(lista, posicion):
+            return lista[posicion - 1]
 
         cruces_octavos = [
-            (equipo(tabla_a, 1), equipo(tabla_b, 8)),
-            (equipo(tabla_b, 1), equipo(tabla_a, 8)),
-            (equipo(tabla_a, 2), equipo(tabla_b, 7)),
-            (equipo(tabla_b, 2), equipo(tabla_a, 7)),
-            (equipo(tabla_a, 3), equipo(tabla_b, 6)),
-            (equipo(tabla_b, 3), equipo(tabla_a, 6)),
-            (equipo(tabla_a, 4), equipo(tabla_b, 5)),
-            (equipo(tabla_b, 4), equipo(tabla_a, 5)),
+            (equipo(equipos_a, 1), equipo(equipos_b, 8)),
+            (equipo(equipos_b, 1), equipo(equipos_a, 8)),
+            (equipo(equipos_a, 2), equipo(equipos_b, 7)),
+            (equipo(equipos_b, 2), equipo(equipos_a, 7)),
+            (equipo(equipos_a, 3), equipo(equipos_b, 6)),
+            (equipo(equipos_b, 3), equipo(equipos_a, 6)),
+            (equipo(equipos_a, 4), equipo(equipos_b, 5)),
+            (equipo(equipos_b, 4), equipo(equipos_a, 5)),
         ]
 
         diccionario = {"octavos": [], "cuartos": [], "semis": [], "final": {}}
@@ -225,20 +241,26 @@ class EstadisticasLPF(Estadisticas):
         # por la posición en la fase de zonas del Clausura -- usamos la
         # tabla general combinada (ignorando zona) como proxy de eso.
         tabla_general = self._tabla_general(tablas_clausura)
+        # Orden ya calculado por _tabla_general(); listas + comprensiones en
+        # vez de DataFrame.isin() + reset_index() + iloc para elegir 4-8
+        # equipos de una tabla de ~19 filas.
+        orden_general = tabla_general["equipo"].tolist()
 
-        seeds_cuartos = tabla_general[tabla_general["equipo"].isin(ganadores_octavos)].reset_index(drop=True)
+        ganadores_octavos_set = set(ganadores_octavos)
+        seeds_cuartos = [nombre for nombre in orden_general if nombre in ganadores_octavos_set]
         cruces_cuartos = [(0, 7), (1, 6), (2, 5), (3, 4)]
         ganadores_cuartos = []
         for i, j in cruces_cuartos:
-            mejor, peor = seeds_cuartos.iloc[i]["equipo"], seeds_cuartos.iloc[j]["equipo"]
+            mejor, peor = seeds_cuartos[i], seeds_cuartos[j]
             ganador, detalle = self.jugar_partido_unico(mejor, peor)
             diccionario["cuartos"].append(detalle)
             ganadores_cuartos.append(ganador)
 
-        seeds_semis = tabla_general[tabla_general["equipo"].isin(ganadores_cuartos)].reset_index(drop=True)
+        ganadores_cuartos_set = set(ganadores_cuartos)
+        seeds_semis = [nombre for nombre in orden_general if nombre in ganadores_cuartos_set]
         finalistas = []
         for i, j in [(0, 3), (1, 2)]:
-            mejor, peor = seeds_semis.iloc[i]["equipo"], seeds_semis.iloc[j]["equipo"]
+            mejor, peor = seeds_semis[i], seeds_semis[j]
             ganador, detalle = self.jugar_partido_unico(mejor, peor)
             diccionario["semis"].append(detalle)
             finalistas.append(ganador)
@@ -306,6 +328,120 @@ class EstadisticasLPF(Estadisticas):
         prom = prom.sort_values("promedio", ascending=False).reset_index(drop=True)
         prom.index = prom.index + 1
         return prom[["equipo", "puntos_totales", "partidos_totales", "promedio"]]
+
+    def _calcular_tabla_anual_arrays(self, clausura_tot):
+        """Versión vectorizada de calcular_tabla_anual(): en vez de armar
+        un DataFrame por simulación, devuelve arrays (n_equipos,
+        n_simulaciones) de puntos/gf/gc/dg para TODAS las simulaciones de
+        una sola vez. clausura_tot es el dict {equipo: {puntos, gf, gc}}
+        de arrays que devuelve _simular_clausura_vectorizado(). El Apertura
+        es el mismo para todas las simulaciones (dato real, no se
+        simula), así que se suma con broadcasting."""
+        nombres = np.array(list(self.equipos.keys()))
+
+        apertura_idx = self.apertura.set_index("equipo")
+        puntos_ap = apertura_idx.loc[nombres, "puntos"].to_numpy(dtype=np.float64)
+        gf_ap = apertura_idx.loc[nombres, "gf"].to_numpy(dtype=np.float64)
+        gc_ap = apertura_idx.loc[nombres, "gc"].to_numpy(dtype=np.float64)
+
+        puntos_cl = np.array([clausura_tot[n]["puntos"] for n in nombres], dtype=np.float64)
+        gf_cl = np.array([clausura_tot[n]["gf"] for n in nombres], dtype=np.float64)
+        gc_cl = np.array([clausura_tot[n]["gc"] for n in nombres], dtype=np.float64)
+
+        puntos = puntos_ap[:, None] + puntos_cl
+        gf = gf_ap[:, None] + gf_cl
+        gc = gc_ap[:, None] + gc_cl
+        dg = gf - gc
+
+        return {"nombres": nombres, "puntos": puntos, "gf": gf, "gc": gc, "dg": dg}
+
+    def _calcular_tabla_promedios_arrays(self, tabla_anual_arr):
+        """Versión vectorizada de calcular_tabla_promedios(): partidos_2026
+        es estático (no depende de la simulación), así que solo "puntos"
+        varía por simulación -- todo se resuelve con un array (n_equipos,
+        n_simulaciones)."""
+        nombres = tabla_anual_arr["nombres"]
+        hist_idx = self.promedios_historicos.set_index("equipo")
+        puntos_hist = hist_idx.loc[nombres, "puntos_historicos"].to_numpy(dtype=np.float64)
+        partidos_hist = hist_idx.loc[nombres, "partidos_historicos"].to_numpy(dtype=np.float64)
+
+        partidos_2026 = self._partidos_2026_por_equipo()
+        partidos_2026_arr = np.array([partidos_2026.loc[n] for n in nombres], dtype=np.float64)
+
+        puntos_totales = puntos_hist[:, None] + tabla_anual_arr["puntos"]
+        partidos_totales = (partidos_hist + partidos_2026_arr)[:, None] * np.ones(
+            tabla_anual_arr["puntos"].shape[1]
+        )
+        promedio = puntos_totales / partidos_totales
+
+        return {
+            "nombres": nombres,
+            "puntos_totales": puntos_totales,
+            "partidos_totales": partidos_totales,
+            "promedio": promedio,
+        }
+
+    def _calcular_descensos_vectorizado(self, tabla_anual_arr, tabla_promedios_arr):
+        """Versión vectorizada de calcular_descensos(): resuelve las
+        n_simulaciones de una sola vez para el caso general (sin empates,
+        sin coincidencia de descendido), y solo cae a un loop -- llamando
+        al calcular_descensos() original sobre un DataFrame armado para
+        esa simulación puntual -- en los casos raros de empate real o de
+        coincidencia entre el descendido por promedio y el de la tabla
+        anual. Esto preserva EXACTAMENTE el mismo comportamiento (incluido
+        jugar partidos de desempate) para esos casos, sin pagar el costo
+        de por-simulación en el caso común."""
+        nombres = tabla_anual_arr["nombres"]
+        puntos, gf, gc, dg = (tabla_anual_arr["puntos"], tabla_anual_arr["gf"],
+                               tabla_anual_arr["gc"], tabla_anual_arr["dg"])
+        promedio = tabla_promedios_arr["promedio"]
+        n, S = puntos.shape
+
+        # Clave única ordenable (puntos > dg > gf, todos desc) para rankear
+        # las S simulaciones de una sola vez con un solo argsort vectorizado.
+        OFFSET_DG = 1000
+        key_anual = puntos * 1_000_000_000 + (dg + OFFSET_DG) * 100_000 + gf
+        orden_anual = np.argsort(-key_anual, axis=0)  # (n, S), índices de equipo
+        idx_ultimo = orden_anual[-1, :]  # peor equipo por sim
+
+        cols = np.arange(S)
+        val_puntos_ult = puntos[idx_ultimo, cols]
+        val_dg_ult = dg[idx_ultimo, cols]
+        val_gf_ult = gf[idx_ultimo, cols]
+        empatados_anual = (puntos == val_puntos_ult) & (dg == val_dg_ult) & (gf == val_gf_ult)
+        n_empatados_anual = empatados_anual.sum(axis=0)
+
+        idx_peor_prom = np.argmin(promedio, axis=0)
+        val_prom_peor = promedio[idx_peor_prom, cols]
+        empatados_prom = np.isclose(promedio, val_prom_peor[None, :])
+        n_empatados_prom = empatados_prom.sum(axis=0)
+
+        mismo = idx_peor_prom == idx_ultimo
+        necesita_fallback = (n_empatados_anual > 1) | (n_empatados_prom > 1) | mismo
+
+        descensos_por_sim = [None] * S
+        directos = np.where(~necesita_fallback)[0]
+        for s in directos:
+            descensos_por_sim[s] = [nombres[idx_peor_prom[s]], nombres[idx_ultimo[s]]]
+
+        for s in np.where(necesita_fallback)[0]:
+            tabla_anual_df = pd.DataFrame({
+                "equipo": nombres, "puntos": puntos[:, s], "gf": gf[:, s],
+                "gc": gc[:, s], "dg": dg[:, s],
+            }).sort_values(["puntos", "dg", "gf"], ascending=[False, False, False]).reset_index(drop=True)
+            tabla_anual_df.index = tabla_anual_df.index + 1
+
+            tabla_prom_df = pd.DataFrame({
+                "equipo": nombres,
+                "puntos_totales": tabla_promedios_arr["puntos_totales"][:, s],
+                "partidos_totales": tabla_promedios_arr["partidos_totales"][:, s],
+                "promedio": promedio[:, s],
+            }).sort_values("promedio", ascending=False).reset_index(drop=True)
+            tabla_prom_df.index = tabla_prom_df.index + 1
+
+            descensos_por_sim[s] = self.calcular_descensos(tabla_anual_df, tabla_prom_df)
+
+        return descensos_por_sim
 
     def _definir_por_desempate(self, candidatos):
         """El reglamento no desempata la posición que define un descenso por
@@ -387,22 +523,45 @@ class EstadisticasLPF(Estadisticas):
 
         paso_reporte = max(1, n_simulaciones // 10)
 
-        for i in range(n_simulaciones):
-            tablas_clausura = self.simular_clausura()
+        # Igual que en Nacional (ver Estadisticas.monte_carlo()): el Clausura
+        # de TODAS las simulaciones se resuelve de una sola vez, vectorizado.
+        # Acá además vectorizamos tabla anual, promedios y descensos (que
+        # Nacional no tiene) -- ver los docstrings de cada _*_arrays /
+        # _calcular_descensos_vectorizado. Lo único que sigue por-simulación
+        # es armar la tabla del Clausura (barato, ya no simula partidos) y
+        # los playoffs (dependen de la tabla real, no se pueden vectorizar).
+        clausura_tot = self._simular_clausura_vectorizado(n_simulaciones)
+        tabla_anual_arr = self._calcular_tabla_anual_arrays(clausura_tot)
+        tabla_promedios_arr = self._calcular_tabla_promedios_arrays(tabla_anual_arr)
+        descensos_por_sim = self._calcular_descensos_vectorizado(tabla_anual_arr, tabla_promedios_arr)
 
+        for i in range(n_simulaciones):
+            totales_i = {
+                nombre: {
+                    "puntos": int(datos["puntos"][i]),
+                    "gf": int(datos["gf"][i]),
+                    "gc": int(datos["gc"][i]),
+                }
+                for nombre, datos in clausura_tot.items()
+            }
+            tablas_clausura = self._armar_tabla_final(totales_i)
+
+            # itertuples() en vez de iterrows(): ver el comentario en
+            # Estadisticas.monte_carlo() -- iterrows arma una Series de
+            # pandas por fila, mucho más lento que itertuples cuando solo
+            # hace falta leer un par de valores, y esto corre una vez por
+            # cada una de las 1000+ simulaciones.
             for zona, tabla_zona in tablas_clausura.items():
-                for posicion, fila in tabla_zona.iterrows():
-                    contador[fila["equipo"]]["puntos_total"] += fila["puntos"]
-                    contador[fila["equipo"]]["posicion_total"] += posicion
+                for posicion, fila in enumerate(tabla_zona.itertuples(index=False), start=1):
+                    contador[fila.equipo]["puntos_total"] += fila.puntos
+                    contador[fila.equipo]["posicion_total"] += posicion
                     if posicion <= 8:
-                        contador[fila["equipo"]]["playoffs"] += 1
+                        contador[fila.equipo]["playoffs"] += 1
 
             campeon_clausura, _ = self.jugar_playoffs(tablas_clausura)
             contador[campeon_clausura]["campeon_clausura"] += 1
 
-            tabla_anual = self.calcular_tabla_anual(tablas_clausura)
-            tabla_promedios = self.calcular_tabla_promedios(tabla_anual)
-            for descendido in self.calcular_descensos(tabla_anual, tabla_promedios):
+            for descendido in descensos_por_sim[i]:
                 contador[descendido]["descenso"] += 1
 
             if (i + 1) % paso_reporte == 0:

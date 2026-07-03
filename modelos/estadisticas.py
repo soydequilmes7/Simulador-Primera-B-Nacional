@@ -11,6 +11,15 @@ class Estadisticas:
     PROMEDIO_GF_LOCAL_LIGA = 1.35
     PROMEDIO_GF_VISITANTE_LIGA = 1.05
 
+    # Factoriales de 0 a 8 precalculados una sola vez (se usan en cada
+    # simular_partido para la tabla de probabilidades Poisson). Evita
+    # llamar math.factorial() en un loop 81 veces por partido simulado --
+    # con miles de partidos por Monte Carlo, esto ahorra millones de
+    # llamadas redundantes (siempre son los mismos 9 valores).
+    _MAX_GOLES = 8
+    _FACTORIALES = np.array([math.factorial(i) for i in range(_MAX_GOLES + 1)], dtype=np.float64)
+    _RANGO_GOLES = np.arange(_MAX_GOLES + 1)
+
     def __init__(self):
 
         self.resultados = None
@@ -213,14 +222,18 @@ class Estadisticas:
         lambda_local = lambda_local_base * shock_local
         lambda_visitante = lambda_visitante_base * shock_visitante
 
-        # Probabilidades Poisson independientes para un rango de marcadores razonable
-        max_goles = 8
-        probs = np.zeros((max_goles + 1, max_goles + 1))
-        for x in range(max_goles + 1):
-            for y in range(max_goles + 1):
-                p_x = (lambda_local ** x) * np.exp(-lambda_local) / math.factorial(x)
-                p_y = (lambda_visitante ** y) * np.exp(-lambda_visitante) / math.factorial(y)
-                probs[x, y] = p_x * p_y
+        # Probabilidades Poisson independientes para un rango de marcadores
+        # razonable. Vectorizado con NumPy en vez de un doble loop de Python
+        # con math.factorial() en cada iteración (81 llamadas por partido):
+        # esta es, por lejos, la función más llamada de toda la simulación
+        # (miles de veces en cada corrida de Monte Carlo), así que evitar el
+        # overhead del intérprete acá es lo que más impacta en la velocidad
+        # total -- tanto en el backend como corriendo en el navegador vía
+        # Pyodide.
+        k = self._RANGO_GOLES
+        p_x = (lambda_local ** k) * np.exp(-lambda_local) / self._FACTORIALES
+        p_y = (lambda_visitante ** k) * np.exp(-lambda_visitante) / self._FACTORIALES
+        probs = np.outer(p_x, p_y)
 
         # Corrección Dixon-Coles: solo afecta a 0-0, 1-0, 0-1, 1-1
         probs[0, 0] *= 1 - lambda_local * lambda_visitante * RHO
@@ -228,16 +241,32 @@ class Estadisticas:
         probs[0, 1] *= 1 + lambda_local * RHO
         probs[1, 1] *= 1 - RHO
 
-        probs = probs / probs.sum()  # renormalizar para que sigan sumando 1
-
-        # Samplear un marcador (x, y) según esas probabilidades ajustadas
-        flat_probs = probs.flatten()
-        idx = np.random.choice(len(flat_probs), p=flat_probs)
+        # Samplear un marcador (x, y) según esas probabilidades ajustadas.
+        # np.random.choice acepta que p no sume exactamente 1 (con que sea
+        # muy cercano alcanza), pero normalizamos igual por prolijidad.
+        flat_probs = probs.ravel()
+        flat_probs = flat_probs / flat_probs.sum()
+        idx = np.random.choice(flat_probs.size, p=flat_probs)
+        max_goles = self._MAX_GOLES
         goles_local, goles_visitante = idx // (max_goles + 1), idx % (max_goles + 1)
 
 
         return int(goles_local), int(goles_visitante)
     
+    def _pares_fixture(self):
+        """Lista (local, visitante) de los partidos pendientes, calculada una
+        sola vez y cacheada. simular_fase_regular() se llama una vez por
+        cada simulación de Monte Carlo (hasta 1000+ veces) y el fixture no
+        cambia entre una simulación y otra, así que recorrerlo con
+        DataFrame.iterrows() en cada vuelta (que reconstruye una Series por
+        fila) es trabajo repetido de más. Se guarda como lista de tuplas
+        nativas de Python, mucho más liviana de recorrer."""
+        if getattr(self, "_pares_fixture_cache", None) is None:
+            self._pares_fixture_cache = list(
+                self.fixture[["equipo_local", "equipo_visitante"]].itertuples(index=False, name=None)
+            )
+        return self._pares_fixture_cache
+
     def simular_fase_regular(self):
         """Simula todos los partidos pendientes del fixture y devuelve la tabla final
         de cada zona (puntos, gf, gc, dg), sin modificar los objetos Equipo originales."""
@@ -248,10 +277,7 @@ class Estadisticas:
             for nombre, equipo in self.equipos.items()
         }
 
-        for _, partido in self.fixture.iterrows():
-            local = partido["equipo_local"]
-            visitante = partido["equipo_visitante"]
-
+        for local, visitante in self._pares_fixture():
             gl, gv = self.simular_partido(local, visitante)
 
             totales[local]["gf"] += gl
@@ -272,31 +298,185 @@ class Estadisticas:
     def _armar_tabla_final(self, totales):
         """Ordena los totales finales por zona, aplicando desempates:
         1) puntos, 2) diferencia de gol, 3) goles a favor.
-        Devuelve un dict {"A": DataFrame, "B": DataFrame}."""
+        Devuelve un dict {"A": DataFrame, "B": DataFrame}.
 
-        filas = []
-        for nombre, datos in totales.items():
-            zona = self.equipos[nombre].zona
-            dg = datos["gf"] - datos["gc"]
-            filas.append({
-                "zona": zona, "equipo": nombre,
-                "puntos": datos["puntos"], "gf": datos["gf"],
-                "gc": datos["gc"], "dg": dg,
-            })
+        Se arma con arrays de NumPy + np.lexsort en vez de
+        DataFrame.sort_values(): esta función se llama una vez por cada
+        simulación de Monte Carlo (1000+ veces) sobre una tabla de apenas
+        ~19 equipos, y el overhead propio de pandas para ordenar (conversión
+        a categórico, lexsort_indexer, etc.) termina pesando más que el
+        trabajo real. El resultado final sigue siendo un DataFrame por
+        zona, con las mismas columnas/orden que antes, para no romper nada
+        de lo que ya consume esta salida (export a JSON, etc.)."""
 
-        tabla = pd.DataFrame(filas)
-        tabla = tabla.sort_values(
-            by=["zona", "puntos", "dg", "gf"],
-            ascending=[True, False, False, False]
-        ).reset_index(drop=True)
+        nombres = np.array(list(totales.keys()))
+        zonas = np.array([self.equipos[n].zona for n in nombres])
+        puntos = np.array([totales[n]["puntos"] for n in nombres])
+        gf = np.array([totales[n]["gf"] for n in nombres])
+        gc = np.array([totales[n]["gc"] for n in nombres])
+        dg = gf - gc
 
         tablas_por_zona = {}
-        for zona in sorted(tabla["zona"].unique()):
-            tabla_zona = tabla[tabla["zona"] == zona].drop(columns=["zona"]).reset_index(drop=True)
+        for zona in sorted(set(zonas.tolist())):
+            mask = zonas == zona
+            # np.lexsort ordena por la ÚLTIMA clave como criterio principal,
+            # así que el orden de desempate (puntos > dg > gf, todos desc)
+            # va de menos a más importante: gf, luego dg, luego puntos.
+            orden = np.lexsort((-gf[mask], -dg[mask], -puntos[mask]))
+            tabla_zona = pd.DataFrame({
+                "equipo": nombres[mask][orden],
+                "puntos": puntos[mask][orden],
+                "gf": gf[mask][orden],
+                "gc": gc[mask][orden],
+                "dg": dg[mask][orden],
+            })
             tabla_zona.index = tabla_zona.index + 1  # posición arranca en 1
             tablas_por_zona[zona] = tabla_zona
 
         return tablas_por_zona
+
+    def _simular_fase_regular_vectorizado(self, n_simulaciones, max_elems_por_bloque=8_000_000):
+        """Versión vectorizada de simular_fase_regular(), pensada para
+        Monte Carlo. En vez de llamar simular_partido() una vez por cada
+        partido pendiente Y por cada simulación (partidos_pendientes x
+        n_simulaciones llamadas individuales, cada una con su propio
+        overhead de Python + numpy), arma TODOS los partidos pendientes de
+        TODAS las simulaciones en un solo bloque de arrays y los resuelve
+        con operaciones vectorizadas de una sola vez.
+
+        Usa EXACTAMENTE el mismo modelo que simular_partido(): mismo
+        lambda por Dixon-Coles + shock Gamma, mismas probabilidades por
+        marcador, mismo muestreo por función de distribución acumulada
+        (matemáticamente equivalente a np.random.choice(p=...), que es lo
+        que usa la versión partido-por-partido) -- estadísticamente
+        equivalente, no una aproximación. Lo único que cambia es que se
+        sortean todos los partidos juntos en vez de uno a la vez.
+
+        Devuelve un dict {equipo: {"puntos": array(n_simulaciones),
+        "gf": array(...), "gc": array(...)}} con los totales finales de
+        CADA simulación, arrancando de los totales ya jugados (igual que
+        simular_fase_regular()).
+
+        max_elems_por_bloque limita cuántas celdas de la grilla de
+        probabilidades (partidos x simulaciones x 81 marcadores posibles)
+        se arman de una sola vez, para no reventar la memoria del
+        navegador cuando corre en Pyodide -- si hace falta, procesa las
+        simulaciones en tandas y las concatena al final (el resultado es
+        idéntico a procesarlas todas juntas, solo cambia cuánta memoria
+        pico se usa)."""
+        pares = self._pares_fixture()
+        M = len(pares)
+        S = n_simulaciones
+        nombres_equipos = list(self.equipos.keys())
+        idx_por_nombre = {n: i for i, n in enumerate(nombres_equipos)}
+        n_equipos = len(nombres_equipos)
+
+        puntos_base = np.array([self.equipos[n].puntos for n in nombres_equipos], dtype=np.int64)
+        gf_base = np.array([self.equipos[n].goles_favor for n in nombres_equipos], dtype=np.int64)
+        gc_base = np.array([self.equipos[n].goles_contra for n in nombres_equipos], dtype=np.int64)
+
+        if M == 0:
+            # No quedan partidos pendientes: todas las simulaciones
+            # devuelven la misma tabla ya jugada, repetida S veces.
+            return {
+                nombre: {
+                    "puntos": np.full(S, puntos_base[i], dtype=np.int64),
+                    "gf": np.full(S, gf_base[i], dtype=np.int64),
+                    "gc": np.full(S, gc_base[i], dtype=np.int64),
+                }
+                for i, nombre in enumerate(nombres_equipos)
+            }
+
+        idx_local = np.array([idx_por_nombre[l] for l, _ in pares])
+        idx_visitante = np.array([idx_por_nombre[v] for _, v in pares])
+
+        lambda_local_base = np.array([
+            self.equipos[l].ataque_local * self.equipos[v].defensa_visitante * self.PROMEDIO_GF_LOCAL_LIGA
+            for l, v in pares
+        ])
+        lambda_visitante_base = np.array([
+            self.equipos[v].ataque_visitante * self.equipos[l].defensa_local * self.PROMEDIO_GF_VISITANTE_LIGA
+            for l, v in pares
+        ])
+
+        RHO = -0.1
+        K_SHOCK = self.K_SHOCK_PARTIDO
+        k = self._RANGO_GOLES        # 0..8
+        fact = self._FACTORIALES
+        max_goles = self._MAX_GOLES
+        n_marcadores = (max_goles + 1) * (max_goles + 1)  # 81
+
+        puntos_tot = np.zeros((n_equipos, S), dtype=np.int64)
+        gf_tot = np.zeros((n_equipos, S), dtype=np.int64)
+        gc_tot = np.zeros((n_equipos, S), dtype=np.int64)
+        puntos_tot[:] = puntos_base[:, None]
+        gf_tot[:] = gf_base[:, None]
+        gc_tot[:] = gc_base[:, None]
+
+        # Tamaño de tanda: cuántas simulaciones procesar juntas para no
+        # superar max_elems_por_bloque celdas (M x tanda x 81) de una vez.
+        tanda = max(1, min(S, max_elems_por_bloque // max(1, M * n_marcadores)))
+
+        for inicio in range(0, S, tanda):
+            s = min(tanda, S - inicio)
+
+            shock_local = np.random.gamma(shape=K_SHOCK, scale=1 / K_SHOCK, size=(M, s))
+            shock_visitante = np.random.gamma(shape=K_SHOCK, scale=1 / K_SHOCK, size=(M, s))
+
+            lambda_local = lambda_local_base[:, None] * shock_local          # (M, s)
+            lambda_visitante = lambda_visitante_base[:, None] * shock_visitante
+
+            p_x = (lambda_local[..., None] ** k) * np.exp(-lambda_local)[..., None] / fact   # (M, s, 9)
+            p_y = (lambda_visitante[..., None] ** k) * np.exp(-lambda_visitante)[..., None] / fact
+
+            probs = p_x[..., :, None] * p_y[..., None, :]  # (M, s, 9, 9)
+
+            # Corrección Dixon-Coles: solo afecta a 0-0, 1-0, 0-1, 1-1 (igual que simular_partido)
+            probs[..., 0, 0] *= 1 - lambda_local * lambda_visitante * RHO
+            probs[..., 1, 0] *= 1 + lambda_visitante * RHO
+            probs[..., 0, 1] *= 1 + lambda_local * RHO
+            probs[..., 1, 1] *= 1 - RHO
+
+            flat = probs.reshape(M, s, n_marcadores)
+            flat = flat / flat.sum(axis=-1, keepdims=True)
+
+            # Muestreo por función de distribución acumulada: es el mismo
+            # método que usa np.random.choice(p=...) por debajo, pero acá
+            # se hace para los M x s partidos de la tanda en un solo paso
+            # vectorizado en vez de partido por partido.
+            cumulativo = np.cumsum(flat, axis=-1)
+            r = np.random.random((M, s, 1))
+            idx_marcador = (cumulativo < r).sum(axis=-1)  # (M, s), valores 0..80
+
+            goles_local = idx_marcador // (max_goles + 1)
+            goles_visitante = idx_marcador % (max_goles + 1)
+
+            gana_local = goles_local > goles_visitante
+            gana_visitante = goles_local < goles_visitante
+            empate = ~gana_local & ~gana_visitante
+
+            pts_local = np.where(gana_local, 3, np.where(empate, 1, 0))
+            pts_visitante = np.where(gana_visitante, 3, np.where(empate, 1, 0))
+
+            bloque_puntos = puntos_tot[:, inicio:inicio + s]
+            bloque_gf = gf_tot[:, inicio:inicio + s]
+            bloque_gc = gc_tot[:, inicio:inicio + s]
+
+            np.add.at(bloque_puntos, idx_local, pts_local)
+            np.add.at(bloque_puntos, idx_visitante, pts_visitante)
+            np.add.at(bloque_gf, idx_local, goles_local)
+            np.add.at(bloque_gf, idx_visitante, goles_visitante)
+            np.add.at(bloque_gc, idx_local, goles_visitante)
+            np.add.at(bloque_gc, idx_visitante, goles_local)
+
+        return {
+            nombre: {
+                "puntos": puntos_tot[i],
+                "gf": gf_tot[i],
+                "gc": gc_tot[i],
+            }
+            for i, nombre in enumerate(nombres_equipos)
+        }
     
     def jugar_final_ascenso(self, nombre_a, nombre_b):
         """Simula la final a partido único por el 1° ascenso entre el puntero
@@ -355,11 +535,19 @@ class Estadisticas:
         ).reset_index(drop=True)
         return combinada
 
-    def _mejor_ubicado(self, tabla_general, equipo_x, equipo_y):
-        """Devuelve (mejor, peor) según la posición en la tabla general combinada."""
-        pos_x = tabla_general.index[tabla_general["equipo"] == equipo_x][0]
-        pos_y = tabla_general.index[tabla_general["equipo"] == equipo_y][0]
-        return (equipo_x, equipo_y) if pos_x < pos_y else (equipo_y, equipo_x)
+    def _posiciones(self, tabla_general):
+        """Diccionario {equipo: posicion} armado UNA vez a partir de la
+        tabla general ya ordenada. _mejor_ubicado() se llama muchas veces
+        por cada Reducido (una por cada cruce), y antes cada llamada hacía
+        una búsqueda booleana sobre todo el DataFrame (tabla_general["equipo"]
+        == equipo_x) para encontrar un solo valor -- con este dict el
+        lookup pasa a ser O(1) en Python puro."""
+        return {nombre: pos for pos, nombre in enumerate(tabla_general["equipo"])}
+
+    def _mejor_ubicado(self, posiciones, equipo_x, equipo_y):
+        """Devuelve (mejor, peor) según la posición en la tabla general
+        combinada. `posiciones` es el dict que arma _posiciones()."""
+        return (equipo_x, equipo_y) if posiciones[equipo_x] < posiciones[equipo_y] else (equipo_y, equipo_x)
 
     def jugar_partido_unico(self, mejor, peor):
         gl, gv = self.simular_partido(mejor, peor)
@@ -407,44 +595,58 @@ class Estadisticas:
             "final": {}
         }
 
-        def equipo(tabla, posicion):
-            return tabla.iloc[posicion - 1]["equipo"]
+        # Listas planas de Python en vez de indexar el DataFrame con
+        # .iloc[...]["equipo"] repetidas veces (cada .iloc[i] arma una
+        # Series entera solo para leer un valor).
+        equipos_a = tabla_a["equipo"].tolist()
+        equipos_b = tabla_b["equipo"].tolist()
+
+        def equipo(lista, posicion):
+            return lista[posicion - 1]
 
         cruces_primera_ronda = [
-            (equipo(tabla_a, 2), equipo(tabla_b, 8)),
-            (equipo(tabla_b, 2), equipo(tabla_a, 8)),
-            (equipo(tabla_a, 3), equipo(tabla_b, 7)),
-            (equipo(tabla_b, 3), equipo(tabla_a, 7)),
-            (equipo(tabla_a, 4), equipo(tabla_b, 6)),
-            (equipo(tabla_b, 4), equipo(tabla_a, 6)),
-            (equipo(tabla_a, 5), equipo(tabla_b, 5)),
+            (equipo(equipos_a, 2), equipo(equipos_b, 8)),
+            (equipo(equipos_b, 2), equipo(equipos_a, 8)),
+            (equipo(equipos_a, 3), equipo(equipos_b, 7)),
+            (equipo(equipos_b, 3), equipo(equipos_a, 7)),
+            (equipo(equipos_a, 4), equipo(equipos_b, 6)),
+            (equipo(equipos_b, 4), equipo(equipos_a, 6)),
+            (equipo(equipos_a, 5), equipo(equipos_b, 5)),
         ]
 
         tabla_general = self._tabla_general(tablas)
+        posiciones = self._posiciones(tabla_general)
+        # Orden general ya calculado en _tabla_general(); lo reutilizamos
+        # como lista plana para armar los seeds de cada ronda con simples
+        # comprensiones de lista (preservan el orden) en vez de
+        # DataFrame.isin() + reset_index() sobre toda la tabla combinada
+        # para elegir apenas 7 u 8 equipos.
+        orden_general = tabla_general["equipo"].tolist()
 
         ganadores_primera_ronda = []
         for x, y in cruces_primera_ronda:
-            mejor, peor = self._mejor_ubicado(tabla_general, x, y)
+            mejor, peor = self._mejor_ubicado(posiciones, x, y)
             ganador, detalle = self.jugar_partido_unico(mejor, peor)
             diccionario["primera_ronda"].append(detalle)
             ganadores_primera_ronda.append(ganador)
 
-        clasificados = ganadores_primera_ronda + [perdedor_final_ascenso]
-        seeds = tabla_general[tabla_general["equipo"].isin(clasificados)].reset_index(drop=True)
+        clasificados = set(ganadores_primera_ronda) | {perdedor_final_ascenso}
+        seeds = [nombre for nombre in orden_general if nombre in clasificados]
 
         cruces_cuartos = [(0, 7), (1, 6), (2, 5), (3, 4)]
         ganadores_cuartos = []
         for i, j in cruces_cuartos:
-            mejor, peor = seeds.iloc[i]["equipo"], seeds.iloc[j]["equipo"]
+            mejor, peor = seeds[i], seeds[j]
             ganador, detalle = self.jugar_partido_unico(mejor, peor)
             diccionario["cuartos"].append(detalle)
             ganadores_cuartos.append(ganador)
 
-        seeds_semis = tabla_general[tabla_general["equipo"].isin(ganadores_cuartos)].reset_index(drop=True)
+        ganadores_cuartos_set = set(ganadores_cuartos)
+        seeds_semis = [nombre for nombre in orden_general if nombre in ganadores_cuartos_set]
 
         finalistas = []
         for i, j in [(0, 3), (1, 2)]:
-            mejor, peor = seeds_semis.iloc[i]["equipo"], seeds_semis.iloc[j]["equipo"]
+            mejor, peor = seeds_semis[i], seeds_semis[j]
             ganador, detalle = self.jugar_partido_unico(mejor, peor)
             diccionario["semis"].append(detalle)
             finalistas.append(ganador)
@@ -516,14 +718,38 @@ class Estadisticas:
 
         paso_reporte = max(1, n_simulaciones // 10)
 
-        for i in range(n_simulaciones):
-            tablas = self.simular_fase_regular()
+        # Resuelve TODOS los partidos pendientes de TODAS las simulaciones
+        # de una sola vez (vectorizado), en vez de hacerlo partido por
+        # partido dentro del loop de abajo -- ver el docstring de
+        # _simular_fase_regular_vectorizado() para el detalle. Esto es,
+        # por lejos, la parte más pesada de todo el Monte Carlo (la fase
+        # regular tiene muchos más partidos que cualquier playoff), así
+        # que es donde más rinde vectorizar.
+        totales_vectorizados = self._simular_fase_regular_vectorizado(n_simulaciones)
 
-            # Acumular puntos y posición de cada equipo, por zona
+        for i in range(n_simulaciones):
+            totales_i = {
+                nombre: {
+                    "puntos": int(datos["puntos"][i]),
+                    "gf": int(datos["gf"][i]),
+                    "gc": int(datos["gc"][i]),
+                }
+                for nombre, datos in totales_vectorizados.items()
+            }
+            tablas = self._armar_tabla_final(totales_i)
+
+            # Acumular puntos y posición de cada equipo, por zona.
+            # to_numpy() + zip en vez de itertuples(): itertuples arma un
+            # namedtuple por fila (overhead de pandas) para leer solo dos
+            # columnas; con arrays de numpy se evita esa construcción.
+            # Mismo orden, mismos valores, mismo resultado -- solo cambia
+            # cómo se recorren.
             for zona, tabla_zona in tablas.items():
-                for posicion, fila in tabla_zona.iterrows():
-                    contador[fila["equipo"]]["puntos_total"] += fila["puntos"]
-                    contador[fila["equipo"]]["posicion_total"] += posicion
+                equipos_col = tabla_zona["equipo"].to_numpy()
+                puntos_col = tabla_zona["puntos"].to_numpy()
+                for posicion, (nombre_equipo, pts) in enumerate(zip(equipos_col, puntos_col), start=1):
+                    contador[nombre_equipo]["puntos_total"] += pts
+                    contador[nombre_equipo]["posicion_total"] += posicion
 
             puntero_a = tablas["A"].iloc[0]["equipo"]
             puntero_b = tablas["B"].iloc[0]["equipo"]

@@ -32,6 +32,21 @@ from main import correr_simulacion, simular_hasta_campeon
 from main_lpf import correr_simulacion_lpf, simular_hasta_campeon_lpf
 from actualizar_resultados import actualizar
 from actualizar_resultados_lpf import actualizar as actualizar_lpf
+import rutas
+
+# Mismos archivos que sirve api/index.py en /api/pysim-source, para que
+# sim-worker.js pueda cargar el simulador local (Pyodide) también en
+# desarrollo, no solo en Render.
+PYSIM_SOURCE_FILES = [
+    "rutas.py",
+    "main.py",
+    "main_lpf.py",
+    "pysim_dispatch.py",
+    "modelos/equipo.py",
+    "modelos/estadisticas.py",
+    "modelos/estadisticas_lpf.py",
+]
+_pysim_source_cache = None
 
 PUERTO = 8000
 CARPETA_WEB = "public"
@@ -68,6 +83,63 @@ class Handler(SimpleHTTPRequestHandler):
         self.send_header("Content-Length", str(len(cuerpo)))
         self.end_headers()
         self.wfile.write(cuerpo)
+
+    def do_GET(self):
+        if self.path == "/api/pysim-source":
+            self._manejar_pysim_source()
+        elif self.path == "/api/datos-nacional":
+            self._manejar_datos_nacional()
+        elif self.path == "/api/datos-lpf":
+            self._manejar_datos_lpf()
+        else:
+            super().do_GET()
+
+    def _manejar_pysim_source(self):
+        global _pysim_source_cache
+        try:
+            if _pysim_source_cache is None:
+                archivos = {}
+                for nombre_relativo in PYSIM_SOURCE_FILES:
+                    ruta = rutas.REPO_DIR / nombre_relativo
+                    archivos[nombre_relativo] = ruta.read_text(encoding="utf-8")
+                _pysim_source_cache = archivos
+            self._responder_json(200, {"files": _pysim_source_cache})
+        except Exception as e:
+            self._responder_json(500, {"error": str(e)})
+
+    def _manejar_datos_nacional(self):
+        try:
+            datos_dir = rutas.datos_dir()
+            archivos = {}
+            for nombre, requerido in [
+                ("resultados.csv", True), ("fixture.csv", True),
+                ("tabla.csv", True), ("goleadores.csv", False),
+            ]:
+                ruta = datos_dir / nombre
+                if ruta.exists():
+                    archivos[nombre] = ruta.read_text(encoding="utf-8")
+                elif requerido:
+                    self._responder_json(500, {"error": f"Falta {nombre} en datos/"})
+                    return
+                else:
+                    archivos[nombre] = ""
+            self._responder_json(200, {"files": archivos})
+        except Exception as e:
+            self._responder_json(500, {"error": str(e)})
+
+    def _manejar_datos_lpf(self):
+        try:
+            datos_dir = rutas.datos_dir()
+            archivos = {}
+            for nombre in ["tablalpf.csv", "fixture_lpf.csv", "resultados_lpf.csv", "promedios_lpf.csv"]:
+                ruta = datos_dir / nombre
+                if not ruta.exists():
+                    self._responder_json(500, {"error": f"Falta {nombre} en datos/"})
+                    return
+                archivos[nombre] = ruta.read_text(encoding="utf-8")
+            self._responder_json(200, {"files": archivos})
+        except Exception as e:
+            self._responder_json(500, {"error": str(e)})
 
     def do_POST(self):
         if self.path == "/api/simular":
