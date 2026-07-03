@@ -787,10 +787,53 @@
   /* ============================================================
      COPA ARGENTINA · identidad propia
      Celeste #6EC1E4 · Navy #0F1C33 · Blanco · Detalles dorados #F5C242.
-     Tema oscuro premium con glassmorphism sutil; pisa el tema del sitio
-     (claro u oscuro) solo mientras la pestaña Copa está activa.
+     Dos variantes que respetan el toggle del sitio: clara (blanco/celeste
+     con hero navy) y oscura (navy premium con glassmorphism).
      ============================================================ */
-  body.liga-copa, body.dark.liga-copa{
+  body.liga-copa{
+    /* -------- modo CLARO -------- */
+    --bg: radial-gradient(1100px 480px at 50% -160px, rgba(110,193,228,0.22), transparent 60%), #F3F8FD;
+    --bg-panel: #FFFFFF;
+    --bg-panel-2: #EAF3FB;
+    --line: rgba(44,111,191,0.18);
+    --ink: #10233F;
+    --ink-dim: #3B5578;
+    --muted: #7189A8;
+
+    --amber: #C08F0E;
+    --amber-dim: rgba(245,194,66,0.18);
+
+    --zone-a: #1E8FC9;
+    --zone-a-dim: rgba(110,193,228,0.16);
+    --zone-b: #2C6FBF;
+    --zone-b-dim: rgba(44,111,191,0.14);
+    --danger: #D14545;
+    --danger-dim: rgba(209,69,69,0.1);
+    --azul: #1E8FC9;
+    --azul-dim: rgba(110,193,228,0.16);
+
+    --radius: 18px;
+    --radius-sm: 12px;
+    --card-shadow: 0 6px 24px rgba(16,35,63,0.1);
+    --card-shadow-hover: 0 12px 34px rgba(16,35,63,0.16);
+    --card-grad: linear-gradient(180deg, #FFFFFF 0%, #F5FAFE 100%);
+    --hero-bg: linear-gradient(165deg, #0A1426 0%, #0F1C33 45%, #17335F 100%);
+    --hero-ink: #FFFFFF;
+    --hero-dim: #9FBEDC;
+    --hero-accent: #F5C242;
+    --tabs-bg: rgba(255,255,255,0.92);
+    --btn-grad: linear-gradient(135deg, #6EC1E4 0%, #2C6FBF 100%);
+    --btn-ink: #FFFFFF;
+    --table-head-bg: rgba(110,193,228,0.14);
+    --hover-lift: translateY(-2px);
+
+    /* vidrio del tema (lo usan las tarjetas de abajo) */
+    --copa-glass: linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(245,250,254,0.82) 100%);
+    --copa-glass-border: rgba(44,111,191,0.2);
+    --copa-glass-border-hover: rgba(30,143,201,0.55);
+  }
+  body.dark.liga-copa{
+    /* -------- modo OSCURO -------- */
     --bg: radial-gradient(1100px 500px at 50% -140px, rgba(110,193,228,0.16), transparent 60%), #0F1C33;
     --bg-panel: #16263F;
     --bg-panel-2: #1B2E4C;
@@ -811,27 +854,23 @@
     --azul: #6EC1E4;
     --azul-dim: rgba(110,193,228,0.14);
 
-    --radius: 18px;
-    --radius-sm: 12px;
     --card-shadow: 0 10px 34px rgba(2,10,26,0.45);
     --card-shadow-hover: 0 16px 44px rgba(2,10,26,0.6);
     --card-grad: linear-gradient(180deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.02) 100%);
-    --hero-bg: linear-gradient(165deg, #0A1426 0%, #0F1C33 45%, #17335F 100%);
-    --hero-ink: #FFFFFF;
-    --hero-dim: #9FBEDC;
-    --hero-accent: #F5C242;
     --tabs-bg: rgba(15,28,51,0.88);
-    --btn-grad: linear-gradient(135deg, #6EC1E4 0%, #2C6FBF 100%);
-    --btn-ink: #FFFFFF;
-    --table-head-bg: rgba(110,193,228,0.10);
-    --hover-lift: translateY(-2px);
+    --table-head-bg: rgba(110,193,228,0.1);
+
+    --copa-glass: linear-gradient(180deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.025) 100%);
+    --copa-glass-border: rgba(110,193,228,0.16);
+    --copa-glass-border-hover: rgba(110,193,228,0.4);
   }
 
-  /* Hero propio: halo celeste, borde luminoso y título con baño dorado */
+  /* Hero propio: halo celeste, borde luminoso y título con baño dorado
+     (el hero se mantiene navy en ambos modos, como banda de marca) */
   body.liga-copa .hero{
     border: 1px solid rgba(110,193,228,0.28);
     border-radius: 22px;
-    box-shadow: inset 0 0 90px rgba(110,193,228,0.09), 0 18px 50px rgba(2,10,26,0.55);
+    box-shadow: inset 0 0 90px rgba(110,193,228,0.09), 0 18px 50px rgba(2,10,26,0.35);
     position: relative;
     overflow: hidden;
   }
@@ -853,19 +892,20 @@
     backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
   }
 
-  /* Tarjetas y paneles: vidrio sutil sobre el navy */
+  /* Tarjetas y paneles: vidrio sutil, con la variante de cada modo */
   body.liga-copa .search-section,
   body.liga-copa .table-wrap,
   body.liga-copa .mc-row,
   body.liga-copa .match,
+  body.liga-copa .team-card,
   body.liga-copa .ascenso-card{
-    background: linear-gradient(180deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.025) 100%);
-    border: 1px solid rgba(110,193,228,0.16);
+    background: var(--copa-glass);
+    border: 1px solid var(--copa-glass-border);
     border-radius: 18px;
     backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
   }
   body.liga-copa .mc-row:hover,
-  body.liga-copa .match:hover{ border-color: rgba(110,193,228,0.4); }
+  body.liga-copa .match:hover{ border-color: var(--copa-glass-border-hover); }
 
   /* Botones: degradado celeste→azul, forma pill, glow al pasar */
   body.liga-copa .btn-simular{
@@ -883,29 +923,58 @@
     background: rgba(110,193,228,0.12); border-color:#6EC1E4;
   }
 
-  /* Jerarquías del cuadro: rondas en celeste, ganadores y campeón dorados */
-  body.liga-copa .round-title{ color:#6EC1E4; letter-spacing:0.14em; }
-  body.liga-copa .match .row.winner{ color:#FFFFFF; font-weight:700; }
-  body.liga-copa .match .row.winner > span:last-child{ color:#F5C242; }
-  body.liga-copa .campeon{
-    color:#F5C242;
-    background: rgba(245,194,66,0.1);
-    border: 1px solid rgba(245,194,66,0.4);
-    border-radius: 999px; padding: 8px 16px;
-    box-shadow: 0 0 26px rgba(245,194,66,0.22);
-  }
-  body.liga-copa .section-head .idx{ color:#F5C242; }
-  body.liga-copa .section-head .rule{ background: linear-gradient(90deg, rgba(110,193,228,0.5), transparent); }
-  body.liga-copa .mc-bar-fill.directo{ background: linear-gradient(90deg, #6EC1E4, #2C6FBF) !important; }
-  body.liga-copa .leg-detail{ color:#8FA6C4; }
-
-  /* Controles sobre fondo oscuro del hero ya heredan bien; el select y el
-     input toman el vidrio del tema */
+  /* El select y el input del hero (fondo navy) van en vidrio con texto
+     blanco, y sus opciones desplegadas SIEMPRE legibles: navy sobre
+     blanco en claro, blanco sobre navy en oscuro */
   body.liga-copa #campeon-equipo-copa,
   body.liga-copa #sim-count-copa{
     background: rgba(255,255,255,0.07);
     border-color: rgba(110,193,228,0.35);
     color:#FFFFFF;
+  }
+  body.liga-copa #campeon-equipo-copa option{ background:#FFFFFF; color:#10233F; }
+  body.dark.liga-copa #campeon-equipo-copa option{ background:#0F1C33; color:#FFFFFF; }
+
+  /* Jerarquías del cuadro: rondas en celeste, ganadores y campeón dorados */
+  body.liga-copa .round-title{ color: var(--zone-a); letter-spacing:0.14em; }
+  body.liga-copa .match .row.winner{ font-weight:700; }
+  body.liga-copa .match .row.winner > span:last-child{ color: var(--amber); }
+  body.liga-copa .campeon{
+    color: var(--amber);
+    background: var(--amber-dim);
+    border: 1px solid rgba(245,194,66,0.4);
+    border-radius: 999px; padding: 8px 16px;
+    box-shadow: 0 0 26px rgba(245,194,66,0.2);
+  }
+  body.liga-copa .section-head .idx{ color: var(--amber); }
+  body.liga-copa .section-head .rule{ background: linear-gradient(90deg, rgba(110,193,228,0.5), transparent); }
+  body.liga-copa .mc-bar-fill.directo{ background: linear-gradient(90deg, #6EC1E4, #2C6FBF) !important; }
+
+  /* Cruces mejor organizados: columnas legibles con scroll horizontal,
+     alineación de árbol (cada ronda repartida a la altura de la
+     anterior), títulos que se quedan pegados al hacer scroll, y
+     distinción clara entre resultado real y simulado */
+  body.liga-copa .bracket{ align-items: stretch; }
+  body.liga-copa .bracket .round{ min-width: 220px; }
+  body.liga-copa .bracket .round-body{ justify-content: space-around; gap: 10px; }
+  body.liga-copa .round-title{
+    position: sticky; top: calc(var(--liga-h, 52px) + 6px); z-index: 2;
+    background: var(--copa-glass);
+    border: 1px solid var(--copa-glass-border);
+    border-radius: 999px; padding: 6px 10px;
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  }
+  body.liga-copa .match.real{ border-left: 3px solid var(--zone-a); }
+  body.liga-copa .match.sim{
+    border-style: dashed;
+    border-left: 3px dashed rgba(245,194,66,0.55);
+  }
+  body.liga-copa .match .leg-detail{
+    font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--muted); margin-top: 4px;
+  }
+  @media (max-width: 700px){
+    body.liga-copa .bracket .round{ min-width: 0; }
   }
 
   /* ---- Escudos de equipos ---- */
@@ -1280,6 +1349,15 @@
 
   <div id="vista-copa" style="display:none">
 
+  <div class="search-section">
+    <div class="search-box">
+      <input type="text" id="team-search-copa" list="team-list-copa" placeholder="Buscar equipo… (ej: River, Instituto, Midland)" autocomplete="off">
+      <datalist id="team-list-copa"></datalist>
+    </div>
+    <div class="search-hint">Escribí el nombre del equipo para ver sus chances en la Copa, ronda por ronda</div>
+    <div id="search-result-copa"></div>
+  </div>
+
   <div class="search-section" id="campeon-section-copa">
     <div class="section-head" style="margin-bottom:14px;">
       <span class="idx">🏆</span><h2 style="font-size:18px;">Simulá hasta que tu equipo levante la Copa</h2><div class="rule"></div>
@@ -1588,6 +1666,13 @@ const ESCUDOS = {
   'Ciudad De Bolivar':'ciudad_bolivar', 'Deportivo Madryn':'deportivo_madryn', 'Deportivo Maipú':'depmaipu',
   'Deportivo Morón':'moron', 'Gimnasia de Jujuy':'gimnasiajujuy', 'San Martín San Juan':'sanmartinsj',
   'San Martín Tucumán':'sanmartintuc',
+  // Ascenso (cuadro de la Copa Argentina)
+  'Argentino Merlo':'argentinomerlo', 'Argentino Monte Maíz':'argentino_mm', 'Atenas Río Cuarto':'atenas',
+  'Camioneros':'camioneros', 'Claypole':'claypole', 'Deportivo Armenio':'armenio',
+  'Deportivo Rincón':'dep_rincon', 'Gimnasia y Esgrima (Chivilcoy)':'gimnasia_chivilcoy',
+  'Ituzaingó':'ituzaingo', 'Olimpo':'olimpo', 'Real Pilar':'realpilar',
+  'San Martín de Formosa':'san_martin_formosa', 'Sarmiento De La Banda':'sarmiento_lb',
+  'Sportivo Barracas':'sportivo_barracas', 'Sportivo Belgrano':'sportivo_belgrano',
 };
 
 function escudoHTML(nombre){
@@ -2839,7 +2924,129 @@ function iniciarCopa(){
   document.getElementById('bracket-copa').innerHTML = bracketCopaHTML(DATA_COPA.rondas, DATA_COPA.campeon);
   renderMCCopa();
   poblarSelectEquiposCopa();
+  TEAM_INDEX_COPA = buildTeamIndexCopa();
+  poblarDatalistCopa(TEAM_INDEX_COPA);
+  const busquedaCopa = document.getElementById('team-search-copa');
+  if (busquedaCopa && busquedaCopa.value) buscarEquipoCopa(busquedaCopa.value);
+  abrirFichaCopaDesdeUrl();
   if (document.body.classList.contains('liga-copa')) actualizarHero('copa');
+}
+
+/* ---------- BUSCADOR DE EQUIPOS (COPA) ---------- */
+let TEAM_INDEX_COPA = {};
+
+function buildTeamIndexCopa(){
+  const index = {};
+  const vivos = new Set(DATA_COPA.equipos_vivos || []);
+  const mc = DATA_COPA.monte_carlo || [];
+
+  // Todos los participantes salen del cuadro; los % solo existen para los vivos.
+  Object.entries(DATA_COPA.rondas || {}).forEach(([ronda, cruces]) => {
+    cruces.forEach(m => {
+      [m.local, m.visitante].forEach(nombre => {
+        if (!index[nombre]) index[nombre] = { equipo: nombre, vivo: vivos.has(nombre), cruces: [] };
+        index[nombre].cruces.push({ ronda, ...m });
+      });
+    });
+  });
+
+  mc.forEach(f => { if (index[f.equipo]) Object.assign(index[f.equipo], f); });
+  return index;
+}
+
+function poblarDatalistCopa(index){
+  const dl = document.getElementById('team-list-copa');
+  if (!dl) return;
+  dl.innerHTML = Object.keys(index).sort().map(n => `<option value="${n}">`).join('');
+}
+
+const RONDA_LABEL_COPA = { "32avos": "32avos", "16avos": "16avos", "octavos": "Octavos",
+                            "cuartos": "Cuartos", "semis": "Semifinal", "final": "Final" };
+
+function renderTeamCardCopa(t){
+  const dorado = 'var(--amber)';
+  const celeste = 'var(--zone-a)';
+  const cabecera = `
+    <div class="tc-head">
+      <div class="tc-name">${escudoHTML(t.equipo)}${t.equipo}</div>
+      <span class="tc-zone" style="background:${t.vivo ? 'var(--amber-dim)' : 'var(--danger-dim)'}; color:${t.vivo ? dorado : 'var(--danger)'}">${t.vivo ? 'EN CARRERA' : 'ELIMINADO'}</span>
+    </div>`;
+
+  if (!t.vivo){
+    const caida = [...t.cruces].reverse().find(c => c.jugado && c.avanza && c.avanza !== t.equipo);
+    const detalle = caida
+      ? `Eliminó su camino <b>${caida.avanza}</b> en ${RONDA_LABEL_COPA[caida.ronda]} (${caida.local} ${caida.golesLocal}-${caida.golesVisitante} ${caida.visitante}${caida.penales ? ', por penales' : ''}).`
+      : 'Ya quedó eliminado del cuadro (dato real).';
+    return `<div class="team-card">${cabecera}
+      <div class="tc-pos" style="margin-top:12px;">${detalle}</div>
+      <div class="tc-share">
+        <button onclick="compartirLinkCopa('${t.equipo.replace(/'/g, "\\'")}', this)">🔗 Copiar link</button>
+        <button onclick="compartirImagen('${t.equipo.replace(/'/g, "\\'")}', this)">📷 Descargar imagen</button>
+      </div>
+    </div>`;
+  }
+
+  const proximo = t.cruces.find(c => !c.jugado);
+  const proximoTxt = proximo
+    ? `Próximo cruce: <b>${proximo.local === t.equipo ? proximo.visitante : proximo.local}</b> en ${RONDA_LABEL_COPA[proximo.ronda]} <span style="color:var(--muted)">(según esta corrida)</span>`
+    : '';
+  return `<div class="team-card">${cabecera}
+    <div class="tc-pos" style="margin-top:12px;">${proximoTxt}</div>
+    <div class="tc-grid" style="margin-top:16px;">
+      <div class="tc-stat"><div class="v" style="color:${celeste}">${fmtPct(t['%octavos'] ?? 0)}</div><div class="l">Octavos</div></div>
+      <div class="tc-stat"><div class="v" style="color:${celeste}">${fmtPct(t['%cuartos'] ?? 0)}</div><div class="l">Cuartos</div></div>
+      <div class="tc-stat"><div class="v" style="color:${celeste}">${fmtPct(t['%semis'] ?? 0)}</div><div class="l">Semifinal</div></div>
+      <div class="tc-stat"><div class="v" style="color:${celeste}">${fmtPct(t['%final'] ?? 0)}</div><div class="l">Final</div></div>
+    </div>
+    <div class="tc-mc-title">Campeón de la Copa en <b style="color:${dorado}">${fmtPct(t['%campeon'] ?? 0)}</b> de las simulaciones</div>
+    <div class="mc-bar-track" style="margin-bottom:14px;">
+      <div class="mc-bar-fill directo" style="width:${t['%campeon'] ?? 0}%;"></div>
+    </div>
+    <div class="tc-share">
+      <button onclick="compartirLinkCopa('${t.equipo.replace(/'/g, "\\'")}', this)">🔗 Copiar link</button>
+      <button onclick="compartirImagen('${t.equipo.replace(/'/g, "\\'")}', this)">📷 Descargar imagen</button>
+    </div>
+  </div>`;
+}
+
+function compartirLinkCopa(nombre, btn){
+  const url = new URL(window.location.href);
+  url.searchParams.delete('equipo');
+  url.searchParams.delete('equipo_lpf');
+  url.searchParams.set('equipo_copa', nombre);
+  navigator.clipboard.writeText(url.toString()).then(() => {
+    const original = btn.textContent;
+    btn.textContent = '✓ Copiado';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = original; btn.classList.remove('copied'); }, 1800);
+  }).catch(() => prompt('Copiá el link:', url.toString()));
+}
+
+function buscarEquipoCopa(nombre){
+  const resultDiv = document.getElementById('search-result-copa');
+  if (!resultDiv) return;
+  if (!nombre || !nombre.trim()){ resultDiv.innerHTML = ""; return; }
+  const exacto = TEAM_INDEX_COPA[nombre];
+  if (exacto){ resultDiv.innerHTML = renderTeamCardCopa(exacto); return; }
+  const q = nombre.trim().toLowerCase();
+  const coincidencia = Object.values(TEAM_INDEX_COPA).find(t => t.equipo.toLowerCase().includes(q));
+  resultDiv.innerHTML = coincidencia
+    ? renderTeamCardCopa(coincidencia)
+    : `<div class="no-result">No se encontró ningún equipo llamado "${nombre}"</div>`;
+}
+
+document.getElementById('team-search-copa').addEventListener('input', (e) => buscarEquipoCopa(e.target.value));
+
+let _fichaCopaDesdeUrlAbierta = false;
+function abrirFichaCopaDesdeUrl(){
+  if (_fichaCopaDesdeUrlAbierta) return;
+  const equipoUrl = new URLSearchParams(window.location.search).get('equipo_copa');
+  if (!equipoUrl) return;
+  _fichaCopaDesdeUrlAbierta = true;
+  setLiga('copa');
+  const input = document.getElementById('team-search-copa');
+  if (input) input.value = equipoUrl;
+  buscarEquipoCopa(equipoUrl);
 }
 
 function matchCopaHTML(m){
@@ -2847,7 +3054,7 @@ function matchCopaHTML(m){
   let nota = "";
   if (!m.jugado) nota = m.penales ? "simulado — por penales" : "simulado";
   else if (m.penales) nota = "definido por penales (dato real)";
-  return `<div class="match">
+  return `<div class="match ${m.jugado ? 'real' : 'sim'}">
     <div class="row ${winLocal ? 'winner' : ''}"><span>${escudoHTML(m.local)}${m.local}</span><span>${m.golesLocal ?? ''}</span></div>
     <div class="row ${!winLocal ? 'winner' : ''}"><span>${escudoHTML(m.visitante)}${m.visitante}</span><span>${m.golesVisitante ?? ''}</span></div>
     ${nota ? `<div class="leg-detail">${nota}</div>` : ''}
