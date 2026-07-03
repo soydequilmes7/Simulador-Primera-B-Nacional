@@ -251,6 +251,7 @@
     font-family: 'Inter', sans-serif;
     line-height: 1.5;
     padding-bottom: 80px;
+    overflow-x: clip;
     transition: background 0.45s ease, color 0.45s ease;
   }
   ::selection{ background: var(--amber); color: #fff; }
@@ -436,12 +437,14 @@
   .liga-tabs .group{
     display:flex; border:1px solid var(--line); border-radius: var(--radius-sm); overflow:hidden;
     background: var(--bg-panel);
+    max-width:100%;
   }
   body.liga-lpf .liga-tabs .group{ border-radius:999px; box-shadow: var(--card-shadow); }
   .liga-tab{
     font-family:'Oswald', sans-serif; font-size:14px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em;
     padding: 11px 26px; cursor:pointer; background:transparent; border:none; color:var(--muted);
     transition: background 0.25s ease, color 0.25s ease;
+    min-width:0;
   }
   .liga-tab.active{ background: var(--amber-dim); color: var(--amber); }
   body.liga-lpf .liga-tab.active{
@@ -552,7 +555,7 @@
 
   /* ---------- STANDINGS TABLE ---------- */
   .table-wrap{
-    border:1px solid var(--line); border-radius: var(--radius); overflow:hidden;
+    border:1px solid var(--line); border-radius: var(--radius); overflow:auto;
     background: var(--bg-panel);
     box-shadow: var(--card-shadow);
     transition: box-shadow 0.25s ease;
@@ -702,6 +705,7 @@
   .match .row{ display:flex; justify-content:space-between; padding:3px 0; color: var(--ink-dim); }
   .match .row.winner{ color:var(--amber); font-weight:700; }
   .match .row span:first-child{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:100%; min-width:0; }
+  .match .row span:last-child{ flex:0 0 auto; min-width:2ch; margin-left:8px; text-align:right; }
   .match.note{ font-size:10px; color:var(--muted); border-style:dashed; box-shadow:none; }
   .final-col .round-body{ align-items:center; }
   .final-col .match{ width:100%; }
@@ -908,7 +912,57 @@
   @media (max-width: 600px){
     .hero{ padding:48px 16px 32px; }
     section{ padding: 44px 16px 0; }
+    table{ min-width:520px; }
     thead th, tbody td{ padding:8px 6px; font-size:12px; }
+    .liga-tabs{
+      align-items:stretch;
+      gap:10px;
+      padding:10px 12px;
+    }
+    .liga-tabs .group{
+      width:100%;
+      flex:1 1 100%;
+    }
+    .liga-tab{
+      flex:1 1 0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      min-height:54px;
+      padding:9px 8px;
+      font-size:13px;
+      line-height:1.15;
+      letter-spacing:0.02em;
+      text-align:center;
+      white-space:normal;
+      overflow-wrap:anywhere;
+    }
+    .theme-toggle{
+      margin:0 auto;
+      min-height:42px;
+    }
+    .zone-tabs{
+      padding:10px 12px;
+    }
+    .zone-tabs .group{
+      width:min(100%, 360px);
+    }
+    .zone-tab{
+      flex:1 1 0;
+      padding:10px 8px;
+      text-align:center;
+    }
+    .mc-row{
+      grid-template-columns: 22px minmax(0, 1fr);
+      gap:10px;
+    }
+    .mc-desc{
+      grid-column:2;
+      text-align:left;
+    }
+    .mc-desc .desc-bar-track{
+      max-width:180px;
+    }
   }
 
   /* ---------- BRACKET RESPONSIVE (stack vertical, sin scroll manual) ---------- */
@@ -916,8 +970,21 @@
     .bracket-scroll{ overflow-x:hidden; }
     .bracket{ flex-direction: column; gap: 22px; }
     .round{ width:100%; }
-    .round-body{ gap:10px; }
+    .round-body{ gap:10px; justify-content:flex-start; }
     .bracket-lines{ display:none; }
+    .round-body > .js-positioned{
+      position:relative;
+      top:auto !important;
+      left:auto;
+      right:auto;
+    }
+    .match{
+      width:100%;
+      padding:10px 12px;
+    }
+    .match.note{
+      text-align:center;
+    }
   }
 
   /* ============================================================
@@ -3151,6 +3218,24 @@ function toggleTema(){
 const themeToggleBtn = document.getElementById('theme-toggle');
 if (themeToggleBtn) themeToggleBtn.addEventListener('click', toggleTema);
 
+/* ---------- PLACEHOLDERS RESPONSIVE ---------- */
+const SEARCH_PLACEHOLDERS = [
+  ['team-search', 'Buscar equipo…', 'Buscar equipo… (ej: Morón, Ferro, Colón)'],
+  ['team-search-lpf', 'Buscar equipo…', 'Buscar equipo… (ej: River, Belgrano, Lanús)'],
+  ['team-search-copa', 'Buscar equipo…', 'Buscar equipo… (ej: River, Instituto, Midland)'],
+];
+
+function aplicarPlaceholdersResponsive(){
+  const usarCorto = window.matchMedia('(max-width: 600px)').matches;
+  SEARCH_PLACEHOLDERS.forEach(([id, corto, largo]) => {
+    const input = document.getElementById(id);
+    if (input) input.placeholder = usarCorto ? corto : largo;
+  });
+}
+
+window.addEventListener('resize', aplicarPlaceholdersResponsive);
+aplicarPlaceholdersResponsive();
+
 /* ---------- COPA ARGENTINA ---------- */
 let DATA_COPA = null;
 const RONDAS_COPA = [
@@ -3584,7 +3669,22 @@ function buildBracketLines(bracketEl){
   const ns = 'http://www.w3.org/2000/svg';
   const rounds = [...bracketEl.querySelectorAll(':scope > .round')];
   let svg = bracketEl.querySelector(':scope > svg.bracket-lines');
+
+  const resetPositionedItems = () => {
+    bracketEl.querySelectorAll('.js-positioned').forEach(el => {
+      el.classList.remove('js-positioned');
+      el.style.top = '';
+    });
+  };
+
+  if (window.matchMedia('(max-width: 760px)').matches || getComputedStyle(bracketEl).flexDirection === 'column'){
+    resetPositionedItems();
+    if (svg) svg.remove();
+    return;
+  }
+
   if (rounds.length < 2){
+    resetPositionedItems();
     if (svg) svg.remove();
     return;
   }
@@ -3600,10 +3700,7 @@ function buildBracketLines(bracketEl){
   // si no, getBoundingClientRect() mediría la posición ya corregida en vez
   // del flujo natural, y en corridas sucesivas (resize, nueva simulación)
   // el cálculo se iría desviando en vez de partir siempre del mismo lugar.
-  bracketEl.querySelectorAll('.js-positioned').forEach(el => {
-    el.classList.remove('js-positioned');
-    el.style.top = '';
-  });
+  resetPositionedItems();
 
   const bracketRect = bracketEl.getBoundingClientRect();
 
