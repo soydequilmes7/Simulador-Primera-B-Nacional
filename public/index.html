@@ -656,6 +656,20 @@
   .bracket-wrap:not(.scrollable) .bracket-nav{ display:none; }
   @media (max-width:760px){ .bracket-nav{ display:none; } }
   .bracket-scroll{ overflow-x:auto; padding: 10px 4px 18px; }
+  /* Copa Argentina: se pidió sacar la barra de scroll nativa (se veía como
+     una franja gris con una flechita al final) — el cuadro se sigue
+     pudiendo deslizar con el dedo/trackpad, y para navegar con mouse
+     quedan las flechas ‹ › (.bracket-nav) ya presentes en todos los
+     cuadros. */
+  #sec-copa-cuadro .bracket-scroll,
+  #campeon-section-copa .bracket-scroll{
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Edge/IE viejo */
+  }
+  #sec-copa-cuadro .bracket-scroll::-webkit-scrollbar,
+  #campeon-section-copa .bracket-scroll::-webkit-scrollbar{
+    display: none; /* Chrome/Safari/Edge nuevo */
+  }
   .bracket{ position:relative; display:flex; gap: clamp(8px, 2vw, 28px); align-items:stretch; width:100%; }
   .bracket-lines{ position:absolute; top:0; left:0; z-index:4; overflow:visible; pointer-events:none; }
   .bracket-lines path{
@@ -672,7 +686,11 @@
      final) quedaba repartida en TODO el alto del cuadro (fijado por la
      ronda con más partidos), y la línea que conecta terminaba siendo
      gigante e invisible en pantalla. */
-  .match.js-positioned{ position:absolute; left:0; right:0; margin:0; }
+  /* .js-positioned se aplica tanto a los .match reubicados como a
+     elementos "extra" del round-body (el cartel .campeon de la final,
+     o el .match.note de "+X entra directo") que deben acompañar el
+     movimiento del último partido real de su ronda — ver buildBracketLines. */
+  .round-body > .js-positioned{ position:absolute; left:0; right:0; margin:0; }
   .match{
     position:relative; border:1px solid var(--line); border-radius: var(--radius-sm);
     background: var(--bg-panel);
@@ -696,6 +714,18 @@
   .final-col .campeon{
     margin-top:14px; font-family:'Oswald'; color:var(--amber); font-size:16px;
     text-transform:uppercase; letter-spacing:0.02em; text-align:center;
+  }
+  /* Cartel del campeón como pie de página del cuadro completo, en vez de
+     vivir DENTRO del round-body de la final: ese último se reposiciona
+     por JS junto con los demás partidos (ver buildBracketLines) y,
+     apenas el cuadro tiene varias rondas, terminaba quedando muy lejos
+     del partido final. Como pie, siempre está justo debajo de todo el
+     cuadro, sin depender de ningún cálculo de altura. */
+  .campeon-anuncio-wrap:empty{ display:none; }
+  .campeon-anuncio{
+    margin-top:18px; padding-top:16px; border-top:1px dashed var(--line);
+    font-family:'Oswald'; color:var(--amber); font-size:18px;
+    text-transform:uppercase; letter-spacing:0.03em; text-align:center;
   }
 
   /* ---------- MONTE CARLO BARS ---------- */
@@ -1229,6 +1259,7 @@
     <div class="bracket-scroll">
       <div class="bracket" id="bracket"></div>
     </div>
+    <div class="campeon-anuncio-wrap" id="campeon-anuncio-reducido"></div>
   </section>
 
   <section id="sec-mc">
@@ -1358,6 +1389,7 @@
     <div class="bracket-scroll">
       <div class="bracket" id="bracket-lpf"></div>
     </div>
+    <div class="campeon-anuncio-wrap" id="campeon-anuncio-lpf"></div>
   </section>
 
   <section id="sec-lpf-mc">
@@ -1489,6 +1521,7 @@
     <div class="section-head"><span class="idx">01</span><h2>El cuadro, cruce por cruce</h2><div class="rule"></div></div>
     <p class="section-note">Los resultados reales quedan fijos; los cruces pendientes se simulan (partido único, cancha neutral, con alargue y penales). Cada corrida nueva puede dar un camino distinto.</p>
     <div class="bracket-scroll"><div class="bracket" id="bracket-copa"></div></div>
+    <div class="campeon-anuncio-wrap" id="campeon-anuncio-copa"></div>
   </section>
 
   <section id="sec-copa-mc">
@@ -1913,6 +1946,17 @@ function escudoHTML(nombre){
   return `<img class="escudo" src="escudos/${archivo}.png" alt="" loading="lazy" onerror="this.remove()">`;
 }
 
+// Cartel del campeón como pie del cuadro completo (ver .campeon-anuncio en
+// el CSS): antes vivía DENTRO del round-body de la final y dependía del
+// reposicionamiento por JS de esa ronda, lo que lo dejaba muy lejos del
+// partido final en cuadros con varias rondas. Ahora es un bloque aparte,
+// simple, que va siempre pegado debajo de todo el cuadro.
+function campeonAnuncioHTML(campeon, simbolo){
+  if (!campeon) return '';
+  return `<div class="campeon-anuncio">${simbolo || '▲'} ${escudoHTML(campeon)}${campeon}</div>`;
+}
+
+
 function renderTabla(zona){
   const body = document.getElementById('tabla-body');
   body.innerHTML = "";
@@ -1995,11 +2039,12 @@ function renderBracket(){
         }).join("")}
         <div class="leg-detail">${r.final.detalle}</div>
       </div>
-      <div class="campeon">▲ ${escudoHTML(r.final.campeon)}${r.final.campeon}</div>
     </div>
   </div>`;
 
   bracket.innerHTML = html;
+  const anuncio = document.getElementById('campeon-anuncio-reducido');
+  if (anuncio) anuncio.innerHTML = campeonAnuncioHTML(r.final.campeon, '▲');
 }
 
 function renderMC(zona){
@@ -2359,7 +2404,6 @@ function renderCampeonResultado(r){
         }).join("")}
         <div class="leg-detail">${red.final.detalle}</div>
       </div>
-      <div class="campeon">▲ ${escudoHTML(red.final.campeon)}${red.final.campeon}</div>
     </div>
   </div>`;
 
@@ -2374,6 +2418,7 @@ function renderCampeonResultado(r){
     </div>
     <div class="label" style="font-family:'JetBrains Mono'; font-size:11px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin: 24px 0 4px;">Reducido — 2° ascenso</div>
     <div class="bracket-scroll"><div class="bracket">${bracketHTML}</div></div>
+    <div class="campeon-anuncio-wrap">${campeonAnuncioHTML(red.final.campeon, '▲')}</div>
   `;
 }
 
@@ -2524,11 +2569,12 @@ function renderPlayoffsLPF(){
         }).join("")}
         <div class="leg-detail">${p.final.texto}</div>
       </div>
-      <div class="campeon">▲ ${escudoHTML(campeon)}${campeon}</div>
     </div>
   </div>`;
 
   bracket.innerHTML = html;
+  const anuncio = document.getElementById('campeon-anuncio-lpf');
+  if (anuncio) anuncio.innerHTML = campeonAnuncioHTML(campeon, '▲');
 }
 
 /* ---------- CLASIFICACIONES A COPAS (para colorear la Tabla Anual) ---------- */
@@ -2993,7 +3039,6 @@ function renderCampeonResultadoLPF(r){
         }).join("")}
         <div class="leg-detail">${p.final.texto}</div>
       </div>
-      <div class="campeon">▲ ${escudoHTML(campeon)}${campeon}</div>
     </div>
   </div>`;
 
@@ -3003,6 +3048,7 @@ function renderCampeonResultadoLPF(r){
     ${tablasZonasHTML}
     <div class="label" style="font-family:'JetBrains Mono'; font-size:11px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin: 24px 0 4px;">Playoffs</div>
     <div class="bracket-scroll"><div class="bracket">${bracketHTML}</div></div>
+    <div class="campeon-anuncio-wrap">${campeonAnuncioHTML(campeon, '▲')}</div>
   `;
 }
 
@@ -3128,6 +3174,8 @@ function iniciarCopa(){
   if (!DATA_COPA) return;
   document.getElementById('last-update-copa').textContent = DATA_COPA.generado ? ("Última corrida: " + DATA_COPA.generado) : "";
   document.getElementById('bracket-copa').innerHTML = bracketCopaHTML(DATA_COPA.rondas, DATA_COPA.campeon);
+  const anuncioCopa = document.getElementById('campeon-anuncio-copa');
+  if (anuncioCopa) anuncioCopa.innerHTML = campeonAnuncioHTML(DATA_COPA.campeon, '🏆');
   renderMCCopa();
   poblarSelectEquiposCopa();
   TEAM_INDEX_COPA = buildTeamIndexCopa();
@@ -3275,7 +3323,6 @@ function bracketCopaHTML(rondas, campeon){
       <div class="round-title">${titulo}</div>
       <div class="round-body">
         ${(rondas[clave] || []).map(matchCopaHTML).join("")}
-        ${esFinal ? `<div class="campeon">🏆 ${escudoHTML(campeon)}${campeon}</div>` : ''}
       </div>
     </div>`;
   });
@@ -3447,6 +3494,7 @@ async function simularHastaCampeonCopa(){
       <div class="campeon-summary">🏆 <b>${cuerpo.equipo}</b> levanta la Copa Argentina en esta corrida simulada
         (intento N° ${cuerpo.intentos} de una búsqueda al azar entre distintas Copas posibles)</div>
       <div class="bracket-scroll" style="margin-top:14px;"><div class="bracket">${bracketCopaHTML(cuerpo.rondas, campeonCorrida)}</div></div>
+      <div class="campeon-anuncio-wrap">${campeonAnuncioHTML(campeonCorrida, '🏆')}</div>
     `;
   } catch (e) {
     setApiErrorStatus(status, "No se pudo simular", e);
@@ -3546,6 +3594,17 @@ function buildBracketLines(bracketEl){
     bracketEl.insertBefore(svg, bracketEl.firstChild);
   }
   svg.innerHTML = '';
+
+  // Antes de medir, deshacemos cualquier reposicionamiento de una corrida
+  // anterior de esta misma función (partidos Y "extras" — ver más abajo):
+  // si no, getBoundingClientRect() mediría la posición ya corregida en vez
+  // del flujo natural, y en corridas sucesivas (resize, nueva simulación)
+  // el cálculo se iría desviando en vez de partir siempre del mismo lugar.
+  bracketEl.querySelectorAll('.js-positioned').forEach(el => {
+    el.classList.remove('js-positioned');
+    el.style.top = '';
+  });
+
   const bracketRect = bracketEl.getBoundingClientRect();
 
   // yCenter: centro vertical (en coordenadas locales del .bracket) de
@@ -3561,26 +3620,85 @@ function buildBracketLines(bracketEl){
     const roundBodyTop = roundBody.getBoundingClientRect().top - bracketRect.top;
     const prevMatches = [...rounds[r - 1].querySelectorAll(':scope > .round-body > .match:not(.note)')];
 
+    // Separamos los partidos "reales" (se reubican según sus partidos de
+    // origen) de cualquier elemento "extra" al final del round-body —el
+    // cartel del campeón (.campeon) en la final, o la nota "+X entra
+    // directo" (.match.note) en Cuartos—. Esos extras no tienen partidos
+    // de origen propios, así que sin ayuda el flex los recentra solos en
+    // toda la altura de la ronda apenas los partidos reales salen del
+    // flujo: eso era justo lo que producía la superposición reportada.
+    const children = [...roundBody.children];
+    const matchEls = children.filter(el => el.classList.contains('match') && !el.classList.contains('note'));
+    const extraEls = children.filter(el => !matchEls.includes(el));
+
     // Paso 1: medir todo ANTES de mover nada (si vamos posicionando de a
     // uno, sacar un partido del flujo normal corre a sus hermanos todavía
     // no procesados y las medidas siguientes quedan mal).
-    const info = [...roundBody.querySelectorAll(':scope > .match:not(.note)')].map(match => ({
+    const info = matchEls.map(match => ({
       match,
       rect: match.getBoundingClientRect(),
       sources: [...new Set([match.dataset.local, match.dataset.visitante]
         .map(name => name && prevMatches.find(pm => pm.dataset.avanza === name))
         .filter(Boolean))]
     }));
+    const extraInfo = extraEls.map(el => ({ el, rect: el.getBoundingClientRect() }));
 
-    info.forEach(({ match, rect, sources }) => {
-      const targetX = rect.left - bracketRect.left;
-      let targetY;
+    // Paso 2: calcular la posición "cruda" de cada partido (promedio de
+    // sus fuentes, o su propia posición si no tiene fuentes) antes de
+    // resolver superposiciones.
+    info.forEach(item => {
+      item.targetX = item.rect.left - bracketRect.left;
+      item.targetY = item.sources.length
+        ? item.sources.reduce((sum, s) => sum + yCenter.get(s), 0) / item.sources.length
+        : item.rect.top - bracketRect.top + item.rect.height / 2;
+    });
+
+    // Paso 3: evitar que dos partidos de la MISMA ronda se superpongan.
+    // OJO: en sorteos reales (Copa Argentina) los cruces de una ronda no
+    // necesariamente quedan en el mismo orden vertical que sus partidos de
+    // origen (ej: partido 1 puede cruzar con el partido 8, y el partido 2
+    // con el partido 6) — el orden del DOM no es un orden por altura. Si
+    // resolvíamos colisiones recorriendo en orden de DOM, cada empuje hacia
+    // abajo se acumulaba sobre el anterior aunque el target "crudo" de ese
+    // partido fuera más arriba, arrastrando toda la ronda muy abajo (el bug
+    // reportado en Liga Profesional / Copa Argentina). La solución: resolver
+    // colisiones ordenando por posición real (targetY), no por orden del
+    // DOM, y después recentrar el bloque resultante para que no quede todo
+    // desplazado hacia abajo respecto de su posición cruda original.
+    const MIN_GAP = 14; // mismo valor que .round-body{ gap:14px }
+    const bySpot = [...info].sort((a, b) => a.targetY - b.targetY);
+    bySpot.forEach(item => { item.rawTargetY = item.targetY; });
+    for (let i = 1; i < bySpot.length; i++){
+      const prev = bySpot[i - 1];
+      const cur = bySpot[i];
+      const minDist = prev.rect.height / 2 + MIN_GAP + cur.rect.height / 2;
+      if (cur.targetY - prev.targetY < minDist){
+        cur.targetY = prev.targetY + minDist;
+      }
+    }
+    // Recentramos: el desplazamiento acumulado por los empujes (comparando
+    // la posición cruda vs. la ya resuelta del último elemento) se reparte
+    // mitad arriba, mitad abajo entre TODOS los elementos del bloque, para
+    // que quede centrado sobre su rango original en vez de anclado por el
+    // primer empuje hacia abajo.
+    if (bySpot.length){
+      const last = bySpot[bySpot.length - 1];
+      const drift = last.targetY - last.rawTargetY;
+      if (drift > 0){
+        const shift = drift / 2;
+        bySpot.forEach(item => { item.targetY -= shift; });
+      }
+    }
+
+    // dy del último partido real reposicionado: los extras lo copian para
+    // moverse junto con él conservando su distancia original.
+    let lastDy = null;
+
+    info.forEach(({ match, rect, sources, targetX, targetY }) => {
       if (sources.length){
-        targetY = sources.reduce((sum, s) => sum + yCenter.get(s), 0) / sources.length;
         match.classList.add('js-positioned');
         match.style.top = (targetY - roundBodyTop - rect.height / 2) + 'px';
-      } else {
-        targetY = rect.top - bracketRect.top + rect.height / 2;
+        lastDy = targetY - (rect.top - bracketRect.top + rect.height / 2);
       }
       yCenter.set(match, targetY);
       if (!sources.length) return;
@@ -3605,6 +3723,17 @@ function buildBracketLines(bracketEl){
       }
       svg.appendChild(path);
     });
+
+    // Paso 4: acompañamos a los extras (campeón / nota) con el mismo
+    // desplazamiento del último partido real, para que queden pegados
+    // a él en vez de flotar solos por todo el alto de la ronda.
+    if (lastDy !== null){
+      extraInfo.forEach(({ el, rect }) => {
+        const originalTopLocal = rect.top - bracketRect.top - roundBodyTop;
+        el.classList.add('js-positioned');
+        el.style.top = (originalTopLocal + lastDy) + 'px';
+      });
+    }
   }
 
   svg.setAttribute('width', bracketEl.scrollWidth);
