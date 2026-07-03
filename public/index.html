@@ -77,6 +77,8 @@
     --btn-ink: #FFFFFF;
     --table-head-bg: #EEF2F9;
     --hover-lift: none;
+    --bracket-line: #2C5DA8;
+    --bracket-line-glow: rgba(44, 93, 168, 0.22);
   }
 
   /* Botones institucionales: borde dorado, sin celeste */
@@ -138,6 +140,8 @@
     --btn-ink: #FFFFFF;
     --table-head-bg: linear-gradient(180deg, #F0F5FF, #E7EFFD);
     --hover-lift: translateY(-2px);
+    --bracket-line: #0E86D4;
+    --bracket-line-glow: rgba(14, 134, 212, 0.22);
   }
 
   /* ---------- MODO OSCURO GLOBAL ---------- */
@@ -178,6 +182,8 @@
     --table-head-bg: #1C2C48;
     --card-shadow: 0 2px 10px rgba(0,0,0,0.5);
     --card-shadow-hover: 0 4px 16px rgba(0,0,0,0.6);
+    --bracket-line: #E8C468;
+    --bracket-line-glow: rgba(216, 165, 59, 0.34);
   }
 
   body.dark.liga-lpf{
@@ -222,6 +228,8 @@
     --table-head-bg: linear-gradient(180deg, #0F2038, #0B1A30);
     --card-shadow: 0 4px 18px rgba(0,0,0,0.45);
     --card-shadow-hover: 0 10px 28px rgba(0,0,0,0.55);
+    --bracket-line: #39B8FF;
+    --bracket-line-glow: rgba(57, 184, 255, 0.34);
   }
 
   /* transición suave y coherente entre torneos y entre modo claro/oscuro */
@@ -629,11 +637,42 @@
   .ascenso-footer b{ color: var(--amber); }
 
   /* ---------- BRACKET ---------- */
+  .bracket-wrap{ position:relative; }
+  /* Los cuadros pueden tener mucha más altura que la pantalla (una ronda
+     con muchos cruces), así que las flechas se anclan al centro vertical
+     de la ventana (sticky) en vez de al centro de todo el cuadro. */
+  .bracket-nav-anchor{ position:sticky; top:50vh; height:0; width:100%; z-index:5; }
+  .bracket-nav{
+    position:absolute; top:0; transform:translateY(-50%);
+    width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    background:var(--bg-panel); border:1px solid var(--line); box-shadow:var(--card-shadow);
+    color:var(--ink); font-size:16px; line-height:1; cursor:pointer;
+    transition:opacity 0.15s ease, border-color 0.15s ease;
+  }
+  .bracket-nav:hover{ border-color:var(--azul); }
+  .bracket-nav-prev{ left:-12px; }
+  .bracket-nav-next{ right:-12px; }
+  .bracket-nav.is-hidden{ opacity:0; pointer-events:none; }
+  .bracket-wrap:not(.scrollable) .bracket-nav{ display:none; }
+  @media (max-width:760px){ .bracket-nav{ display:none; } }
   .bracket-scroll{ overflow-x:auto; padding: 10px 4px 18px; }
-  .bracket{ display:flex; gap: clamp(8px, 2vw, 28px); align-items:stretch; width:100%; }
-  .round{ display:flex; flex-direction:column; flex:1 1 0; min-width:0; }
+  .bracket{ position:relative; display:flex; gap: clamp(8px, 2vw, 28px); align-items:stretch; width:100%; }
+  .bracket-lines{ position:absolute; top:0; left:0; z-index:4; overflow:visible; pointer-events:none; }
+  .bracket-lines path{
+    fill:none; stroke:var(--bracket-line); stroke-width:4;
+    stroke-linecap:round; stroke-linejoin:round;
+    filter: drop-shadow(0 0 5px var(--bracket-line-glow));
+  }
+  .round{ position:relative; z-index:2; display:flex; flex-direction:column; flex:1 1 0; min-width:0; }
   .round-title{ font-family:'JetBrains Mono'; font-size:10px; color:var(--muted); text-align:center; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:14px; flex-shrink:0; }
-  .round-body{ display:flex; flex-direction:column; justify-content:center; flex:1; gap:14px; }
+  .round-body{ display:flex; flex-direction:column; justify-content:center; flex:1; gap:14px; position:relative; }
+  /* A partir de la 2da ronda, cada partido se reubica por JS a la altura
+     media de los dos partidos de los que sale (ver buildBracketLines):
+     con space-around/center puro, una ronda con pocos partidos (semis,
+     final) quedaba repartida en TODO el alto del cuadro (fijado por la
+     ronda con más partidos), y la línea que conecta terminaba siendo
+     gigante e invisible en pantalla. */
+  .match.js-positioned{ position:absolute; left:0; right:0; margin:0; }
   .match{
     position:relative; border:1px solid var(--line); border-radius: var(--radius-sm);
     background: var(--bg-panel);
@@ -645,10 +684,6 @@
   .match .row{ display:flex; justify-content:space-between; padding:3px 0; color: var(--ink-dim); }
   .match .row.winner{ color:var(--amber); font-weight:700; }
   .match .row span:first-child{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:100%; min-width:0; }
-  .match::after{
-    content:""; position:absolute; right:-16px; top:50%; width:16px; height:1px; background:var(--line);
-  }
-  .round:last-child .match::after{ display:none; }
   .match.note{ font-size:10px; color:var(--muted); border-style:dashed; box-shadow:none; }
   .final-col .round-body{ align-items:center; }
   .final-col .match{ width:100%; }
@@ -851,8 +886,8 @@
     .bracket-scroll{ overflow-x:hidden; }
     .bracket{ flex-direction: column; gap: 22px; }
     .round{ width:100%; }
-    .match::after{ display:none; }
     .round-body{ gap:10px; }
+    .bracket-lines{ display:none; }
   }
 
   /* ============================================================
@@ -897,6 +932,8 @@
     --btn-ink: #FFFFFF;
     --table-head-bg: rgba(110,193,228,0.14);
     --hover-lift: translateY(-2px);
+    --bracket-line: #1E8FC9;
+    --bracket-line-glow: rgba(30, 143, 201, 0.26);
 
     /* vidrio del tema (lo usan las tarjetas de abajo) */
     --copa-glass: linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(245,250,254,0.82) 100%);
@@ -930,6 +967,8 @@
     --card-grad: linear-gradient(180deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.02) 100%);
     --tabs-bg: rgba(15,28,51,0.88);
     --table-head-bg: rgba(110,193,228,0.1);
+    --bracket-line: #8DE3FF;
+    --bracket-line-glow: rgba(110, 193, 228, 0.5);
 
     --copa-glass: linear-gradient(180deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.025) 100%);
     --copa-glass-border: rgba(110,193,228,0.16);
@@ -1023,17 +1062,17 @@
 
   /* Cruces mejor organizados: columnas legibles con scroll horizontal,
      alineación de árbol (cada ronda repartida a la altura de la
-     anterior), títulos que se quedan pegados al hacer scroll, y
-     distinción clara entre resultado real y simulado */
+     anterior), y distinción clara entre resultado real y simulado.
+     El título de ronda va en flujo normal (no sticky): al ser sticky
+     dentro de cada columna se despegaba de su round-body al scrollear
+     la página y terminaba superpuesto sobre los partidos. */
   body.liga-copa .bracket{ align-items: stretch; }
   body.liga-copa .bracket .round{ min-width: 220px; }
   body.liga-copa .bracket .round-body{ justify-content: space-around; gap: 10px; }
   body.liga-copa .round-title{
-    position: sticky; top: calc(var(--liga-h, 52px) + 6px); z-index: 2;
     background: var(--copa-glass);
     border: 1px solid var(--copa-glass-border);
     border-radius: 999px; padding: 6px 10px;
-    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
   }
   body.liga-copa .match.real{ border-left: 3px solid var(--zone-a); }
   body.liga-copa .match.sim{
@@ -1916,7 +1955,7 @@ function renderAscenso(){
 
 function matchHTML(m, roundLabel){
   const winnerIsLocal = m.avanza === m.local;
-  return `<div class="match">
+  return `<div class="match" data-local="${m.local}" data-visitante="${m.visitante}" data-avanza="${m.avanza || ''}">
     <div class="row ${winnerIsLocal ? 'winner':''}"><span>${escudoHTML(m.local)}${m.local}</span><span>${m.golesLocal}</span></div>
     <div class="row ${!winnerIsLocal ? 'winner':''}"><span>${escudoHTML(m.visitante)}${m.visitante}</span><span>${m.golesVisitante}</span></div>
   </div>`;
@@ -1948,7 +1987,7 @@ function renderBracket(){
   html += `<div class="round final-col">
     <div class="round-title">Final (ida y vuelta)</div>
     <div class="round-body">
-      <div class="match">
+      <div class="match" data-local="${r.semis[0] ? r.semis[0].avanza : ''}" data-visitante="${r.semis[1] ? r.semis[1].avanza : ''}">
         ${r.semis.map(m => {
           const equipo = m.avanza;
           const esCampeon = equipo === r.final.campeon;
@@ -2312,7 +2351,7 @@ function renderCampeonResultado(r){
   bracketHTML += `<div class="round final-col">
     <div class="round-title">Final (ida y vuelta)</div>
     <div class="round-body">
-      <div class="match">
+      <div class="match" data-local="${red.semis[0] ? red.semis[0].avanza : ''}" data-visitante="${red.semis[1] ? red.semis[1].avanza : ''}">
         ${red.semis.map(m => {
           const nombreEquipo = m.avanza;
           const esCampeon = nombreEquipo === red.final.campeon;
@@ -2477,7 +2516,7 @@ function renderPlayoffsLPF(){
   html += `<div class="round final-col">
     <div class="round-title">Final</div>
     <div class="round-body">
-      <div class="match">
+      <div class="match" data-local="${p.semis[0] ? p.semis[0].avanza : ''}" data-visitante="${p.semis[1] ? p.semis[1].avanza : ''}">
         ${p.semis.map(m => {
           const equipo = m.avanza;
           const esCampeon = equipo === campeon;
@@ -2946,7 +2985,7 @@ function renderCampeonResultadoLPF(r){
   bracketHTML += `<div class="round final-col">
     <div class="round-title">Final</div>
     <div class="round-body">
-      <div class="match">
+      <div class="match" data-local="${p.semis[0] ? p.semis[0].avanza : ''}" data-visitante="${p.semis[1] ? p.semis[1].avanza : ''}">
         ${p.semis.map(m => {
           const nombreEquipo = m.avanza;
           const esCampeon = nombreEquipo === campeon;
@@ -3024,6 +3063,10 @@ function setLiga(liga){
   document.body.classList.toggle('liga-lpf', liga === 'lpf');
   document.body.classList.toggle('liga-copa', liga === 'copa');
   actualizarHero(liga);
+  // El cuadro recién visible puede haber quedado con medidas en 0 (display:none
+  // no dispara el MutationObserver de los brackets), así que se refresca a mano.
+  refreshAllBracketNavs();
+  refreshAllBracketLines();
 }
 
 function ajustarOffsetLigaTabs(){
@@ -3217,7 +3260,7 @@ function matchCopaHTML(m){
   let nota = "";
   if (!m.jugado) nota = m.penales ? "simulado — por penales" : "simulado";
   else if (m.penales) nota = "definido por penales (dato real)";
-  return `<div class="match ${m.jugado ? 'real' : 'sim'}">
+  return `<div class="match ${m.jugado ? 'real' : 'sim'}" data-local="${m.local}" data-visitante="${m.visitante}" data-avanza="${m.avanza || ''}">
     <div class="row ${winLocal ? 'winner' : ''}"><span>${escudoHTML(m.local)}${m.local}</span><span>${m.golesLocal ?? ''}</span></div>
     <div class="row ${!winLocal ? 'winner' : ''}"><span>${escudoHTML(m.visitante)}${m.visitante}</span><span>${m.golesVisitante ?? ''}</span></div>
     ${nota ? `<div class="leg-detail">${nota}</div>` : ''}
@@ -3421,5 +3464,180 @@ document.getElementById('btn-campeon-copa').addEventListener('click', simularHas
 
 cargarDatosLPF();
 cargarDatosCopa();
+
+// Flechas de navegación para los cuadros (brackets): evitan tener que
+// arrastrar la barra de scroll horizontal para ver las rondas siguientes.
+// Se agregan por JS porque el contenido de cada .bracket-scroll se genera
+// dinámicamente (a veces mucho después de cargar la página).
+function updateBracketNav(scrollEl){
+  const wrap = scrollEl.parentElement;
+  if (!wrap || !wrap.classList.contains('bracket-wrap')) return;
+  const scrollable = scrollEl.scrollWidth > scrollEl.clientWidth + 4;
+  wrap.classList.toggle('scrollable', scrollable);
+  if (!scrollable) return;
+  const prev = wrap.querySelector('.bracket-nav-prev');
+  const next = wrap.querySelector('.bracket-nav-next');
+  prev.classList.toggle('is-hidden', scrollEl.scrollLeft <= 4);
+  next.classList.toggle('is-hidden', scrollEl.scrollLeft + scrollEl.clientWidth >= scrollEl.scrollWidth - 4);
+}
+
+function setupBracketNav(scrollEl){
+  if (scrollEl.dataset.navReady){ updateBracketNav(scrollEl); return; }
+  scrollEl.dataset.navReady = '1';
+
+  const wrap = document.createElement('div');
+  wrap.className = 'bracket-wrap';
+  scrollEl.parentNode.insertBefore(wrap, scrollEl);
+  wrap.appendChild(scrollEl);
+
+  const scrollByRound = (dir) => {
+    const round = scrollEl.querySelector('.round');
+    const delta = round ? round.getBoundingClientRect().width + 24 : scrollEl.clientWidth * 0.6;
+    scrollEl.scrollBy({ left: dir * delta, behavior: 'smooth' });
+  };
+
+  const anchor = document.createElement('div');
+  anchor.className = 'bracket-nav-anchor';
+  wrap.insertBefore(anchor, scrollEl);
+
+  [-1, 1].forEach(dir => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = `bracket-nav ${dir < 0 ? 'bracket-nav-prev' : 'bracket-nav-next'}`;
+    btn.setAttribute('aria-label', dir < 0 ? 'Ver rondas anteriores' : 'Ver rondas siguientes');
+    btn.textContent = dir < 0 ? '‹' : '›';
+    btn.addEventListener('click', () => scrollByRound(dir));
+    anchor.appendChild(btn);
+  });
+
+  scrollEl.addEventListener('scroll', () => updateBracketNav(scrollEl));
+  updateBracketNav(scrollEl);
+}
+
+function refreshAllBracketNavs(){
+  document.querySelectorAll('.bracket-scroll').forEach(setupBracketNav);
+}
+
+// Líneas que conectan cada partido con el cruce del que sale y con el
+// cruce siguiente al que avanza. Se arman por nombre de equipo (buscando,
+// en la ronda anterior, qué partido tiene ese nombre como "avanza") en vez
+// de por posición, porque algunos cuadros (el Reducido) empatan partidos
+// de forma salteada, no secuencial.
+//
+// La 1ra ronda queda como cae por CSS (flex, bien repartida porque tiene
+// muchos partidos). Desde la 2da ronda en adelante, cada partido se
+// reubica (position:absolute, top calculado) a la altura media de sus
+// dos partidos de origen — si lo dejáramos con justify-content:center/
+// space-around, una ronda con pocos partidos (semis, final) quedaba
+// repartida en TODO el alto del cuadro (el de la ronda con más partidos),
+// y la línea que conecta terminaba con un tramo vertical de miles de
+// píxeles, invisible en pantalla.
+function buildBracketLines(bracketEl){
+  const ns = 'http://www.w3.org/2000/svg';
+  const rounds = [...bracketEl.querySelectorAll(':scope > .round')];
+  let svg = bracketEl.querySelector(':scope > svg.bracket-lines');
+  if (rounds.length < 2){
+    if (svg) svg.remove();
+    return;
+  }
+  if (!svg){
+    svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('class', 'bracket-lines');
+    bracketEl.insertBefore(svg, bracketEl.firstChild);
+  }
+  svg.innerHTML = '';
+  const bracketRect = bracketEl.getBoundingClientRect();
+
+  // yCenter: centro vertical (en coordenadas locales del .bracket) de
+  // cada partido ya resuelto — arranca con la 1ra ronda tal cual cayó.
+  const yCenter = new Map();
+  rounds[0].querySelectorAll(':scope > .round-body > .match:not(.note)').forEach(m => {
+    const r = m.getBoundingClientRect();
+    yCenter.set(m, r.top - bracketRect.top + r.height / 2);
+  });
+
+  for (let r = 1; r < rounds.length; r++){
+    const roundBody = rounds[r].querySelector(':scope > .round-body');
+    const roundBodyTop = roundBody.getBoundingClientRect().top - bracketRect.top;
+    const prevMatches = [...rounds[r - 1].querySelectorAll(':scope > .round-body > .match:not(.note)')];
+
+    // Paso 1: medir todo ANTES de mover nada (si vamos posicionando de a
+    // uno, sacar un partido del flujo normal corre a sus hermanos todavía
+    // no procesados y las medidas siguientes quedan mal).
+    const info = [...roundBody.querySelectorAll(':scope > .match:not(.note)')].map(match => ({
+      match,
+      rect: match.getBoundingClientRect(),
+      sources: [...new Set([match.dataset.local, match.dataset.visitante]
+        .map(name => name && prevMatches.find(pm => pm.dataset.avanza === name))
+        .filter(Boolean))]
+    }));
+
+    info.forEach(({ match, rect, sources }) => {
+      const targetX = rect.left - bracketRect.left;
+      let targetY;
+      if (sources.length){
+        targetY = sources.reduce((sum, s) => sum + yCenter.get(s), 0) / sources.length;
+        match.classList.add('js-positioned');
+        match.style.top = (targetY - roundBodyTop - rect.height / 2) + 'px';
+      } else {
+        targetY = rect.top - bracketRect.top + rect.height / 2;
+      }
+      yCenter.set(match, targetY);
+      if (!sources.length) return;
+
+      const path = document.createElementNS(ns, 'path');
+      if (sources.length === 2){
+        const y1 = yCenter.get(sources[0]);
+        const y2 = yCenter.get(sources[1]);
+        const x1 = sources[0].getBoundingClientRect().right - bracketRect.left;
+        const x2 = sources[1].getBoundingClientRect().right - bracketRect.left;
+        const xSource = Math.max(x1, x2);
+        const xMid = xSource + (targetX - xSource) / 2;
+        path.setAttribute('d', [
+          `M${x1},${y1} H${xMid} V${targetY} H${targetX}`,
+          `M${x2},${y2} H${xMid} V${targetY} H${targetX}`
+        ].join(' '));
+      } else {
+        const y0 = yCenter.get(sources[0]);
+        const x0 = sources[0].getBoundingClientRect().right - bracketRect.left;
+        const xMid = x0 + (targetX - x0) / 2;
+        path.setAttribute('d', `M${x0},${y0} H${xMid} V${targetY} H${targetX}`);
+      }
+      svg.appendChild(path);
+    });
+  }
+
+  svg.setAttribute('width', bracketEl.scrollWidth);
+  svg.setAttribute('height', bracketEl.scrollHeight);
+}
+
+function refreshAllBracketLines(){
+  document.querySelectorAll('.bracket').forEach(buildBracketLines);
+}
+
+// El propio refresh reescribe el DOM (líneas, flechas), así que hay que
+// desconectar el observer mientras corre para no disparar un loop infinito
+// de mutación → refresh → mutación.
+let bracketRefreshQueued = false;
+const bracketObserver = new MutationObserver(() => {
+  if (bracketRefreshQueued) return;
+  bracketRefreshQueued = true;
+  requestAnimationFrame(() => {
+    bracketRefreshQueued = false;
+    bracketObserver.disconnect();
+    refreshAllBracketNavs();
+    refreshAllBracketLines();
+    bracketObserver.observe(document.body, { childList: true, subtree: true });
+  });
+});
+bracketObserver.observe(document.body, { childList: true, subtree: true });
+
+window.addEventListener('resize', () => {
+  refreshAllBracketNavs();
+  refreshAllBracketLines();
+});
+
+refreshAllBracketNavs();
+refreshAllBracketLines();
 
 </script>
