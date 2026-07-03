@@ -783,6 +783,12 @@
     .match::after{ display:none; }
     .round-body{ gap:10px; }
   }
+
+  /* ---- Escudos de equipos ---- */
+  .escudo{ width:24px; height:24px; object-fit:contain; vertical-align:-6px; margin-right:8px; }
+  .tc-name .escudo{ width:34px; height:34px; vertical-align:-8px; margin-right:10px; }
+  .match .row .escudo, .copa-card li .escudo, .descenso-card .escudo{ width:20px; height:20px; vertical-align:-5px; margin-right:7px; }
+  .campeon .escudo, .ascenso-score .team .escudo{ width:22px; height:22px; vertical-align:-5px; margin-right:7px; }
 </style>
 </head>
 <body>
@@ -1496,6 +1502,40 @@ let zonaActual = "A";
 
 function fmtPct(n){ return n.toFixed(1) + "%"; }
 
+/* ---------- ESCUDOS ---------- */
+const ESCUDOS = {
+  // Primera Nacional
+  'Acassuso':'acassuso', 'Agropecuario':'agropecuario', 'All Boys':'allboys', 'Almagro':'almagro',
+  'Alte. Brown':'almirante', 'Atlanta':'atlanta', 'Atlético Rafaela':'atleticorafaela', 'Bolivar':'ciudad_bolivar',
+  'CA Mitre':'mitre', 'Central Norte':'central_norte', 'Chacarita':'chacarita', 'Chaco For Ever':'chaco_for_ever',
+  'Chicago':'nueva_chicago', 'Colegiales':'colegiales', 'Colón':'colon', 'Defensores':'defensores',
+  'Dep. Madryn':'deportivo_madryn', 'Estudiantes':'estudiantes_caseros', 'Ferro':'ferro', 'Gimnasia (J)':'gimnasiajujuy',
+  'Gimnasia y Tiro':'gimnasia_y_tiro', 'Godoy Cruz':'godoycruz', 'Güemes':'guemes', 'Los Andes':'los_andes',
+  'Maipú':'depmaipu', 'Midland':'midland', 'Morón':'moron', 'Patronato':'patronato',
+  'Quilmes':'quilmes', 'Racing (Cba)':'racing_cordoba', 'San Martín':'sanmartinsj', 'San Martín (T)':'sanmartintuc',
+  'San Miguel':'sanmiguel', 'San Telmo':'santelmo', 'Temperley':'temperley', 'Tristan Suárez':'tristansuarez',
+  // Liga Profesional
+  'Aldosivi':'aldosivi', 'Argentinos Juniors':'argentinos', 'Atlético Tucumán':'atleticotucuman', 'Banfield':'banfield',
+  'Barracas Central':'barracas', 'Belgrano':'belgrano', 'Boca Juniors':'boca', 'Central Córdoba SdE':'centralcordoba',
+  'Defensa y Justicia':'defensa', 'Deportivo Riestra':'riestra', 'Estudiantes RC':'estudiantesrc',
+  'Estudiantes de La Plata':'estudiantes', 'Gimnasia La Plata':'gimnasia', 'Gimnasia de Mendoza':'gimnasiamendoza',
+  'Huracán':'huracan', 'Independiente':'independiente', 'Independiente Rivadavia':'independienteriv', 'Instituto':'instituto',
+  'Lanús':'lanus', "Newell's Old Boys":'newells', 'Platense':'platense', 'Racing Club':'racing',
+  'River Plate':'river', 'Rosario Central':'rosariocentral', 'San Lorenzo':'sanlorenzo', 'Sarmiento Junín':'sarmiento',
+  'Talleres de Córdoba':'talleres', 'Tigre':'tigre', 'Unión de Santa Fe':'union', 'Vélez Sarsfield':'velez',
+};
+
+function escudoHTML(nombre){
+  // Busca primero el nombre tal cual (cubre "Gimnasia (J)", "San Martín (T)")
+  // y si no, la versión limpia sin paréntesis ni sufijos con guion largo
+  // (cubre "River Plate — Campeón Copa Argentina 2026").
+  const crudo = String(nombre).trim();
+  const limpio = crudo.replace(/\s*\(.*?\)\s*/g, '').split('—')[0].trim();
+  const archivo = ESCUDOS[crudo] ?? ESCUDOS[limpio];
+  if (!archivo) return '';
+  return `<img class="escudo" src="escudos/${archivo}.png" alt="" loading="lazy" onerror="this.remove()">`;
+}
+
 function renderTabla(zona){
   const body = document.getElementById('tabla-body');
   body.innerHTML = "";
@@ -1505,7 +1545,7 @@ function renderTabla(zona){
     if (i === 0) tr.classList.add('punta');
     else if (i >= 1 && i <= 7) tr.classList.add('reducido');
     if (i >= filas.length - 2) tr.classList.add('descenso');
-    tr.innerHTML = `<td>${i+1}</td><td>${f.equipo}</td><td>${f.puntos}</td><td>${f.gf}</td><td>${f.gc}</td><td>${f.dg > 0 ? '+'+f.dg : f.dg}</td>`;
+    tr.innerHTML = `<td>${i+1}</td><td>${escudoHTML(f.equipo)}${f.equipo}</td><td>${f.puntos}</td><td>${f.gf}</td><td>${f.gc}</td><td>${f.dg > 0 ? '+'+f.dg : f.dg}</td>`;
     body.appendChild(tr);
   });
 }
@@ -1516,7 +1556,7 @@ function renderAscenso(){
 
     document.getElementById("final-ascenso-score").innerHTML = `
         <span class="team ${fa.ganador===fa.equipo_a?"win":""}">
-            ${fa.equipo_a}
+            ${escudoHTML(fa.equipo_a)}${fa.equipo_a}
         </span>
 
         <span class="gscore">
@@ -1524,7 +1564,7 @@ function renderAscenso(){
         </span>
 
         <span class="team ${fa.ganador===fa.equipo_b?"win":""}">
-            ${fa.equipo_b}
+            ${escudoHTML(fa.equipo_b)}${fa.equipo_b}
         </span>
     `;
 
@@ -1539,8 +1579,8 @@ function renderAscenso(){
 function matchHTML(m, roundLabel){
   const winnerIsLocal = m.avanza === m.local;
   return `<div class="match">
-    <div class="row ${winnerIsLocal ? 'winner':''}"><span>${m.local}</span><span>${m.golesLocal}</span></div>
-    <div class="row ${!winnerIsLocal ? 'winner':''}"><span>${m.visitante}</span><span>${m.golesVisitante}</span></div>
+    <div class="row ${winnerIsLocal ? 'winner':''}"><span>${escudoHTML(m.local)}${m.local}</span><span>${m.golesLocal}</span></div>
+    <div class="row ${!winnerIsLocal ? 'winner':''}"><span>${escudoHTML(m.visitante)}${m.visitante}</span><span>${m.golesVisitante}</span></div>
   </div>`;
 }
 
@@ -1578,7 +1618,7 @@ function renderBracket(){
         }).join("")}
         <div class="leg-detail">${r.final.detalle}</div>
       </div>
-      <div class="campeon">▲ ${r.final.campeon}</div>
+      <div class="campeon">▲ ${escudoHTML(r.final.campeon)}${r.final.campeon}</div>
     </div>
   </div>`;
 
@@ -1599,7 +1639,7 @@ function renderMC(zona){
     row.innerHTML = `
       <div class="pos">${i+1}</div>
       <div>
-        <div class="name"><span>${f.equipo}</span><span class="pct" style="color:${zoneColor}">${fmtPct(f.ascenso_total)} ascenso</span></div>
+        <div class="name"><span>${escudoHTML(f.equipo)}${f.equipo}</span><span class="pct" style="color:${zoneColor}">${fmtPct(f.ascenso_total)} ascenso</span></div>
         <div class="mc-bar-track">
           <div class="mc-bar-fill directo" style="width:${directo}%; background:${zoneColor}"></div>
           <div class="mc-bar-fill reducido" style="left:${directo}%; width:${reducido}%; background:${zoneColor}"></div>
@@ -1624,7 +1664,7 @@ function renderEsperada(zona){
   body.innerHTML = "";
   DATA.tabla_esperada[zona].forEach((f, i) => {
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${i+1}</td><td>${f.equipo}</td><td>${f.puntos_prom}</td><td>${f.posicion_prom}</td>`;
+    tr.innerHTML = `<td>${i+1}</td><td>${escudoHTML(f.equipo)}${f.equipo}</td><td>${f.puntos_prom}</td><td>${f.posicion_prom}</td>`;
     body.appendChild(tr);
   });
 }
@@ -1643,7 +1683,7 @@ function renderGoleadores(){
   filas.forEach((f, i) => {
     const tr = document.createElement('tr');
     if (i === 0) tr.classList.add('punta');
-    tr.innerHTML = `<td>${i+1}</td><td>${f.jugador}</td><td>${f.equipo}</td><td>${f.goles}</td><td>${f.proyeccion}</td>`;
+    tr.innerHTML = `<td>${i+1}</td><td>${f.jugador}</td><td>${escudoHTML(f.equipo)}${f.equipo}</td><td>${f.goles}</td><td>${f.proyeccion}</td>`;
     body.appendChild(tr);
   });
 }
@@ -1704,7 +1744,7 @@ function renderTeamCard(t){
   return `
     <div class="team-card">
       <div class="tc-head">
-        <div class="tc-name">${t.equipo}</div>
+        <div class="tc-name">${escudoHTML(t.equipo)}${t.equipo}</div>
         <span class="tc-zone" style="background:${zoneDim}; color:${zoneColor}">ZONA ${t.zona}</span>
       </div>
       <div class="tc-pos">Posición actual: <b>${t.posicion}°</b> de ${t.total} — <b>${t.puntos}</b> pts (DG ${t.dg > 0 ? '+' + t.dg : t.dg})</div>
@@ -1887,7 +1927,7 @@ function renderCampeonResultado(r){
       if (i >= filas.length - 2) clases.push('descenso');
       const esObjetivo = f.equipo === r.equipo;
       html += `<tr class="${clases.join(' ')}"${esObjetivo ? ' style="box-shadow: inset 3px 0 0 var(--amber);"' : ''}>
-        <td>${i + 1}</td><td>${f.equipo}${esObjetivo ? ' 🏆' : ''}</td><td>${f.puntos}</td><td>${f.gf}</td><td>${f.gc}</td><td>${f.dg > 0 ? '+' + f.dg : f.dg}</td>
+        <td>${i + 1}</td><td>${escudoHTML(f.equipo)}${f.equipo}${esObjetivo ? ' 🏆' : ''}</td><td>${f.puntos}</td><td>${f.gf}</td><td>${f.gc}</td><td>${f.dg > 0 ? '+' + f.dg : f.dg}</td>
       </tr>`;
     });
     return html;
@@ -1907,9 +1947,9 @@ function renderCampeonResultado(r){
 
   const fa = r.final_ascenso;
   const faScoreHTML = `
-    <span class="team ${fa.ganador === fa.equipo_a ? "win" : ""}">${fa.equipo_a}</span>
+    <span class="team ${fa.ganador === fa.equipo_a ? "win" : ""}">${escudoHTML(fa.equipo_a)}${fa.equipo_a}</span>
     <span class="gscore">${fa.detalle_marcador[0]} - ${fa.detalle_marcador[1]}</span>
-    <span class="team ${fa.ganador === fa.equipo_b ? "win" : ""}">${fa.equipo_b}</span>
+    <span class="team ${fa.ganador === fa.equipo_b ? "win" : ""}">${escudoHTML(fa.equipo_b)}${fa.equipo_b}</span>
   `;
   let faFooter = `Asciende directo: <b>${fa.ganador}</b> · ${fa.perdedor} pasa al Reducido`;
   if (fa.detalle_penales) faFooter += ` &middot; definido por penales ${fa.detalle_penales[0]}-${fa.detalle_penales[1]}`;
@@ -1938,11 +1978,11 @@ function renderCampeonResultado(r){
         ${red.semis.map(m => {
           const nombreEquipo = m.avanza;
           const esCampeon = nombreEquipo === red.final.campeon;
-          return `<div class="row ${esCampeon ? 'winner' : ''}"><span>${nombreEquipo}</span></div>`;
+          return `<div class="row ${esCampeon ? 'winner' : ''}"><span>${escudoHTML(nombreEquipo)}${nombreEquipo}</span></div>`;
         }).join("")}
         <div class="leg-detail">${red.final.detalle}</div>
       </div>
-      <div class="campeon">▲ ${red.final.campeon}</div>
+      <div class="campeon">▲ ${escudoHTML(red.final.campeon)}${red.final.campeon}</div>
     </div>
   </div>`;
 
@@ -2011,7 +2051,7 @@ function filaTablaLPFHTML(f, i, totalFilas, marcarPlayoffs){
   if (i === 0) clases.push('punta');
   else if (marcarPlayoffs && i <= 7) clases.push('reducido'); // top 8 clasifican a playoffs
   return `<tr class="${clases.join(' ')}">
-    <td>${i + 1}</td><td>${f.equipo}</td><td>${f.puntos}</td><td>${f.gf}</td><td>${f.gc}</td><td>${f.dg > 0 ? '+' + f.dg : f.dg}</td>
+    <td>${i + 1}</td><td>${escudoHTML(f.equipo)}${f.equipo}</td><td>${f.puntos}</td><td>${f.gf}</td><td>${f.gc}</td><td>${f.dg > 0 ? '+' + f.dg : f.dg}</td>
   </tr>`;
 }
 
@@ -2045,7 +2085,7 @@ function renderMCLPF(zona){
     row.innerHTML = `
       <div class="pos">${i+1}</div>
       <div>
-        <div class="name"><span>${f.equipo}</span><span class="pct" style="color:${zoneColor}">${f['%campeon_clausura']}% campeón</span></div>
+        <div class="name"><span>${escudoHTML(f.equipo)}${f.equipo}</span><span class="pct" style="color:${zoneColor}">${f['%campeon_clausura']}% campeón</span></div>
         <div class="mc-bar-track">
           <div class="mc-bar-fill directo" style="width:${f['%playoffs']}%; background:${zoneColor}"></div>
         </div>
@@ -2069,7 +2109,7 @@ function renderEsperadaLPF(zona){
   body.innerHTML = "";
   DATA_LPF.tabla_esperada[zona].forEach((f, i) => {
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${i+1}</td><td>${f.equipo}</td><td>${f.puntos_prom}</td><td>${f.posicion_prom}</td>`;
+    tr.innerHTML = `<td>${i+1}</td><td>${escudoHTML(f.equipo)}${f.equipo}</td><td>${f.puntos_prom}</td><td>${f.posicion_prom}</td>`;
     body.appendChild(tr);
   });
 }
@@ -2107,7 +2147,7 @@ function renderPlayoffsLPF(){
         }).join("")}
         <div class="leg-detail">${p.final.texto}</div>
       </div>
-      <div class="campeon">▲ ${campeon}</div>
+      <div class="campeon">▲ ${escudoHTML(campeon)}${campeon}</div>
     </div>
   </div>`;
 
@@ -2159,7 +2199,7 @@ function renderTablaAnualLPF(){
     else if (LPF_EQUIPOS_LIBERTADORES.has(f.equipo)) clases.push('libertadores');
     else if (LPF_EQUIPOS_SUDAMERICANA.has(f.equipo)) clases.push('sudamericana');
     return `<tr class="${clases.join(' ')}">
-      <td>${i + 1}</td><td>${f.equipo}</td><td>${f.puntos}</td><td>${f.gf}</td><td>${f.gc}</td><td>${f.dg > 0 ? '+' + f.dg : f.dg}</td>
+      <td>${i + 1}</td><td>${escudoHTML(f.equipo)}${f.equipo}</td><td>${f.puntos}</td><td>${f.gf}</td><td>${f.gc}</td><td>${f.dg > 0 ? '+' + f.dg : f.dg}</td>
     </tr>`;
   }).join('');
 }
@@ -2168,7 +2208,7 @@ function renderDescensosLPF(){
   const cont = document.getElementById('descensos-lpf');
   if (!cont) return;
   cont.innerHTML = DATA_LPF.descensos.map(equipo =>
-    `<div class="descenso-card"><span class="arrow">▼</span>${equipo}</div>`
+    `<div class="descenso-card"><span class="arrow">▼</span>${escudoHTML(equipo)}${equipo}</div>`
   ).join('');
 }
 
@@ -2179,7 +2219,7 @@ function renderPromediosLPF(){
   body.innerHTML = DATA_LPF.tabla_promedios.map((f, i) => {
     const clase = descendidos.has(f.equipo) ? 'descenso' : '';
     return `<tr class="${clase}">
-      <td>${i + 1}</td><td>${f.equipo}</td><td>${f.puntos}</td><td>${f.partidos_jugados}</td><td>${f.promedio.toFixed(3)}</td>
+      <td>${i + 1}</td><td>${escudoHTML(f.equipo)}${f.equipo}</td><td>${f.puntos}</td><td>${f.partidos_jugados}</td><td>${f.promedio.toFixed(3)}</td>
     </tr>`;
   }).join('');
 }
@@ -2201,10 +2241,10 @@ function renderCopasLPF(){
   libertadores.innerHTML = listaLibertadores.map(equipo => {
     const esInventado = equipo.includes('Campeón Copa Argentina');
     const noSimulado = !campeonCopaArgentina && equipo.toLowerCase().includes('no simulado');
-    return `<li class="${esInventado ? 'inventado' : ''} ${noSimulado ? 'no-simulado' : ''}">${equipo}</li>`;
+    return `<li class="${esInventado ? 'inventado' : ''} ${noSimulado ? 'no-simulado' : ''}">${escudoHTML(equipo)}${equipo}</li>`;
   }).join('');
 
-  sudamericana.innerHTML = DATA_LPF.copas.sudamericana_2027.map(equipo => `<li>${equipo}</li>`).join('');
+  sudamericana.innerHTML = DATA_LPF.copas.sudamericana_2027.map(equipo => `<li>${escudoHTML(equipo)}${equipo}</li>`).join('');
 
   // Guardamos los equipos clasificados (normalizados) para colorear la Tabla Anual
   LPF_EQUIPOS_LIBERTADORES = new Set(listaLibertadores.map(normalizarEquipoLPF));
@@ -2228,9 +2268,9 @@ function renderTrofeoLPF(){
   especial.style.display = 'none';
 
   document.getElementById('trofeo-lpf-score').innerHTML = `
-    <span class="team ${t.campeon_trofeo === t.campeon_apertura ? 'win' : ''}">${t.campeon_apertura}</span>
+    <span class="team ${t.campeon_trofeo === t.campeon_apertura ? 'win' : ''}">${escudoHTML(t.campeon_apertura)}${t.campeon_apertura}</span>
     <span class="gscore">${t.marcador[0]} - ${t.marcador[1]}</span>
-    <span class="team ${t.campeon_trofeo === t.campeon_clausura ? 'win' : ''}">${t.campeon_clausura}</span>
+    <span class="team ${t.campeon_trofeo === t.campeon_clausura ? 'win' : ''}">${escudoHTML(t.campeon_clausura)}${t.campeon_clausura}</span>
   `;
   document.getElementById('trofeo-lpf-footer').innerHTML = `Campeón del Trofeo de Campeones: <b>${t.campeon_trofeo}</b>`;
 }
@@ -2386,7 +2426,7 @@ function renderTeamCardLPF(t){
   return `
     <div class="team-card">
       <div class="tc-head">
-        <div class="tc-name">${t.equipo}</div>
+        <div class="tc-name">${escudoHTML(t.equipo)}${t.equipo}</div>
         <span class="tc-zone" style="background:${zoneDim}; color:${zoneColor}">ZONA ${t.zona}</span>
       </div>
       <div class="tc-pos">${posActualTxt}</div>
@@ -2532,7 +2572,7 @@ function renderCampeonResultadoLPF(r){
       else if (marcarPlayoffs && i <= 7) clases.push('reducido');
       const esObjetivo = f.equipo === r.equipo;
       html += `<tr class="${clases.join(' ')}"${esObjetivo ? ' style="box-shadow: inset 3px 0 0 var(--amber);"' : ''}>
-        <td>${i + 1}</td><td>${f.equipo}${esObjetivo ? ' 🏆' : ''}</td><td>${f.puntos}</td><td>${f.gf}</td><td>${f.gc}</td><td>${f.dg > 0 ? '+' + f.dg : f.dg}</td>
+        <td>${i + 1}</td><td>${escudoHTML(f.equipo)}${f.equipo}${esObjetivo ? ' 🏆' : ''}</td><td>${f.puntos}</td><td>${f.gf}</td><td>${f.gc}</td><td>${f.dg > 0 ? '+' + f.dg : f.dg}</td>
       </tr>`;
     });
     return html;
@@ -2572,11 +2612,11 @@ function renderCampeonResultadoLPF(r){
         ${p.semis.map(m => {
           const nombreEquipo = m.avanza;
           const esCampeon = nombreEquipo === campeon;
-          return `<div class="row ${esCampeon ? 'winner' : ''}"><span>${nombreEquipo}</span></div>`;
+          return `<div class="row ${esCampeon ? 'winner' : ''}"><span>${escudoHTML(nombreEquipo)}${nombreEquipo}</span></div>`;
         }).join("")}
         <div class="leg-detail">${p.final.texto}</div>
       </div>
-      <div class="campeon">▲ ${campeon}</div>
+      <div class="campeon">▲ ${escudoHTML(campeon)}${campeon}</div>
     </div>
   </div>`;
 
