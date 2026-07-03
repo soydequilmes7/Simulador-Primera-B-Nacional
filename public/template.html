@@ -1140,7 +1140,14 @@
   </footer>
 
 <script>
-const API_BASE_URL = "https://simulador-primera-nacional-backend.onrender.com";
+const API_RENDER_URL = "https://simulador-primera-nacional-backend.onrender.com";
+const API_BASE_URL = (() => {
+  const host = window.location.hostname;
+  if (host === "localhost" || host === "127.0.0.1" || host.endsWith(".onrender.com")) {
+    return "";
+  }
+  return API_RENDER_URL;
+})();
 const API_TIMEOUT_MS = 120000;
 
 function apiUrl(path){
