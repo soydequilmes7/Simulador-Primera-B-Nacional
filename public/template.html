@@ -4283,25 +4283,16 @@ function renderCampeonResultadoBMetro(r){
     const red = r.reducido;
     let bracketHTML = "";
     bracketHTML += `<div class="round">
-      <div class="round-title">Cuartos</div>
-      <div class="round-body">${red.cuartos.map(m => matchHTML(m)).join("")}</div>
+      <div class="round-title">Cuartos (ida y vuelta)</div>
+      <div class="round-body">${red.cuartos.map(m => seriesHTML(m)).join("")}</div>
     </div>`;
     bracketHTML += `<div class="round">
-      <div class="round-title">Semifinal</div>
-      <div class="round-body">${red.semis.map(m => matchHTML(m)).join("")}</div>
+      <div class="round-title">Semifinal (ida y vuelta)</div>
+      <div class="round-body">${red.semis.map(m => seriesHTML(m)).join("")}</div>
     </div>`;
     bracketHTML += `<div class="round final-col">
       <div class="round-title">Final (ida y vuelta)</div>
-      <div class="round-body">
-        <div class="match" data-local="${red.semis[0] ? red.semis[0].avanza : ''}" data-visitante="${red.semis[1] ? red.semis[1].avanza : ''}">
-          ${red.semis.map(m => {
-            const nombreEquipo = m.avanza;
-            const esCampeon = nombreEquipo === red.final.campeon;
-            return `<div class="row ${esCampeon ? 'winner' : ''}"><span>${escudoHTML(nombreEquipo)}${nombreEquipo}</span></div>`;
-          }).join("")}
-          <div class="leg-detail">${red.final.detalle}</div>
-        </div>
-      </div>
+      <div class="round-body">${seriesHTML(red.final)}</div>
     </div>`;
 
     bracketBlockHTML = `
