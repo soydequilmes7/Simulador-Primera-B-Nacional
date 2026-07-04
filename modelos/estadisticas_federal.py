@@ -112,6 +112,14 @@ class EstadisticasFederal(Estadisticas):
         # el Monte Carlo, y cada fase pisa equipo.zona/self.fixture).
         self._zonas_primera_fase = {nombre: fila["zona"] for nombre, fila in
                                      self.tabla.set_index("equipo").iterrows()}
+        self._totales_primera_fase = {
+            fila["equipo"]: {
+                "puntos": int(fila["puntos"]),
+                "gf": int(fila["gf"]),
+                "gc": int(fila["gc"]),
+            }
+            for _, fila in self.tabla.iterrows()
+        }
         self._fixture_primera_fase = self.fixture.copy()
 
     def reiniciar_para_nueva_corrida(self) -> None:
@@ -120,7 +128,7 @@ class EstadisticasFederal(Estadisticas):
         completa del torneo cuando se reutiliza la misma instancia (p.
         ej. cada repetición del Monte Carlo)."""
         self._asignar_zonas(self._zonas_primera_fase)
-        self._resetear_puntajes(list(self.equipos.keys()))
+        self._restaurar_puntajes_primera_fase()
         self._reset_fixture(self._fixture_primera_fase)
 
     def crear_equipos_federal(self) -> None:
@@ -144,6 +152,17 @@ class EstadisticasFederal(Estadisticas):
             equipo.puntos = 0
             equipo.goles_favor = 0
             equipo.goles_contra = 0
+
+    def _restaurar_puntajes_primera_fase(self) -> None:
+        """Restaura la tabla real vigente antes de simular los partidos
+        pendientes de la Primera Fase. A diferencia de Segunda Fase y
+        Reválida, la Primera Fase no arranca de cero en cada corrida:
+        debe partir de datos/tabla_federal_a.csv y proyectar lo que falta."""
+        for nombre, totales in self._totales_primera_fase.items():
+            equipo = self.equipos[nombre]
+            equipo.puntos = totales["puntos"]
+            equipo.goles_favor = totales["gf"]
+            equipo.goles_contra = totales["gc"]
 
     def _asignar_zonas(self, mapa_zona: dict[str, str]) -> None:
         """equipo.zona = zona para cada entrada de mapa_zona (nombre ->
