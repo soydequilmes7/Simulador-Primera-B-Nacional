@@ -35,6 +35,7 @@ from actualizar_resultados_lpf import actualizar as actualizar_lpf
 from main_copa import correr_simulacion_copa, simular_hasta_campeon_copa
 from actualizar_resultados_copa import actualizar as actualizar_copa
 from main_bmetro import correr_simulacion_bmetro, simular_hasta_ascenso_bmetro
+from actualizar_resultados_bmetro import actualizar as actualizar_bmetro
 from main_federal import correr_simulacion_federal, simular_hasta_ascenso_federal
 from actualizar_resultados_federal import actualizar as actualizar_federal
 import rutas
@@ -196,6 +197,8 @@ class Handler(SimpleHTTPRequestHandler):
             self._manejar_simular_campeon_copa()
         elif self.path == "/api/simular-bmetro":
             self._manejar_simular_bmetro()
+        elif self.path == "/api/actualizar-bmetro":
+            self._manejar_actualizar_bmetro()
         elif self.path == "/api/simular-campeon-bmetro":
             self._manejar_simular_campeon_bmetro()
         elif self.path == "/api/simular-federal":
@@ -479,6 +482,24 @@ class Handler(SimpleHTTPRequestHandler):
             self._responder_json(200, datos)
         except Exception as e:
             print(f">>> ERROR al simular B Metro: {e}")
+            self._responder_json(500, {"error": str(e)})
+        finally:
+            lock_simulacion.release()
+
+    def _manejar_actualizar_bmetro(self):
+        """Scrapea Promiedos (B Metropolitana) y, si hay partidos nuevos,
+        actualiza fixture/resultados/tabla y re-simula."""
+        n_sims = self._leer_n_sims()
+        if not lock_simulacion.acquire(blocking=False):
+            self._responder_json(409, {"error": "Ya hay una simulación/actualización corriendo, esperá a que termine"})
+            return
+        try:
+            print(f"\n>>> Actualización de B Metro pedida desde la web (Promiedos), {n_sims} corridas si hay partidos nuevos...")
+            resultado = actualizar_bmetro(n_sims=n_sims, correr_simulacion_fn=correr_simulacion_bmetro, imprimir=True)
+            print(">>> Actualización de B Metro terminada.\n")
+            self._responder_json(200, resultado)
+        except Exception as e:
+            print(f">>> ERROR al actualizar B Metro: {e}")
             self._responder_json(500, {"error": str(e)})
         finally:
             lock_simulacion.release()
