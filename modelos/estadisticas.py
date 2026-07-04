@@ -577,8 +577,19 @@ class Estadisticas:
         else:
             ganador = equipo_x if np.random.random() < 0.5 else equipo_y
             detalle_str += " (Penales)"
-            
+
         detalle = {
+            # Nombres de los dos equipos que jugaron la serie. Se agregan
+            # además de "detalle"/"campeon" (que ya se usaban) para que el
+            # frontend pueda armar el bracket sin depender de la ronda
+            # anterior para saber quién jugó -- necesario para B Metro,
+            # donde cuartos y semis también son ida y vuelta (a diferencia
+            # de Nacional/LPF, donde solo la final lo es y ahí sí alcanza
+            # con los "avanza" de semis para saber los dos finalistas).
+            "equipo_x": equipo_x,
+            "equipo_y": equipo_y,
+            "goles_x": goles_x,
+            "goles_y": goles_y,
             "detalle": detalle_str,
             "campeon": ganador
         }

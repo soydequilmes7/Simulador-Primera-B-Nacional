@@ -1,0 +1,1843 @@
+{
+  "liga": "bmetro",
+  "n_simulaciones": 1000,
+  "generado": "2026-07-04 13:41",
+  "tabla": [
+    {
+      "equipo": "Arsenal de Sarandí",
+      "puntos": 82,
+      "gf": 63,
+      "gc": 30,
+      "dg": 33
+    },
+    {
+      "equipo": "Excursionistas",
+      "puntos": 79,
+      "gf": 62,
+      "gc": 27,
+      "dg": 35
+    },
+    {
+      "equipo": "Villa Dalmine",
+      "puntos": 69,
+      "gf": 51,
+      "gc": 28,
+      "dg": 23
+    },
+    {
+      "equipo": "Sportivo Italiano",
+      "puntos": 69,
+      "gf": 49,
+      "gc": 31,
+      "dg": 18
+    },
+    {
+      "equipo": "Talleres RE",
+      "puntos": 65,
+      "gf": 40,
+      "gc": 29,
+      "dg": 11
+    },
+    {
+      "equipo": "Real Pilar",
+      "puntos": 58,
+      "gf": 47,
+      "gc": 47,
+      "dg": 0
+    },
+    {
+      "equipo": "San Martín Burzaco",
+      "puntos": 57,
+      "gf": 47,
+      "gc": 39,
+      "dg": 8
+    },
+    {
+      "equipo": "Comunicaciones",
+      "puntos": 57,
+      "gf": 46,
+      "gc": 45,
+      "dg": 1
+    },
+    {
+      "equipo": "Camioneros",
+      "puntos": 56,
+      "gf": 42,
+      "gc": 44,
+      "dg": -2
+    },
+    {
+      "equipo": "Sportivo Dock Sud",
+      "puntos": 55,
+      "gf": 36,
+      "gc": 33,
+      "dg": 3
+    },
+    {
+      "equipo": "Deportivo Laferrere",
+      "puntos": 55,
+      "gf": 43,
+      "gc": 49,
+      "dg": -6
+    },
+    {
+      "equipo": "Deportivo Armenio",
+      "puntos": 54,
+      "gf": 36,
+      "gc": 49,
+      "dg": -13
+    },
+    {
+      "equipo": "Villa San Carlos",
+      "puntos": 53,
+      "gf": 46,
+      "gc": 41,
+      "dg": 5
+    },
+    {
+      "equipo": "Liniers",
+      "puntos": 52,
+      "gf": 35,
+      "gc": 43,
+      "dg": -8
+    },
+    {
+      "equipo": "Deportivo Merlo",
+      "puntos": 51,
+      "gf": 40,
+      "gc": 56,
+      "dg": -16
+    },
+    {
+      "equipo": "Argentino Quilmes",
+      "puntos": 50,
+      "gf": 43,
+      "gc": 38,
+      "dg": 5
+    },
+    {
+      "equipo": "UAI Urquiza",
+      "puntos": 49,
+      "gf": 26,
+      "gc": 31,
+      "dg": -5
+    },
+    {
+      "equipo": "Argentino Merlo",
+      "puntos": 47,
+      "gf": 32,
+      "gc": 43,
+      "dg": -11
+    },
+    {
+      "equipo": "Brown de Adrogué",
+      "puntos": 41,
+      "gf": 35,
+      "gc": 51,
+      "dg": -16
+    },
+    {
+      "equipo": "Defensores Unidos",
+      "puntos": 36,
+      "gf": 33,
+      "gc": 49,
+      "dg": -16
+    },
+    {
+      "equipo": "Flandria",
+      "puntos": 35,
+      "gf": 28,
+      "gc": 52,
+      "dg": -24
+    },
+    {
+      "equipo": "Ituzaingó",
+      "puntos": 33,
+      "gf": 37,
+      "gc": 62,
+      "dg": -25
+    }
+  ],
+  "tabla_actual": [
+    {
+      "zona": "Unica",
+      "posicion": 1,
+      "equipo": "Excursionistas",
+      "partidos_jugados": 22,
+      "ganados": 13,
+      "empatados": 6,
+      "perdidos": 3,
+      "gf": 33,
+      "gc": 12,
+      "dg": 21,
+      "puntos": 45
+    },
+    {
+      "zona": "Unica",
+      "posicion": 2,
+      "equipo": "Talleres RE",
+      "partidos_jugados": 22,
+      "ganados": 12,
+      "empatados": 6,
+      "perdidos": 4,
+      "gf": 23,
+      "gc": 10,
+      "dg": 13,
+      "puntos": 42
+    },
+    {
+      "zona": "Unica",
+      "posicion": 3,
+      "equipo": "Arsenal de Sarandí",
+      "partidos_jugados": 22,
+      "ganados": 11,
+      "empatados": 8,
+      "perdidos": 3,
+      "gf": 31,
+      "gc": 16,
+      "dg": 15,
+      "puntos": 41
+    },
+    {
+      "zona": "Unica",
+      "posicion": 4,
+      "equipo": "Villa Dalmine",
+      "partidos_jugados": 22,
+      "ganados": 11,
+      "empatados": 7,
+      "perdidos": 4,
+      "gf": 26,
+      "gc": 12,
+      "dg": 14,
+      "puntos": 40
+    },
+    {
+      "zona": "Unica",
+      "posicion": 5,
+      "equipo": "Camioneros",
+      "partidos_jugados": 22,
+      "ganados": 10,
+      "empatados": 8,
+      "perdidos": 4,
+      "gf": 23,
+      "gc": 15,
+      "dg": 8,
+      "puntos": 38
+    },
+    {
+      "zona": "Unica",
+      "posicion": 6,
+      "equipo": "Sportivo Italiano",
+      "partidos_jugados": 22,
+      "ganados": 9,
+      "empatados": 7,
+      "perdidos": 6,
+      "gf": 22,
+      "gc": 19,
+      "dg": 3,
+      "puntos": 34
+    },
+    {
+      "zona": "Unica",
+      "posicion": 7,
+      "equipo": "Real Pilar",
+      "partidos_jugados": 22,
+      "ganados": 9,
+      "empatados": 6,
+      "perdidos": 7,
+      "gf": 24,
+      "gc": 23,
+      "dg": 1,
+      "puntos": 33
+    },
+    {
+      "zona": "Unica",
+      "posicion": 8,
+      "equipo": "Comunicaciones",
+      "partidos_jugados": 22,
+      "ganados": 8,
+      "empatados": 7,
+      "perdidos": 7,
+      "gf": 25,
+      "gc": 23,
+      "dg": 2,
+      "puntos": 31
+    },
+    {
+      "zona": "Unica",
+      "posicion": 9,
+      "equipo": "Deportivo Armenio",
+      "partidos_jugados": 22,
+      "ganados": 9,
+      "empatados": 4,
+      "perdidos": 9,
+      "gf": 25,
+      "gc": 27,
+      "dg": -2,
+      "puntos": 31
+    },
+    {
+      "zona": "Unica",
+      "posicion": 10,
+      "equipo": "Deportivo Merlo",
+      "partidos_jugados": 22,
+      "ganados": 8,
+      "empatados": 7,
+      "perdidos": 7,
+      "gf": 26,
+      "gc": 33,
+      "dg": -7,
+      "puntos": 31
+    },
+    {
+      "zona": "Unica",
+      "posicion": 11,
+      "equipo": "San Martín Burzaco",
+      "partidos_jugados": 22,
+      "ganados": 7,
+      "empatados": 9,
+      "perdidos": 6,
+      "gf": 22,
+      "gc": 19,
+      "dg": 3,
+      "puntos": 30
+    },
+    {
+      "zona": "Unica",
+      "posicion": 12,
+      "equipo": "Argentino Merlo",
+      "partidos_jugados": 22,
+      "ganados": 8,
+      "empatados": 6,
+      "perdidos": 8,
+      "gf": 20,
+      "gc": 20,
+      "dg": 0,
+      "puntos": 30
+    },
+    {
+      "zona": "Unica",
+      "posicion": 13,
+      "equipo": "Deportivo Laferrere",
+      "partidos_jugados": 22,
+      "ganados": 7,
+      "empatados": 7,
+      "perdidos": 8,
+      "gf": 23,
+      "gc": 28,
+      "dg": -5,
+      "puntos": 28
+    },
+    {
+      "zona": "Unica",
+      "posicion": 14,
+      "equipo": "Argentino Quilmes",
+      "partidos_jugados": 22,
+      "ganados": 6,
+      "empatados": 9,
+      "perdidos": 7,
+      "gf": 24,
+      "gc": 22,
+      "dg": 2,
+      "puntos": 27
+    },
+    {
+      "zona": "Unica",
+      "posicion": 15,
+      "equipo": "Liniers",
+      "partidos_jugados": 22,
+      "ganados": 6,
+      "empatados": 7,
+      "perdidos": 9,
+      "gf": 15,
+      "gc": 22,
+      "dg": -7,
+      "puntos": 25
+    },
+    {
+      "zona": "Unica",
+      "posicion": 16,
+      "equipo": "Sportivo Dock Sud",
+      "partidos_jugados": 22,
+      "ganados": 5,
+      "empatados": 9,
+      "perdidos": 8,
+      "gf": 21,
+      "gc": 21,
+      "dg": 0,
+      "puntos": 24
+    },
+    {
+      "zona": "Unica",
+      "posicion": 17,
+      "equipo": "Defensores Unidos",
+      "partidos_jugados": 22,
+      "ganados": 5,
+      "empatados": 8,
+      "perdidos": 9,
+      "gf": 18,
+      "gc": 23,
+      "dg": -5,
+      "puntos": 23
+    },
+    {
+      "zona": "Unica",
+      "posicion": 18,
+      "equipo": "UAI Urquiza",
+      "partidos_jugados": 22,
+      "ganados": 3,
+      "empatados": 13,
+      "perdidos": 6,
+      "gf": 12,
+      "gc": 16,
+      "dg": -4,
+      "puntos": 22
+    },
+    {
+      "zona": "Unica",
+      "posicion": 19,
+      "equipo": "Flandria",
+      "partidos_jugados": 22,
+      "ganados": 6,
+      "empatados": 4,
+      "perdidos": 12,
+      "gf": 17,
+      "gc": 28,
+      "dg": -11,
+      "puntos": 22
+    },
+    {
+      "zona": "Unica",
+      "posicion": 20,
+      "equipo": "Brown de Adrogué",
+      "partidos_jugados": 22,
+      "ganados": 5,
+      "empatados": 7,
+      "perdidos": 10,
+      "gf": 16,
+      "gc": 27,
+      "dg": -11,
+      "puntos": 22
+    },
+    {
+      "zona": "Unica",
+      "posicion": 21,
+      "equipo": "Villa San Carlos",
+      "partidos_jugados": 22,
+      "ganados": 3,
+      "empatados": 9,
+      "perdidos": 10,
+      "gf": 21,
+      "gc": 29,
+      "dg": -8,
+      "puntos": 18
+    },
+    {
+      "zona": "Unica",
+      "posicion": 22,
+      "equipo": "Ituzaingó",
+      "partidos_jugados": 22,
+      "ganados": 1,
+      "empatados": 6,
+      "perdidos": 15,
+      "gf": 16,
+      "gc": 38,
+      "dg": -22,
+      "puntos": 9
+    }
+  ],
+  "puntero_ascenso_directo": "Arsenal de Sarandí",
+  "reducido": {
+    "cuartos": [
+      {
+        "equipo_x": "Excursionistas",
+        "equipo_y": "Camioneros",
+        "goles_x": 1,
+        "goles_y": 3,
+        "detalle": "Ida: 0-2 | Vuelta: 1-1",
+        "campeon": "Camioneros"
+      },
+      {
+        "equipo_x": "Villa Dalmine",
+        "equipo_y": "Comunicaciones",
+        "goles_x": 0,
+        "goles_y": 1,
+        "detalle": "Ida: 0-0 | Vuelta: 1-0",
+        "campeon": "Comunicaciones"
+      },
+      {
+        "equipo_x": "Sportivo Italiano",
+        "equipo_y": "San Martín Burzaco",
+        "goles_x": 1,
+        "goles_y": 2,
+        "detalle": "Ida: 0-1 | Vuelta: 1-1",
+        "campeon": "San Martín Burzaco"
+      },
+      {
+        "equipo_x": "Talleres RE",
+        "equipo_y": "Real Pilar",
+        "goles_x": 2,
+        "goles_y": 2,
+        "detalle": "Ida: 1-0 | Vuelta: 2-1 (Penales)",
+        "campeon": "Real Pilar"
+      }
+    ],
+    "semis": [
+      {
+        "equipo_x": "Real Pilar",
+        "equipo_y": "Camioneros",
+        "goles_x": 1,
+        "goles_y": 1,
+        "detalle": "Ida: 1-1 | Vuelta: 0-0 (Penales)",
+        "campeon": "Camioneros"
+      },
+      {
+        "equipo_x": "San Martín Burzaco",
+        "equipo_y": "Comunicaciones",
+        "goles_x": 4,
+        "goles_y": 2,
+        "detalle": "Ida: 1-0 | Vuelta: 2-3",
+        "campeon": "San Martín Burzaco"
+      }
+    ],
+    "final": {
+      "equipo_x": "Camioneros",
+      "equipo_y": "San Martín Burzaco",
+      "goles_x": 4,
+      "goles_y": 4,
+      "detalle": "Ida: 2-0 | Vuelta: 4-2 (Penales)",
+      "campeon": "Camioneros"
+    }
+  },
+  "campeon_reducido": "Camioneros",
+  "descensos": [
+    "Flandria",
+    "Ituzaingó"
+  ],
+  "monte_carlo": [
+    {
+      "equipo": "Excursionistas",
+      "%puntero": 61.3,
+      "%ascenso_directo": 61.3,
+      "%ascenso_reducido": 9.1,
+      "ascenso_total": 70.4,
+      "descenso": 0.0
+    },
+    {
+      "equipo": "Arsenal de Sarandí",
+      "%puntero": 11.9,
+      "%ascenso_directo": 11.9,
+      "%ascenso_reducido": 17.1,
+      "ascenso_total": 29.0,
+      "descenso": 0.0
+    },
+    {
+      "equipo": "Talleres RE",
+      "%puntero": 14.6,
+      "%ascenso_directo": 14.6,
+      "%ascenso_reducido": 13.9,
+      "ascenso_total": 28.5,
+      "descenso": 0.0
+    },
+    {
+      "equipo": "Villa Dalmine",
+      "%puntero": 9.7,
+      "%ascenso_directo": 9.7,
+      "%ascenso_reducido": 16.6,
+      "ascenso_total": 26.3,
+      "descenso": 0.0
+    },
+    {
+      "equipo": "Camioneros",
+      "%puntero": 2.2,
+      "%ascenso_directo": 2.2,
+      "%ascenso_reducido": 11.7,
+      "ascenso_total": 13.9,
+      "descenso": 0.0
+    },
+    {
+      "equipo": "Sportivo Italiano",
+      "%puntero": 0.2,
+      "%ascenso_directo": 0.2,
+      "%ascenso_reducido": 6.6,
+      "ascenso_total": 6.8,
+      "descenso": 0.0
+    },
+    {
+      "equipo": "Real Pilar",
+      "%puntero": 0.1,
+      "%ascenso_directo": 0.1,
+      "%ascenso_reducido": 4.7,
+      "ascenso_total": 4.8,
+      "descenso": 0.1
+    },
+    {
+      "equipo": "Comunicaciones",
+      "%puntero": 0.0,
+      "%ascenso_directo": 0.0,
+      "%ascenso_reducido": 4.7,
+      "ascenso_total": 4.7,
+      "descenso": 0.0
+    },
+    {
+      "equipo": "San Martín Burzaco",
+      "%puntero": 0.0,
+      "%ascenso_directo": 0.0,
+      "%ascenso_reducido": 4.7,
+      "ascenso_total": 4.7,
+      "descenso": 0.2
+    },
+    {
+      "equipo": "Argentino Merlo",
+      "%puntero": 0.0,
+      "%ascenso_directo": 0.0,
+      "%ascenso_reducido": 3.6,
+      "ascenso_total": 3.6,
+      "descenso": 0.0
+    },
+    {
+      "equipo": "Deportivo Armenio",
+      "%puntero": 0.0,
+      "%ascenso_directo": 0.0,
+      "%ascenso_reducido": 2.1,
+      "ascenso_total": 2.1,
+      "descenso": 0.1
+    },
+    {
+      "equipo": "Argentino Quilmes",
+      "%puntero": 0.0,
+      "%ascenso_directo": 0.0,
+      "%ascenso_reducido": 1.8,
+      "ascenso_total": 1.8,
+      "descenso": 0.4
+    },
+    {
+      "equipo": "Deportivo Merlo",
+      "%puntero": 0.0,
+      "%ascenso_directo": 0.0,
+      "%ascenso_reducido": 1.5,
+      "ascenso_total": 1.5,
+      "descenso": 0.1
+    },
+    {
+      "equipo": "Deportivo Laferrere",
+      "%puntero": 0.0,
+      "%ascenso_directo": 0.0,
+      "%ascenso_reducido": 1.1,
+      "ascenso_total": 1.1,
+      "descenso": 0.8
+    },
+    {
+      "equipo": "Sportivo Dock Sud",
+      "%puntero": 0.0,
+      "%ascenso_directo": 0.0,
+      "%ascenso_reducido": 0.4,
+      "ascenso_total": 0.4,
+      "descenso": 2.0
+    },
+    {
+      "equipo": "Liniers",
+      "%puntero": 0.0,
+      "%ascenso_directo": 0.0,
+      "%ascenso_reducido": 0.3,
+      "ascenso_total": 0.3,
+      "descenso": 3.4
+    },
+    {
+      "equipo": "Defensores Unidos",
+      "%puntero": 0.0,
+      "%ascenso_directo": 0.0,
+      "%ascenso_reducido": 0.1,
+      "ascenso_total": 0.1,
+      "descenso": 7.2
+    },
+    {
+      "equipo": "UAI Urquiza",
+      "%puntero": 0.0,
+      "%ascenso_directo": 0.0,
+      "%ascenso_reducido": 0.0,
+      "ascenso_total": 0.0,
+      "descenso": 8.4
+    },
+    {
+      "equipo": "Flandria",
+      "%puntero": 0.0,
+      "%ascenso_directo": 0.0,
+      "%ascenso_reducido": 0.0,
+      "ascenso_total": 0.0,
+      "descenso": 20.3
+    },
+    {
+      "equipo": "Brown de Adrogué",
+      "%puntero": 0.0,
+      "%ascenso_directo": 0.0,
+      "%ascenso_reducido": 0.0,
+      "ascenso_total": 0.0,
+      "descenso": 16.2
+    },
+    {
+      "equipo": "Villa San Carlos",
+      "%puntero": 0.0,
+      "%ascenso_directo": 0.0,
+      "%ascenso_reducido": 0.0,
+      "ascenso_total": 0.0,
+      "descenso": 43.6
+    },
+    {
+      "equipo": "Ituzaingó",
+      "%puntero": 0.0,
+      "%ascenso_directo": 0.0,
+      "%ascenso_reducido": 0.0,
+      "ascenso_total": 0.0,
+      "descenso": 97.2
+    }
+  ],
+  "tabla_esperada": [
+    {
+      "equipo": "Excursionistas",
+      "puntos_prom": 77.5,
+      "posicion_prom": 1.7
+    },
+    {
+      "equipo": "Talleres RE",
+      "puntos_prom": 71.5,
+      "posicion_prom": 3.2
+    },
+    {
+      "equipo": "Arsenal de Sarandí",
+      "puntos_prom": 70.7,
+      "posicion_prom": 3.4
+    },
+    {
+      "equipo": "Villa Dalmine",
+      "puntos_prom": 69.5,
+      "posicion_prom": 3.8
+    },
+    {
+      "equipo": "Camioneros",
+      "puntos_prom": 66.5,
+      "posicion_prom": 4.9
+    },
+    {
+      "equipo": "Sportivo Italiano",
+      "puntos_prom": 59.8,
+      "posicion_prom": 8.1
+    },
+    {
+      "equipo": "Real Pilar",
+      "puntos_prom": 58.3,
+      "posicion_prom": 9.1
+    },
+    {
+      "equipo": "Comunicaciones",
+      "puntos_prom": 57.4,
+      "posicion_prom": 9.5
+    },
+    {
+      "equipo": "San Martín Burzaco",
+      "puntos_prom": 56.4,
+      "posicion_prom": 10.0
+    },
+    {
+      "equipo": "Argentino Merlo",
+      "puntos_prom": 55.2,
+      "posicion_prom": 10.8
+    },
+    {
+      "equipo": "Deportivo Armenio",
+      "puntos_prom": 55.0,
+      "posicion_prom": 11.1
+    },
+    {
+      "equipo": "Deportivo Merlo",
+      "puntos_prom": 54.7,
+      "posicion_prom": 11.5
+    },
+    {
+      "equipo": "Argentino Quilmes",
+      "puntos_prom": 52.5,
+      "posicion_prom": 12.4
+    },
+    {
+      "equipo": "Deportivo Laferrere",
+      "puntos_prom": 52.2,
+      "posicion_prom": 13.0
+    },
+    {
+      "equipo": "Sportivo Dock Sud",
+      "puntos_prom": 49.4,
+      "posicion_prom": 14.5
+    },
+    {
+      "equipo": "Liniers",
+      "puntos_prom": 48.0,
+      "posicion_prom": 15.7
+    },
+    {
+      "equipo": "Defensores Unidos",
+      "puntos_prom": 46.6,
+      "posicion_prom": 16.5
+    },
+    {
+      "equipo": "UAI Urquiza",
+      "puntos_prom": 46.0,
+      "posicion_prom": 16.7
+    },
+    {
+      "equipo": "Brown de Adrogué",
+      "puntos_prom": 44.4,
+      "posicion_prom": 17.8
+    },
+    {
+      "equipo": "Flandria",
+      "puntos_prom": 43.6,
+      "posicion_prom": 18.2
+    },
+    {
+      "equipo": "Villa San Carlos",
+      "puntos_prom": 40.1,
+      "posicion_prom": 19.5
+    },
+    {
+      "equipo": "Ituzaingó",
+      "puntos_prom": 29.2,
+      "posicion_prom": 21.9
+    }
+  ],
+  "rachas": {
+    "Excursionistas": [
+      {
+        "gf": 2,
+        "gc": 0,
+        "puntos": 3,
+        "fecha": null,
+        "jornada": 18,
+        "rival": "Villa San Carlos",
+        "condicion": "visitante"
+      },
+      {
+        "gf": 2,
+        "gc": 0,
+        "puntos": 3,
+        "fecha": null,
+        "jornada": 19,
+        "rival": "San Martín Burzaco",
+        "condicion": "local"
+      },
+      {
+        "gf": 1,
+        "gc": 0,
+        "puntos": 3,
+        "fecha": null,
+        "jornada": 20,
+        "rival": "Sportivo Italiano",
+        "condicion": "visitante"
+      },
+      {
+        "gf": 1,
+        "gc": 1,
+        "puntos": 1,
+        "fecha": null,
+        "jornada": 21,
+        "rival": "Camioneros",
+        "condicion": "local"
+      },
+      {
+        "gf": 5,
+        "gc": 0,
+        "puntos": 3,
+        "fecha": null,
+        "jornada": 22,
+        "rival": "Deportivo Merlo",
+        "condicion": "local"
+      }
+    ],
+    "Talleres RE": [
+      {
+        "gf": 4,
+        "gc": 1,
+        "puntos": 3,
+        "fecha": null,
+        "jornada": 18,
+        "rival": "Camioneros",
+        "condicion": "visitante"
+      },
+      {
+        "gf": 2,
+        "gc": 0,
+        "puntos": 3,
+        "fecha": null,
+        "jornada": 19,
+        "rival": "Deportivo Merlo",
+        "condicion": "local"
+      },
+      {
+        "gf": 1,
+        "gc": 1,
+        "puntos": 1,
+        "fecha": null,
+        "jornada": 20,
+        "rival": "Sportivo Dock Sud",
+        "condicion": "visitante"
+      },
+      {
+        "gf": 0,
+        "gc": 0,
+        "puntos": 1,
+        "fecha": null,
+        "jornada": 21,
+        "rival": "Comunicaciones",
+        "condicion": "local"
+      },
+      {
+        "gf": 1,
+        "gc": 0,
+        "puntos": 3,
+        "fecha": null,
+        "jornada": 22,
+        "rival": "Defensores Unidos",
+        "condicion": "local"
+      }
+    ],
+    "Arsenal de Sarandí": [
+      {
+        "gf": 0,
+        "gc": 2,
+        "puntos": 0,
+        "fecha": null,
+        "jornada": 18,
+        "rival": "San Martín Burzaco",
+        "condicion": "visitante"
+      },
+      {
+        "gf": 1,
+        "gc": 3,
+        "puntos": 0,
+        "fecha": null,
+        "jornada": 19,
+        "rival": "Sportivo Italiano",
+        "condicion": "local"
+      },
+      {
+        "gf": 2,
+        "gc": 1,
+        "puntos": 3,
+        "fecha": null,
+        "jornada": 20,
+        "rival": "Camioneros",
+        "condicion": "visitante"
+      },
+      {
+        "gf": 4,
+        "gc": 2,
+        "puntos": 3,
+        "fecha": null,
+        "jornada": 21,
+        "rival": "Deportivo Merlo",
+        "condicion": "local"
+      },
+      {
+        "gf": 0,
+        "gc": 0,
+        "puntos": 1,
+        "fecha": null,
+        "jornada": 22,
+        "rival": "Sportivo Dock Sud",
+        "condicion": "local"
+      }
+    ],
+    "Villa Dalmine": [
+      {
+        "gf": 0,
+        "gc": 1,
+        "puntos": 0,
+        "fecha": null,
+        "jornada": 18,
+        "rival": "Liniers",
+        "condicion": "visitante"
+      },
+      {
+        "gf": 0,
+        "gc": 0,
+        "puntos": 1,
+        "fecha": null,
+        "jornada": 19,
+        "rival": "Villa San Carlos",
+        "condicion": "local"
+      },
+      {
+        "gf": 2,
+        "gc": 0,
+        "puntos": 3,
+        "fecha": null,
+        "jornada": 20,
+        "rival": "San Martín Burzaco",
+        "condicion": "visitante"
+      },
+      {
+        "gf": 2,
+        "gc": 1,
+        "puntos": 3,
+        "fecha": null,
+        "jornada": 21,
+        "rival": "Sportivo Italiano",
+        "condicion": "local"
+      },
+      {
+        "gf": 0,
+        "gc": 1,
+        "puntos": 0,
+        "fecha": null,
+        "jornada": 22,
+        "rival": "Camioneros",
+        "condicion": "local"
+      }
+    ],
+    "Camioneros": [
+      {
+        "gf": 1,
+        "gc": 4,
+        "puntos": 0,
+        "fecha": null,
+        "jornada": 18,
+        "rival": "Talleres RE",
+        "condicion": "local"
+      },
+      {
+        "gf": 0,
+        "gc": 0,
+        "puntos": 1,
+        "fecha": null,
+        "jornada": 19,
+        "rival": "Argentino Merlo",
+        "condicion": "visitante"
+      },
+      {
+        "gf": 1,
+        "gc": 2,
+        "puntos": 0,
+        "fecha": null,
+        "jornada": 20,
+        "rival": "Arsenal de Sarandí",
+        "condicion": "local"
+      },
+      {
+        "gf": 1,
+        "gc": 1,
+        "puntos": 1,
+        "fecha": null,
+        "jornada": 21,
+        "rival": "Excursionistas",
+        "condicion": "visitante"
+      },
+      {
+        "gf": 1,
+        "gc": 0,
+        "puntos": 3,
+        "fecha": null,
+        "jornada": 22,
+        "rival": "Villa Dalmine",
+        "condicion": "visitante"
+      }
+    ],
+    "Sportivo Italiano": [
+      {
+        "gf": 0,
+        "gc": 2,
+        "puntos": 0,
+        "fecha": null,
+        "jornada": 18,
+        "rival": "Argentino Merlo",
+        "condicion": "local"
+      },
+      {
+        "gf": 3,
+        "gc": 1,
+        "puntos": 3,
+        "fecha": null,
+        "jornada": 19,
+        "rival": "Arsenal de Sarandí",
+        "condicion": "visitante"
+      },
+      {
+        "gf": 0,
+        "gc": 1,
+        "puntos": 0,
+        "fecha": null,
+        "jornada": 20,
+        "rival": "Excursionistas",
+        "condicion": "local"
+      },
+      {
+        "gf": 1,
+        "gc": 2,
+        "puntos": 0,
+        "fecha": null,
+        "jornada": 21,
+        "rival": "Villa Dalmine",
+        "condicion": "visitante"
+      },
+      {
+        "gf": 0,
+        "gc": 0,
+        "puntos": 1,
+        "fecha": null,
+        "jornada": 22,
+        "rival": "UAI Urquiza",
+        "condicion": "visitante"
+      }
+    ],
+    "Real Pilar": [
+      {
+        "gf": 2,
+        "gc": 1,
+        "puntos": 3,
+        "fecha": null,
+        "jornada": 18,
+        "rival": "UAI Urquiza",
+        "condicion": "local"
+      },
+      {
+        "gf": 0,
+        "gc": 2,
+        "puntos": 0,
+        "fecha": null,
+        "jornada": 19,
+        "rival": "Ituzaingó",
+        "condicion": "visitante"
+      },
+      {
+        "gf": 1,
+        "gc": 0,
+        "puntos": 3,
+        "fecha": null,
+        "jornada": 20,
+        "rival": "Liniers",
+        "condicion": "visitante"
+      },
+      {
+        "gf": 1,
+        "gc": 1,
+        "puntos": 1,
+        "fecha": null,
+        "jornada": 21,
+        "rival": "Villa San Carlos",
+        "condicion": "local"
+      },
+      {
+        "gf": 0,
+        "gc": 0,
+        "puntos": 1,
+        "fecha": null,
+        "jornada": 22,
+        "rival": "San Martín Burzaco",
+        "condicion": "local"
+      }
+    ],
+    "Comunicaciones": [
+      {
+        "gf": 0,
+        "gc": 1,
+        "puntos": 0,
+        "fecha": null,
+        "jornada": 18,
+        "rival": "Deportivo Armenio",
+        "condicion": "local"
+      },
+      {
+        "gf": 2,
+        "gc": 1,
+        "puntos": 3,
+        "fecha": null,
+        "jornada": 19,
+        "rival": "Brown de Adrogué",
+        "condicion": "visitante"
+      },
+      {
+        "gf": 3,
+        "gc": 3,
+        "puntos": 1,
+        "fecha": null,
+        "jornada": 20,
+        "rival": "Deportivo Laferrere",
+        "condicion": "local"
+      },
+      {
+        "gf": 0,
+        "gc": 0,
+        "puntos": 1,
+        "fecha": null,
+        "jornada": 21,
+        "rival": "Talleres RE",
+        "condicion": "visitante"
+      },
+      {
+        "gf": 2,
+        "gc": 3,
+        "puntos": 0,
+        "fecha": null,
+        "jornada": 22,
+        "rival": "Argentino Merlo",
+        "condicion": "visitante"
+      }
+    ],
+    "Deportivo Armenio": [
+      {
+        "gf": 1,
+        "gc": 0,
+        "puntos": 3,
+        "fecha": null,
+        "jornada": 18,
+        "rival": "Comunicaciones",
+        "condicion": "visitante"
+      },
+      {
+        "gf": 3,
+        "gc": 0,
+        "puntos": 3,
+        "fecha": null,
+        "jornada": 19,
+        "rival": "Defensores Unidos",
+        "condicion": "local"
+      },
+      {
+        "gf": 1,
+        "gc": 1,
+        "puntos": 1,
+        "fecha": null,
+        "jornada": 20,
+        "rival": "Argentino Quilmes",
+        "condicion": "visitante"
+      },
+      {
+        "gf": 2,
+        "gc": 1,
+        "puntos": 3,
+        "fecha": null,
+        "jornada": 21,
+        "rival": "Flandria",
+        "condicion": "local"
+      },
+      {
+        "gf": 2,
+        "gc": 1,
+        "puntos": 3,
+        "fecha": null,
+        "jornada": 22,
+        "rival": "Ituzaingó",
+        "condicion": "local"
+      }
+    ],
+    "Deportivo Merlo": [
+      {
+        "gf": 2,
+        "gc": 1,
+        "puntos": 3,
+        "fecha": null,
+        "jornada": 18,
+        "rival": "Deportivo Laferrere",
+        "condicion": "local"
+      },
+      {
+        "gf": 0,
+        "gc": 2,
+        "puntos": 0,
+        "fecha": null,
+        "jornada": 19,
+        "rival": "Talleres RE",
+        "condicion": "visitante"
+      },
+      {
+        "gf": 2,
+        "gc": 2,
+        "puntos": 1,
+        "fecha": null,
+        "jornada": 20,
+        "rival": "Argentino Merlo",
+        "condicion": "local"
+      },
+      {
+        "gf": 2,
+        "gc": 4,
+        "puntos": 0,
+        "fecha": null,
+        "jornada": 21,
+        "rival": "Arsenal de Sarandí",
+        "condicion": "visitante"
+      },
+      {
+        "gf": 0,
+        "gc": 5,
+        "puntos": 0,
+        "fecha": null,
+        "jornada": 22,
+        "rival": "Excursionistas",
+        "condicion": "visitante"
+      }
+    ],
+    "San Martín Burzaco": [
+      {
+        "gf": 2,
+        "gc": 0,
+        "puntos": 3,
+        "fecha": null,
+        "jornada": 18,
+        "rival": "Arsenal de Sarandí",
+        "condicion": "local"
+      },
+      {
+        "gf": 0,
+        "gc": 2,
+        "puntos": 0,
+        "fecha": null,
+        "jornada": 19,
+        "rival": "Excursionistas",
+        "condicion": "visitante"
+      },
+      {
+        "gf": 0,
+        "gc": 2,
+        "puntos": 0,
+        "fecha": null,
+        "jornada": 20,
+        "rival": "Villa Dalmine",
+        "condicion": "local"
+      },
+      {
+        "gf": 0,
+        "gc": 0,
+        "puntos": 1,
+        "fecha": null,
+        "jornada": 21,
+        "rival": "UAI Urquiza",
+        "condicion": "visitante"
+      },
+      {
+        "gf": 0,
+        "gc": 0,
+        "puntos": 1,
+        "fecha": null,
+        "jornada": 22,
+        "rival": "Real Pilar",
+        "condicion": "visitante"
+      }
+    ],
+    "Argentino Merlo": [
+      {
+        "gf": 2,
+        "gc": 0,
+        "puntos": 3,
+        "fecha": null,
+        "jornada": 18,
+        "rival": "Sportivo Italiano",
+        "condicion": "visitante"
+      },
+      {
+        "gf": 0,
+        "gc": 0,
+        "puntos": 1,
+        "fecha": null,
+        "jornada": 19,
+        "rival": "Camioneros",
+        "condicion": "local"
+      },
+      {
+        "gf": 2,
+        "gc": 2,
+        "puntos": 1,
+        "fecha": null,
+        "jornada": 20,
+        "rival": "Deportivo Merlo",
+        "condicion": "visitante"
+      },
+      {
+        "gf": 3,
+        "gc": 1,
+        "puntos": 3,
+        "fecha": null,
+        "jornada": 21,
+        "rival": "Sportivo Dock Sud",
+        "condicion": "local"
+      },
+      {
+        "gf": 3,
+        "gc": 2,
+        "puntos": 3,
+        "fecha": null,
+        "jornada": 22,
+        "rival": "Comunicaciones",
+        "condicion": "local"
+      }
+    ],
+    "Deportivo Laferrere": [
+      {
+        "gf": 1,
+        "gc": 2,
+        "puntos": 0,
+        "fecha": null,
+        "jornada": 18,
+        "rival": "Deportivo Merlo",
+        "condicion": "visitante"
+      },
+      {
+        "gf": 2,
+        "gc": 1,
+        "puntos": 3,
+        "fecha": null,
+        "jornada": 19,
+        "rival": "Sportivo Dock Sud",
+        "condicion": "local"
+      },
+      {
+        "gf": 3,
+        "gc": 3,
+        "puntos": 1,
+        "fecha": null,
+        "jornada": 20,
+        "rival": "Comunicaciones",
+        "condicion": "visitante"
+      },
+      {
+        "gf": 1,
+        "gc": 0,
+        "puntos": 3,
+        "fecha": null,
+        "jornada": 21,
+        "rival": "Defensores Unidos",
+        "condicion": "local"
+      },
+      {
+        "gf": 1,
+        "gc": 1,
+        "puntos": 1,
+        "fecha": null,
+        "jornada": 22,
+        "rival": "Argentino Quilmes",
+        "condicion": "local"
+      }
+    ],
+    "Argentino Quilmes": [
+      {
+        "gf": 2,
+        "gc": 0,
+        "puntos": 3,
+        "fecha": null,
+        "jornada": 18,
+        "rival": "Ituzaingó",
+        "condicion": "local"
+      },
+      {
+        "gf": 1,
+        "gc": 0,
+        "puntos": 3,
+        "fecha": null,
+        "jornada": 19,
+        "rival": "Flandria",
+        "condicion": "visitante"
+      },
+      {
+        "gf": 1,
+        "gc": 1,
+        "puntos": 1,
+        "fecha": null,
+        "jornada": 20,
+        "rival": "Deportivo Armenio",
+        "condicion": "local"
+      },
+      {
+        "gf": 4,
+        "gc": 2,
+        "puntos": 3,
+        "fecha": null,
+        "jornada": 21,
+        "rival": "Brown de Adrogué",
+        "condicion": "visitante"
+      },
+      {
+        "gf": 1,
+        "gc": 1,
+        "puntos": 1,
+        "fecha": null,
+        "jornada": 22,
+        "rival": "Deportivo Laferrere",
+        "condicion": "visitante"
+      }
+    ],
+    "Liniers": [
+      {
+        "gf": 1,
+        "gc": 0,
+        "puntos": 3,
+        "fecha": null,
+        "jornada": 18,
+        "rival": "Villa Dalmine",
+        "condicion": "local"
+      },
+      {
+        "gf": 1,
+        "gc": 2,
+        "puntos": 0,
+        "fecha": null,
+        "jornada": 19,
+        "rival": "UAI Urquiza",
+        "condicion": "visitante"
+      },
+      {
+        "gf": 0,
+        "gc": 1,
+        "puntos": 0,
+        "fecha": null,
+        "jornada": 20,
+        "rival": "Real Pilar",
+        "condicion": "local"
+      },
+      {
+        "gf": 1,
+        "gc": 1,
+        "puntos": 1,
+        "fecha": null,
+        "jornada": 21,
+        "rival": "Ituzaingó",
+        "condicion": "visitante"
+      },
+      {
+        "gf": 1,
+        "gc": 1,
+        "puntos": 1,
+        "fecha": null,
+        "jornada": 22,
+        "rival": "Villa San Carlos",
+        "condicion": "local"
+      }
+    ],
+    "Sportivo Dock Sud": [
+      {
+        "gf": 0,
+        "gc": 1,
+        "puntos": 0,
+        "fecha": null,
+        "jornada": 18,
+        "rival": "Brown de Adrogué",
+        "condicion": "local"
+      },
+      {
+        "gf": 1,
+        "gc": 2,
+        "puntos": 0,
+        "fecha": null,
+        "jornada": 19,
+        "rival": "Deportivo Laferrere",
+        "condicion": "visitante"
+      },
+      {
+        "gf": 1,
+        "gc": 1,
+        "puntos": 1,
+        "fecha": null,
+        "jornada": 20,
+        "rival": "Talleres RE",
+        "condicion": "local"
+      },
+      {
+        "gf": 1,
+        "gc": 3,
+        "puntos": 0,
+        "fecha": null,
+        "jornada": 21,
+        "rival": "Argentino Merlo",
+        "condicion": "visitante"
+      },
+      {
+        "gf": 0,
+        "gc": 0,
+        "puntos": 1,
+        "fecha": null,
+        "jornada": 22,
+        "rival": "Arsenal de Sarandí",
+        "condicion": "visitante"
+      }
+    ],
+    "Defensores Unidos": [
+      {
+        "gf": 1,
+        "gc": 0,
+        "puntos": 3,
+        "fecha": null,
+        "jornada": 18,
+        "rival": "Flandria",
+        "condicion": "local"
+      },
+      {
+        "gf": 0,
+        "gc": 3,
+        "puntos": 0,
+        "fecha": null,
+        "jornada": 19,
+        "rival": "Deportivo Armenio",
+        "condicion": "visitante"
+      },
+      {
+        "gf": 1,
+        "gc": 1,
+        "puntos": 1,
+        "fecha": null,
+        "jornada": 20,
+        "rival": "Brown de Adrogué",
+        "condicion": "local"
+      },
+      {
+        "gf": 0,
+        "gc": 1,
+        "puntos": 0,
+        "fecha": null,
+        "jornada": 21,
+        "rival": "Deportivo Laferrere",
+        "condicion": "visitante"
+      },
+      {
+        "gf": 0,
+        "gc": 1,
+        "puntos": 0,
+        "fecha": null,
+        "jornada": 22,
+        "rival": "Talleres RE",
+        "condicion": "visitante"
+      }
+    ],
+    "UAI Urquiza": [
+      {
+        "gf": 1,
+        "gc": 2,
+        "puntos": 0,
+        "fecha": null,
+        "jornada": 18,
+        "rival": "Real Pilar",
+        "condicion": "visitante"
+      },
+      {
+        "gf": 2,
+        "gc": 1,
+        "puntos": 3,
+        "fecha": null,
+        "jornada": 19,
+        "rival": "Liniers",
+        "condicion": "local"
+      },
+      {
+        "gf": 0,
+        "gc": 0,
+        "puntos": 1,
+        "fecha": null,
+        "jornada": 20,
+        "rival": "Villa San Carlos",
+        "condicion": "visitante"
+      },
+      {
+        "gf": 0,
+        "gc": 0,
+        "puntos": 1,
+        "fecha": null,
+        "jornada": 21,
+        "rival": "San Martín Burzaco",
+        "condicion": "local"
+      },
+      {
+        "gf": 0,
+        "gc": 0,
+        "puntos": 1,
+        "fecha": null,
+        "jornada": 22,
+        "rival": "Sportivo Italiano",
+        "condicion": "local"
+      }
+    ],
+    "Flandria": [
+      {
+        "gf": 0,
+        "gc": 1,
+        "puntos": 0,
+        "fecha": null,
+        "jornada": 18,
+        "rival": "Defensores Unidos",
+        "condicion": "visitante"
+      },
+      {
+        "gf": 0,
+        "gc": 1,
+        "puntos": 0,
+        "fecha": null,
+        "jornada": 19,
+        "rival": "Argentino Quilmes",
+        "condicion": "local"
+      },
+      {
+        "gf": 3,
+        "gc": 2,
+        "puntos": 3,
+        "fecha": null,
+        "jornada": 20,
+        "rival": "Ituzaingó",
+        "condicion": "local"
+      },
+      {
+        "gf": 1,
+        "gc": 2,
+        "puntos": 0,
+        "fecha": null,
+        "jornada": 21,
+        "rival": "Deportivo Armenio",
+        "condicion": "visitante"
+      },
+      {
+        "gf": 0,
+        "gc": 2,
+        "puntos": 0,
+        "fecha": null,
+        "jornada": 22,
+        "rival": "Brown de Adrogué",
+        "condicion": "visitante"
+      }
+    ],
+    "Brown de Adrogué": [
+      {
+        "gf": 1,
+        "gc": 0,
+        "puntos": 3,
+        "fecha": null,
+        "jornada": 18,
+        "rival": "Sportivo Dock Sud",
+        "condicion": "visitante"
+      },
+      {
+        "gf": 1,
+        "gc": 2,
+        "puntos": 0,
+        "fecha": null,
+        "jornada": 19,
+        "rival": "Comunicaciones",
+        "condicion": "local"
+      },
+      {
+        "gf": 1,
+        "gc": 1,
+        "puntos": 1,
+        "fecha": null,
+        "jornada": 20,
+        "rival": "Defensores Unidos",
+        "condicion": "visitante"
+      },
+      {
+        "gf": 2,
+        "gc": 4,
+        "puntos": 0,
+        "fecha": null,
+        "jornada": 21,
+        "rival": "Argentino Quilmes",
+        "condicion": "local"
+      },
+      {
+        "gf": 2,
+        "gc": 0,
+        "puntos": 3,
+        "fecha": null,
+        "jornada": 22,
+        "rival": "Flandria",
+        "condicion": "local"
+      }
+    ],
+    "Villa San Carlos": [
+      {
+        "gf": 0,
+        "gc": 2,
+        "puntos": 0,
+        "fecha": null,
+        "jornada": 18,
+        "rival": "Excursionistas",
+        "condicion": "local"
+      },
+      {
+        "gf": 0,
+        "gc": 0,
+        "puntos": 1,
+        "fecha": null,
+        "jornada": 19,
+        "rival": "Villa Dalmine",
+        "condicion": "visitante"
+      },
+      {
+        "gf": 0,
+        "gc": 0,
+        "puntos": 1,
+        "fecha": null,
+        "jornada": 20,
+        "rival": "UAI Urquiza",
+        "condicion": "local"
+      },
+      {
+        "gf": 1,
+        "gc": 1,
+        "puntos": 1,
+        "fecha": null,
+        "jornada": 21,
+        "rival": "Real Pilar",
+        "condicion": "visitante"
+      },
+      {
+        "gf": 1,
+        "gc": 1,
+        "puntos": 1,
+        "fecha": null,
+        "jornada": 22,
+        "rival": "Liniers",
+        "condicion": "visitante"
+      }
+    ],
+    "Ituzaingó": [
+      {
+        "gf": 0,
+        "gc": 2,
+        "puntos": 0,
+        "fecha": null,
+        "jornada": 18,
+        "rival": "Argentino Quilmes",
+        "condicion": "visitante"
+      },
+      {
+        "gf": 2,
+        "gc": 0,
+        "puntos": 3,
+        "fecha": null,
+        "jornada": 19,
+        "rival": "Real Pilar",
+        "condicion": "local"
+      },
+      {
+        "gf": 2,
+        "gc": 3,
+        "puntos": 0,
+        "fecha": null,
+        "jornada": 20,
+        "rival": "Flandria",
+        "condicion": "visitante"
+      },
+      {
+        "gf": 1,
+        "gc": 1,
+        "puntos": 1,
+        "fecha": null,
+        "jornada": 21,
+        "rival": "Liniers",
+        "condicion": "local"
+      },
+      {
+        "gf": 1,
+        "gc": 2,
+        "puntos": 0,
+        "fecha": null,
+        "jornada": 22,
+        "rival": "Deportivo Armenio",
+        "condicion": "visitante"
+      }
+    ]
+  }
+}

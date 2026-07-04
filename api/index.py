@@ -51,6 +51,8 @@ PYSIM_SOURCE_FILES = [
     "modelos/estadisticas_lpf.py",
     "main_copa.py",
     "modelos/estadisticas_copa.py",
+    "main_bmetro.py",
+    "modelos/estadisticas_bmetro.py",
 ]
 # El código fuente no cambia mientras el proceso está corriendo, así que se
 # lee y cachea una sola vez.
@@ -142,6 +144,7 @@ class ReadWriteLock:
 _lock_nacional = ReadWriteLock()
 _lock_lpf = ReadWriteLock()
 _lock_copa = ReadWriteLock()
+_lock_bmetro = ReadWriteLock()
 
 
 class SimularBody(BaseModel):
@@ -153,6 +156,10 @@ class SimularLPFBody(BaseModel):
 
 
 class SimularCopaBody(BaseModel):
+    n_sims: int = N_SIMULACIONES
+
+
+class SimularBmetroBody(BaseModel):
     n_sims: int = N_SIMULACIONES
 
 
@@ -293,6 +300,33 @@ def datos_lpf():
         return JSONResponse(status_code=500, content={"error": str(e)})
     finally:
         _lock_lpf.release_read()
+
+
+@app.get("/api/datos-bmetro")
+def datos_bmetro():
+    """Igual que /api/datos-nacional pero con los CSV de B Metropolitana
+    (tabla, fixture, resultados), para que el simulador en el navegador
+    (Web Worker con Pyodide) arranque con los mismos datos que usaría el
+    backend."""
+    ocupado = _adquirir_lectura(
+        _lock_bmetro,
+        "Hay una actualización de B Metropolitana en curso. Esperá unos segundos y probá de nuevo.",
+    )
+    if ocupado:
+        return ocupado
+    try:
+        datos_dir = rutas.datos_dir()
+        archivos = {}
+        for nombre in ["tabla_bmetro.csv", "fixture_bmetro.csv", "resultados_bmetro.csv"]:
+            ruta = datos_dir / nombre
+            if not ruta.exists():
+                return JSONResponse(status_code=500, content={"error": f"Falta {nombre} en datos/"})
+            archivos[nombre] = ruta.read_text(encoding="utf-8")
+        return {"files": archivos}
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
+    finally:
+        _lock_bmetro.release_read()
 
 
 @app.get("/")
@@ -485,6 +519,57 @@ def simular_campeon_copa_endpoint(body: SimularCampeonBody):
         return JSONResponse(status_code=500, content={"error": str(e)})
     finally:
         _lock_copa.release_read()
+
+
+@app.post("/api/simular-bmetro")
+def simular_bmetro_endpoint(body: SimularBmetroBody = SimularBmetroBody()):
+    """Corre la simulación completa de B Metropolitana (temporada regular
+    + ascenso directo + Torneo Reducido + Monte Carlo) y devuelve el
+    resultado directo en la respuesta."""
+    n_sims = _clamp_n_sims(body.n_sims)
+
+    ocupado = _adquirir_lectura(
+        _lock_bmetro,
+        "Hay una actualización de B Metropolitana en curso. Esperá unos segundos y probá de nuevo.",
+    )
+    if ocupado:
+        return ocupado
+    try:
+        datos = pysim_dispatch.simular_bmetro(n_sims)
+        return datos
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
+    finally:
+        _lock_bmetro.release_read()
+
+
+@app.post("/api/simular-campeon-bmetro")
+def simular_campeon_bmetro_endpoint(body: SimularCampeonBody):
+    """Corre simular_hasta_ascenso_bmetro() del equipo pedido y devuelve
+    esa temporada completa: tabla única y, si le tocó vía Reducido, el
+    bracket (cuartos/semis/final)."""
+    equipo_objetivo = body.equipo.strip()
+    if not equipo_objetivo:
+        return JSONResponse(status_code=400, content={"error": "Falta indicar el equipo"})
+
+    max_intentos = _clamp_max_intentos(body.max_intentos)
+
+    ocupado = _adquirir_lectura(
+        _lock_bmetro,
+        "Hay una actualización de B Metropolitana en curso. Esperá unos segundos y probá de nuevo.",
+    )
+    if ocupado:
+        return ocupado
+    try:
+        return pysim_dispatch.simular_campeon_bmetro(equipo_objetivo, max_intentos)
+    except ValueError as e:
+        # simular_hasta_ascenso_bmetro levanta ValueError si el nombre de
+        # equipo no existe (con sugerencias si hay coincidencias parciales)
+        return JSONResponse(status_code=400, content={"error": str(e)})
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
+    finally:
+        _lock_bmetro.release_read()
 
 
 @app.post("/api/actualizar")

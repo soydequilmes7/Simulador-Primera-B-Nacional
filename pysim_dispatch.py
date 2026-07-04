@@ -2,25 +2,31 @@
 """
 pysim_dispatch.py
 
-Punto único de entrada a las 4 simulaciones "livianas" (no escriben a
-disco): correr_simulacion, correr_simulacion_lpf, simular_hasta_campeon y
-simular_hasta_campeon_lpf. Arma el mismo dict de respuesta que antes
-armaba cada endpoint de api/index.py, para que:
+Punto único de entrada a las simulaciones "livianas" (no escriben a
+disco) de las 4 ligas: correr_simulacion / simular_hasta_campeon
+(Nacional), correr_simulacion_lpf / simular_hasta_campeon_lpf (LPF),
+correr_simulacion_copa / simular_hasta_campeon_copa (Copa) y
+correr_simulacion_bmetro / simular_hasta_ascenso_bmetro (B Metro). Arma
+el mismo dict de respuesta que antes armaba cada endpoint de
+api/index.py, para que:
 
 - api/index.py lo use en /api/simular, /api/simular-lpf,
-  /api/simular-campeon y /api/simular-campeon-lpf.
+  /api/simular-campeon, /api/simular-campeon-lpf, /api/simular-copa,
+  /api/simular-campeon-copa, /api/simular-bmetro y
+  /api/simular-campeon-bmetro.
 - El Web Worker con Pyodide (public/js/sim-worker.js) llame exactamente
   las mismas funciones dentro del navegador, sin reimplementar el
   wrapping en JS.
 
-No hace I/O propio: delega todo a main.py / main_lpf.py, que ya leen los
-CSV vía rutas.datos_dir().
+No hace I/O propio: delega todo a main.py / main_lpf.py / main_copa.py /
+main_bmetro.py, que ya leen los CSV vía rutas.datos_dir().
 """
 import json
 
 from main import correr_simulacion, simular_hasta_campeon
 from main_lpf import correr_simulacion_lpf, simular_hasta_campeon_lpf
 from main_copa import correr_simulacion_copa, simular_hasta_campeon_copa
+from main_bmetro import correr_simulacion_bmetro, simular_hasta_ascenso_bmetro
 
 
 def simular(n_sims):
@@ -56,6 +62,15 @@ def simular_campeon_lpf(equipo_objetivo, max_intentos):
     return _envolver_hasta_campeon(resultado, equipo_objetivo, max_intentos)
 
 
+def simular_bmetro(n_sims):
+    return correr_simulacion_bmetro(n_sims=n_sims, imprimir=False, guardar_json=False)
+
+
+def simular_campeon_bmetro(equipo_objetivo, max_intentos):
+    resultado = simular_hasta_ascenso_bmetro(equipo_objetivo, max_intentos=max_intentos, imprimir=False)
+    return _envolver_hasta_campeon(resultado, equipo_objetivo, max_intentos)
+
+
 _TAREAS = {
     "simular": lambda kwargs: simular(kwargs["n_sims"]),
     "simular-lpf": lambda kwargs: simular_lpf(kwargs["n_sims"]),
@@ -63,6 +78,8 @@ _TAREAS = {
     "simular-campeon-lpf": lambda kwargs: simular_campeon_lpf(kwargs["equipo"], kwargs["max_intentos"]),
     "simular-copa": lambda kwargs: simular_copa(kwargs["n_sims"]),
     "simular-campeon-copa": lambda kwargs: simular_campeon_copa(kwargs["equipo"], kwargs["max_intentos"]),
+    "simular-bmetro": lambda kwargs: simular_bmetro(kwargs["n_sims"]),
+    "simular-campeon-bmetro": lambda kwargs: simular_campeon_bmetro(kwargs["equipo"], kwargs["max_intentos"]),
 }
 
 

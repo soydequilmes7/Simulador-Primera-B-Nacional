@@ -34,6 +34,7 @@ from actualizar_resultados import actualizar
 from actualizar_resultados_lpf import actualizar as actualizar_lpf
 from main_copa import correr_simulacion_copa, simular_hasta_campeon_copa
 from actualizar_resultados_copa import actualizar as actualizar_copa
+from main_bmetro import correr_simulacion_bmetro, simular_hasta_ascenso_bmetro
 import rutas
 
 # Mismos archivos que sirve api/index.py en /api/pysim-source, para que
@@ -49,6 +50,8 @@ PYSIM_SOURCE_FILES = [
     "modelos/estadisticas_lpf.py",
     "main_copa.py",
     "modelos/estadisticas_copa.py",
+    "main_bmetro.py",
+    "modelos/estadisticas_bmetro.py",
 ]
 _pysim_source_cache = None
 
@@ -97,6 +100,8 @@ class Handler(SimpleHTTPRequestHandler):
             self._manejar_datos_csv(["copa_argentina.csv"])
         elif self.path == "/api/datos-lpf":
             self._manejar_datos_lpf()
+        elif self.path == "/api/datos-bmetro":
+            self._manejar_datos_csv(["tabla_bmetro.csv", "fixture_bmetro.csv", "resultados_bmetro.csv"])
         else:
             super().do_GET()
 
@@ -182,6 +187,10 @@ class Handler(SimpleHTTPRequestHandler):
             self._manejar_actualizar_copa()
         elif self.path == "/api/simular-campeon-copa":
             self._manejar_simular_campeon_copa()
+        elif self.path == "/api/simular-bmetro":
+            self._manejar_simular_bmetro()
+        elif self.path == "/api/simular-campeon-bmetro":
+            self._manejar_simular_campeon_bmetro()
         else:
             self._responder_json(404, {"error": "Ruta no encontrada"})
 
@@ -438,6 +447,72 @@ class Handler(SimpleHTTPRequestHandler):
             self._responder_json(400, {"error": "Body inválido"})
         except Exception as e:
             print(f">>> ERROR al simular hasta campeón Copa: {e}")
+            self._responder_json(500, {"error": str(e)})
+        finally:
+            lock_simulacion.release()
+
+    def _manejar_simular_bmetro(self):
+        """Corre la simulación completa de B Metropolitana (temporada
+        regular + ascenso directo + Torneo Reducido + Monte Carlo) pedida
+        desde la web, con el n_sims del body."""
+        n_sims = self._leer_n_sims()
+        if not lock_simulacion.acquire(blocking=False):
+            self._responder_json(409, {"error": "Ya hay una simulación corriendo, esperá a que termine"})
+            return
+        try:
+            print(f"\n>>> Corriendo nueva simulación de B Metro pedida desde la web ({n_sims} corridas)...")
+            datos = correr_simulacion_bmetro(imprimir=True, n_sims=n_sims)
+            print(">>> Simulación de B Metro terminada y data_bmetro.json actualizado.\n")
+            self._responder_json(200, datos)
+        except Exception as e:
+            print(f">>> ERROR al simular B Metro: {e}")
+            self._responder_json(500, {"error": str(e)})
+        finally:
+            lock_simulacion.release()
+
+    def _manejar_simular_campeon_bmetro(self):
+        """Corre simular_hasta_ascenso_bmetro() del equipo pedido desde la
+        web y devuelve esa temporada completa (tabla única y, si le tocó
+        vía Reducido, el bracket) en la respuesta."""
+        if not lock_simulacion.acquire(blocking=False):
+            self._responder_json(409, {"error": "Ya hay una simulación corriendo, esperá a que termine"})
+            return
+        try:
+            largo = int(self.headers.get("Content-Length", 0))
+            cuerpo_raw = self.rfile.read(largo) if largo > 0 else b"{}"
+            datos = json.loads(cuerpo_raw) if cuerpo_raw else {}
+
+            equipo_objetivo = str(datos.get("equipo", "")).strip()
+            if not equipo_objetivo:
+                self._responder_json(400, {"error": "Falta indicar el equipo"})
+                return
+
+            try:
+                max_intentos = int(datos.get("max_intentos", MAX_INTENTOS_CAMPEON_DEFAULT))
+            except (ValueError, TypeError):
+                max_intentos = MAX_INTENTOS_CAMPEON_DEFAULT
+            max_intentos = max(MAX_INTENTOS_CAMPEON_MIN, min(MAX_INTENTOS_CAMPEON_MAX, max_intentos))
+
+            print(f"\n>>> Simulando hasta el ascenso de {equipo_objetivo} (B Metro) pedido desde la web ({max_intentos} intentos máx)...")
+            resultado = simular_hasta_ascenso_bmetro(equipo_objetivo, max_intentos=max_intentos, imprimir=True)
+
+            if resultado is None:
+                print(f">>> No se logró el ascenso de {equipo_objetivo} en {max_intentos} intentos.\n")
+                self._responder_json(200, {
+                    "logrado": False,
+                    "equipo": equipo_objetivo,
+                    "max_intentos": max_intentos,
+                })
+                return
+
+            print(f">>> {equipo_objetivo} ascendió en el intento {resultado['intentos']}.\n")
+            self._responder_json(200, {"logrado": True, **resultado})
+        except ValueError as e:
+            self._responder_json(400, {"error": str(e)})
+        except json.JSONDecodeError:
+            self._responder_json(400, {"error": "Body inválido"})
+        except Exception as e:
+            print(f">>> ERROR al simular hasta ascenso B Metro: {e}")
             self._responder_json(500, {"error": str(e)})
         finally:
             lock_simulacion.release()

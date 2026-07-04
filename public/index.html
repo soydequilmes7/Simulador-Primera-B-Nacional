@@ -9,7 +9,7 @@
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
   /* =====================================================================
@@ -707,6 +707,10 @@
   .match .row span:first-child{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:100%; min-width:0; }
   .match .row span:last-child{ flex:0 0 auto; min-width:2ch; margin-left:8px; text-align:right; }
   .match.note{ font-size:10px; color:var(--muted); border-style:dashed; box-shadow:none; }
+  .match .leg-detail{
+    margin-top:6px; padding-top:6px; border-top:1px dashed var(--line);
+    font-size:10px; color:var(--muted); text-align:center; letter-spacing:0.02em;
+  }
   .final-col .round-body{ align-items:center; }
   .final-col .match{ width:100%; }
   body.liga-lpf .final-col .match{ border-color: var(--amber); box-shadow: 0 4px 18px rgba(184,134,11,0.15); }
@@ -804,7 +808,7 @@
      mismo peso visual (color y grosor) que ya usa el select "Elegí un
      equipo"— en vez de quedar flotando sin límites como el resto de
      .search-section en esta liga. */
-  #campeon-section-lpf{
+  #campeon-section-lpf, #campeon-section-bmetro{
     border: 1px solid var(--line); border-radius: var(--radius);
     padding-bottom: 28px;
   }
@@ -817,18 +821,18 @@
   #campeon-equipo:focus{ border-color: var(--azul); }
   #campeon-equipo:disabled{ cursor:wait; opacity:0.5; }
   /* estos controles viven fuera del hero: botón en versión "de contenido" */
-  #campeon-section .btn-simular, #campeon-section-lpf .btn-simular, #campeon-section-copa .btn-simular{ background: var(--btn-grad); color: var(--btn-ink); }
-  #campeon-section .sim-status, #campeon-section-lpf .sim-status, #campeon-section-copa .sim-status{ color: var(--ink-dim); }
-  #campeon-section .sim-status.error, #campeon-section-lpf .sim-status.error, #campeon-section-copa .sim-status.error{ color: var(--danger); }
-  #campeon-section .sim-status.ok, #campeon-section-lpf .sim-status.ok, #campeon-section-copa .sim-status.ok{ color: var(--zone-a); }
-  #campeon-equipo-lpf, #campeon-equipo-copa{
+  #campeon-section .btn-simular, #campeon-section-lpf .btn-simular, #campeon-section-copa .btn-simular, #campeon-section-bmetro .btn-simular{ background: var(--btn-grad); color: var(--btn-ink); }
+  #campeon-section .sim-status, #campeon-section-lpf .sim-status, #campeon-section-copa .sim-status, #campeon-section-bmetro .sim-status{ color: var(--ink-dim); }
+  #campeon-section .sim-status.error, #campeon-section-lpf .sim-status.error, #campeon-section-copa .sim-status.error, #campeon-section-bmetro .sim-status.error{ color: var(--danger); }
+  #campeon-section .sim-status.ok, #campeon-section-lpf .sim-status.ok, #campeon-section-copa .sim-status.ok, #campeon-section-bmetro .sim-status.ok{ color: var(--zone-a); }
+  #campeon-equipo-lpf, #campeon-equipo-copa, #campeon-equipo-bmetro{
     font-family:'JetBrains Mono'; font-size:13px; font-weight:600; color: var(--ink);
     background: var(--bg-panel); border:1px solid var(--line); border-radius: var(--radius-sm);
     padding: 10px 12px; outline:none; transition: border-color 0.15s, opacity 0.15s; min-width:220px;
   }
-  #campeon-equipo-lpf:hover:not(:disabled), #campeon-equipo-copa:hover:not(:disabled){ border-color: var(--azul); }
-  #campeon-equipo-lpf:focus, #campeon-equipo-copa:focus{ border-color: var(--azul); }
-  #campeon-equipo-lpf:disabled, #campeon-equipo-copa:disabled{ cursor:wait; opacity:0.5; }
+  #campeon-equipo-lpf:hover:not(:disabled), #campeon-equipo-copa:hover:not(:disabled), #campeon-equipo-bmetro:hover:not(:disabled){ border-color: var(--azul); }
+  #campeon-equipo-lpf:focus, #campeon-equipo-copa:focus, #campeon-equipo-bmetro:focus{ border-color: var(--azul); }
+  #campeon-equipo-lpf:disabled, #campeon-equipo-copa:disabled, #campeon-equipo-bmetro:disabled{ cursor:wait; opacity:0.5; }
   .campeon-summary{
     font-family:'JetBrains Mono'; font-size:13px; color:var(--ink-dim); text-align:center;
     padding:14px; background:var(--bg-panel); border:1px solid var(--line); border-radius: var(--radius);
@@ -1202,6 +1206,364 @@
     body.liga-copa .bracket .round{ min-width: 0; }
   }
 
+  /* ============================================================
+     PRIMERA B METROPOLITANA · identidad propia
+     Turquesa institucional + dorado mate + blanco. Fondo claro (no la
+     banda navy que comparten Nacional/LPF/Copa), formas orgánicas en
+     las esquinas, tarjetas flotantes en vez de badges de vidrio, y
+     tablas con look de "fila-card" en vez de grilla clásica.
+     Reusa exactamente los mismos nombres de variable que el resto de
+     los temas (--amber, --azul, --zone-a, --radius, --btn-grad, etc.),
+     así que todos los componentes que ya dependen de esos tokens
+     (botones, inputs, filas de tabla, barras de Monte Carlo, bracket)
+     heredan la nueva paleta sin tocar una línea de HTML/JS de lógica.
+     ============================================================ */
+  body.liga-bmetro{
+    /* -------- modo CLARO -------- */
+    --bg: linear-gradient(180deg, #F2FCFD 0%, #EAF9FA 100%);
+    --bg-panel: #FFFFFF;
+    --bg-panel-2: #F5F7F8;
+    --line: #E3E9EA;
+    --ink: #22323A;
+    --ink-dim: #555555;
+    --muted: #7A9296;
+
+    /* acento dorado mate */
+    --amber: #B39B5E;
+    --amber-dim: #F3EDE0;
+
+    /* turquesa como acento "positivo" (ascenso directo, foco, links) */
+    --zone-a: #18BFD5;
+    --zone-a-dim: #DFF7FA;
+    --zone-b: #B39B5E;
+    --zone-b-dim: #F3EDE0;
+    --danger: #C93B32;
+    --danger-dim: #FBE1DF;
+    --azul: #18BFD5;
+    --azul-dim: #DFF7FA;
+
+    /* tokens semánticos de la tabla de posiciones */
+    --leader-bg: #F3EDE0;
+    --leader-accent: #B39B5E;
+    --leader-text: #7A6535;
+    --qualified-bg: #DFF7FA;
+    --qualified-accent: #18BFD5;
+    --qualified-text: #0E7A8A;
+    --relegation-bg: #FBE1DF;
+    --relegation-accent: #C93B32;
+    --relegation-text: #9A2A24;
+
+    /* forma: redondeado premium, sombras suaves con tinte turquesa */
+    --radius: 20px;
+    --radius-sm: 14px;
+    --card-shadow: 0 6px 22px rgba(20,120,135,0.09);
+    --card-shadow-hover: 0 14px 34px rgba(20,120,135,0.16);
+    --card-grad: linear-gradient(180deg, #FFFFFF 0%, #FBFEFE 100%);
+    --hero-bg: linear-gradient(160deg, #12A0B5 0%, #20C6DB 55%, #27D3E4 100%);
+    --hero-ink: #FFFFFF;
+    --hero-dim: rgba(255,255,255,0.85);
+    --hero-accent: #E7D6A8;
+    --tabs-bg: rgba(255,255,255,0.92);
+    --btn-grad: linear-gradient(135deg, #C3AB69 0%, #A68F57 100%);
+    --btn-ink: #FFFFFF;
+    --table-head-bg: #FFFFFF;
+    --hover-lift: translateY(-3px);
+    --bracket-line: #18BFD5;
+    --bracket-line-glow: rgba(24,191,213,0.24);
+  }
+  body.dark.liga-bmetro{
+    /* -------- modo OSCURO (el hero se mantiene turquesa en ambos
+       modos, como banda de marca -- solo cambia el resto de la UI) -------- */
+    --bg: linear-gradient(180deg, #0A2A30 0%, #0D333A 100%);
+    --bg-panel: #123840;
+    --bg-panel-2: #164048;
+    --line: rgba(179,155,94,0.22);
+    --ink: #F1F7F7;
+    --ink-dim: #BFD8DB;
+    --muted: #7FA0A5;
+
+    --amber: #D9C48A;
+    --amber-dim: rgba(217,196,138,0.14);
+
+    --zone-a: #35D8EF;
+    --zone-a-dim: rgba(53,216,239,0.14);
+    --zone-b: #D9C48A;
+    --zone-b-dim: rgba(217,196,138,0.14);
+    --danger: #FF8A7A;
+    --danger-dim: rgba(255,138,122,0.14);
+    --azul: #35D8EF;
+    --azul-dim: rgba(53,216,239,0.14);
+
+    --leader-bg: rgba(217,196,138,0.14);
+    --leader-accent: #D9C48A;
+    --leader-text: #F0DDAA;
+    --qualified-bg: rgba(53,216,239,0.12);
+    --qualified-accent: #35D8EF;
+    --qualified-text: #8FEFFB;
+    --relegation-bg: rgba(255,138,122,0.12);
+    --relegation-accent: #FF8A7A;
+    --relegation-text: #FFB3A8;
+
+    --card-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    --card-shadow-hover: 0 16px 40px rgba(0,0,0,0.5);
+    --card-grad: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
+    --tabs-bg: rgba(10,42,48,0.9);
+    --table-head-bg: rgba(53,216,239,0.06);
+    --bracket-line: #35D8EF;
+    --bracket-line-glow: rgba(53,216,239,0.35);
+  }
+
+  /* ---- Hero: banda turquesa con formas orgánicas doradas en las
+     esquinas (en vez del halo navy que comparten las otras 3 ligas) ---- */
+  body.liga-bmetro .hero{
+    border-radius: 0 0 32px 32px;
+  }
+  body.liga-bmetro .hero::before{
+    content:"";
+    position:absolute; inset:0; pointer-events:none;
+    background:
+      radial-gradient(420px 420px at -80px -100px, rgba(179,155,94,0.38), transparent 70%),
+      radial-gradient(460px 460px at calc(100% + 90px) calc(100% + 70px), rgba(179,155,94,0.30), transparent 70%);
+  }
+  body.liga-bmetro .hero::after{
+    height:4px;
+    background: linear-gradient(90deg, transparent, #B39B5E 18%, #FFFFFF 50%, #B39B5E 82%, transparent);
+    opacity:0.95;
+  }
+  /* halo orgánico de ambiente para el resto de la página (no solo el
+     hero): dos manchas doradas muy tenues, fijas en las esquinas de la
+     ventana, detrás de todo el contenido. */
+  body.liga-bmetro::before, body.liga-bmetro::after{
+    content:""; position:fixed; z-index:-1; pointer-events:none;
+    border-radius: 42% 58% 65% 35% / 45% 45% 55% 55%;
+    filter: blur(4px);
+  }
+  body.liga-bmetro::before{
+    top:-140px; left:-180px; width:420px; height:420px;
+    background: radial-gradient(circle at 30% 30%, rgba(179,155,94,0.14), transparent 72%);
+  }
+  body.liga-bmetro::after{
+    bottom:-160px; right:-180px; width:480px; height:480px;
+    background: radial-gradient(circle at 70% 70%, rgba(24,191,213,0.10), transparent 72%);
+  }
+
+  /* ---- Formas orgánicas doradas en las esquinas del hero, inspiradas en
+     la identidad oficial 2026 (sin copiarla): abanicos de pétalos alargados
+     que irradian desde cada esquina, alternando sólido/contorno para dar
+     profundidad. Viven siempre en el DOM pero solo se muestran para B
+     Metro. ---- */
+  .bmetro-leaves{ display:none; }
+  body.liga-bmetro .bmetro-leaves{
+    display:block; position:absolute; width:230px; height:230px;
+    z-index:-1; pointer-events:none; opacity:0.9;
+  }
+  body.liga-bmetro .bmetro-leaves-tl{ top:-14px; left:-14px; }
+  body.liga-bmetro .bmetro-leaves-br{ bottom:-14px; right:-14px; transform:rotate(180deg); }
+  body.liga-bmetro .bmetro-leaves-svg{ width:100%; height:100%; overflow:visible; }
+  body.liga-bmetro .bmetro-leaves-svg path{ fill:#B39B5E; }
+  body.liga-bmetro .bmetro-leaves-svg path.outline{ fill:none; stroke:#B39B5E; stroke-width:5; }
+  @media (max-width:600px){
+    body.liga-bmetro .bmetro-leaves{ width:150px; height:150px; }
+  }
+
+  /* ---- Emblema propio arriba del eyebrow (el "logo" de la sección):
+     escudo con borde blanco y letra dorada, en línea con el crest oficial.
+     Vive siempre en el DOM (compartido entre las 4 ligas) pero solo se
+     muestra para B Metro, así no hace falta tocar el JS que puebla el
+     resto del hero (hero-eyebrow / hero-title-span / hero-sub / meta-*). */
+  .bmetro-emblem{ display:none; }
+  body.liga-bmetro .bmetro-emblem{
+    display:flex; justify-content:center; margin-bottom:18px; position:relative; z-index:1;
+    opacity:0; animation: fade-in 0.6s ease forwards;
+  }
+  body.liga-bmetro .bmetro-emblem svg{
+    width:58px; height:66px;
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.18));
+  }
+  body.liga-bmetro .bmetro-emblem .emblem-letra{ fill:#B39B5E; font-family:'Space Grotesk', sans-serif; }
+  body.liga-bmetro .bmetro-emblem .emblem-aro{ fill:rgba(255,255,255,0.14); stroke:#FFFFFF; stroke-width:2.5; }
+
+  /* ---- Tipografía del hero: más aire, jerarquía más clara ---- */
+  body.liga-bmetro .eyebrow{ letter-spacing:0.38em; }
+  body.liga-bmetro .hero h1{ letter-spacing:0.02em; }
+  body.liga-bmetro .hero h1 span{ color: var(--hero-accent); }
+  body.liga-bmetro .hero p.sub{ max-width:560px; letter-spacing:0.01em; }
+
+  /* ---- Tarjetas de estadísticas: blancas, flotando sobre el turquesa,
+     con número dorado y texto gris (en vez de los badges translúcidos
+     que usan las otras ligas sobre su hero oscuro) ---- */
+  body.liga-bmetro .hero .meta{ gap:16px; margin-top:34px; }
+  body.liga-bmetro .hero .meta div{
+    background:#FFFFFF; border:none; border-radius:20px;
+    padding:14px 22px; min-width:118px;
+    box-shadow: 0 10px 26px rgba(10,60,68,0.18);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  body.liga-bmetro .hero .meta div:hover{
+    transform: translateY(-4px);
+    box-shadow: 0 16px 34px rgba(10,60,68,0.24);
+  }
+  body.liga-bmetro .hero .meta .num{ color:#B39B5E; font-size:23px; }
+  body.liga-bmetro .hero .meta .lbl{ color:#5B6B72; }
+
+  /* ---- Input de simulaciones del hero: blanco sólido y redondeado
+     (el resto de las ligas usa un input translúcido pensado para un
+     hero oscuro; acá el hero es claro, así que ese estilo se invierte) ---- */
+  body.liga-bmetro #sim-count-bmetro{
+    font-family:'JetBrains Mono'; font-size:13px; font-weight:600; color:#22323A;
+    background:#FFFFFF; border:1px solid #E3E9EA; border-radius:999px;
+    padding:10px 14px; width:96px; text-align:center; outline:none;
+    box-shadow: 0 4px 14px rgba(10,60,68,0.12);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  body.liga-bmetro #sim-count-bmetro:hover:not(:disabled){ border-color:#B39B5E; }
+  body.liga-bmetro #sim-count-bmetro:focus{ border-color:#B39B5E; box-shadow: 0 0 0 3px rgba(179,155,94,0.25); }
+  body.liga-bmetro #sim-count-bmetro:disabled{ cursor:wait; opacity:0.5; }
+  body.liga-bmetro #sim-count-bmetro::-webkit-inner-spin-button,
+  body.liga-bmetro #sim-count-bmetro::-webkit-outer-spin-button{ opacity:0.6; }
+
+  /* ---- Botón principal: dorado sólido, texto blanco, pill + elevación ---- */
+  body.liga-bmetro .btn-simular{
+    border-radius:999px;
+    box-shadow: 0 8px 22px rgba(179,155,94,0.4);
+  }
+  body.liga-bmetro .btn-simular:hover:not(:disabled){
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(179,155,94,0.5);
+  }
+  /* ---- Botón secundario (por si se agrega uno a futuro): borde dorado,
+     transparente, se llena de dorado al hover ---- */
+  body.liga-bmetro .btn-actualizar{
+    border-radius:999px; border-color: rgba(179,155,94,0.7); color:#FFFFFF;
+  }
+  body.liga-bmetro .btn-actualizar:hover:not(:disabled){
+    background:#B39B5E; border-color:#B39B5E; color:#FFFFFF;
+  }
+
+  /* ---- Pestaña activa "B Metropolitana": dorado sólido + texto blanco,
+     en vez del gris/ámbar oscuro que usan por defecto las otras vistas ---- */
+  body.liga-bmetro .liga-tabs .group{ border-radius:999px; box-shadow: var(--card-shadow); }
+  body.liga-bmetro .liga-tab.active{
+    background: linear-gradient(135deg, #C3AB69, #A68F57);
+    color:#FFFFFF;
+  }
+
+  body.liga-bmetro .section-head .idx{ color: var(--amber); font-weight:700; }
+  body.liga-bmetro .section-head .rule{ background: linear-gradient(90deg, var(--line), transparent); }
+
+  /* ---- Tablas de posiciones y de posición esperada: filas tipo card
+     (blanco, separadas, esquinas redondeadas) en vez de grilla clásica
+     con líneas divisorias. Mismo <table> de siempre -- el "look de
+     card" se logra con border-collapse:separate + spacing entre filas,
+     así que no hace falta tocar el JS que arma las filas. ---- */
+  body.liga-bmetro #sec-tabla-bmetro .table-wrap,
+  body.liga-bmetro #sec-esperada-bmetro .table-wrap{
+    border:none; box-shadow:none; background:transparent; overflow:visible;
+  }
+  body.liga-bmetro #sec-tabla-bmetro table,
+  body.liga-bmetro #sec-esperada-bmetro table{
+    border-collapse:separate; border-spacing:0 10px;
+  }
+  body.liga-bmetro #sec-tabla-bmetro thead th,
+  body.liga-bmetro #sec-esperada-bmetro thead th{
+    background:transparent; border-bottom:none; color:#5B6B72; font-weight:600;
+  }
+  body.liga-bmetro #sec-tabla-bmetro tbody tr,
+  body.liga-bmetro #sec-esperada-bmetro tbody tr{
+    background: var(--bg-panel); box-shadow: var(--card-shadow);
+  }
+  body.liga-bmetro #sec-tabla-bmetro tbody tr:hover,
+  body.liga-bmetro #sec-esperada-bmetro tbody tr:hover{
+    box-shadow: var(--card-shadow-hover);
+  }
+  body.liga-bmetro #sec-tabla-bmetro tbody td,
+  body.liga-bmetro #sec-esperada-bmetro tbody td{
+    border-bottom:none; padding:13px 14px;
+  }
+  body.liga-bmetro #sec-tabla-bmetro tbody td:first-child,
+  body.liga-bmetro #sec-esperada-bmetro tbody td:first-child{
+    border-top-left-radius:16px; border-bottom-left-radius:16px;
+  }
+  body.liga-bmetro #sec-tabla-bmetro tbody td:last-child,
+  body.liga-bmetro #sec-esperada-bmetro tbody td:last-child{
+    border-top-right-radius:16px; border-bottom-right-radius:16px;
+  }
+  body.liga-bmetro #sec-tabla-bmetro tbody tr.punta,
+  body.liga-bmetro #sec-tabla-bmetro tbody tr.reducido,
+  body.liga-bmetro #sec-tabla-bmetro tbody tr.descenso{
+    box-shadow: var(--card-shadow), inset 3px 0 0 var(--leader-accent);
+  }
+  body.liga-bmetro #sec-tabla-bmetro tbody tr.reducido{
+    box-shadow: var(--card-shadow), inset 3px 0 0 var(--qualified-accent);
+  }
+  body.liga-bmetro #sec-tabla-bmetro tbody tr.descenso{
+    box-shadow: var(--card-shadow), inset 3px 0 0 var(--relegation-accent);
+  }
+
+  /* ---- Lista de probabilidades (Monte Carlo): filas-card separadas
+     en vez de lista con separadores internos ---- */
+  body.liga-bmetro #mc-list-bmetro{ display:flex; flex-direction:column; gap:10px; }
+  body.liga-bmetro #mc-list-bmetro .mc-row{
+    background: var(--bg-panel); border-bottom:none; border-radius:16px;
+    padding:14px 16px; box-shadow: var(--card-shadow);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+  }
+  body.liga-bmetro #mc-list-bmetro .mc-row:hover{
+    background: var(--bg-panel); box-shadow: var(--card-shadow-hover); transform: translateY(-2px);
+  }
+
+  @media (max-width:600px){
+    body.liga-bmetro .hero{ border-radius: 0 0 22px 22px; }
+    body.liga-bmetro::before, body.liga-bmetro::after{ width:260px; height:260px; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    body.liga-bmetro .hero .meta div,
+    body.liga-bmetro .btn-simular,
+    body.liga-bmetro #mc-list-bmetro .mc-row{ transition:none; }
+  }
+
+  /* ---- Tipografía propia: Plus Jakarta Sans para texto/UI y Space Grotesk
+     para títulos y cifras — una pareja moderna y deportiva, bien distinta
+     del Oswald + Inter + JetBrains Mono que usan las otras 3 ligas. ---- */
+  body.liga-bmetro{ font-family:'Plus Jakarta Sans', sans-serif; }
+  body.liga-bmetro input,
+  body.liga-bmetro button,
+  body.liga-bmetro select{ font-family:'Plus Jakarta Sans', sans-serif; }
+  body.liga-bmetro .display,
+  body.liga-bmetro .hero h1,
+  body.liga-bmetro .section-head h2,
+  body.liga-bmetro .team-card .tc-name{
+    font-family:'Space Grotesk', sans-serif; text-transform:none; letter-spacing:0.01em; font-weight:700;
+  }
+  body.liga-bmetro .mono,
+  body.liga-bmetro tbody td,
+  body.liga-bmetro .section-head .idx,
+  body.liga-bmetro .round-title,
+  body.liga-bmetro .mc-row .pos,
+  body.liga-bmetro .mc-row .name .pct,
+  body.liga-bmetro .team-card .tc-zone,
+  body.liga-bmetro .team-card .tc-pos,
+  body.liga-bmetro .team-card .tc-stat .v,
+  body.liga-bmetro .campeon-summary,
+  body.liga-bmetro #campeon-equipo-bmetro,
+  body.liga-bmetro #sim-count-bmetro,
+  body.liga-bmetro .match .row span:last-child{
+    font-family:'Space Grotesk', sans-serif;
+  }
+  body.liga-bmetro .eyebrow{ font-family:'Space Grotesk', sans-serif; font-weight:600; }
+
+  /* ---- Select "Elegí un equipo": mismas reglas de color que en Copa,
+     para que las opciones se lean bien en ambos modos con la paleta propia. ---- */
+  body.liga-bmetro #campeon-equipo-bmetro option{ background:#FFFFFF; color:#22323A; }
+  body.dark.liga-bmetro #campeon-equipo-bmetro option{ background:#123840; color:#F1F7F7; }
+
+  /* ---- Navegación entre torneos: al estar parado en B Metro, el grupo de
+     pestañas adopta el mismo lenguaje redondeado + dorado que el resto de
+     la sección, en vez del contenedor genérico compartido. ---- */
+  body.liga-bmetro .liga-tabs .group{ border:1px solid rgba(179,155,94,0.35); }
+  body.liga-bmetro .liga-tab:not(.active):hover{ color:#B39B5E; background: var(--amber-dim); }
+  body.liga-bmetro .theme-toggle{ border-radius:999px; }
+
   /* ---- Escudos de equipos ---- */
   .escudo{ width:24px; height:24px; object-fit:contain; vertical-align:-6px; margin-right:8px; }
   .tc-name .escudo{ width:34px; height:34px; vertical-align:-8px; margin-right:10px; }
@@ -1219,6 +1581,38 @@
       <a href="https://x.com/soydequilmes7" target="_blank" rel="noopener noreferrer" title="@soydequilmes7 en X" aria-label="@soydequilmes7 en X">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
       </a>
+    </div>
+
+    <div class="bmetro-leaves bmetro-leaves-tl" aria-hidden="true">
+      <svg class="bmetro-leaves-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <g>
+          <path d="M0,0 C45,-28 115,-28 175,0 C115,28 45,28 0,0 Z" transform="rotate(-10)" opacity="0.9"/>
+          <path class="outline" d="M0,0 C40,-24 100,-24 150,0 C100,24 40,24 0,0 Z" transform="rotate(13)" opacity="0.55"/>
+          <path d="M0,0 C50,-30 125,-30 190,0 C125,30 50,30 0,0 Z" transform="rotate(33)" opacity="1"/>
+          <path class="outline" d="M0,0 C38,-22 92,-22 138,0 C92,22 38,22 0,0 Z" transform="rotate(53)" opacity="0.5"/>
+          <path d="M0,0 C42,-26 105,-26 158,0 C105,26 42,26 0,0 Z" transform="rotate(73)" opacity="0.85"/>
+          <path class="outline" d="M0,0 C34,-20 82,-20 122,0 C82,20 34,20 0,0 Z" transform="rotate(93)" opacity="0.4"/>
+        </g>
+      </svg>
+    </div>
+    <div class="bmetro-leaves bmetro-leaves-br" aria-hidden="true">
+      <svg class="bmetro-leaves-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <g>
+          <path d="M0,0 C45,-28 115,-28 175,0 C115,28 45,28 0,0 Z" transform="rotate(-10)" opacity="0.9"/>
+          <path class="outline" d="M0,0 C40,-24 100,-24 150,0 C100,24 40,24 0,0 Z" transform="rotate(13)" opacity="0.55"/>
+          <path d="M0,0 C50,-30 125,-30 190,0 C125,30 50,30 0,0 Z" transform="rotate(33)" opacity="1"/>
+          <path class="outline" d="M0,0 C38,-22 92,-22 138,0 C92,22 38,22 0,0 Z" transform="rotate(53)" opacity="0.5"/>
+          <path d="M0,0 C42,-26 105,-26 158,0 C105,26 42,26 0,0 Z" transform="rotate(73)" opacity="0.85"/>
+          <path class="outline" d="M0,0 C34,-20 82,-20 122,0 C82,20 34,20 0,0 Z" transform="rotate(93)" opacity="0.4"/>
+        </g>
+      </svg>
+    </div>
+
+    <div class="bmetro-emblem" aria-hidden="true">
+      <svg viewBox="0 0 60 68" xmlns="http://www.w3.org/2000/svg">
+        <path class="emblem-aro" d="M30 2 L55 10 V33 C55 48 44 58 30 65 C16 58 5 48 5 33 V10 Z"/>
+        <text class="emblem-letra" x="30" y="42" text-anchor="middle" font-size="26" font-weight="700">B</text>
+      </svg>
     </div>
     <div class="eyebrow" id="hero-eyebrow">SIMULACIÓN MONTE CARLO — <span id="hero-n">0</span> CORRIDAS</div>
     <h1 class="display">SIMULADOR <span id="hero-title-span">PRIMERA NACIONAL</span></h1>
@@ -1271,6 +1665,19 @@
       <div id="sim-status-copa" class="sim-status"></div>
       <div id="last-update-copa" class="last-update"></div>
     </div>
+
+    <div class="sim-control" id="sim-control-bmetro" style="display:none">
+      <div class="sim-select-row">
+        <label for="sim-count-bmetro">Cantidad de simulaciones</label>
+        <input type="number" id="sim-count-bmetro" value="500" min="50" max="5000" step="1">
+        <span class="rango">(50–5000)</span>
+      </div>
+      <div class="btn-row">
+        <button id="btn-simular-bmetro" class="btn-simular">▶ Correr nueva simulación</button>
+      </div>
+      <div id="sim-status-bmetro" class="sim-status"></div>
+      <div id="last-update-bmetro" class="last-update"></div>
+    </div>
   </div>
 
   <div class="liga-tabs">
@@ -1278,6 +1685,7 @@
       <button class="liga-tab" data-liga="lpf">Liga Profesional</button>
       <button class="liga-tab" data-liga="copa">Copa Argentina</button>
       <button class="liga-tab active" data-liga="nacional">Primera Nacional</button>
+      <button class="liga-tab" data-liga="bmetro">B Metropolitana</button>
     </div>
     <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Cambiar entre modo claro y oscuro">
       <span id="theme-toggle-icon">🌙</span><span id="theme-toggle-label">Oscuro</span>
@@ -1574,6 +1982,85 @@
 
   </div><!-- /vista-lpf -->
 
+  <div id="vista-bmetro" style="display:none">
+
+  <div class="search-section" id="search-section-bmetro">
+    <div class="search-box">
+      <input type="text" id="team-search-bmetro" list="team-list-bmetro" placeholder="Buscar equipo… (ej: Almirante Brown, Liniers, UAI Urquiza)" autocomplete="off">
+      <datalist id="team-list-bmetro"></datalist>
+    </div>
+    <div class="search-hint">Escribí el nombre del equipo para ver su tabla, chances de ascenso y descenso</div>
+    <div id="search-result-bmetro"></div>
+  </div>
+
+  <div class="search-section" id="campeon-section-bmetro">
+    <div class="section-head" style="margin-bottom:14px;">
+      <span class="idx">🏆</span><h2 style="font-size:18px;">Simulá hasta que tu equipo ascienda</h2><div class="rule"></div>
+    </div>
+    <p class="section-note" style="margin:0 0 16px; text-align:center; max-width:none;">
+      Elegí un equipo: corremos temporadas completas (fase regular + Torneo Reducido), una tras otra, hasta
+      encontrar la primera en la que consigue el ascenso — directo como puntero, o por el Reducido. Te mostramos
+      esa temporada puntual.
+    </p>
+    <div class="campeon-controls">
+      <select id="campeon-equipo-bmetro"><option value="">Elegí un equipo…</option></select>
+      <button id="btn-campeon-bmetro" class="btn-simular">🏆 Simular hasta el ascenso</button>
+    </div>
+    <div id="campeon-status-bmetro" class="sim-status"></div>
+    <div id="campeon-resultado-bmetro"></div>
+  </div>
+
+  <section id="sec-tabla-bmetro">
+    <div class="section-head"><span class="idx">01</span><h2>Tabla final simulada</h2><div class="rule"></div></div>
+    <p class="section-note">Resultado de una corrida puntual de la temporada regular: se completan los partidos pendientes del fixture sobre la base de los resultados ya jugados. Tabla única, sin zonas.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>GF</th><th>GC</th><th>DG</th></tr></thead>
+        <tbody id="tabla-bmetro-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="sec-ascenso-bmetro">
+    <div class="section-head"><span class="idx">02</span><h2>Camino al ascenso</h2><div class="rule"></div></div>
+    <p class="section-note">El puntero de la tabla asciende directo. Los ocho mejor ubicados detrás de él (2° al 9°) juegan el Torneo Reducido por el 2° ascenso: cuartos, semifinal y final, todo a ida y vuelta.</p>
+
+    <div class="ascenso-card">
+      <div class="label">Ascenso directo</div>
+      <div class="ascenso-footer" id="bmetro-puntero-footer"></div>
+    </div>
+
+    <div class="label" style="font-family:'JetBrains Mono'; font-size:11px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin: 24px 0 4px;">Torneo Reducido — 2° ascenso</div>
+    <div class="bracket-scroll">
+      <div class="bracket" id="bracket-bmetro"></div>
+    </div>
+    <div class="campeon-anuncio-wrap" id="campeon-anuncio-reducido-bmetro"></div>
+  </section>
+
+  <section id="sec-mc-bmetro">
+    <div class="section-head"><span class="idx">03</span><h2>Probabilidades — Monte Carlo</h2><div class="rule"></div></div>
+    <p class="section-note">Cada barra desglosa el % de simulaciones en que el equipo asciende directo (puntero) o por el Reducido. A la derecha, el % de veces que descendió.</p>
+    <div class="legend">
+      <span><i style="background:var(--zone-a)"></i> Ascenso directo</span>
+      <span><i style="background:var(--zone-a); opacity:0.5"></i> Ascenso por Reducido</span>
+      <span><i style="background:var(--danger)"></i> % descenso</span>
+    </div>
+    <div id="mc-list-bmetro"></div>
+  </section>
+
+  <section id="sec-esperada-bmetro">
+    <div class="section-head"><span class="idx">04</span><h2>Posición final esperada</h2><div class="rule"></div></div>
+    <p class="section-note">Puntos y posición promedio de cada equipo a lo largo de todas las simulaciones.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Equipo</th><th>Pts. prom.</th><th>Pos. prom.</th></tr></thead>
+        <tbody id="esperada-body-bmetro"></tbody>
+      </table>
+    </div>
+  </section>
+
+  </div><!-- /vista-bmetro -->
+
   <div id="vista-copa" style="display:none">
 
   <div class="search-section">
@@ -1686,7 +2173,7 @@ function setApiActionsDisabled(disabled){
   document.querySelectorAll('.btn-simular, .btn-actualizar').forEach(btn => {
     btn.disabled = disabled;
   });
-  document.querySelectorAll('#sim-count, #sim-count-lpf, #sim-count-copa, #campeon-equipo, #campeon-equipo-lpf, #campeon-equipo-copa').forEach(control => {
+  document.querySelectorAll('#sim-count, #sim-count-lpf, #sim-count-copa, #sim-count-bmetro, #campeon-equipo, #campeon-equipo-lpf, #campeon-equipo-copa, #campeon-equipo-bmetro').forEach(control => {
     control.disabled = disabled;
   });
 }
@@ -2018,16 +2505,61 @@ const ESCUDOS = {
   'Ituzaingó':'ituzaingo', 'Olimpo':'olimpo', 'Real Pilar':'realpilar',
   'San Martín de Formosa':'san_martin_formosa', 'Sarmiento De La Banda':'sarmiento_lb',
   'Sportivo Barracas':'sportivo_barracas', 'Sportivo Belgrano':'sportivo_belgrano',
+
+  // Primera B Metropolitana (equipos propios de esta categoría)
+  'Argentino de Quilmes':'argquilmes', 'Argentino Quilmes':'argquilmes', 'Argentino (Q)':'argquilmes',
+  'Arsenal de Sarandí':'arsenal', 'Arsenal (S)':'arsenal',
+  'Brown de Adrogué':'brownadrogue', 'Brown (A)':'brownadrogue',
+  'Comunicaciones':'comunicaciones',
+  'Defensores Unidos':'cadu', 'CADU':'cadu', 'Defensores Unidos (Zárate)':'cadu',
+  'Deportivo Merlo':'depmerlo', 'Merlo':'depmerlo',
+  'Dock Sud':'dock_sud', 'Sportivo Dock Sud':'dock_sud', 'Deportivo Dock Sud':'dock_sud', 'Dock  Sud':'dock_sud', 'Docksud':'dock_sud', 'DockSud':'dock_sud',
+  'Excursionistas':'excursionistas',
+  'Fénix':'fenix',
+  'Flandria':'flandria',
+  'Deportivo Laferrere':'laferrere', 'Laferrere':'laferrere', 'La Ferrere':'laferrere',
+  'Liniers':'liniers',
+  'Sacachispas':'sacachispas',
+  'San Martín de Burzaco':'smburzaco', 'San Martín (B)':'smburzaco', 'San Martín Burzaco':'smburzaco',
+  'Sportivo Italiano':'spitaliano',
+  'Talleres RE':'talleres', 'Talleres (RE)':'talleres', 'Talleres Remedios de Escalada':'talleres',
+  'Talleres de Remedios de Escalada':'talleres',
+  'UAI Urquiza':'uaiurquiza',
+  'Villa Dálmine':'villadalmine', 'Villa Dalmine':'villadalmine',
+  'Villa San Carlos':'villasancarlos',
 };
+
+// Sin acentos, sin espacios ni símbolos, todo en minúscula — para poder
+// intentar resolver el archivo de un equipo aunque no esté en ESCUDOS
+// (por ejemplo si data_bmetro.json usa una variante de nombre no prevista
+// arriba). Sirve como red de contención: si el archivo no existe, la
+// propia imagen se saca sola vía onerror, así que probar no tiene costo.
+function slugifyEquipo(s){
+  return String(s)
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '');
+}
+
+// Copia del diccionario en minúsculas, por si el nombre llega con otra
+// capitalización (p.ej. "dock sud" en vez de "Dock Sud").
+const ESCUDOS_LOWER = {};
+for (const k in ESCUDOS) ESCUDOS_LOWER[k.toLowerCase()] = ESCUDOS[k];
 
 function escudoHTML(nombre){
   // Busca primero el nombre tal cual (cubre "Gimnasia (J)", "San Martín (T)")
   // y si no, la versión limpia sin paréntesis ni sufijos con guion largo
-  // (cubre "River Plate — Campeón Copa Argentina 2026").
+  // (cubre "River Plate — Campeón Copa Argentina 2026"). Si ninguna de las
+  // dos está en el diccionario, prueba sin importar mayúsculas/minúsculas,
+  // y como última red de contención intenta con el nombre "slugificado"
+  // (sin acentos/espacios/símbolos) por si coincide tal cual con el
+  // archivo — y si el archivo no existe, la imagen se saca sola (onerror).
   const crudo = String(nombre).trim();
+  if (!crudo) return '';
   const limpio = crudo.replace(/\s*\(.*?\)\s*/g, '').split('—')[0].trim();
-  const archivo = ESCUDOS[crudo] ?? ESCUDOS[limpio];
-  if (!archivo) return '';
+  const archivo = ESCUDOS[crudo] ?? ESCUDOS[limpio]
+    ?? ESCUDOS_LOWER[crudo.toLowerCase()] ?? ESCUDOS_LOWER[limpio.toLowerCase()]
+    ?? slugifyEquipo(limpio || crudo);
   return `<img class="escudo" src="escudos/${archivo}.png" alt="" loading="lazy" onerror="this.remove()">`;
 }
 
@@ -2087,6 +2619,20 @@ function matchHTML(m, roundLabel){
   return `<div class="match" data-local="${m.local}" data-visitante="${m.visitante}" data-avanza="${m.avanza || ''}">
     <div class="row ${winnerIsLocal ? 'winner':''}"><span>${escudoHTML(m.local)}${m.local}</span><span>${m.golesLocal}</span></div>
     <div class="row ${!winnerIsLocal ? 'winner':''}"><span>${escudoHTML(m.visitante)}${m.visitante}</span><span>${m.golesVisitante}</span></div>
+  </div>`;
+}
+
+// Serie a ida y vuelta (dos partidos, sin "local"/"visitante" fijo del
+// cruce en sí -- cada equipo jugó una vez de local). Usa equipo_x/equipo_y
+// + detalle/campeon, tal como los devuelve jugar_serie_ida_vuelta() en el
+// backend. A diferencia de matchHTML() (partido único), acá no hay goles
+// por fila individual: se muestra el resultado agregado en "detalle".
+function seriesHTML(m){
+  const xGana = m.campeon === m.equipo_x;
+  return `<div class="match" data-local="${m.equipo_x}" data-visitante="${m.equipo_y}" data-avanza="${m.campeon || ''}">
+    <div class="row ${xGana ? 'winner':''}"><span>${escudoHTML(m.equipo_x)}${m.equipo_x}</span></div>
+    <div class="row ${!xGana ? 'winner':''}"><span>${escudoHTML(m.equipo_y)}${m.equipo_y}</span></div>
+    <div class="leg-detail">${m.detalle}</div>
   </div>`;
 }
 
@@ -3139,6 +3685,455 @@ function renderCampeonResultadoLPF(r){
 
 document.getElementById('btn-campeon-lpf').addEventListener('click', simularHastaCampeonLPF);
 
+/* ---------- B METROPOLITANA (tabla única, sin zonas) ---------- */
+async function cargarDatosBMetro(){
+  try {
+    const respuesta = await fetch("./data_bmetro.json?t=" + Date.now());
+    if (!respuesta.ok) throw new Error("No se pudo cargar data_bmetro.json");
+    DATA_BMETRO = await respuesta.json();
+    iniciarBMetro();
+  } catch (e) {
+    const cont = document.getElementById('vista-bmetro');
+    if (cont) cont.innerHTML = `<div style="padding:24px 24px 0; max-width:720px; margin:0 auto; text-align:center; color:var(--muted); font-family:'JetBrains Mono'; font-size:13px;">
+      No se pudo cargar data_bmetro.json todavía (${e.message}). Corré <code>python main_bmetro.py</code> una vez para generarlo.
+    </div>`;
+  }
+}
+
+function iniciarBMetro(){
+  renderTablaBMetro();
+  renderReducidoBMetro();
+  renderMCBMetro();
+  renderEsperadaBMetro();
+  poblarSelectEquiposBMetro();
+  TEAM_INDEX_BMETRO = buildTeamIndexBMetro();
+  poblarDatalistBMetro(TEAM_INDEX_BMETRO);
+  // Si había una ficha abierta, la refrescamos con los datos nuevos.
+  const busquedaBMetro = document.getElementById('team-search-bmetro');
+  if (busquedaBMetro && busquedaBMetro.value) buscarEquipoBMetro(busquedaBMetro.value);
+  abrirFichaBMetroDesdeUrl();
+  if (document.body.classList.contains('liga-bmetro')) actualizarHero('bmetro');
+}
+
+/* ---------- BUSCADOR DE EQUIPOS (B METROPOLITANA) ---------- */
+let TEAM_INDEX_BMETRO = {};
+
+function buildTeamIndexBMetro(){
+  const index = {};
+  if (!DATA_BMETRO) return index;
+  // tabla_actual = posiciones reales de HOY (tabla_bmetro.csv). Si por
+  // algún motivo no viene, caemos a la tabla simulada para no romper.
+  const actual = DATA_BMETRO.tabla_actual || DATA_BMETRO.tabla;
+  const mc = DATA_BMETRO.monte_carlo || [];
+  const esperada = DATA_BMETRO.tabla_esperada || [];
+  const rachas = DATA_BMETRO.rachas || {};
+  const nDesc = DATA_BMETRO.descensos_n || 2;
+  const nRed = DATA_BMETRO.reducido_n || 9;
+  actual.forEach((f, i) => {
+    const mcRow = mc.find(m => m.equipo === f.equipo) || {};
+    const espRow = esperada.find(e => e.equipo === f.equipo) || {};
+    // Más reciente primero en la ficha (vienen en orden cronológico).
+    const ultimos5 = [...(rachas[f.equipo] || [])].reverse();
+    let estado = 'medio';
+    if (i === 0) estado = 'puntero';
+    else if (i <= nRed - 1) estado = 'reducido';
+    if (i >= actual.length - nDesc) estado = 'descenso';
+    index[f.equipo] = {
+      equipo: f.equipo, posicion: f.posicion ?? (i + 1), total: actual.length, estado,
+      puntos: f.puntos, gf: f.gf, gc: f.gc, dg: f.dg,
+      puntero: mcRow['%puntero'] ?? 0,
+      ascenso_directo: mcRow['%ascenso_directo'] ?? 0,
+      ascenso_reducido: mcRow['%ascenso_reducido'] ?? 0,
+      ascenso_total: mcRow['ascenso_total'] ?? 0,
+      descenso: mcRow['descenso'] ?? 0,
+      puntos_prom: espRow['puntos_prom'] ?? '—',
+      posicion_prom: espRow['posicion_prom'] ?? '—',
+      ultimos5
+    };
+  });
+  return index;
+}
+
+function poblarDatalistBMetro(index){
+  const dl = document.getElementById('team-list-bmetro');
+  if (!dl) return;
+  dl.innerHTML = Object.keys(index).sort().map(nombre => `<option value="${nombre}">`).join('');
+}
+
+const BADGE_ESTADO_BMETRO = {
+  puntero:  { bg: 'var(--amber-dim)',   color: 'var(--amber)',  label: 'PUNTERO',       accent: 'var(--amber)' },
+  reducido: { bg: 'var(--zone-a-dim)',  color: 'var(--zone-a)', label: 'ZONA REDUCIDO', accent: 'var(--zone-a)' },
+  descenso: { bg: 'var(--danger-dim)',  color: 'var(--danger)', label: 'ZONA DESCENSO', accent: 'var(--danger)' },
+  medio:    { bg: 'var(--line)',        color: 'var(--muted)',  label: 'MITAD DE TABLA', accent: 'var(--zone-a)' },
+};
+
+function renderTeamCardBMetro(t){
+  const badge = BADGE_ESTADO_BMETRO[t.estado] || BADGE_ESTADO_BMETRO.medio;
+  const descClass = t.descenso >= 25 ? 'high' : '';
+  return `
+    <div class="team-card">
+      <div class="tc-head">
+        <div class="tc-name">${escudoHTML(t.equipo)}${t.equipo}</div>
+        <span class="tc-zone" style="background:${badge.bg}; color:${badge.color}">${badge.label}</span>
+      </div>
+      <div class="tc-pos">Posición actual: <b>${t.posicion}°</b> de ${t.total} — <b>${t.puntos}</b> pts (DG ${t.dg > 0 ? '+' + t.dg : t.dg})</div>
+      <div class="tc-grid" style="margin-top:16px;">
+        <div class="tc-stat"><div class="v" style="color:${badge.accent}">${fmtPct(t.puntero)}</div><div class="l">Puntero (ascenso directo)</div></div>
+        <div class="tc-stat"><div class="v" style="color:${badge.accent}">${fmtPct(t.ascenso_reducido)}</div><div class="l">Ascenso por Reducido</div></div>
+        <div class="tc-stat"><div class="v" style="color:${badge.accent}">${fmtPct(t.ascenso_total)}</div><div class="l">Ascenso total</div></div>
+        <div class="tc-stat"><div class="v ${descClass}" style="${t.descenso >= 25 ? 'color:var(--danger)' : ''}">${fmtPct(t.descenso)}</div><div class="l">Descenso</div></div>
+      </div>
+      <div class="tc-mc-title">Asciende (directo + Reducido) en ${fmtPct(t.ascenso_total)} de las simulaciones</div>
+      <div class="mc-bar-track" style="margin-bottom:14px;">
+        <div class="mc-bar-fill directo" style="width:${t.puntero}%; background:${badge.accent}"></div>
+        <div class="mc-bar-fill reducido" style="left:${t.puntero}%; width:${t.ascenso_reducido}%; background:${badge.accent}"></div>
+      </div>
+      <div class="tc-pos">Posición final promedio: <b>${t.posicion_prom}°</b> — Puntos promedio: <b>${t.puntos_prom}</b></div>
+      <div class="tc-racha">
+        <div class="tc-racha-title">Últimos partidos</div>
+        ${renderRacha(t.ultimos5)}
+      </div>
+      <div class="tc-share">
+        <button onclick="compartirLinkBMetro('${t.equipo.replace(/'/g, "\\'")}', this)">🔗 Copiar link</button>
+        <button onclick="compartirImagen('${t.equipo.replace(/'/g, "\\'")}', this)">📷 Descargar imagen</button>
+      </div>
+    </div>
+  `;
+}
+
+function compartirLinkBMetro(nombre, btn){
+  const url = new URL(window.location.href);
+  url.searchParams.delete('equipo');
+  url.searchParams.delete('equipo_lpf');
+  url.searchParams.delete('equipo_copa');
+  url.searchParams.set('equipo_bmetro', nombre);
+  navigator.clipboard.writeText(url.toString()).then(() => {
+    const original = btn.textContent;
+    btn.textContent = '✓ Copiado';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = original; btn.classList.remove('copied'); }, 1800);
+  }).catch(() => {
+    prompt('Copiá el link:', url.toString());
+  });
+}
+
+function buscarEquipoBMetro(nombre){
+  const resultDiv = document.getElementById('search-result-bmetro');
+  if (!resultDiv) return;
+  if (!nombre || !nombre.trim()){
+    resultDiv.innerHTML = "";
+    return;
+  }
+  const index = TEAM_INDEX_BMETRO;
+  const exacto = index[nombre];
+  if (exacto){
+    resultDiv.innerHTML = renderTeamCardBMetro(exacto);
+    return;
+  }
+  const q = nombre.trim().toLowerCase();
+  const coincidencia = Object.values(index).find(t => t.equipo.toLowerCase().includes(q));
+  if (coincidencia){
+    resultDiv.innerHTML = renderTeamCardBMetro(coincidencia);
+  } else {
+    resultDiv.innerHTML = `<div class="no-result">No se encontró ningún equipo llamado "${nombre}"</div>`;
+  }
+}
+
+document.getElementById('team-search-bmetro').addEventListener('input', (e) => buscarEquipoBMetro(e.target.value));
+
+// Link compartido con ?equipo_bmetro=...: cambia a la pestaña B Metro y
+// abre la ficha directo (equivalente al ?equipo= de Nacional). Solo la
+// primera vez.
+let _fichaBMetroDesdeUrlAbierta = false;
+function abrirFichaBMetroDesdeUrl(){
+  if (_fichaBMetroDesdeUrlAbierta) return;
+  const equipoUrl = new URLSearchParams(window.location.search).get('equipo_bmetro');
+  if (!equipoUrl) return;
+  _fichaBMetroDesdeUrlAbierta = true;
+  setLiga('bmetro');
+  const input = document.getElementById('team-search-bmetro');
+  if (input) input.value = equipoUrl;
+  buscarEquipoBMetro(equipoUrl);
+}
+
+function poblarSelectEquiposBMetro(){
+  const sel = document.getElementById('campeon-equipo-bmetro');
+  if (!sel || !DATA_BMETRO || !DATA_BMETRO.tabla) return;
+  const valorPrevio = sel.value;
+  const nombres = DATA_BMETRO.tabla.map(f => f.equipo).sort();
+  sel.innerHTML = '<option value="">Elegí un equipo…</option>' +
+    nombres.map(n => `<option value="${n}">${n}</option>`).join('');
+  if (valorPrevio && nombres.includes(valorPrevio)) sel.value = valorPrevio;
+}
+
+function leerNSimsBMetro(){
+  const input = document.getElementById('sim-count-bmetro');
+  let n = parseInt(input.value, 10);
+  if (!Number.isFinite(n)) n = 500;
+  n = Math.max(50, Math.min(5000, n));
+  input.value = n; // refleja el valor ya corregido si el usuario puso algo fuera de rango
+  return n;
+}
+
+async function correrSimulacionBMetro(){
+  const btn = document.getElementById('btn-simular-bmetro');
+  const status = document.getElementById('sim-status-bmetro');
+  const input = document.getElementById('sim-count-bmetro');
+  const nSims = leerNSimsBMetro();
+
+  if (!beginApiAction(status)) return;
+
+  btn.disabled = true;
+  input.disabled = true;
+  btn.textContent = "Simulando…";
+  status.classList.remove('error', 'ok');
+  status.textContent = `Corriendo ${nSims} simulaciones — puede tardar 1-2 minutos, no cierres esta pestaña.`;
+
+  try {
+    const cuerpo = await ejecutarSimulacion("simular-bmetro", { n_sims: Number(nSims) }, "/api/simular-bmetro", status);
+
+    // El simulador local (Pyodide) y la API devuelven el mismo shape que
+    // data_bmetro.json, así que renderizamos desde ahí en vez de volver a
+    // pedir data_bmetro.json.
+    DATA_BMETRO = cuerpo;
+    iniciarBMetro();
+
+    status.classList.add('ok');
+    status.textContent = "✓ Simulación actualizada (" + (DATA_BMETRO.generado || "") + ")";
+  } catch (e) {
+    setApiErrorStatus(status, "No se pudo correr la simulación", e);
+  } finally {
+    btn.disabled = false;
+    input.disabled = false;
+    btn.textContent = "▶ Correr nueva simulación";
+    endApiAction();
+  }
+}
+
+document.getElementById('btn-simular-bmetro').addEventListener('click', correrSimulacionBMetro);
+
+function renderTablaBMetro(){
+  const body = document.getElementById('tabla-bmetro-body');
+  if (!body || !DATA_BMETRO) return;
+  const filas = DATA_BMETRO.tabla;
+  const nDesc = DATA_BMETRO.descensos_n || 2;
+  const nRed = DATA_BMETRO.reducido_n || 9;
+  body.innerHTML = "";
+  filas.forEach((f, i) => {
+    const tr = document.createElement('tr');
+    if (i === 0) tr.classList.add('punta');
+    else if (i >= 1 && i <= nRed - 1) tr.classList.add('reducido');
+    if (i >= filas.length - nDesc) tr.classList.add('descenso');
+    tr.innerHTML = `<td>${i+1}</td><td>${escudoHTML(f.equipo)}${f.equipo}</td><td>${f.puntos}</td><td>${f.gf}</td><td>${f.gc}</td><td>${f.dg > 0 ? '+'+f.dg : f.dg}</td>`;
+    body.appendChild(tr);
+  });
+}
+
+function renderReducidoBMetro(){
+  if (!DATA_BMETRO) return;
+  const r = DATA_BMETRO.reducido;
+  const bracket = document.getElementById('bracket-bmetro');
+  if (!bracket || !r) return;
+
+  const footer = document.getElementById('bmetro-puntero-footer');
+  if (footer) {
+    footer.innerHTML = `Asciende directo: <b>${DATA_BMETRO.puntero_ascenso_directo}</b> — puntero de la tabla, sin jugar el Reducido.`;
+  }
+
+  let html = "";
+  html += `<div class="round">
+    <div class="round-title">Cuartos (ida y vuelta)</div>
+    <div class="round-body">${r.cuartos.map(m => seriesHTML(m)).join("")}</div>
+  </div>`;
+
+  html += `<div class="round">
+    <div class="round-title">Semifinal (ida y vuelta)</div>
+    <div class="round-body">${r.semis.map(m => seriesHTML(m)).join("")}</div>
+  </div>`;
+
+  html += `<div class="round final-col">
+    <div class="round-title">Final (ida y vuelta)</div>
+    <div class="round-body">${seriesHTML(r.final)}</div>
+  </div>`;
+
+  bracket.innerHTML = html;
+  const anuncio = document.getElementById('campeon-anuncio-reducido-bmetro');
+  if (anuncio) anuncio.innerHTML = campeonAnuncioHTML(r.final.campeon, '▲');
+}
+
+function renderMCBMetro(){
+  const list = document.getElementById('mc-list-bmetro');
+  if (!list || !DATA_BMETRO || !DATA_BMETRO.monte_carlo) return;
+  list.innerHTML = "";
+  const zoneColor = 'var(--zone-a)';
+  DATA_BMETRO.monte_carlo.forEach((f, i) => {
+    const row = document.createElement('div');
+    row.className = 'mc-row';
+    const directo = f['%ascenso_directo'];
+    const reducido = f['%ascenso_reducido'];
+    const descClass = f.descenso >= 25 ? 'high' : '';
+    row.innerHTML = `
+      <div class="pos">${i+1}</div>
+      <div>
+        <div class="name"><span>${escudoHTML(f.equipo)}${f.equipo}</span><span class="pct" style="color:${zoneColor}">${fmtPct(f.ascenso_total)} ascenso</span></div>
+        <div class="mc-bar-track">
+          <div class="mc-bar-fill directo" style="width:${directo}%; background:${zoneColor}"></div>
+          <div class="mc-bar-fill reducido" style="left:${directo}%; width:${reducido}%; background:${zoneColor}"></div>
+        </div>
+        <div class="mc-sub">
+          <span><i class="dot" style="background:${zoneColor}"></i>${fmtPct(directo)} directo</span>
+          <span><i class="dot" style="background:${zoneColor}; opacity:0.5"></i>${fmtPct(reducido)} reducido</span>
+        </div>
+      </div>
+      <div class="mc-desc">
+        <div class="desc-pct ${descClass}">${fmtPct(f.descenso)}</div>
+        <div class="desc-lbl">descenso</div>
+        <div class="desc-bar-track"><div class="desc-bar-fill" style="width:${Math.min(f.descenso, 100)}%"></div></div>
+      </div>
+    `;
+    list.appendChild(row);
+  });
+}
+
+function renderEsperadaBMetro(){
+  const body = document.getElementById('esperada-body-bmetro');
+  if (!body || !DATA_BMETRO || !DATA_BMETRO.tabla_esperada) return;
+  body.innerHTML = "";
+  DATA_BMETRO.tabla_esperada.forEach((f, i) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${i+1}</td><td>${escudoHTML(f.equipo)}${f.equipo}</td><td>${f.puntos_prom}</td><td>${f.posicion_prom}</td>`;
+    body.appendChild(tr);
+  });
+}
+
+/* ---------- B METROPOLITANA: SIMULAR HASTA EL ASCENSO ---------- */
+async function simularHastaCampeonBMetro(){
+  const btn = document.getElementById('btn-campeon-bmetro');
+  const sel = document.getElementById('campeon-equipo-bmetro');
+  const status = document.getElementById('campeon-status-bmetro');
+  const resultado = document.getElementById('campeon-resultado-bmetro');
+  const equipo = sel.value;
+
+  status.classList.remove('error', 'ok');
+
+  if (!equipo){
+    status.classList.add('error');
+    status.textContent = "Elegí un equipo primero.";
+    return;
+  }
+
+  if (!beginApiAction(status)) return;
+
+  btn.disabled = true;
+  sel.disabled = true;
+  btn.textContent = "Simulando…";
+  status.textContent = `Corriendo temporadas hasta que ${equipo} ascienda — puede tardar unos segundos.`;
+  resultado.innerHTML = "";
+
+  try {
+    const cuerpo = await ejecutarSimulacion("simular-campeon-bmetro", { equipo }, "/api/simular-campeon-bmetro", status);
+
+    if (!cuerpo.logrado) {
+      status.classList.add('error');
+      status.textContent = `No se logró el ascenso de ${equipo} en ${cuerpo.max_intentos} intentos simulados. Probá de nuevo — el azar puede variar.`;
+      return;
+    }
+
+    renderCampeonResultadoBMetro(cuerpo);
+    status.classList.add('ok');
+    status.textContent = `✓ Encontrado en el intento N° ${cuerpo.intentos}`;
+  } catch (e) {
+    setApiErrorStatus(status, "No se pudo simular", e);
+  } finally {
+    btn.disabled = false;
+    sel.disabled = false;
+    btn.textContent = "🏆 Simular hasta el ascenso";
+    endApiAction();
+  }
+}
+
+function renderCampeonResultadoBMetro(r){
+  const cont = document.getElementById('campeon-resultado-bmetro');
+  const via = r.via === 'ascenso_directo' ? 'ascenso directo (puntero)' : 'el Torneo Reducido';
+  const nDesc = (DATA_BMETRO && DATA_BMETRO.descensos_n) || 2;
+  const nRed = (DATA_BMETRO && DATA_BMETRO.reducido_n) || 9;
+
+  function filasHTML(filas){
+    let html = "";
+    filas.forEach((f, i) => {
+      const clases = [];
+      if (i === 0) clases.push('punta');
+      else if (i >= 1 && i <= nRed - 1) clases.push('reducido');
+      if (i >= filas.length - nDesc) clases.push('descenso');
+      const esObjetivo = f.equipo === r.equipo;
+      html += `<tr class="${clases.join(' ')}"${esObjetivo ? ' style="box-shadow: inset 3px 0 0 var(--amber);"' : ''}>
+        <td>${i + 1}</td><td>${escudoHTML(f.equipo)}${f.equipo}${esObjetivo ? ' 🏆' : ''}</td><td>${f.puntos}</td><td>${f.gf}</td><td>${f.gc}</td><td>${f.dg > 0 ? '+' + f.dg : f.dg}</td>
+      </tr>`;
+    });
+    return html;
+  }
+
+  const tablaHTML = `
+    <div style="margin-top:14px;">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>GF</th><th>GC</th><th>DG</th></tr></thead>
+          <tbody>${filasHTML(r.tabla)}</tbody>
+        </table>
+      </div>
+    </div>
+  `;
+
+  let bracketBlockHTML;
+  if (r.via === 'ascenso_directo'){
+    bracketBlockHTML = `
+      <div class="ascenso-card" style="margin-top:18px;">
+        <div class="label">Ascenso directo</div>
+        <div class="ascenso-footer">Puntero de la tabla: <b>${r.equipo}</b> — asciende directo, sin jugar el Reducido.</div>
+      </div>
+    `;
+  } else {
+    const red = r.reducido;
+    let bracketHTML = "";
+    bracketHTML += `<div class="round">
+      <div class="round-title">Cuartos</div>
+      <div class="round-body">${red.cuartos.map(m => matchHTML(m)).join("")}</div>
+    </div>`;
+    bracketHTML += `<div class="round">
+      <div class="round-title">Semifinal</div>
+      <div class="round-body">${red.semis.map(m => matchHTML(m)).join("")}</div>
+    </div>`;
+    bracketHTML += `<div class="round final-col">
+      <div class="round-title">Final (ida y vuelta)</div>
+      <div class="round-body">
+        <div class="match" data-local="${red.semis[0] ? red.semis[0].avanza : ''}" data-visitante="${red.semis[1] ? red.semis[1].avanza : ''}">
+          ${red.semis.map(m => {
+            const nombreEquipo = m.avanza;
+            const esCampeon = nombreEquipo === red.final.campeon;
+            return `<div class="row ${esCampeon ? 'winner' : ''}"><span>${escudoHTML(nombreEquipo)}${nombreEquipo}</span></div>`;
+          }).join("")}
+          <div class="leg-detail">${red.final.detalle}</div>
+        </div>
+      </div>
+    </div>`;
+
+    bracketBlockHTML = `
+      <div class="label" style="font-family:'JetBrains Mono'; font-size:11px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin: 24px 0 4px;">Torneo Reducido — 2° ascenso</div>
+      <div class="bracket-scroll"><div class="bracket">${bracketHTML}</div></div>
+      <div class="campeon-anuncio-wrap">${campeonAnuncioHTML(red.final.campeon, '▲')}</div>
+    `;
+  }
+
+  cont.innerHTML = `
+    <div class="campeon-summary">🏆 <b>${r.equipo}</b> asciende en esta temporada simulada — vía <b>${via}</b>
+      (intento N° ${r.intentos} de una búsqueda al azar entre distintas temporadas posibles)</div>
+    ${tablaHTML}
+    ${bracketBlockHTML}
+  `;
+}
+
+document.getElementById('btn-campeon-bmetro').addEventListener('click', simularHastaCampeonBMetro);
+
 /* ---------- SELECTOR DE LIGA ---------- */
 const HERO_TEXTOS = {
   nacional: {
@@ -3158,6 +4153,12 @@ const HERO_TEXTOS = {
     titulo: "LIGA PROFESIONAL",
     sub: "Apertura 2026 ya jugado (dato real) + Clausura simulado con el mismo modelo Poisson — playoffs cruzados, Tabla Anual, copas internacionales y Trofeo de Campeones.",
     ascensosLbl: "Playoffs (equipos)",
+  },
+  bmetro: {
+    eyebrow: () => `SIMULACIÓN MONTE CARLO — <span id="hero-n">${(DATA_BMETRO && DATA_BMETRO.n_simulaciones) || 0}</span> CORRIDAS`,
+    titulo: "PRIMERA B METROPOLITANA",
+    sub: "Temporada regular simulada con el mismo modelo Poisson ajustado por forma reciente y corrección Dixon-Coles: 1 ascenso directo (puntero) + 1 por el Torneo Reducido, tabla única sin zonas.",
+    ascensosLbl: "Ascensos por edición",
   }
 };
 
@@ -3176,6 +4177,11 @@ function actualizarHero(liga){
     document.getElementById('meta-equipos').textContent = 30;
     document.getElementById('meta-ascensos').textContent = 16;
     document.getElementById('meta-descensos').textContent = 2;
+  } else if (liga === 'bmetro'){
+    document.getElementById('meta-equipos').textContent = (DATA_BMETRO && DATA_BMETRO.tabla.length) || 22;
+    document.getElementById('meta-zonas').textContent = 1;
+    document.getElementById('meta-ascensos').textContent = 2;
+    document.getElementById('meta-descensos').textContent = (DATA_BMETRO && DATA_BMETRO.descensos && DATA_BMETRO.descensos.length) || 2;
   } else if (DATA) {
     document.getElementById('meta-equipos').textContent = DATA.tablas.A.length + DATA.tablas.B.length;
     document.getElementById('meta-ascensos').textContent = 2;
@@ -3188,11 +4194,14 @@ function setLiga(liga){
   document.getElementById('vista-nacional').style.display = liga === 'nacional' ? '' : 'none';
   document.getElementById('vista-lpf').style.display = liga === 'lpf' ? '' : 'none';
   document.getElementById('vista-copa').style.display = liga === 'copa' ? '' : 'none';
+  document.getElementById('vista-bmetro').style.display = liga === 'bmetro' ? '' : 'none';
   document.getElementById('sim-control-nacional').style.display = liga === 'nacional' ? '' : 'none';
   document.getElementById('sim-control-lpf').style.display = liga === 'lpf' ? '' : 'none';
   document.getElementById('sim-control-copa').style.display = liga === 'copa' ? '' : 'none';
+  document.getElementById('sim-control-bmetro').style.display = liga === 'bmetro' ? '' : 'none';
   document.body.classList.toggle('liga-lpf', liga === 'lpf');
   document.body.classList.toggle('liga-copa', liga === 'copa');
+  document.body.classList.toggle('liga-bmetro', liga === 'bmetro');
   actualizarHero(liga);
   // El cuadro recién visible puede haber quedado con medidas en 0 (display:none
   // no dispara el MutationObserver de los brackets), así que se refresca a mano.
@@ -3241,6 +4250,7 @@ const SEARCH_PLACEHOLDERS = [
   ['team-search', 'Buscar equipo…', 'Buscar equipo… (ej: Morón, Ferro, Colón)'],
   ['team-search-lpf', 'Buscar equipo…', 'Buscar equipo… (ej: River, Belgrano, Lanús)'],
   ['team-search-copa', 'Buscar equipo…', 'Buscar equipo… (ej: River, Instituto, Midland)'],
+  ['team-search-bmetro', 'Buscar equipo…', 'Buscar equipo… (ej: Almirante Brown, Liniers, UAI Urquiza)'],
 ];
 
 function aplicarPlaceholdersResponsive(){
@@ -3255,6 +4265,7 @@ window.addEventListener('resize', aplicarPlaceholdersResponsive);
 aplicarPlaceholdersResponsive();
 
 /* ---------- COPA ARGENTINA ---------- */
+let DATA_BMETRO = null;
 let DATA_COPA = null;
 const RONDAS_COPA = [
   ["32avos", "32avos de final"], ["16avos", "16avos de final"], ["octavos", "Octavos"],
@@ -3615,6 +4626,7 @@ document.getElementById('btn-campeon-copa').addEventListener('click', simularHas
 
 cargarDatosLPF();
 cargarDatosCopa();
+cargarDatosBMetro();
 
 // Flechas de navegación para los cuadros (brackets): evitan tener que
 // arrastrar la barra de scroll horizontal para ver las rondas siguientes.
