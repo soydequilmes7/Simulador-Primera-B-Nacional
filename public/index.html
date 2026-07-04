@@ -9,7 +9,7 @@
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Anton&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
   /* =====================================================================
@@ -1594,6 +1594,375 @@
   body.liga-bmetro .liga-tab:not(.active):hover{ color:#B39B5E; background: var(--amber-dim); }
   body.liga-bmetro .theme-toggle{ border-radius:999px; }
 
+  /* =====================================================================
+     TORNEO FEDERAL A · identidad propia
+     — Lenguaje visual completamente distinto de las otras 4 categorías:
+       en vez de un modo claro con fondo blanco y acentos azul/dorado,
+       Federal A es una marca OSCURA, mineral y premium: degradado negro →
+       verde petróleo (#103A38), grafito, blanco puro y una textura
+       topográfica casi imperceptible. Sin azul, sin dorado.
+     — Tipografía propia: Anton (condensada, institucional) para títulos,
+       Manrope para UI/texto y Space Grotesk para cifras y etiquetas
+       técnicas — nada del Oswald/Inter/JetBrains de las demás.
+     — Esquinas rectas, cards de vidrio con borde blanco translúcido,
+       botones oscuros con filo blanco e iluminación verde al hover, y
+       contadores tipo placa metálica.
+     La página se mantiene oscura en ambos estados del toggle (grafito por
+     defecto, negro absoluto en "oscuro"), para preservar la identidad.
+     Todo se apoya en las mismas variables que el resto: la lógica del
+     simulador no se toca. ===================================================================== */
+  body.liga-federal{
+    /* -------- estado por defecto: GRAFITO -------- */
+    --bg: #0B1413;
+    --bg-panel: rgba(255,255,255,0.035);
+    --bg-panel-2: rgba(255,255,255,0.06);
+    --line: rgba(255,255,255,0.13);
+    --ink: #F1F5F4;
+    --ink-dim: #AEBEBB;
+    --muted: #6F827E;
+
+    /* acento único: verde petróleo/teal (reemplaza al dorado) */
+    --amber: #4FB3A6;
+    --amber-dim: rgba(79,179,166,0.14);
+
+    --zone-a: #37B8A8;               /* clasifica / ascenso */
+    --zone-a-dim: rgba(55,184,168,0.15);
+    --zone-b: #9AAAA6;               /* neutro grafito */
+    --zone-b-dim: rgba(154,170,166,0.14);
+    --danger: #E0685A;
+    --danger-dim: rgba(224,104,90,0.14);
+    --azul: #4FB3A6;                 /* links/focus en petróleo, nunca azul */
+    --azul-dim: rgba(79,179,166,0.16);
+
+    /* tokens de tabla: líder = placa blanca, clasifica = petróleo */
+    --leader-bg: rgba(255,255,255,0.10);
+    --leader-accent: #FFFFFF;
+    --leader-text: #FFFFFF;
+    --qualified-bg: rgba(55,184,168,0.13);
+    --qualified-accent: #37B8A8;
+    --qualified-text: #86E4D6;
+    --relegation-bg: rgba(224,104,90,0.12);
+    --relegation-accent: #E0685A;
+    --relegation-text: #F2A99E;
+
+    /* forma: esquinas rectas, sombras minerales profundas */
+    --radius: 2px;
+    --radius-sm: 2px;
+    --card-shadow: 0 10px 30px rgba(0,0,0,0.45);
+    --card-shadow-hover: 0 16px 42px rgba(0,0,0,0.6);
+    --card-grad: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015));
+    --hero-bg: linear-gradient(160deg, #070B0A 0%, #0C201E 52%, #103A38 100%);
+    --hero-ink: #FFFFFF;
+    --hero-dim: #A7B7B4;
+    --hero-accent: #FFFFFF;          /* aro blanco del escudo */
+    --tabs-bg: rgba(9,15,14,0.86);
+    --btn-grad: rgba(255,255,255,0.045);
+    --btn-ink: #FFFFFF;
+    --table-head-bg: rgba(255,255,255,0.04);
+    --hover-lift: translateY(-2px);
+    --bracket-line: #37B8A8;
+    --bracket-line-glow: rgba(55,184,168,0.4);
+
+    /* vidrio propio del tema (cards / paneles) */
+    --fed-glass: linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%);
+    --fed-border: rgba(255,255,255,0.14);
+    --fed-border-hover: rgba(79,179,166,0.6);
+
+    font-family:'Manrope', sans-serif;
+    background: var(--bg);
+  }
+  body.dark.liga-federal{
+    /* -------- estado "oscuro": NEGRO ABSOLUTO (aún más contraste) --------
+       Se redefine el palette completo (no solo el fondo) porque
+       `body.dark:not(.liga-lpf)` tiene mayor especificidad que el bloque
+       base `body.liga-federal` y, de lo contrario, filtraría los acentos
+       dorado/azul de Nacional en modo oscuro. Mismos valores petróleo, con
+       fondos aún más profundos. */
+    --bg: #060C0B;
+    --bg-panel: rgba(255,255,255,0.03);
+    --bg-panel-2: rgba(255,255,255,0.05);
+    --line: rgba(255,255,255,0.11);
+    --ink: #F1F5F4;
+    --ink-dim: #AEBEBB;
+    --muted: #6F827E;
+
+    --amber: #4FB3A6;
+    --amber-dim: rgba(79,179,166,0.14);
+    --zone-a: #37B8A8;
+    --zone-a-dim: rgba(55,184,168,0.15);
+    --zone-b: #9AAAA6;
+    --zone-b-dim: rgba(154,170,166,0.14);
+    --danger: #E0685A;
+    --danger-dim: rgba(224,104,90,0.14);
+    --azul: #4FB3A6;
+    --azul-dim: rgba(79,179,166,0.16);
+
+    --leader-bg: rgba(255,255,255,0.10);
+    --leader-accent: #FFFFFF;
+    --leader-text: #FFFFFF;
+    --qualified-bg: rgba(55,184,168,0.13);
+    --qualified-accent: #37B8A8;
+    --qualified-text: #86E4D6;
+    --relegation-bg: rgba(224,104,90,0.12);
+    --relegation-accent: #E0685A;
+    --relegation-text: #F2A99E;
+
+    --hero-bg: linear-gradient(160deg, #030807 0%, #071A18 52%, #0C302E 100%);
+    --hero-ink: #FFFFFF;
+    --hero-dim: #A7B7B4;
+    --hero-accent: #FFFFFF;
+    --tabs-bg: rgba(4,9,8,0.9);
+    --btn-grad: rgba(255,255,255,0.045);
+    --btn-ink: #FFFFFF;
+    --table-head-bg: rgba(255,255,255,0.04);
+    --bracket-line: #37B8A8;
+    --bracket-line-glow: rgba(55,184,168,0.4);
+    --card-shadow: 0 12px 34px rgba(0,0,0,0.6);
+    --card-shadow-hover: 0 18px 46px rgba(0,0,0,0.72);
+  }
+
+  /* ---- Textura topográfica global: dos capas casi imperceptibles de
+     líneas de nivel (curvas concéntricas) + un velo petróleo en las
+     esquinas. Fijas detrás de todo el contenido, no solo del hero. ---- */
+  body.liga-federal::before{
+    content:""; position:fixed; inset:0; z-index:-2; pointer-events:none;
+    background:
+      radial-gradient(1200px 700px at 78% -12%, rgba(16,58,56,0.55), transparent 60%),
+      radial-gradient(900px 600px at 8% 108%, rgba(16,58,56,0.4), transparent 60%);
+  }
+  body.liga-federal::after{
+    content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
+    opacity:0.5;
+    background-image:
+      repeating-radial-gradient(circle at 82% 0%, transparent 0 58px, rgba(255,255,255,0.022) 58px 59px),
+      repeating-radial-gradient(circle at 10% 100%, transparent 0 66px, rgba(255,255,255,0.018) 66px 67px);
+  }
+
+  /* Tipografía: Anton para títulos/pestañas, Manrope para UI, Space Grotesk
+     para cifras y etiquetas técnicas. */
+  body.liga-federal input,
+  body.liga-federal button,
+  body.liga-federal select{ font-family:'Manrope', sans-serif; }
+  body.liga-federal .display,
+  body.liga-federal .hero h1,
+  body.liga-federal .section-head h2{
+    font-family:'Anton', sans-serif; font-weight:400;
+    text-transform:uppercase; letter-spacing:0.03em;
+  }
+  body.liga-federal .mono,
+  body.liga-federal .eyebrow,
+  body.liga-federal tbody td,
+  body.liga-federal thead th,
+  body.liga-federal .hero .meta .num,
+  body.liga-federal .hero .meta .lbl,
+  body.liga-federal .section-head .idx,
+  body.liga-federal .round-title,
+  body.liga-federal .sim-select-row label,
+  body.liga-federal .sim-status,
+  body.liga-federal .last-update,
+  body.liga-federal .btn-simular,
+  body.liga-federal .btn-actualizar,
+  body.liga-federal #sim-count-federal,
+  body.liga-federal .mc-row .pos,
+  body.liga-federal .mc-row .name .pct{
+    font-family:'Space Grotesk', sans-serif;
+  }
+
+  /* ---- HERO: banda mineral negra→petróleo con guía topográfica y filo
+     blanco (en lugar del acento dorado/celeste de las otras ligas) ---- */
+  body.liga-federal .hero{
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  body.liga-federal .hero::before{
+    content:""; position:absolute; inset:0; pointer-events:none;
+    background:
+      radial-gradient(760px 420px at 50% -180px, rgba(55,184,168,0.14), transparent 62%),
+      repeating-linear-gradient(115deg, transparent 0 46px, rgba(255,255,255,0.015) 46px 47px);
+  }
+  body.liga-federal .hero::after{
+    height:2px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.9) 34%, #37B8A8 50%, rgba(255,255,255,0.9) 66%, transparent);
+    opacity:1;
+  }
+  body.liga-federal .eyebrow{ color: var(--hero-dim); letter-spacing:0.42em; font-weight:500; }
+  body.liga-federal .hero h1{
+    color:#B7C4C2;                 /* "SIMULADOR" en gris claro */
+    font-size: clamp(40px, 8.4vw, 82px);
+    line-height:0.94; letter-spacing:0.02em;
+    text-shadow: 0 2px 30px rgba(0,0,0,0.5);
+  }
+  body.liga-federal .hero h1 span{ color:#FFFFFF; }   /* "TORNEO FEDERAL A" blanco puro */
+  body.liga-federal .hero p.sub{ color: var(--hero-dim); max-width:560px; }
+
+  /* Emblema del hero: aro blanco (crest) con disco petróleo y monograma
+     "FA", envuelto en un halo circular muy sutil. Reemplaza al escudo
+     .torneo-logo (cuyo asset no existe para esta liga) y se convierte en
+     el protagonista, inspirado en el aro blanco del escudo oficial. */
+  .federal-crest{ display:none; }
+  body.liga-federal .torneo-logo[data-liga="federal"]{ display:none; }
+  body.liga-federal .federal-crest{
+    display:flex; align-items:center; justify-content:center;
+    position:relative; width:132px; height:132px; margin:0 auto 20px;
+    opacity:0; animation: fade-in 0.7s ease forwards 0.05s;
+  }
+  /* halo: aro blanco difuso girando la mirada hacia el emblema */
+  body.liga-federal .federal-crest::before{
+    content:""; position:absolute; width:210px; height:210px; border-radius:50%;
+    border:1px solid rgba(255,255,255,0.16);
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.04), inset 0 0 60px rgba(55,184,168,0.14);
+    background: radial-gradient(circle, rgba(55,184,168,0.10), transparent 62%);
+  }
+  body.liga-federal .federal-crest-disc{
+    position:relative; width:118px; height:118px; border-radius:50%;
+    background:
+      radial-gradient(circle at 50% 34%, #145049 0%, #0D2E2C 60%, #081A19 100%);
+    border:3px solid #FFFFFF;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.55), inset 0 0 22px rgba(0,0,0,0.5);
+    display:flex; align-items:center; justify-content:center;
+  }
+  /* aro interior fino (doble aro del crest) */
+  body.liga-federal .federal-crest-disc::after{
+    content:""; position:absolute; inset:9px; border-radius:50%;
+    border:1px solid rgba(255,255,255,0.32);
+  }
+  body.liga-federal .federal-crest-mono{
+    font-family:'Anton', sans-serif; font-size:44px; letter-spacing:0.02em;
+    color:#FFFFFF; line-height:1; text-shadow:0 2px 10px rgba(0,0,0,0.5);
+    position:relative;
+  }
+  @media (max-width:700px){
+    body.liga-federal .federal-crest{ width:112px; height:112px; }
+    body.liga-federal .federal-crest::before{ width:176px; height:176px; }
+    body.liga-federal .federal-crest-disc{ width:100px; height:100px; }
+    body.liga-federal .federal-crest-mono{ font-size:38px; }
+  }
+
+  /* ---- Contadores = placas metálicas / paneles técnicos ---- */
+  body.liga-federal .hero .meta{ gap:12px; margin-top:32px; }
+  body.liga-federal .hero .meta > div{
+    position:relative;
+    background: linear-gradient(160deg, rgba(255,255,255,0.11) 0%, rgba(255,255,255,0.03) 48%, rgba(255,255,255,0.06) 100%);
+    border:1px solid rgba(255,255,255,0.16);
+    border-radius:2px; padding:12px 20px 11px; min-width:112px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.22), inset 0 -1px 0 rgba(0,0,0,0.4), 0 4px 14px rgba(0,0,0,0.4);
+    transition: border-color 0.2s ease, transform 0.2s ease;
+  }
+  /* remache/indicador técnico en la esquina de la placa */
+  body.liga-federal .hero .meta > div::before{
+    content:""; position:absolute; top:6px; right:6px; width:4px; height:4px;
+    border-radius:50%; background: rgba(55,184,168,0.9);
+    box-shadow:0 0 6px rgba(55,184,168,0.8);
+  }
+  body.liga-federal .hero .meta > div:hover{ border-color: rgba(255,255,255,0.34); transform: var(--hover-lift); }
+  /* las etiquetas internas (.num/.lbl son <div> y también matchean la regla
+     base `.hero .meta div`): se les quita borde/padding para que la placa
+     sea una sola pieza y no se dibujen cajas anidadas */
+  body.liga-federal .hero .meta .num,
+  body.liga-federal .hero .meta .lbl{
+    border:none; padding:0; border-radius:0; min-width:0; box-shadow:none; background:none;
+  }
+  body.liga-federal .hero .meta .num{ color:#FFFFFF; font-size:22px; font-weight:700; margin-bottom:3px; }
+  body.liga-federal .hero .meta .lbl{ color: var(--hero-dim); letter-spacing:0.14em; }
+
+  /* ---- Input de simulaciones (no tenía estilo propio) ---- */
+  body.liga-federal #sim-count-federal{
+    font-size:13px; font-weight:600; color:#FFFFFF;
+    background: rgba(255,255,255,0.05);
+    border:1px solid rgba(255,255,255,0.28); border-radius:2px;
+    padding:9px 10px; width:92px; text-align:center; outline:none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+  }
+  body.liga-federal #sim-count-federal:hover:not(:disabled){ border-color: rgba(255,255,255,0.55); }
+  body.liga-federal #sim-count-federal:focus{ border-color:#37B8A8; box-shadow:0 0 0 3px rgba(55,184,168,0.22); }
+  body.liga-federal #sim-count-federal:disabled{ cursor:wait; opacity:0.5; }
+  body.liga-federal #sim-count-federal::-webkit-inner-spin-button,
+  body.liga-federal #sim-count-federal::-webkit-outer-spin-button{ opacity:0.6; }
+
+  /* ---- Botones: fondo oscuro, filo blanco fino, iluminación verde al hover ---- */
+  body.liga-federal .btn-simular{
+    font-size:12px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase;
+    background: rgba(255,255,255,0.045);
+    border:1px solid rgba(255,255,255,0.45); border-radius:2px;
+    color:#FFFFFF; padding:12px 26px;
+  }
+  body.liga-federal .btn-simular:hover:not(:disabled){
+    background: rgba(55,184,168,0.16);
+    border-color:#4FB3A6;
+    box-shadow: 0 0 24px rgba(55,184,168,0.45), inset 0 0 18px rgba(55,184,168,0.12);
+    filter:none;
+  }
+  body.liga-federal .btn-actualizar{
+    font-size:12px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase;
+    background:transparent; border:1px solid rgba(255,255,255,0.28); border-radius:2px;
+    color: var(--hero-dim); padding:12px 26px;
+  }
+  body.liga-federal .btn-actualizar:hover:not(:disabled){
+    background: rgba(255,255,255,0.05); border-color:#4FB3A6; color:#FFFFFF;
+    box-shadow: 0 0 18px rgba(55,184,168,0.3);
+  }
+
+  /* ---- Navegación entre torneos: pestaña Federal activa = blanco + verde
+     petróleo (nunca ámbar), grupo con borde fino ---- */
+  body.liga-federal .liga-tabs{ border-bottom:1px solid rgba(255,255,255,0.08); }
+  body.liga-federal .liga-tabs .group{
+    border:1px solid rgba(255,255,255,0.14); border-radius:2px;
+    background: rgba(255,255,255,0.03);
+  }
+  body.liga-federal .liga-tab{ font-family:'Anton', sans-serif; font-weight:400; letter-spacing:0.06em; }
+  body.liga-federal .liga-tab.active{
+    background: linear-gradient(160deg, #103A38, #0B2A28);
+    color:#FFFFFF; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.22);
+  }
+  body.liga-federal .liga-tab:not(.active){ color: var(--muted); }
+  body.liga-federal .liga-tab:not(.active):hover{ color:#DCE6E3; background: rgba(255,255,255,0.05); }
+  body.liga-federal .theme-toggle{
+    background: rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.16); color: var(--ink-dim); border-radius:2px;
+  }
+  body.liga-federal .theme-toggle:hover{ color:#FFFFFF; border-color:#4FB3A6; }
+
+  /* ---- Cards / paneles: vidrio oscuro, borde blanco translúcido, recto ---- */
+  body.liga-federal .search-section,
+  body.liga-federal .table-wrap,
+  body.liga-federal .mc-row,
+  body.liga-federal .match,
+  body.liga-federal .team-card,
+  body.liga-federal .ascenso-card,
+  body.liga-federal .faq details{
+    background: var(--fed-glass);
+    border:1px solid var(--fed-border);
+    border-radius:2px;
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  }
+  body.liga-federal .mc-row:hover,
+  body.liga-federal .match:hover,
+  body.liga-federal .team-card:hover,
+  body.liga-federal .ascenso-card:hover{ border-color: var(--fed-border-hover); }
+  body.liga-federal .search-box input{ background: rgba(255,255,255,0.05); }
+  body.liga-federal .search-section + .search-section{ margin-top:26px; }
+  body.liga-federal #campeon-section-federal{ border-color: var(--fed-border); background: var(--fed-glass); }
+
+  /* select "Elegí un equipo" y sus opciones, legibles en el tema oscuro */
+  body.liga-federal #campeon-equipo-federal{
+    background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.28); color:#FFFFFF;
+  }
+  body.liga-federal #campeon-equipo-federal:hover:not(:disabled),
+  body.liga-federal #campeon-equipo-federal:focus{ border-color:#37B8A8; }
+  body.liga-federal #campeon-equipo-federal option{ background:#0D2422; color:#F1F5F4; }
+
+  /* acentos de sección y probabilidades en petróleo */
+  body.liga-federal .section-head .idx{ color:#4FB3A6; font-weight:700; }
+  body.liga-federal .section-head h2{ font-size:26px; }
+  body.liga-federal .section-head .rule{ background: linear-gradient(90deg, rgba(255,255,255,0.18), transparent); }
+  body.liga-federal .round-title{ color:#4FB3A6; letter-spacing:0.14em; }
+  body.liga-federal .mc-bar-fill.directo{ background: linear-gradient(90deg, #37B8A8, #145049) !important; }
+  body.liga-federal .faq summary{ color: var(--ink); }
+  body.liga-federal .faq summary::after{ color:#4FB3A6; }
+
+  @media (prefers-reduced-motion: reduce){
+    body.liga-federal .federal-crest{ animation:none; opacity:1; }
+    body.liga-federal .hero .meta > div{ transition:none; }
+  }
+
   /* ---- Escudos de equipos ---- */
   .escudo{ width:24px; height:24px; object-fit:contain; vertical-align:-6px; margin-right:8px; }
   .tc-name .escudo{ width:34px; height:34px; vertical-align:-8px; margin-right:10px; }
@@ -1649,6 +2018,9 @@
            onerror="this.remove()">
       <img class="torneo-logo" data-liga="federal" src="logos-torneos/federal-a.png" alt=""
            onerror="this.remove()">
+      <div class="federal-crest" aria-hidden="true">
+        <div class="federal-crest-disc"><span class="federal-crest-mono">FA</span></div>
+      </div>
     </div>
     <div class="eyebrow" id="hero-eyebrow">SIMULACIÓN MONTE CARLO — <span id="hero-n">0</span> CORRIDAS</div>
     <h1 class="display">SIMULADOR <span id="hero-title-span">PRIMERA NACIONAL</span></h1>
