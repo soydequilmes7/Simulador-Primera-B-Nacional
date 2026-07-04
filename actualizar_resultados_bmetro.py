@@ -89,6 +89,10 @@ def actualizar(n_sims=1000, correr_simulacion_fn=None, imprimir=True):
     for i, fila in enumerate(fixture):
         clave = (fila["equipo_local"], fila["equipo_visitante"])
         indice_fixture[clave] = i
+    resultados_ya_cargados = {
+        (fila["equipo_local"], fila["equipo_visitante"])
+        for fila in resultados
+    }
 
     sin_matchear = []
     cargados = []
@@ -96,6 +100,8 @@ def actualizar(n_sims=1000, correr_simulacion_fn=None, imprimir=True):
 
     for p in partidos_jugados:
         clave = (p["equipo_local"], p["equipo_visitante"])
+        if clave in resultados_ya_cargados:
+            continue
         if clave in indice_fixture:
             idx = indice_fixture[clave]
             fila_fixture = fixture[idx]
@@ -109,6 +115,7 @@ def actualizar(n_sims=1000, correr_simulacion_fn=None, imprimir=True):
             })
             indices_a_borrar.append(idx)
             cargados.append(p)
+            resultados_ya_cargados.add(clave)
         else:
             sin_matchear.append(p)
 

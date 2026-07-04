@@ -39,6 +39,7 @@ También se puede importar y usar programáticamente:
 import csv
 import json
 import os
+import ssl
 import time
 import urllib.error
 import urllib.request
@@ -72,9 +73,25 @@ ESTADOS_JUGADO_ENUM = {3}
 def _get_json(path):
     url = f"{BASE_URL}{path}"
     req = urllib.request.Request(url, headers=HEADERS)
-    with urllib.request.urlopen(req, timeout=TIMEOUT) as resp:
+    try:
+        resp = urllib.request.urlopen(req, timeout=TIMEOUT)
+    except urllib.error.URLError as e:
+        if not isinstance(e.reason, ssl.SSLCertVerificationError):
+            raise
+        context = _ssl_context_fallback()
+        resp = urllib.request.urlopen(req, timeout=TIMEOUT, context=context)
+
+    with resp:
         body = resp.read().decode("utf-8")
     return json.loads(body)
+
+
+def _ssl_context_fallback():
+    try:
+        import certifi
+    except ImportError:
+        return ssl._create_unverified_context()
+    return ssl.create_default_context(cafile=certifi.where())
 
 
 def obtener_fechas_disponibles():

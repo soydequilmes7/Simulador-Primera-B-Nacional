@@ -78,9 +78,10 @@ def _preparar_motor() -> EstadisticasFederal:
 
 def _correr_torneo_completo(e: EstadisticasFederal) -> dict:
     """Corre las 5 Fases + las 6 Etapas de la Reválida una vez sobre el
-    estado actual de `e` (ratings ya calculados). Reinicia zonas/fixture/
-    puntajes al principio (reiniciar_para_nueva_corrida()), así se puede
-    reusar la misma instancia de `e` en cada repetición del Monte Carlo.
+    estado actual de `e` (ratings ya calculados). Restaura zonas, fixture
+    y tabla vigente de Primera Fase al principio
+    (reiniciar_para_nueva_corrida()), así se puede reusar la misma
+    instancia de `e` en cada repetición del Monte Carlo.
     Devuelve todos los artefactos intermedios -- los usan tanto la
     corrida de exhibición como simular_hasta_ascenso_federal()."""
     e.reiniciar_para_nueva_corrida()
