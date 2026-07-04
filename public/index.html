@@ -1371,17 +1371,29 @@
      Vive siempre en el DOM (compartido entre las 4 ligas) pero solo se
      muestra para B Metro, así no hace falta tocar el JS que puebla el
      resto del hero (hero-eyebrow / hero-title-span / hero-sub / meta-*). */
-  .bmetro-emblem{ display:none; }
-  body.liga-bmetro .bmetro-emblem{
-    display:flex; justify-content:center; margin-bottom:18px; position:relative; z-index:1;
+  /* Badge del torneo en el hero: un único slot que muestra el escudo
+     oficial de la competición activa (Nacional, LPF, Copa o B Metro).
+     El aro toma el acento de cada tema (--hero-accent) para integrarse
+     con la identidad visual de esa pestaña en vez de verse pegado. */
+  .torneo-logo-wrap{ display:flex; justify-content:center; margin-bottom:18px; position:relative; z-index:1; min-height:0; }
+  .torneo-logo{
+    /* Fondo blanco sólido (no vidrio): varios escudos de torneo tienen
+       colores oscuros que se perdían contra el hero navy con el fondo
+       traslúcido anterior. Blanco opaco garantiza contraste siempre. */
+    display:none; width:92px; height:92px; object-fit:contain; padding:14px;
+    border-radius:50%;
+    background: #FFFFFF;
+    border: 2px solid var(--hero-accent);
+    box-shadow: 0 8px 22px rgba(0,0,0,0.32), 0 0 0 4px rgba(255,255,255,0.08) inset;
     opacity:0; animation: fade-in 0.6s ease forwards;
   }
-  body.liga-bmetro .bmetro-emblem svg{
-    width:58px; height:66px;
-    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.18));
+  body.liga-nacional .torneo-logo[data-liga="nacional"],
+  body.liga-lpf .torneo-logo[data-liga="lpf"],
+  body.liga-copa .torneo-logo[data-liga="copa"],
+  body.liga-bmetro .torneo-logo[data-liga="bmetro"]{ display:block; }
+  @media (max-width:700px){
+    .torneo-logo{ width:72px; height:72px; padding:11px; }
   }
-  body.liga-bmetro .bmetro-emblem .emblem-letra{ fill:#B39B5E; font-family:'Space Grotesk', sans-serif; }
-  body.liga-bmetro .bmetro-emblem .emblem-aro{ fill:rgba(255,255,255,0.14); stroke:#FFFFFF; stroke-width:2.5; }
 
   /* ---- Tipografía del hero: más aire, jerarquía más clara ---- */
   body.liga-bmetro .eyebrow{ letter-spacing:0.38em; }
@@ -1608,11 +1620,15 @@
       </svg>
     </div>
 
-    <div class="bmetro-emblem" aria-hidden="true">
-      <svg viewBox="0 0 60 68" xmlns="http://www.w3.org/2000/svg">
-        <path class="emblem-aro" d="M30 2 L55 10 V33 C55 48 44 58 30 65 C16 58 5 48 5 33 V10 Z"/>
-        <text class="emblem-letra" x="30" y="42" text-anchor="middle" font-size="26" font-weight="700">B</text>
-      </svg>
+    <div class="torneo-logo-wrap" aria-hidden="true">
+      <img class="torneo-logo" data-liga="nacional" src="logos-torneos/primera-nacional.png" alt=""
+           onerror="this.parentElement.style.display='none'">
+      <img class="torneo-logo" data-liga="lpf" src="logos-torneos/liga-profesional.png" alt=""
+           onerror="this.remove()">
+      <img class="torneo-logo" data-liga="copa" src="logos-torneos/copa-argentina.png" alt=""
+           onerror="this.remove()">
+      <img class="torneo-logo" data-liga="bmetro" src="logos-torneos/b-metropolitana.png" alt=""
+           onerror="this.remove()">
     </div>
     <div class="eyebrow" id="hero-eyebrow">SIMULACIÓN MONTE CARLO — <span id="hero-n">0</span> CORRIDAS</div>
     <h1 class="display">SIMULADOR <span id="hero-title-span">PRIMERA NACIONAL</span></h1>
@@ -2522,7 +2538,7 @@ const ESCUDOS = {
   'Sacachispas':'sacachispas',
   'San Martín de Burzaco':'smburzaco', 'San Martín (B)':'smburzaco', 'San Martín Burzaco':'smburzaco',
   'Sportivo Italiano':'spitaliano',
-  'Talleres RE':'talleres', 'Talleres (RE)':'talleres', 'Talleres Remedios de Escalada':'talleres',
+  'Talleres RE':'talleres_re', 'Talleres (RE)':'talleres_re', 'Talleres Remedios de Escalada':'talleres_re',
   'Talleres de Remedios de Escalada':'talleres',
   'UAI Urquiza':'uaiurquiza',
   'Villa Dálmine':'villadalmine', 'Villa Dalmine':'villadalmine',
@@ -4199,6 +4215,7 @@ function setLiga(liga){
   document.getElementById('sim-control-lpf').style.display = liga === 'lpf' ? '' : 'none';
   document.getElementById('sim-control-copa').style.display = liga === 'copa' ? '' : 'none';
   document.getElementById('sim-control-bmetro').style.display = liga === 'bmetro' ? '' : 'none';
+  document.body.classList.toggle('liga-nacional', liga === 'nacional');
   document.body.classList.toggle('liga-lpf', liga === 'lpf');
   document.body.classList.toggle('liga-copa', liga === 'copa');
   document.body.classList.toggle('liga-bmetro', liga === 'bmetro');
