@@ -166,7 +166,7 @@ class EstadisticasFederal(Estadisticas):
             equipo.goles_contra = 0
 
     def _restaurar_puntajes_primera_fase(self) -> None:
-<<<<<<< HEAD
+
         """Restaura puntos/gf/gc de TODOS los equipos a los valores
         reales de tabla_federal_a.csv (partidos ya jugados) -- a
         diferencia de _resetear_puntajes(), que los pone en cero. Se usa
@@ -177,7 +177,6 @@ class EstadisticasFederal(Estadisticas):
             equipo.puntos = valores["puntos"]
             equipo.goles_favor = valores["gf"]
             equipo.goles_contra = valores["gc"]
-=======
         """Restaura la tabla real vigente antes de simular los partidos
         pendientes de la Primera Fase. A diferencia de Segunda Fase y
         Reválida, la Primera Fase no arranca de cero en cada corrida:
@@ -187,7 +186,6 @@ class EstadisticasFederal(Estadisticas):
             equipo.puntos = totales["puntos"]
             equipo.goles_favor = totales["gf"]
             equipo.goles_contra = totales["gc"]
->>>>>>> 55b42a87e826a5f684328a65984572b668ffd955
 
     def _asignar_zonas(self, mapa_zona: dict[str, str]) -> None:
         """equipo.zona = zona para cada entrada de mapa_zona (nombre ->
