@@ -1,311 +1,311 @@
 {
   "liga": "federal_a",
-  "generado": "2026-07-04 14:26",
-  "n_simulaciones": 30,
+  "generado": "2026-07-04 17:59",
+  "n_simulaciones": 500,
   "primera_fase": {
     "tablas": {
       "1": [
         {
           "posicion": 1,
-          "equipo": "Sportivo AC",
-          "puntos": 37,
-          "gf": 28,
-          "gc": 18,
-          "dg": 10
-        },
-        {
-          "posicion": 2,
-          "equipo": "Gimnasia y Esgrima de Chivilcoy",
-          "puntos": 33,
-          "gf": 27,
-          "gc": 16,
-          "dg": 11
-        },
-        {
-          "posicion": 3,
-          "equipo": "Gimnasia y Esgrima de Concepción del Uruguay",
-          "puntos": 30,
-          "gf": 23,
-          "gc": 13,
-          "dg": 10
-        },
-        {
-          "posicion": 4,
-          "equipo": "Defensores de Belgrano de V. Ramallo",
-          "puntos": 27,
-          "gf": 21,
-          "gc": 19,
-          "dg": 2
-        },
-        {
-          "posicion": 5,
-          "equipo": "Douglas Haig",
-          "puntos": 23,
-          "gf": 20,
-          "gc": 25,
-          "dg": -5
-        },
-        {
-          "posicion": 6,
-          "equipo": "Escobar FC",
-          "puntos": 20,
-          "gf": 22,
-          "gc": 28,
-          "dg": -6
-        },
-        {
-          "posicion": 7,
-          "equipo": "9 de Julio",
-          "puntos": 20,
-          "gf": 21,
-          "gc": 28,
-          "dg": -7
-        },
-        {
-          "posicion": 8,
-          "equipo": "Sportivo Belgrano",
-          "puntos": 19,
-          "gf": 17,
-          "gc": 23,
-          "dg": -6
-        },
-        {
-          "posicion": 9,
-          "equipo": "Independiente Chivilcoy",
-          "puntos": 18,
-          "gf": 26,
-          "gc": 25,
+          "equipo": "El Linqueño",
+          "puntos": 3,
+          "gf": 3,
+          "gc": 2,
           "dg": 1
         },
         {
+          "posicion": 2,
+          "equipo": "Independiente Chivilcoy",
+          "puntos": 3,
+          "gf": 4,
+          "gc": 4,
+          "dg": 0
+        },
+        {
+          "posicion": 3,
+          "equipo": "Douglas Haig",
+          "puntos": 0,
+          "gf": 0,
+          "gc": 0,
+          "dg": 0
+        },
+        {
+          "posicion": 4,
+          "equipo": "9 De Julio Rafaela",
+          "puntos": 0,
+          "gf": 0,
+          "gc": 0,
+          "dg": 0
+        },
+        {
+          "posicion": 5,
+          "equipo": "CSCyD Gimnasia y Esgrima (Chivilcoy)",
+          "puntos": 0,
+          "gf": 0,
+          "gc": 0,
+          "dg": 0
+        },
+        {
+          "posicion": 6,
+          "equipo": "Defensores Belgrano (VR)",
+          "puntos": 0,
+          "gf": 0,
+          "gc": 0,
+          "dg": 0
+        },
+        {
+          "posicion": 7,
+          "equipo": "Sportivo Las Parejas",
+          "puntos": 0,
+          "gf": 0,
+          "gc": 0,
+          "dg": 0
+        },
+        {
+          "posicion": 8,
+          "equipo": "Atlético Escobar",
+          "puntos": 0,
+          "gf": 0,
+          "gc": 0,
+          "dg": 0
+        },
+        {
+          "posicion": 9,
+          "equipo": "Gimnasia de Concepción",
+          "puntos": 0,
+          "gf": 0,
+          "gc": 0,
+          "dg": 0
+        },
+        {
           "posicion": 10,
-          "equipo": "El Linqueño",
-          "puntos": 14,
-          "gf": 18,
-          "gc": 28,
-          "dg": -10
+          "equipo": "Sportivo Belgrano",
+          "puntos": 0,
+          "gf": 1,
+          "gc": 2,
+          "dg": -1
         }
       ],
       "2": [
         {
           "posicion": 1,
-          "equipo": "Boca Unidos",
-          "puntos": 28,
-          "gf": 25,
-          "gc": 14,
-          "dg": 11
+          "equipo": "San Martín de Formosa",
+          "puntos": 3,
+          "gf": 2,
+          "gc": 0,
+          "dg": 2
         },
         {
           "posicion": 2,
           "equipo": "Tucumán Central",
-          "puntos": 27,
-          "gf": 20,
-          "gc": 15,
-          "dg": 5
+          "puntos": 1,
+          "gf": 3,
+          "gc": 3,
+          "dg": 0
         },
         {
           "posicion": 3,
-          "equipo": "Sarmiento de La Banda",
-          "puntos": 23,
-          "gf": 16,
-          "gc": 13,
-          "dg": 3
+          "equipo": "Juventud Antoniana",
+          "puntos": 1,
+          "gf": 3,
+          "gc": 5,
+          "dg": -2
         },
         {
           "posicion": 4,
-          "equipo": "Juventud Antoniana",
-          "puntos": 22,
-          "gf": 21,
-          "gc": 21,
+          "equipo": "Bartolomé Mitre (Posadas)",
+          "puntos": 0,
+          "gf": 0,
+          "gc": 0,
           "dg": 0
         },
         {
           "posicion": 5,
-          "equipo": "San Martín de Formosa",
-          "puntos": 20,
-          "gf": 17,
-          "gc": 18,
-          "dg": -1
+          "equipo": "Sarmiento De La Banda",
+          "puntos": 0,
+          "gf": 0,
+          "gc": 0,
+          "dg": 0
         },
         {
           "posicion": 6,
-          "equipo": "Sol de América",
-          "puntos": 20,
-          "gf": 15,
-          "gc": 21,
-          "dg": -6
+          "equipo": "Sol De América",
+          "puntos": 0,
+          "gf": 0,
+          "gc": 0,
+          "dg": 0
         },
         {
           "posicion": 7,
-          "equipo": "Sarmiento de Resistencia",
-          "puntos": 19,
-          "gf": 14,
-          "gc": 14,
+          "equipo": "Defensores Pto. Vilelas",
+          "puntos": 0,
+          "gf": 0,
+          "gc": 0,
           "dg": 0
         },
         {
           "posicion": 8,
-          "equipo": "Defensores de Puerto Vilelas",
-          "puntos": 19,
-          "gf": 16,
-          "gc": 21,
-          "dg": -5
+          "equipo": "Boca Unidos de Corrientes",
+          "puntos": 0,
+          "gf": 0,
+          "gc": 0,
+          "dg": 0
         },
         {
           "posicion": 9,
-          "equipo": "Bartolomé Mitre",
-          "puntos": 14,
-          "gf": 13,
-          "gc": 20,
-          "dg": -7
+          "equipo": "Sarmiento de Resistencia",
+          "puntos": 0,
+          "gf": 0,
+          "gc": 0,
+          "dg": 0
         }
       ],
       "3": [
         {
           "posicion": 1,
-          "equipo": "Cipolletti",
-          "puntos": 27,
-          "gf": 24,
-          "gc": 15,
-          "dg": 9
-        },
-        {
-          "posicion": 2,
           "equipo": "Deportivo Rincón",
-          "puntos": 26,
-          "gf": 23,
-          "gc": 20,
-          "dg": 3
-        },
-        {
-          "posicion": 3,
-          "equipo": "Deportivo Argentino",
-          "puntos": 23,
-          "gf": 23,
-          "gc": 24,
-          "dg": -1
-        },
-        {
-          "posicion": 4,
-          "equipo": "Atenas",
-          "puntos": 22,
-          "gf": 20,
-          "gc": 18,
-          "dg": 2
-        },
-        {
-          "posicion": 5,
-          "equipo": "Huracán Las Heras",
-          "puntos": 21,
-          "gf": 20,
-          "gc": 17,
-          "dg": 3
-        },
-        {
-          "posicion": 6,
-          "equipo": "AC San Martín",
-          "puntos": 21,
-          "gf": 23,
-          "gc": 22,
+          "puntos": 3,
+          "gf": 1,
+          "gc": 0,
           "dg": 1
         },
         {
+          "posicion": 2,
+          "equipo": "Cipolletti",
+          "puntos": 0,
+          "gf": 0,
+          "gc": 0,
+          "dg": 0
+        },
+        {
+          "posicion": 3,
+          "equipo": "Atenas Río Cuarto",
+          "puntos": 0,
+          "gf": 0,
+          "gc": 0,
+          "dg": 0
+        },
+        {
+          "posicion": 4,
+          "equipo": "Argentino Monte Maíz",
+          "puntos": 0,
+          "gf": 0,
+          "gc": 0,
+          "dg": 0
+        },
+        {
+          "posicion": 5,
+          "equipo": "Costa Brava (Gral Pico)",
+          "puntos": 0,
+          "gf": 0,
+          "gc": 0,
+          "dg": 0
+        },
+        {
+          "posicion": 6,
+          "equipo": "Fundación Amigos por el Deporte",
+          "puntos": 0,
+          "gf": 0,
+          "gc": 0,
+          "dg": 0
+        },
+        {
           "posicion": 7,
-          "equipo": "Juventud Unida Universitario",
-          "puntos": 21,
-          "gf": 21,
-          "gc": 24,
-          "dg": -3
+          "equipo": "Juventud Unida San Luis",
+          "puntos": 0,
+          "gf": 0,
+          "gc": 0,
+          "dg": 0
         },
         {
           "posicion": 8,
-          "equipo": "Costa Brava",
-          "puntos": 19,
-          "gf": 17,
-          "gc": 21,
-          "dg": -4
+          "equipo": "San Martín de Mendoza",
+          "puntos": 0,
+          "gf": 0,
+          "gc": 0,
+          "dg": 0
         },
         {
           "posicion": 9,
-          "equipo": "FADEP",
-          "puntos": 16,
-          "gf": 11,
-          "gc": 21,
-          "dg": -10
+          "equipo": "Huracán Las Heras",
+          "puntos": 0,
+          "gf": 0,
+          "gc": 1,
+          "dg": -1
         }
       ],
       "4": [
         {
           "posicion": 1,
-          "equipo": "Santamarina",
-          "puntos": 27,
-          "gf": 23,
-          "gc": 15,
-          "dg": 8
+          "equipo": "Guillermo Brown",
+          "puntos": 5,
+          "gf": 4,
+          "gc": 1,
+          "dg": 3
         },
         {
           "posicion": 2,
-          "equipo": "Kimberley",
-          "puntos": 26,
-          "gf": 25,
-          "gc": 15,
-          "dg": 10
+          "equipo": "Sol de Mayo",
+          "puntos": 4,
+          "gf": 2,
+          "gc": 1,
+          "dg": 1
         },
         {
           "posicion": 3,
-          "equipo": "Círculo Deportivo",
-          "puntos": 26,
-          "gf": 15,
-          "gc": 13,
-          "dg": 2
+          "equipo": "Germinal",
+          "puntos": 4,
+          "gf": 2,
+          "gc": 3,
+          "dg": -1
         },
         {
           "posicion": 4,
-          "equipo": "Guillermo Brown",
-          "puntos": 24,
-          "gf": 19,
-          "gc": 19,
-          "dg": 0
+          "equipo": "Olimpo",
+          "puntos": 3,
+          "gf": 1,
+          "gc": 2,
+          "dg": -1
         },
         {
           "posicion": 5,
-          "equipo": "Villa Mitre",
-          "puntos": 21,
-          "gf": 19,
-          "gc": 15,
-          "dg": 4
+          "equipo": "Círculo Deportivo",
+          "puntos": 2,
+          "gf": 2,
+          "gc": 2,
+          "dg": 0
         },
         {
           "posicion": 6,
           "equipo": "Alvarado",
-          "puntos": 21,
-          "gf": 24,
-          "gc": 25,
-          "dg": -1
+          "puntos": 1,
+          "gf": 0,
+          "gc": 0,
+          "dg": 0
         },
         {
           "posicion": 7,
-          "equipo": "Olimpo",
-          "puntos": 19,
-          "gf": 23,
-          "gc": 27,
-          "dg": -4
+          "equipo": "Villa Mitre",
+          "puntos": 1,
+          "gf": 0,
+          "gc": 2,
+          "dg": -2
         },
         {
           "posicion": 8,
-          "equipo": "Sol de Mayo",
-          "puntos": 17,
-          "gf": 17,
-          "gc": 20,
-          "dg": -3
+          "equipo": "Kimberley Mar Del Plata",
+          "puntos": 0,
+          "gf": 0,
+          "gc": 0,
+          "dg": 0
         },
         {
           "posicion": 9,
-          "equipo": "Germinal",
-          "puntos": 13,
-          "gf": 14,
-          "gc": 30,
-          "dg": -16
+          "equipo": "Santamarina Tandil",
+          "puntos": 0,
+          "gf": 0,
+          "gc": 0,
+          "dg": 0
         }
       ]
     }
@@ -315,7 +315,7 @@
       "1": [
         {
           "posicion": 1,
-          "equipo": "9 de Julio",
+          "equipo": "Sportivo Belgrano",
           "puntos": 0,
           "gf": 0,
           "gc": 0,
@@ -323,7 +323,7 @@
         },
         {
           "posicion": 2,
-          "equipo": "El Linqueño",
+          "equipo": "Defensores Belgrano (VR)",
           "puntos": 0,
           "gf": 0,
           "gc": 0,
@@ -331,7 +331,7 @@
         },
         {
           "posicion": 3,
-          "equipo": "Escobar FC",
+          "equipo": "Sportivo Las Parejas",
           "puntos": 0,
           "gf": 0,
           "gc": 0,
@@ -339,7 +339,7 @@
         },
         {
           "posicion": 4,
-          "equipo": "Independiente Chivilcoy",
+          "equipo": "Atlético Escobar",
           "puntos": 0,
           "gf": 0,
           "gc": 0,
@@ -347,7 +347,7 @@
         },
         {
           "posicion": 5,
-          "equipo": "Sportivo Belgrano",
+          "equipo": "Gimnasia de Concepción",
           "puntos": 0,
           "gf": 0,
           "gc": 0,
@@ -357,7 +357,7 @@
       "2": [
         {
           "posicion": 1,
-          "equipo": "Bartolomé Mitre",
+          "equipo": "Sarmiento De La Banda",
           "puntos": 0,
           "gf": 0,
           "gc": 0,
@@ -365,7 +365,7 @@
         },
         {
           "posicion": 2,
-          "equipo": "Defensores de Puerto Vilelas",
+          "equipo": "Sol De América",
           "puntos": 0,
           "gf": 0,
           "gc": 0,
@@ -373,7 +373,7 @@
         },
         {
           "posicion": 3,
-          "equipo": "San Martín de Formosa",
+          "equipo": "Defensores Pto. Vilelas",
           "puntos": 0,
           "gf": 0,
           "gc": 0,
@@ -381,7 +381,7 @@
         },
         {
           "posicion": 4,
-          "equipo": "Sarmiento de Resistencia",
+          "equipo": "Boca Unidos de Corrientes",
           "puntos": 0,
           "gf": 0,
           "gc": 0,
@@ -389,7 +389,7 @@
         },
         {
           "posicion": 5,
-          "equipo": "Sol de América",
+          "equipo": "Sarmiento de Resistencia",
           "puntos": 0,
           "gf": 0,
           "gc": 0,
@@ -399,7 +399,7 @@
       "3": [
         {
           "posicion": 1,
-          "equipo": "AC San Martín",
+          "equipo": "Costa Brava (Gral Pico)",
           "puntos": 0,
           "gf": 0,
           "gc": 0,
@@ -407,7 +407,7 @@
         },
         {
           "posicion": 2,
-          "equipo": "Costa Brava",
+          "equipo": "Fundación Amigos por el Deporte",
           "puntos": 0,
           "gf": 0,
           "gc": 0,
@@ -415,7 +415,7 @@
         },
         {
           "posicion": 3,
-          "equipo": "FADEP",
+          "equipo": "Juventud Unida San Luis",
           "puntos": 0,
           "gf": 0,
           "gc": 0,
@@ -431,7 +431,7 @@
         },
         {
           "posicion": 5,
-          "equipo": "Juventud Unida Universitario",
+          "equipo": "San Martín de Mendoza",
           "puntos": 0,
           "gf": 0,
           "gc": 0,
@@ -449,7 +449,7 @@
         },
         {
           "posicion": 2,
-          "equipo": "Germinal",
+          "equipo": "Kimberley Mar Del Plata",
           "puntos": 0,
           "gf": 0,
           "gc": 0,
@@ -457,7 +457,7 @@
         },
         {
           "posicion": 3,
-          "equipo": "Olimpo",
+          "equipo": "Villa Mitre",
           "puntos": 0,
           "gf": 0,
           "gc": 0,
@@ -465,7 +465,7 @@
         },
         {
           "posicion": 4,
-          "equipo": "Sol de Mayo",
+          "equipo": "Santamarina Tandil",
           "puntos": 0,
           "gf": 0,
           "gc": 0,
@@ -475,149 +475,149 @@
       "A": [
         {
           "posicion": 1,
-          "equipo": "Gimnasia y Esgrima de Concepción del Uruguay",
-          "puntos": 16,
-          "gf": 11,
-          "gc": 6,
-          "dg": 5
+          "equipo": "9 De Julio Rafaela",
+          "puntos": 19,
+          "gf": 16,
+          "gc": 5,
+          "dg": 11
         },
         {
           "posicion": 2,
-          "equipo": "Defensores de Belgrano de V. Ramallo",
-          "puntos": 15,
-          "gf": 13,
-          "gc": 8,
-          "dg": 5
+          "equipo": "Juventud Antoniana",
+          "puntos": 18,
+          "gf": 10,
+          "gc": 3,
+          "dg": 7
         },
         {
           "posicion": 3,
-          "equipo": "Boca Unidos",
+          "equipo": "Independiente Chivilcoy",
           "puntos": 14,
-          "gf": 13,
-          "gc": 8,
-          "dg": 5
+          "gf": 14,
+          "gc": 10,
+          "dg": 4
         },
         {
           "posicion": 4,
-          "equipo": "Sarmiento de La Banda",
-          "puntos": 13,
-          "gf": 8,
-          "gc": 6,
-          "dg": 2
+          "equipo": "El Linqueño",
+          "puntos": 10,
+          "gf": 13,
+          "gc": 7,
+          "dg": 6
         },
         {
           "posicion": 5,
-          "equipo": "Sportivo AC",
-          "puntos": 12,
-          "gf": 7,
-          "gc": 6,
-          "dg": 1
+          "equipo": "CSCyD Gimnasia y Esgrima (Chivilcoy)",
+          "puntos": 9,
+          "gf": 6,
+          "gc": 13,
+          "dg": -7
         },
         {
           "posicion": 6,
-          "equipo": "Juventud Antoniana",
-          "puntos": 10,
-          "gf": 9,
-          "gc": 12,
-          "dg": -3
+          "equipo": "Tucumán Central",
+          "puntos": 8,
+          "gf": 8,
+          "gc": 10,
+          "dg": -2
         },
         {
           "posicion": 7,
-          "equipo": "Tucumán Central",
-          "puntos": 9,
+          "equipo": "Bartolomé Mitre (Posadas)",
+          "puntos": 8,
           "gf": 7,
-          "gc": 8,
-          "dg": -1
+          "gc": 11,
+          "dg": -4
         },
         {
           "posicion": 8,
-          "equipo": "Douglas Haig",
+          "equipo": "San Martín de Formosa",
           "puntos": 6,
-          "gf": 8,
-          "gc": 17,
-          "dg": -9
+          "gf": 10,
+          "gc": 13,
+          "dg": -3
         },
         {
           "posicion": 9,
-          "equipo": "Gimnasia y Esgrima de Chivilcoy",
-          "puntos": 4,
-          "gf": 5,
-          "gc": 10,
-          "dg": -5
+          "equipo": "Douglas Haig",
+          "puntos": 5,
+          "gf": 6,
+          "gc": 18,
+          "dg": -12
         }
       ],
       "B": [
         {
           "posicion": 1,
-          "equipo": "Cipolletti",
-          "puntos": 14,
-          "gf": 9,
-          "gc": 5,
-          "dg": 4
+          "equipo": "Argentino Monte Maíz",
+          "puntos": 16,
+          "gf": 24,
+          "gc": 14,
+          "dg": 10
         },
         {
           "posicion": 2,
-          "equipo": "Villa Mitre",
+          "equipo": "Germinal",
           "puntos": 14,
-          "gf": 13,
-          "gc": 11,
-          "dg": 2
+          "gf": 16,
+          "gc": 12,
+          "dg": 4
         },
         {
           "posicion": 3,
-          "equipo": "Atenas",
-          "puntos": 13,
-          "gf": 8,
-          "gc": 8,
-          "dg": 0
+          "equipo": "Cipolletti",
+          "puntos": 14,
+          "gf": 16,
+          "gc": 15,
+          "dg": 1
         },
         {
           "posicion": 4,
           "equipo": "Deportivo Rincón",
-          "puntos": 12,
-          "gf": 11,
-          "gc": 7,
-          "dg": 4
+          "puntos": 13,
+          "gf": 6,
+          "gc": 10,
+          "dg": -4
         },
         {
           "posicion": 5,
-          "equipo": "Deportivo Argentino",
+          "equipo": "Círculo Deportivo",
           "puntos": 12,
-          "gf": 7,
-          "gc": 4,
-          "dg": 3
+          "gf": 15,
+          "gc": 15,
+          "dg": 0
         },
         {
           "posicion": 6,
-          "equipo": "Círculo Deportivo",
-          "puntos": 10,
-          "gf": 8,
-          "gc": 9,
-          "dg": -1
+          "equipo": "Olimpo",
+          "puntos": 9,
+          "gf": 11,
+          "gc": 10,
+          "dg": 1
         },
         {
           "posicion": 7,
-          "equipo": "Kimberley",
-          "puntos": 10,
-          "gf": 5,
-          "gc": 8,
+          "equipo": "Guillermo Brown",
+          "puntos": 9,
+          "gf": 12,
+          "gc": 15,
           "dg": -3
         },
         {
           "posicion": 8,
-          "equipo": "Santamarina",
-          "puntos": 9,
-          "gf": 4,
-          "gc": 9,
-          "dg": -5
+          "equipo": "Atenas Río Cuarto",
+          "puntos": 8,
+          "gf": 11,
+          "gc": 14,
+          "dg": -3
         },
         {
           "posicion": 9,
-          "equipo": "Guillermo Brown",
-          "puntos": 5,
-          "gf": 4,
-          "gc": 8,
-          "dg": -4
+          "equipo": "Sol de Mayo",
+          "puntos": 6,
+          "gf": 7,
+          "gc": 13,
+          "dg": -6
         }
       ]
     }
@@ -625,134 +625,64 @@
   "camino_principal": {
     "tercera_fase": {
       "p1": {
-        "ganador": "Gimnasia y Esgrima de Concepción del Uruguay",
-        "perdedor": "Deportivo Rincón",
-        "local_ida": "Deportivo Rincón",
-        "visitante_ida": "Gimnasia y Esgrima de Concepción del Uruguay",
-        "ida": [
-          1,
-          3
-        ],
-        "vuelta": [
-          0,
-          2
-        ],
-        "agregado": [
-          3,
-          3
-        ],
-        "definido_por": "mejor_ubicacion",
-        "avanza": "Gimnasia y Esgrima de Concepción del Uruguay"
+        "equipo_x": "Deportivo Rincón",
+        "equipo_y": "9 De Julio Rafaela",
+        "goles_x": 6,
+        "goles_y": 4,
+        "detalle": "Ida: 3-1 | Vuelta: 3-3",
+        "campeon": "Deportivo Rincón"
       },
       "p2": {
-        "ganador": "Atenas",
-        "perdedor": "Defensores de Belgrano de V. Ramallo",
-        "local_ida": "Atenas",
-        "visitante_ida": "Defensores de Belgrano de V. Ramallo",
-        "ida": [
-          2,
-          1
-        ],
-        "vuelta": [
-          0,
-          0
-        ],
-        "agregado": [
-          2,
-          1
-        ],
-        "avanza": "Atenas"
+        "equipo_x": "Cipolletti",
+        "equipo_y": "Juventud Antoniana",
+        "goles_x": 2,
+        "goles_y": 2,
+        "detalle": "Ida: 0-0 | Vuelta: 2-2 (por mejor ubicación)",
+        "campeon": "Juventud Antoniana"
       },
       "p3": {
-        "ganador": "Cipolletti",
-        "perdedor": "Sarmiento de La Banda",
-        "local_ida": "Sarmiento de La Banda",
-        "visitante_ida": "Cipolletti",
-        "ida": [
-          1,
-          1
-        ],
-        "vuelta": [
-          2,
-          1
-        ],
-        "agregado": [
-          2,
-          3
-        ],
-        "avanza": "Cipolletti"
+        "equipo_x": "El Linqueño",
+        "equipo_y": "Argentino Monte Maíz",
+        "goles_x": 3,
+        "goles_y": 2,
+        "detalle": "Ida: 1-1 | Vuelta: 1-2",
+        "campeon": "El Linqueño"
       },
       "p4": {
-        "ganador": "Villa Mitre",
-        "perdedor": "Boca Unidos",
-        "local_ida": "Boca Unidos",
-        "visitante_ida": "Villa Mitre",
-        "ida": [
-          1,
-          0
-        ],
-        "vuelta": [
-          3,
-          0
-        ],
-        "agregado": [
-          1,
-          3
-        ],
-        "avanza": "Villa Mitre"
+        "equipo_x": "Independiente Chivilcoy",
+        "equipo_y": "Germinal",
+        "goles_x": 2,
+        "goles_y": 2,
+        "detalle": "Ida: 1-2 | Vuelta: 0-1 (por mejor ubicación)",
+        "campeon": "Germinal"
       }
     },
     "cuarta_fase": {
       "c1": {
-        "ganador": "Atenas",
-        "perdedor": "Gimnasia y Esgrima de Concepción del Uruguay",
-        "local_ida": "Atenas",
-        "visitante_ida": "Gimnasia y Esgrima de Concepción del Uruguay",
-        "ida": [
-          5,
-          0
-        ],
-        "vuelta": [
-          2,
-          1
-        ],
-        "agregado": [
-          6,
-          2
-        ],
-        "avanza": "Atenas"
+        "equipo_x": "Juventud Antoniana",
+        "equipo_y": "Deportivo Rincón",
+        "goles_x": 3,
+        "goles_y": 1,
+        "detalle": "Ida: 2-0 | Vuelta: 1-1",
+        "campeon": "Juventud Antoniana"
       },
       "c2": {
-        "ganador": "Cipolletti",
-        "perdedor": "Villa Mitre",
-        "local_ida": "Villa Mitre",
-        "visitante_ida": "Cipolletti",
-        "ida": [
-          2,
-          2
-        ],
-        "vuelta": [
-          2,
-          2
-        ],
-        "agregado": [
-          4,
-          4
-        ],
-        "definido_por": "mejor_ubicacion",
-        "avanza": "Cipolletti"
+        "equipo_x": "Germinal",
+        "equipo_y": "El Linqueño",
+        "goles_x": 1,
+        "goles_y": 2,
+        "detalle": "Ida: 1-1 | Vuelta: 1-0",
+        "campeon": "El Linqueño"
       }
     },
     "quinta_fase_final": {
-      "ganador": "Atenas",
-      "perdedor": "Cipolletti",
-      "marcador": [
-        3,
-        1
-      ],
-      "texto": "Atenas 3 - 1 Cipolletti"
+      "local": "Juventud Antoniana",
+      "visitante": "El Linqueño",
+      "golesLocal": 0,
+      "golesVisitante": 1,
+      "avanza": "El Linqueño"
     },
-    "ascenso_1": "Atenas"
+    "ascenso_1": "El Linqueño"
   },
   "revalida": {
     "primera_etapa": {
@@ -760,993 +690,702 @@
         "RA": [
           {
             "posicion": 1,
-            "equipo": "9 de Julio",
-            "puntos": 18,
-            "gf": 17,
-            "gc": 7,
-            "dg": 10
+            "equipo": "Defensores Belgrano (VR)",
+            "puntos": 20,
+            "gf": 18,
+            "gc": 6,
+            "dg": 12
           },
           {
             "posicion": 2,
-            "equipo": "Sol de América",
-            "puntos": 16,
+            "equipo": "Sportivo Las Parejas",
+            "puntos": 17,
             "gf": 16,
-            "gc": 9,
-            "dg": 7
+            "gc": 11,
+            "dg": 5
           },
           {
             "posicion": 3,
-            "equipo": "Independiente Chivilcoy",
+            "equipo": "Atlético Escobar",
             "puntos": 15,
-            "gf": 8,
+            "gf": 10,
             "gc": 8,
-            "dg": 0
+            "dg": 2
           },
           {
             "posicion": 4,
-            "equipo": "El Linqueño",
-            "puntos": 14,
-            "gf": 13,
-            "gc": 13,
-            "dg": 0
+            "equipo": "Sarmiento de Resistencia",
+            "puntos": 13,
+            "gf": 10,
+            "gc": 12,
+            "dg": -2
           },
           {
             "posicion": 5,
-            "equipo": "Sarmiento de Resistencia",
-            "puntos": 13,
-            "gf": 6,
-            "gc": 6,
-            "dg": 0
+            "equipo": "Sarmiento De La Banda",
+            "puntos": 12,
+            "gf": 13,
+            "gc": 12,
+            "dg": 1
           },
           {
             "posicion": 6,
-            "equipo": "Defensores de Puerto Vilelas",
-            "puntos": 12,
-            "gf": 7,
-            "gc": 9,
+            "equipo": "Defensores Pto. Vilelas",
+            "puntos": 11,
+            "gf": 8,
+            "gc": 10,
             "dg": -2
           },
           {
             "posicion": 7,
-            "equipo": "Bartolomé Mitre",
-            "puntos": 12,
-            "gf": 13,
-            "gc": 16,
-            "dg": -3
+            "equipo": "Boca Unidos de Corrientes",
+            "puntos": 11,
+            "gf": 5,
+            "gc": 9,
+            "dg": -4
           },
           {
             "posicion": 8,
-            "equipo": "San Martín de Formosa",
-            "puntos": 9,
-            "gf": 15,
-            "gc": 15,
-            "dg": 0
+            "equipo": "Sportivo Belgrano",
+            "puntos": 10,
+            "gf": 13,
+            "gc": 14,
+            "dg": -1
           },
           {
             "posicion": 9,
-            "equipo": "Sportivo Belgrano",
-            "puntos": 9,
+            "equipo": "Sol De América",
+            "puntos": 7,
             "gf": 7,
-            "gc": 7,
-            "dg": 0
+            "gc": 12,
+            "dg": -5
           },
           {
             "posicion": 10,
-            "equipo": "Escobar FC",
+            "equipo": "Gimnasia de Concepción",
             "puntos": 6,
             "gf": 6,
-            "gc": 18,
-            "dg": -12
+            "gc": 12,
+            "dg": -6
           }
         ],
         "RB": [
           {
             "posicion": 1,
-            "equipo": "Alvarado",
+            "equipo": "Santamarina Tandil",
             "puntos": 17,
-            "gf": 13,
-            "gc": 6,
-            "dg": 7
+            "gf": 14,
+            "gc": 10,
+            "dg": 4
           },
           {
             "posicion": 2,
-            "equipo": "Germinal",
-            "puntos": 16,
-            "gf": 12,
-            "gc": 7,
-            "dg": 5
+            "equipo": "Huracán Las Heras",
+            "puntos": 15,
+            "gf": 17,
+            "gc": 6,
+            "dg": 11
           },
           {
             "posicion": 3,
-            "equipo": "Costa Brava",
-            "puntos": 12,
-            "gf": 14,
+            "equipo": "Kimberley Mar Del Plata",
+            "puntos": 14,
+            "gf": 11,
             "gc": 9,
-            "dg": 5
-          },
-          {
-            "posicion": 4,
-            "equipo": "Olimpo",
-            "puntos": 11,
-            "gf": 7,
-            "gc": 5,
             "dg": 2
           },
           {
+            "posicion": 4,
+            "equipo": "San Martín de Mendoza",
+            "puntos": 11,
+            "gf": 14,
+            "gc": 11,
+            "dg": 3
+          },
+          {
             "posicion": 5,
-            "equipo": "FADEP",
+            "equipo": "Costa Brava (Gral Pico)",
             "puntos": 11,
             "gf": 8,
-            "gc": 11,
-            "dg": -3
+            "gc": 9,
+            "dg": -1
           },
           {
             "posicion": 6,
-            "equipo": "Sol de Mayo",
-            "puntos": 10,
-            "gf": 6,
-            "gc": 8,
+            "equipo": "Alvarado",
+            "puntos": 9,
+            "gf": 7,
+            "gc": 9,
             "dg": -2
           },
           {
             "posicion": 7,
-            "equipo": "Juventud Unida Universitario",
+            "equipo": "Villa Mitre",
             "puntos": 8,
-            "gf": 9,
-            "gc": 12,
-            "dg": -3
+            "gf": 6,
+            "gc": 11,
+            "dg": -5
           },
           {
             "posicion": 8,
-            "equipo": "AC San Martín",
+            "equipo": "Juventud Unida San Luis",
             "puntos": 7,
-            "gf": 6,
-            "gc": 10,
+            "gf": 9,
+            "gc": 13,
             "dg": -4
           },
           {
             "posicion": 9,
-            "equipo": "Huracán Las Heras",
-            "puntos": 7,
-            "gf": 7,
-            "gc": 14,
-            "dg": -7
+            "equipo": "Fundación Amigos por el Deporte",
+            "puntos": 6,
+            "gf": 4,
+            "gc": 12,
+            "dg": -8
           }
         ]
       }
     },
     "descensos": [
-      "Escobar FC",
-      "Bartolomé Mitre",
-      "Sol de Mayo",
-      "Huracán Las Heras"
+      "Sportivo Belgrano",
+      "Gimnasia de Concepción",
+      "Fundación Amigos por el Deporte",
+      "Juventud Unida San Luis"
     ],
     "segunda_etapa": {
       "posiciones": {
-        "1": "Defensores de Belgrano de V. Ramallo",
-        "2": "Boca Unidos",
-        "3": "Deportivo Rincón",
-        "4": "Sarmiento de La Banda",
-        "5": "Deportivo Argentino",
-        "6": "Sportivo AC",
-        "7": "Círculo Deportivo",
-        "8": "Juventud Antoniana",
-        "9": "Kimberley",
-        "10": "Tucumán Central",
-        "11": "Santamarina",
-        "12": "Douglas Haig",
-        "13": "Guillermo Brown",
-        "14": "Gimnasia y Esgrima de Chivilcoy",
-        "15": "9 de Julio",
-        "16": "Alvarado",
-        "17": "Sol de América",
-        "18": "Germinal",
-        "19": "Costa Brava",
-        "20": "Independiente Chivilcoy",
-        "21": "El Linqueño",
-        "22": "Olimpo",
-        "23": "Sarmiento de Resistencia",
-        "24": "FADEP"
+        "1": "9 De Julio Rafaela",
+        "2": "Argentino Monte Maíz",
+        "3": "Independiente Chivilcoy",
+        "4": "Cipolletti",
+        "5": "Círculo Deportivo",
+        "6": "CSCyD Gimnasia y Esgrima (Chivilcoy)",
+        "7": "Olimpo",
+        "8": "Tucumán Central",
+        "9": "Guillermo Brown",
+        "10": "Bartolomé Mitre (Posadas)",
+        "11": "Atenas Río Cuarto",
+        "12": "San Martín de Formosa",
+        "13": "Sol de Mayo",
+        "14": "Douglas Haig",
+        "15": "Defensores Belgrano (VR)",
+        "16": "Santamarina Tandil",
+        "17": "Sportivo Las Parejas",
+        "18": "Huracán Las Heras",
+        "19": "Kimberley Mar Del Plata",
+        "20": "Atlético Escobar",
+        "21": "San Martín de Mendoza",
+        "22": "Sarmiento de Resistencia",
+        "23": "Costa Brava (Gral Pico)",
+        "24": "Sarmiento De La Banda"
       },
       "resultados": {
         "1v24": {
-          "ganador": "Defensores de Belgrano de V. Ramallo",
-          "perdedor": "FADEP",
-          "local_ida": "FADEP",
-          "visitante_ida": "Defensores de Belgrano de V. Ramallo",
-          "ida": [
-            1,
-            0
-          ],
-          "vuelta": [
-            1,
-            0
-          ],
-          "agregado": [
-            1,
-            1
-          ],
-          "definido_por": "mejor_ubicacion",
-          "avanza": "Defensores de Belgrano de V. Ramallo"
+          "equipo_x": "Sarmiento De La Banda",
+          "equipo_y": "9 De Julio Rafaela",
+          "goles_x": 5,
+          "goles_y": 4,
+          "detalle": "Ida: 2-3 | Vuelta: 1-3",
+          "campeon": "Sarmiento De La Banda"
         },
         "2v23": {
-          "ganador": "Boca Unidos",
-          "perdedor": "Sarmiento de Resistencia",
-          "local_ida": "Sarmiento de Resistencia",
-          "visitante_ida": "Boca Unidos",
-          "ida": [
-            1,
-            1
-          ],
-          "vuelta": [
-            1,
-            1
-          ],
-          "agregado": [
-            2,
-            2
-          ],
-          "definido_por": "mejor_ubicacion",
-          "avanza": "Boca Unidos"
+          "equipo_x": "Costa Brava (Gral Pico)",
+          "equipo_y": "Argentino Monte Maíz",
+          "goles_x": 2,
+          "goles_y": 3,
+          "detalle": "Ida: 1-2 | Vuelta: 1-1",
+          "campeon": "Argentino Monte Maíz"
         },
         "3v22": {
-          "ganador": "Deportivo Rincón",
-          "perdedor": "Olimpo",
-          "local_ida": "Olimpo",
-          "visitante_ida": "Deportivo Rincón",
-          "ida": [
-            2,
-            3
-          ],
-          "vuelta": [
-            6,
-            1
-          ],
-          "agregado": [
-            3,
-            9
-          ],
-          "avanza": "Deportivo Rincón"
+          "equipo_x": "Sarmiento de Resistencia",
+          "equipo_y": "Independiente Chivilcoy",
+          "goles_x": 6,
+          "goles_y": 5,
+          "detalle": "Ida: 4-4 | Vuelta: 1-2",
+          "campeon": "Sarmiento de Resistencia"
         },
         "4v21": {
-          "ganador": "Sarmiento de La Banda",
-          "perdedor": "El Linqueño",
-          "local_ida": "El Linqueño",
-          "visitante_ida": "Sarmiento de La Banda",
-          "ida": [
-            2,
-            3
-          ],
-          "vuelta": [
-            2,
-            0
-          ],
-          "agregado": [
-            2,
-            5
-          ],
-          "avanza": "Sarmiento de La Banda"
+          "equipo_x": "San Martín de Mendoza",
+          "equipo_y": "Cipolletti",
+          "goles_x": 6,
+          "goles_y": 8,
+          "detalle": "Ida: 5-4 | Vuelta: 4-1",
+          "campeon": "Cipolletti"
         },
         "5v20": {
-          "ganador": "Independiente Chivilcoy",
-          "perdedor": "Deportivo Argentino",
-          "local_ida": "Independiente Chivilcoy",
-          "visitante_ida": "Deportivo Argentino",
-          "ida": [
-            2,
-            0
-          ],
-          "vuelta": [
-            1,
-            0
-          ],
-          "agregado": [
-            2,
-            1
-          ],
-          "avanza": "Independiente Chivilcoy"
+          "equipo_x": "Atlético Escobar",
+          "equipo_y": "Círculo Deportivo",
+          "goles_x": 3,
+          "goles_y": 0,
+          "detalle": "Ida: 2-0 | Vuelta: 0-1",
+          "campeon": "Atlético Escobar"
         },
         "6v19": {
-          "ganador": "Costa Brava",
-          "perdedor": "Sportivo AC",
-          "local_ida": "Costa Brava",
-          "visitante_ida": "Sportivo AC",
-          "ida": [
-            4,
-            0
-          ],
-          "vuelta": [
-            0,
-            0
-          ],
-          "agregado": [
-            4,
-            0
-          ],
-          "avanza": "Costa Brava"
+          "equipo_x": "Kimberley Mar Del Plata",
+          "equipo_y": "CSCyD Gimnasia y Esgrima (Chivilcoy)",
+          "goles_x": 1,
+          "goles_y": 1,
+          "detalle": "Ida: 0-0 | Vuelta: 1-1 (por mejor ubicación)",
+          "campeon": "CSCyD Gimnasia y Esgrima (Chivilcoy)"
         },
         "7v18": {
-          "ganador": "Germinal",
-          "perdedor": "Círculo Deportivo",
-          "local_ida": "Germinal",
-          "visitante_ida": "Círculo Deportivo",
-          "ida": [
-            1,
-            2
-          ],
-          "vuelta": [
-            0,
-            3
-          ],
-          "agregado": [
-            4,
-            2
-          ],
-          "avanza": "Germinal"
+          "equipo_x": "Huracán Las Heras",
+          "equipo_y": "Olimpo",
+          "goles_x": 1,
+          "goles_y": 3,
+          "detalle": "Ida: 0-1 | Vuelta: 2-1",
+          "campeon": "Olimpo"
         },
         "8v17": {
-          "ganador": "Juventud Antoniana",
-          "perdedor": "Sol de América",
-          "local_ida": "Sol de América",
-          "visitante_ida": "Juventud Antoniana",
-          "ida": [
-            0,
-            0
-          ],
-          "vuelta": [
-            1,
-            1
-          ],
-          "agregado": [
-            1,
-            1
-          ],
-          "definido_por": "mejor_ubicacion",
-          "avanza": "Juventud Antoniana"
+          "equipo_x": "Sportivo Las Parejas",
+          "equipo_y": "Tucumán Central",
+          "goles_x": 3,
+          "goles_y": 2,
+          "detalle": "Ida: 3-2 | Vuelta: 0-0",
+          "campeon": "Sportivo Las Parejas"
         },
         "9v16": {
-          "ganador": "Alvarado",
-          "perdedor": "Kimberley",
-          "local_ida": "Alvarado",
-          "visitante_ida": "Kimberley",
-          "ida": [
-            3,
-            0
-          ],
-          "vuelta": [
-            1,
-            0
-          ],
-          "agregado": [
-            3,
-            1
-          ],
-          "avanza": "Alvarado"
+          "equipo_x": "Santamarina Tandil",
+          "equipo_y": "Guillermo Brown",
+          "goles_x": 1,
+          "goles_y": 0,
+          "detalle": "Ida: 1-0 | Vuelta: 0-0",
+          "campeon": "Santamarina Tandil"
         },
         "10v15": {
-          "ganador": "Tucumán Central",
-          "perdedor": "9 de Julio",
-          "local_ida": "9 de Julio",
-          "visitante_ida": "Tucumán Central",
-          "ida": [
-            0,
-            2
-          ],
-          "vuelta": [
-            3,
-            1
-          ],
-          "agregado": [
-            1,
-            5
-          ],
-          "avanza": "Tucumán Central"
+          "equipo_x": "Defensores Belgrano (VR)",
+          "equipo_y": "Bartolomé Mitre (Posadas)",
+          "goles_x": 1,
+          "goles_y": 2,
+          "detalle": "Ida: 1-2 | Vuelta: 0-0",
+          "campeon": "Bartolomé Mitre (Posadas)"
         },
         "11v14": {
-          "ganador": "Gimnasia y Esgrima de Chivilcoy",
-          "perdedor": "Santamarina",
-          "local_ida": "Gimnasia y Esgrima de Chivilcoy",
-          "visitante_ida": "Santamarina",
-          "ida": [
-            3,
-            0
-          ],
-          "vuelta": [
-            3,
-            2
-          ],
-          "agregado": [
-            5,
-            3
-          ],
-          "avanza": "Gimnasia y Esgrima de Chivilcoy"
+          "equipo_x": "Douglas Haig",
+          "equipo_y": "Atenas Río Cuarto",
+          "goles_x": 5,
+          "goles_y": 4,
+          "detalle": "Ida: 2-1 | Vuelta: 3-3",
+          "campeon": "Douglas Haig"
         },
         "12v13": {
-          "ganador": "Guillermo Brown",
-          "perdedor": "Douglas Haig",
-          "local_ida": "Guillermo Brown",
-          "visitante_ida": "Douglas Haig",
-          "ida": [
-            3,
-            0
-          ],
-          "vuelta": [
-            0,
-            0
-          ],
-          "agregado": [
-            3,
-            0
-          ],
-          "avanza": "Guillermo Brown"
+          "equipo_x": "Sol de Mayo",
+          "equipo_y": "San Martín de Formosa",
+          "goles_x": 2,
+          "goles_y": 3,
+          "detalle": "Ida: 1-1 | Vuelta: 2-1",
+          "campeon": "San Martín de Formosa"
         }
       }
     },
     "tercera_etapa": {
       "posiciones": {
-        "1": "Gimnasia y Esgrima de Concepción del Uruguay",
-        "2": "Villa Mitre",
-        "3": "Defensores de Belgrano de V. Ramallo",
-        "4": "Boca Unidos",
-        "5": "Deportivo Rincón",
-        "6": "Sarmiento de La Banda",
-        "7": "Independiente Chivilcoy",
-        "8": "Costa Brava",
-        "9": "Germinal",
-        "10": "Juventud Antoniana",
-        "11": "Alvarado",
-        "12": "Tucumán Central",
-        "13": "Gimnasia y Esgrima de Chivilcoy",
-        "14": "Guillermo Brown"
+        "1": "Germinal",
+        "2": "Deportivo Rincón",
+        "3": "Sarmiento De La Banda",
+        "4": "Argentino Monte Maíz",
+        "5": "Sarmiento de Resistencia",
+        "6": "Cipolletti",
+        "7": "Atlético Escobar",
+        "8": "CSCyD Gimnasia y Esgrima (Chivilcoy)",
+        "9": "Olimpo",
+        "10": "Sportivo Las Parejas",
+        "11": "Santamarina Tandil",
+        "12": "Bartolomé Mitre (Posadas)",
+        "13": "Douglas Haig",
+        "14": "San Martín de Formosa"
       },
       "resultados": {
         "1v14": {
-          "ganador": "Guillermo Brown",
-          "perdedor": "Gimnasia y Esgrima de Concepción del Uruguay",
-          "local_ida": "Guillermo Brown",
-          "visitante_ida": "Gimnasia y Esgrima de Concepción del Uruguay",
-          "ida": [
-            3,
-            1
-          ],
-          "vuelta": [
-            1,
-            0
-          ],
-          "agregado": [
-            3,
-            2
-          ],
-          "avanza": "Guillermo Brown"
+          "equipo_x": "San Martín de Formosa",
+          "equipo_y": "Germinal",
+          "goles_x": 3,
+          "goles_y": 2,
+          "detalle": "Ida: 0-2 | Vuelta: 0-3",
+          "campeon": "San Martín de Formosa"
         },
         "2v13": {
-          "ganador": "Villa Mitre",
-          "perdedor": "Gimnasia y Esgrima de Chivilcoy",
-          "local_ida": "Gimnasia y Esgrima de Chivilcoy",
-          "visitante_ida": "Villa Mitre",
-          "ida": [
-            1,
-            2
-          ],
-          "vuelta": [
-            0,
-            1
-          ],
-          "agregado": [
-            2,
-            2
-          ],
-          "definido_por": "mejor_ubicacion",
-          "avanza": "Villa Mitre"
+          "equipo_x": "Douglas Haig",
+          "equipo_y": "Deportivo Rincón",
+          "goles_x": 2,
+          "goles_y": 0,
+          "detalle": "Ida: 1-0 | Vuelta: 0-1",
+          "campeon": "Douglas Haig"
         },
         "3v12": {
-          "ganador": "Defensores de Belgrano de V. Ramallo",
-          "perdedor": "Tucumán Central",
-          "local_ida": "Tucumán Central",
-          "visitante_ida": "Defensores de Belgrano de V. Ramallo",
-          "ida": [
-            2,
-            3
-          ],
-          "vuelta": [
-            0,
-            0
-          ],
-          "agregado": [
-            2,
-            3
-          ],
-          "avanza": "Defensores de Belgrano de V. Ramallo"
+          "equipo_x": "Bartolomé Mitre (Posadas)",
+          "equipo_y": "Sarmiento De La Banda",
+          "goles_x": 3,
+          "goles_y": 3,
+          "detalle": "Ida: 1-1 | Vuelta: 2-2 (por mejor ubicación)",
+          "campeon": "Sarmiento De La Banda"
         },
         "4v11": {
-          "ganador": "Boca Unidos",
-          "perdedor": "Alvarado",
-          "local_ida": "Alvarado",
-          "visitante_ida": "Boca Unidos",
-          "ida": [
-            1,
-            0
-          ],
-          "vuelta": [
-            4,
-            1
-          ],
-          "agregado": [
-            2,
-            4
-          ],
-          "avanza": "Boca Unidos"
+          "equipo_x": "Santamarina Tandil",
+          "equipo_y": "Argentino Monte Maíz",
+          "goles_x": 3,
+          "goles_y": 2,
+          "detalle": "Ida: 2-1 | Vuelta: 1-1",
+          "campeon": "Santamarina Tandil"
         },
         "5v10": {
-          "ganador": "Juventud Antoniana",
-          "perdedor": "Deportivo Rincón",
-          "local_ida": "Juventud Antoniana",
-          "visitante_ida": "Deportivo Rincón",
-          "ida": [
-            2,
-            1
-          ],
-          "vuelta": [
-            0,
-            0
-          ],
-          "agregado": [
-            2,
-            1
-          ],
-          "avanza": "Juventud Antoniana"
+          "equipo_x": "Sportivo Las Parejas",
+          "equipo_y": "Sarmiento de Resistencia",
+          "goles_x": 2,
+          "goles_y": 3,
+          "detalle": "Ida: 2-2 | Vuelta: 1-0",
+          "campeon": "Sarmiento de Resistencia"
         },
         "6v9": {
-          "ganador": "Sarmiento de La Banda",
-          "perdedor": "Germinal",
-          "local_ida": "Germinal",
-          "visitante_ida": "Sarmiento de La Banda",
-          "ida": [
-            1,
-            1
-          ],
-          "vuelta": [
-            1,
-            1
-          ],
-          "agregado": [
-            2,
-            2
-          ],
-          "definido_por": "mejor_ubicacion",
-          "avanza": "Sarmiento de La Banda"
+          "equipo_x": "Olimpo",
+          "equipo_y": "Cipolletti",
+          "goles_x": 2,
+          "goles_y": 2,
+          "detalle": "Ida: 1-1 | Vuelta: 1-1 (por mejor ubicación)",
+          "campeon": "Cipolletti"
         },
         "7v8": {
-          "ganador": "Costa Brava",
-          "perdedor": "Independiente Chivilcoy",
-          "local_ida": "Costa Brava",
-          "visitante_ida": "Independiente Chivilcoy",
-          "ida": [
-            0,
-            1
-          ],
-          "vuelta": [
-            1,
-            4
-          ],
-          "agregado": [
-            4,
-            2
-          ],
-          "avanza": "Costa Brava"
+          "equipo_x": "CSCyD Gimnasia y Esgrima (Chivilcoy)",
+          "equipo_y": "Atlético Escobar",
+          "goles_x": 2,
+          "goles_y": 2,
+          "detalle": "Ida: 0-2 | Vuelta: 0-2 (por mejor ubicación)",
+          "campeon": "Atlético Escobar"
         }
       }
     },
     "cuarta_etapa": {
       "posiciones": {
-        "1": "Cipolletti",
-        "2": "Guillermo Brown",
-        "3": "Villa Mitre",
-        "4": "Defensores de Belgrano de V. Ramallo",
-        "5": "Boca Unidos",
-        "6": "Juventud Antoniana",
-        "7": "Sarmiento de La Banda",
-        "8": "Costa Brava"
+        "1": "Juventud Antoniana",
+        "2": "San Martín de Formosa",
+        "3": "Douglas Haig",
+        "4": "Sarmiento De La Banda",
+        "5": "Santamarina Tandil",
+        "6": "Sarmiento de Resistencia",
+        "7": "Cipolletti",
+        "8": "Atlético Escobar"
       },
       "resultados": {
         "1v8": {
-          "ganador": "Cipolletti",
-          "perdedor": "Costa Brava",
-          "local_ida": "Costa Brava",
-          "visitante_ida": "Cipolletti",
-          "ida": [
-            0,
-            1
-          ],
-          "vuelta": [
-            2,
-            0
-          ],
-          "agregado": [
-            0,
-            3
-          ],
-          "avanza": "Cipolletti"
+          "equipo_x": "Atlético Escobar",
+          "equipo_y": "Juventud Antoniana",
+          "goles_x": 2,
+          "goles_y": 3,
+          "detalle": "Ida: 1-1 | Vuelta: 2-1",
+          "campeon": "Juventud Antoniana"
         },
         "2v7": {
-          "ganador": "Sarmiento de La Banda",
-          "perdedor": "Guillermo Brown",
-          "local_ida": "Sarmiento de La Banda",
-          "visitante_ida": "Guillermo Brown",
-          "ida": [
-            2,
-            2
-          ],
-          "vuelta": [
-            0,
-            1
-          ],
-          "agregado": [
-            3,
-            2
-          ],
-          "avanza": "Sarmiento de La Banda"
+          "equipo_x": "Cipolletti",
+          "equipo_y": "San Martín de Formosa",
+          "goles_x": 1,
+          "goles_y": 7,
+          "detalle": "Ida: 1-5 | Vuelta: 2-0",
+          "campeon": "San Martín de Formosa"
         },
         "3v6": {
-          "ganador": "Juventud Antoniana",
-          "perdedor": "Villa Mitre",
-          "local_ida": "Juventud Antoniana",
-          "visitante_ida": "Villa Mitre",
-          "ida": [
-            2,
-            2
-          ],
-          "vuelta": [
-            1,
-            3
-          ],
-          "agregado": [
-            5,
-            3
-          ],
-          "avanza": "Juventud Antoniana"
+          "equipo_x": "Sarmiento de Resistencia",
+          "equipo_y": "Douglas Haig",
+          "goles_x": 2,
+          "goles_y": 1,
+          "detalle": "Ida: 2-1 | Vuelta: 0-0",
+          "campeon": "Sarmiento de Resistencia"
         },
         "4v5": {
-          "ganador": "Defensores de Belgrano de V. Ramallo",
-          "perdedor": "Boca Unidos",
-          "local_ida": "Boca Unidos",
-          "visitante_ida": "Defensores de Belgrano de V. Ramallo",
-          "ida": [
-            2,
-            1
-          ],
-          "vuelta": [
-            4,
-            0
-          ],
-          "agregado": [
-            2,
-            5
-          ],
-          "avanza": "Defensores de Belgrano de V. Ramallo"
+          "equipo_x": "Santamarina Tandil",
+          "equipo_y": "Sarmiento De La Banda",
+          "goles_x": 3,
+          "goles_y": 2,
+          "detalle": "Ida: 2-0 | Vuelta: 2-1",
+          "campeon": "Santamarina Tandil"
         }
       }
     },
     "quinta_etapa": {
       "1v4": {
-        "ganador": "Cipolletti",
-        "perdedor": "Defensores de Belgrano de V. Ramallo",
-        "local_ida": "Defensores de Belgrano de V. Ramallo",
-        "visitante_ida": "Cipolletti",
-        "ida": [
-          0,
-          4
-        ],
-        "vuelta": [
-          0,
-          0
-        ],
-        "agregado": [
-          0,
-          4
-        ],
-        "avanza": "Cipolletti"
+        "equipo_x": "Santamarina Tandil",
+        "equipo_y": "Juventud Antoniana",
+        "goles_x": 5,
+        "goles_y": 3,
+        "detalle": "Ida: 3-2 | Vuelta: 1-2",
+        "campeon": "Santamarina Tandil"
       },
       "2v3": {
-        "ganador": "Juventud Antoniana",
-        "perdedor": "Sarmiento de La Banda",
-        "local_ida": "Juventud Antoniana",
-        "visitante_ida": "Sarmiento de La Banda",
-        "ida": [
-          4,
-          0
-        ],
-        "vuelta": [
-          0,
-          1
-        ],
-        "agregado": [
-          5,
-          0
-        ],
-        "avanza": "Juventud Antoniana"
+        "equipo_x": "Sarmiento de Resistencia",
+        "equipo_y": "San Martín de Formosa",
+        "goles_x": 1,
+        "goles_y": 4,
+        "detalle": "Ida: 0-2 | Vuelta: 2-1",
+        "campeon": "San Martín de Formosa"
       }
     },
     "sexta_etapa_final": {
-      "ganador": "Juventud Antoniana",
-      "perdedor": "Cipolletti",
-      "local_ida": "Juventud Antoniana",
-      "visitante_ida": "Cipolletti",
-      "ida": [
-        1,
-        0
-      ],
-      "vuelta": [
-        1,
-        2
-      ],
-      "agregado": [
-        3,
-        1
-      ],
-      "avanza": "Juventud Antoniana"
+      "equipo_x": "San Martín de Formosa",
+      "equipo_y": "Santamarina Tandil",
+      "goles_x": 3,
+      "goles_y": 4,
+      "detalle": "Ida: 0-0 | Vuelta: 4-3",
+      "campeon": "Santamarina Tandil"
     },
-    "ascenso_2": "Juventud Antoniana"
+    "ascenso_2": "Santamarina Tandil"
   },
   "monte_carlo": [
     {
-      "equipo": "Cipolletti",
-      "%ascenso_directo": 10.0,
-      "%ascenso_revalida": 3.3,
-      "%asciende": 13.3,
-      "%descenso": 10.0
-    },
-    {
-      "equipo": "Kimberley",
-      "%ascenso_directo": 10.0,
-      "%ascenso_revalida": 3.3,
-      "%asciende": 13.3,
-      "%descenso": 3.3
-    },
-    {
-      "equipo": "Costa Brava",
-      "%ascenso_directo": 6.7,
-      "%ascenso_revalida": 6.7,
-      "%asciende": 13.3,
-      "%descenso": 10.0
-    },
-    {
-      "equipo": "Huracán Las Heras",
-      "%ascenso_directo": 6.7,
-      "%ascenso_revalida": 3.3,
-      "%asciende": 10.0,
-      "%descenso": 16.7
-    },
-    {
-      "equipo": "Independiente Chivilcoy",
-      "%ascenso_directo": 6.7,
-      "%ascenso_revalida": 3.3,
-      "%asciende": 10.0,
-      "%descenso": 6.7
-    },
-    {
-      "equipo": "Deportivo Rincón",
-      "%ascenso_directo": 0.0,
-      "%ascenso_revalida": 10.0,
-      "%asciende": 10.0,
-      "%descenso": 6.7
-    },
-    {
-      "equipo": "Sarmiento de La Banda",
-      "%ascenso_directo": 0.0,
-      "%ascenso_revalida": 10.0,
-      "%asciende": 10.0,
-      "%descenso": 13.3
-    },
-    {
-      "equipo": "Tucumán Central",
-      "%ascenso_directo": 0.0,
-      "%ascenso_revalida": 10.0,
-      "%asciende": 10.0,
-      "%descenso": 3.3
-    },
-    {
-      "equipo": "9 de Julio",
-      "%ascenso_directo": 6.7,
-      "%ascenso_revalida": 0.0,
-      "%asciende": 6.7,
-      "%descenso": 13.3
-    },
-    {
-      "equipo": "Sportivo Belgrano",
-      "%ascenso_directo": 6.7,
-      "%ascenso_revalida": 0.0,
-      "%asciende": 6.7,
+      "equipo": "Douglas Haig",
+      "%ascenso_directo": 12.6,
+      "%ascenso_revalida": 11.8,
+      "%asciende": 24.4,
       "%descenso": 0.0
     },
     {
-      "equipo": "Círculo Deportivo",
-      "%ascenso_directo": 3.3,
-      "%ascenso_revalida": 3.3,
-      "%asciende": 6.7,
-      "%descenso": 16.7
-    },
-    {
-      "equipo": "Defensores de Belgrano de V. Ramallo",
-      "%ascenso_directo": 3.3,
-      "%ascenso_revalida": 3.3,
-      "%asciende": 6.7,
-      "%descenso": 10.0
-    },
-    {
-      "equipo": "Guillermo Brown",
-      "%ascenso_directo": 3.3,
-      "%ascenso_revalida": 3.3,
-      "%asciende": 6.7,
-      "%descenso": 3.3
-    },
-    {
-      "equipo": "Juventud Antoniana",
-      "%ascenso_directo": 3.3,
-      "%ascenso_revalida": 3.3,
-      "%asciende": 6.7,
-      "%descenso": 13.3
-    },
-    {
-      "equipo": "Juventud Unida Universitario",
-      "%ascenso_directo": 3.3,
-      "%ascenso_revalida": 3.3,
-      "%asciende": 6.7,
-      "%descenso": 10.0
-    },
-    {
-      "equipo": "Alvarado",
-      "%ascenso_directo": 0.0,
-      "%ascenso_revalida": 6.7,
-      "%asciende": 6.7,
-      "%descenso": 3.3
-    },
-    {
-      "equipo": "Atenas",
-      "%ascenso_directo": 0.0,
-      "%ascenso_revalida": 6.7,
-      "%asciende": 6.7,
-      "%descenso": 6.7
-    },
-    {
-      "equipo": "AC San Martín",
-      "%ascenso_directo": 3.3,
-      "%ascenso_revalida": 0.0,
-      "%asciende": 3.3,
-      "%descenso": 6.7
-    },
-    {
-      "equipo": "Bartolomé Mitre",
-      "%ascenso_directo": 3.3,
-      "%ascenso_revalida": 0.0,
-      "%asciende": 3.3,
-      "%descenso": 6.7
-    },
-    {
-      "equipo": "Douglas Haig",
-      "%ascenso_directo": 3.3,
-      "%ascenso_revalida": 0.0,
-      "%asciende": 3.3,
-      "%descenso": 10.0
-    },
-    {
-      "equipo": "El Linqueño",
-      "%ascenso_directo": 3.3,
-      "%ascenso_revalida": 0.0,
-      "%asciende": 3.3,
-      "%descenso": 20.0
-    },
-    {
-      "equipo": "FADEP",
-      "%ascenso_directo": 3.3,
-      "%ascenso_revalida": 0.0,
-      "%asciende": 3.3,
-      "%descenso": 6.7
+      "equipo": "Cipolletti",
+      "%ascenso_directo": 12.4,
+      "%ascenso_revalida": 7.6,
+      "%asciende": 20.0,
+      "%descenso": 0.0
     },
     {
       "equipo": "Olimpo",
-      "%ascenso_directo": 3.3,
-      "%ascenso_revalida": 0.0,
-      "%asciende": 3.3,
-      "%descenso": 16.7
+      "%ascenso_directo": 8.6,
+      "%ascenso_revalida": 6.2,
+      "%asciende": 14.8,
+      "%descenso": 2.8
     },
     {
-      "equipo": "Santamarina",
-      "%ascenso_directo": 3.3,
-      "%ascenso_revalida": 0.0,
-      "%asciende": 3.3,
-      "%descenso": 30.0
+      "equipo": "San Martín de Formosa",
+      "%ascenso_directo": 7.8,
+      "%ascenso_revalida": 6.0,
+      "%asciende": 13.8,
+      "%descenso": 9.6
     },
     {
-      "equipo": "Sol de Mayo",
-      "%ascenso_directo": 3.3,
-      "%ascenso_revalida": 0.0,
-      "%asciende": 3.3,
-      "%descenso": 16.7
+      "equipo": "Sportivo Belgrano",
+      "%ascenso_directo": 4.6,
+      "%ascenso_revalida": 5.2,
+      "%asciende": 9.8,
+      "%descenso": 12.0
     },
     {
-      "equipo": "Villa Mitre",
-      "%ascenso_directo": 3.3,
-      "%ascenso_revalida": 0.0,
-      "%asciende": 3.3,
-      "%descenso": 20.0
+      "equipo": "Alvarado",
+      "%ascenso_directo": 2.8,
+      "%ascenso_revalida": 6.8,
+      "%asciende": 9.6,
+      "%descenso": 5.8
     },
     {
-      "equipo": "Defensores de Puerto Vilelas",
-      "%ascenso_directo": 0.0,
-      "%ascenso_revalida": 3.3,
-      "%asciende": 3.3,
-      "%descenso": 20.0
+      "equipo": "Bartolomé Mitre (Posadas)",
+      "%ascenso_directo": 4.8,
+      "%ascenso_revalida": 4.0,
+      "%asciende": 8.8,
+      "%descenso": 0.0
     },
     {
-      "equipo": "Escobar FC",
-      "%ascenso_directo": 0.0,
-      "%ascenso_revalida": 3.3,
-      "%asciende": 3.3,
-      "%descenso": 3.3
+      "equipo": "9 De Julio Rafaela",
+      "%ascenso_directo": 5.6,
+      "%ascenso_revalida": 3.0,
+      "%asciende": 8.6,
+      "%descenso": 0.0
+    },
+    {
+      "equipo": "Atenas Río Cuarto",
+      "%ascenso_directo": 4.6,
+      "%ascenso_revalida": 3.2,
+      "%asciende": 7.8,
+      "%descenso": 0.0
     },
     {
       "equipo": "Germinal",
-      "%ascenso_directo": 0.0,
-      "%ascenso_revalida": 3.3,
-      "%asciende": 3.3,
-      "%descenso": 3.3
+      "%ascenso_directo": 3.8,
+      "%ascenso_revalida": 4.0,
+      "%asciende": 7.8,
+      "%descenso": 5.0
     },
     {
-      "equipo": "Gimnasia y Esgrima de Chivilcoy",
+      "equipo": "Tucumán Central",
+      "%ascenso_directo": 3.8,
+      "%ascenso_revalida": 4.0,
+      "%asciende": 7.8,
+      "%descenso": 13.2
+    },
+    {
+      "equipo": "CSCyD Gimnasia y Esgrima (Chivilcoy)",
+      "%ascenso_directo": 3.6,
+      "%ascenso_revalida": 3.2,
+      "%asciende": 6.8,
+      "%descenso": 3.8
+    },
+    {
+      "equipo": "Villa Mitre",
+      "%ascenso_directo": 4.2,
+      "%ascenso_revalida": 2.4,
+      "%asciende": 6.6,
+      "%descenso": 3.4
+    },
+    {
+      "equipo": "Sarmiento De La Banda",
+      "%ascenso_directo": 2.4,
+      "%ascenso_revalida": 3.6,
+      "%asciende": 6.0,
+      "%descenso": 2.6
+    },
+    {
+      "equipo": "Juventud Antoniana",
+      "%ascenso_directo": 3.0,
+      "%ascenso_revalida": 2.4,
+      "%asciende": 5.4,
+      "%descenso": 5.4
+    },
+    {
+      "equipo": "El Linqueño",
+      "%ascenso_directo": 2.6,
+      "%ascenso_revalida": 2.6,
+      "%asciende": 5.2,
+      "%descenso": 7.8
+    },
+    {
+      "equipo": "Argentino Monte Maíz",
+      "%ascenso_directo": 3.0,
+      "%ascenso_revalida": 1.6,
+      "%asciende": 4.6,
+      "%descenso": 5.4
+    },
+    {
+      "equipo": "Sol de Mayo",
+      "%ascenso_directo": 1.8,
+      "%ascenso_revalida": 2.4,
+      "%asciende": 4.2,
+      "%descenso": 5.2
+    },
+    {
+      "equipo": "Deportivo Rincón",
+      "%ascenso_directo": 1.8,
+      "%ascenso_revalida": 2.0,
+      "%asciende": 3.8,
+      "%descenso": 9.4
+    },
+    {
+      "equipo": "Sol De América",
+      "%ascenso_directo": 1.4,
+      "%ascenso_revalida": 2.0,
+      "%asciende": 3.4,
+      "%descenso": 7.0
+    },
+    {
+      "equipo": "Círculo Deportivo",
+      "%ascenso_directo": 1.6,
+      "%ascenso_revalida": 1.4,
+      "%asciende": 3.0,
+      "%descenso": 11.4
+    },
+    {
+      "equipo": "Guillermo Brown",
+      "%ascenso_directo": 2.0,
+      "%ascenso_revalida": 0.0,
+      "%asciende": 2.0,
+      "%descenso": 7.0
+    },
+    {
+      "equipo": "Costa Brava (Gral Pico)",
+      "%ascenso_directo": 0.8,
+      "%ascenso_revalida": 1.0,
+      "%asciende": 1.8,
+      "%descenso": 16.6
+    },
+    {
+      "equipo": "Defensores Pto. Vilelas",
+      "%ascenso_directo": 0.2,
+      "%ascenso_revalida": 1.6,
+      "%asciende": 1.8,
+      "%descenso": 9.4
+    },
+    {
+      "equipo": "Huracán Las Heras",
+      "%ascenso_directo": 0.2,
+      "%ascenso_revalida": 1.4,
+      "%asciende": 1.6,
+      "%descenso": 18.6
+    },
+    {
+      "equipo": "Gimnasia de Concepción",
       "%ascenso_directo": 0.0,
-      "%ascenso_revalida": 3.3,
-      "%asciende": 3.3,
-      "%descenso": 0.0
+      "%ascenso_revalida": 1.6,
+      "%asciende": 1.6,
+      "%descenso": 7.0
+    },
+    {
+      "equipo": "Atlético Escobar",
+      "%ascenso_directo": 0.0,
+      "%ascenso_revalida": 1.4,
+      "%asciende": 1.4,
+      "%descenso": 9.0
+    },
+    {
+      "equipo": "Juventud Unida San Luis",
+      "%ascenso_directo": 0.0,
+      "%ascenso_revalida": 1.2,
+      "%asciende": 1.2,
+      "%descenso": 17.6
+    },
+    {
+      "equipo": "Kimberley Mar Del Plata",
+      "%ascenso_directo": 0.0,
+      "%ascenso_revalida": 1.2,
+      "%asciende": 1.2,
+      "%descenso": 21.8
+    },
+    {
+      "equipo": "Defensores Belgrano (VR)",
+      "%ascenso_directo": 0.0,
+      "%ascenso_revalida": 1.0,
+      "%asciende": 1.0,
+      "%descenso": 8.4
+    },
+    {
+      "equipo": "Fundación Amigos por el Deporte",
+      "%ascenso_directo": 0.0,
+      "%ascenso_revalida": 1.0,
+      "%asciende": 1.0,
+      "%descenso": 22.8
+    },
+    {
+      "equipo": "Boca Unidos de Corrientes",
+      "%ascenso_directo": 0.0,
+      "%ascenso_revalida": 0.8,
+      "%asciende": 0.8,
+      "%descenso": 12.8
+    },
+    {
+      "equipo": "San Martín de Mendoza",
+      "%ascenso_directo": 0.0,
+      "%ascenso_revalida": 0.6,
+      "%asciende": 0.6,
+      "%descenso": 20.8
+    },
+    {
+      "equipo": "Santamarina Tandil",
+      "%ascenso_directo": 0.0,
+      "%ascenso_revalida": 0.6,
+      "%asciende": 0.6,
+      "%descenso": 26.4
     },
     {
       "equipo": "Sarmiento de Resistencia",
       "%ascenso_directo": 0.0,
-      "%ascenso_revalida": 3.3,
-      "%asciende": 3.3,
-      "%descenso": 13.3
+      "%ascenso_revalida": 0.6,
+      "%asciende": 0.6,
+      "%descenso": 71.2
     },
     {
-      "equipo": "Sol de América",
+      "equipo": "Sportivo Las Parejas",
       "%ascenso_directo": 0.0,
-      "%ascenso_revalida": 3.3,
-      "%asciende": 3.3,
-      "%descenso": 10.0
+      "%ascenso_revalida": 0.6,
+      "%asciende": 0.6,
+      "%descenso": 7.4
     },
     {
-      "equipo": "Boca Unidos",
-      "%ascenso_directo": 0.0,
-      "%ascenso_revalida": 0.0,
-      "%asciende": 0.0,
-      "%descenso": 13.3
-    },
-    {
-      "equipo": "Deportivo Argentino",
+      "equipo": "Independiente Chivilcoy",
       "%ascenso_directo": 0.0,
       "%ascenso_revalida": 0.0,
       "%asciende": 0.0,
-      "%descenso": 13.3
-    },
-    {
-      "equipo": "Gimnasia y Esgrima de Concepción del Uruguay",
-      "%ascenso_directo": 0.0,
-      "%ascenso_revalida": 0.0,
-      "%asciende": 0.0,
-      "%descenso": 20.0
-    },
-    {
-      "equipo": "San Martín de Formosa",
-      "%ascenso_directo": 0.0,
-      "%ascenso_revalida": 0.0,
-      "%asciende": 0.0,
-      "%descenso": 10.0
-    },
-    {
-      "equipo": "Sportivo AC",
-      "%ascenso_directo": 0.0,
-      "%ascenso_revalida": 0.0,
-      "%asciende": 0.0,
-      "%descenso": 13.3
+      "%descenso": 13.4
     }
   ]
 }

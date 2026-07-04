@@ -1,0 +1,1794 @@
+[
+  {
+    "timestamp": "2026-07-04T18:23:44",
+    "partidos_cargados": [],
+    "sin_matchear": [
+      {
+        "equipo_local": "Sportivo Belgrano",
+        "equipo_visitante": "9 De Julio Rafaela",
+        "goles_local": 3,
+        "goles_visitante": 0,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "El Linqueño",
+        "equipo_visitante": "Sportivo Las Parejas",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Independiente Chivilcoy",
+        "equipo_visitante": "Atlético Escobar",
+        "goles_local": 2,
+        "goles_visitante": 1,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Defensores Belgrano (VR)",
+        "equipo_visitante": "Gimnasia de Concepción",
+        "goles_local": 2,
+        "goles_visitante": 1,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Douglas Haig",
+        "equipo_visitante": "CSCyD Gimnasia y Esgrima (Chivilcoy)",
+        "goles_local": 2,
+        "goles_visitante": 1,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "9 De Julio Rafaela",
+        "equipo_visitante": "Independiente Chivilcoy",
+        "goles_local": 3,
+        "goles_visitante": 2,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "CSCyD Gimnasia y Esgrima (Chivilcoy)",
+        "equipo_visitante": "Sportivo Belgrano",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Defensores Belgrano (VR)",
+        "equipo_visitante": "El Linqueño",
+        "goles_local": 3,
+        "goles_visitante": 1,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Gimnasia de Concepción",
+        "equipo_visitante": "Douglas Haig",
+        "goles_local": 1,
+        "goles_visitante": 3,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Atlético Escobar",
+        "equipo_visitante": "Sportivo Las Parejas",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "El Linqueño",
+        "equipo_visitante": "Atlético Escobar",
+        "goles_local": 2,
+        "goles_visitante": 1,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Sportivo Las Parejas",
+        "equipo_visitante": "9 De Julio Rafaela",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Independiente Chivilcoy",
+        "equipo_visitante": "CSCyD Gimnasia y Esgrima (Chivilcoy)",
+        "goles_local": 3,
+        "goles_visitante": 0,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Douglas Haig",
+        "equipo_visitante": "Defensores Belgrano (VR)",
+        "goles_local": 3,
+        "goles_visitante": 2,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Sportivo Belgrano",
+        "equipo_visitante": "Gimnasia de Concepción",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Gimnasia de Concepción",
+        "equipo_visitante": "Independiente Chivilcoy",
+        "goles_local": 0,
+        "goles_visitante": 1,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Defensores Belgrano (VR)",
+        "equipo_visitante": "Sportivo Belgrano",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "CSCyD Gimnasia y Esgrima (Chivilcoy)",
+        "equipo_visitante": "Sportivo Las Parejas",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Douglas Haig",
+        "equipo_visitante": "El Linqueño",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "9 De Julio Rafaela",
+        "equipo_visitante": "Atlético Escobar",
+        "goles_local": 4,
+        "goles_visitante": 1,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Atlético Escobar",
+        "equipo_visitante": "CSCyD Gimnasia y Esgrima (Chivilcoy)",
+        "goles_local": 0,
+        "goles_visitante": 2,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Sportivo Belgrano",
+        "equipo_visitante": "Douglas Haig",
+        "goles_local": 0,
+        "goles_visitante": 1,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Independiente Chivilcoy",
+        "equipo_visitante": "Defensores Belgrano (VR)",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Sportivo Las Parejas",
+        "equipo_visitante": "Gimnasia de Concepción",
+        "goles_local": 2,
+        "goles_visitante": 1,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "El Linqueño",
+        "equipo_visitante": "9 De Julio Rafaela",
+        "goles_local": 0,
+        "goles_visitante": 3,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Gimnasia de Concepción",
+        "equipo_visitante": "Atlético Escobar",
+        "goles_local": 1,
+        "goles_visitante": 2,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Douglas Haig",
+        "equipo_visitante": "Independiente Chivilcoy",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Defensores Belgrano (VR)",
+        "equipo_visitante": "Sportivo Las Parejas",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "CSCyD Gimnasia y Esgrima (Chivilcoy)",
+        "equipo_visitante": "9 De Julio Rafaela",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Sportivo Belgrano",
+        "equipo_visitante": "El Linqueño",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Independiente Chivilcoy",
+        "equipo_visitante": "Sportivo Belgrano",
+        "goles_local": 0,
+        "goles_visitante": 3,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Atlético Escobar",
+        "equipo_visitante": "Defensores Belgrano (VR)",
+        "goles_local": 3,
+        "goles_visitante": 2,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "9 De Julio Rafaela",
+        "equipo_visitante": "Gimnasia de Concepción",
+        "goles_local": 4,
+        "goles_visitante": 1,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "El Linqueño",
+        "equipo_visitante": "CSCyD Gimnasia y Esgrima (Chivilcoy)",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Sportivo Las Parejas",
+        "equipo_visitante": "Douglas Haig",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Independiente Chivilcoy",
+        "equipo_visitante": "El Linqueño",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Gimnasia de Concepción",
+        "equipo_visitante": "CSCyD Gimnasia y Esgrima (Chivilcoy)",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Sportivo Belgrano",
+        "equipo_visitante": "Sportivo Las Parejas",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Douglas Haig",
+        "equipo_visitante": "Atlético Escobar",
+        "goles_local": 4,
+        "goles_visitante": 1,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Defensores Belgrano (VR)",
+        "equipo_visitante": "9 De Julio Rafaela",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "CSCyD Gimnasia y Esgrima (Chivilcoy)",
+        "equipo_visitante": "Defensores Belgrano (VR)",
+        "goles_local": 3,
+        "goles_visitante": 0,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "El Linqueño",
+        "equipo_visitante": "Gimnasia de Concepción",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "9 De Julio Rafaela",
+        "equipo_visitante": "Douglas Haig",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Atlético Escobar",
+        "equipo_visitante": "Sportivo Belgrano",
+        "goles_local": 1,
+        "goles_visitante": 3,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Sportivo Las Parejas",
+        "equipo_visitante": "Independiente Chivilcoy",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "CSCyD Gimnasia y Esgrima (Chivilcoy)",
+        "equipo_visitante": "Douglas Haig",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "9 De Julio Rafaela",
+        "equipo_visitante": "Sportivo Belgrano",
+        "goles_local": 0,
+        "goles_visitante": 2,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Gimnasia de Concepción",
+        "equipo_visitante": "Defensores Belgrano (VR)",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Sportivo Las Parejas",
+        "equipo_visitante": "El Linqueño",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Atlético Escobar",
+        "equipo_visitante": "Independiente Chivilcoy",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Sportivo Las Parejas",
+        "equipo_visitante": "Atlético Escobar",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "El Linqueño",
+        "equipo_visitante": "Defensores Belgrano (VR)",
+        "goles_local": 0,
+        "goles_visitante": 2,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Independiente Chivilcoy",
+        "equipo_visitante": "9 De Julio Rafaela",
+        "goles_local": 2,
+        "goles_visitante": 2,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Douglas Haig",
+        "equipo_visitante": "Gimnasia de Concepción",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Sportivo Belgrano",
+        "equipo_visitante": "CSCyD Gimnasia y Esgrima (Chivilcoy)",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Atlético Escobar",
+        "equipo_visitante": "El Linqueño",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "CSCyD Gimnasia y Esgrima (Chivilcoy)",
+        "equipo_visitante": "Independiente Chivilcoy",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "9 De Julio Rafaela",
+        "equipo_visitante": "Sportivo Las Parejas",
+        "goles_local": 2,
+        "goles_visitante": 2,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Gimnasia de Concepción",
+        "equipo_visitante": "Sportivo Belgrano",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Defensores Belgrano (VR)",
+        "equipo_visitante": "Douglas Haig",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Atlético Escobar",
+        "equipo_visitante": "9 De Julio Rafaela",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Sportivo Las Parejas",
+        "equipo_visitante": "CSCyD Gimnasia y Esgrima (Chivilcoy)",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "El Linqueño",
+        "equipo_visitante": "Douglas Haig",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Independiente Chivilcoy",
+        "equipo_visitante": "Gimnasia de Concepción",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Sportivo Belgrano",
+        "equipo_visitante": "Defensores Belgrano (VR)",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "CSCyD Gimnasia y Esgrima (Chivilcoy)",
+        "equipo_visitante": "Atlético Escobar",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Douglas Haig",
+        "equipo_visitante": "Sportivo Belgrano",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Defensores Belgrano (VR)",
+        "equipo_visitante": "Independiente Chivilcoy",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Gimnasia de Concepción",
+        "equipo_visitante": "Sportivo Las Parejas",
+        "goles_local": 0,
+        "goles_visitante": 1,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "9 De Julio Rafaela",
+        "equipo_visitante": "El Linqueño",
+        "goles_local": 3,
+        "goles_visitante": 2,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Sportivo Las Parejas",
+        "equipo_visitante": "Defensores Belgrano (VR)",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "El Linqueño",
+        "equipo_visitante": "Sportivo Belgrano",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Independiente Chivilcoy",
+        "equipo_visitante": "Douglas Haig",
+        "goles_local": 0,
+        "goles_visitante": 4,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Atlético Escobar",
+        "equipo_visitante": "Gimnasia de Concepción",
+        "goles_local": 2,
+        "goles_visitante": 1,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "9 De Julio Rafaela",
+        "equipo_visitante": "CSCyD Gimnasia y Esgrima (Chivilcoy)",
+        "goles_local": 2,
+        "goles_visitante": 1,
+        "zona": "1"
+      },
+      {
+        "equipo_local": "Sarmiento de Resistencia",
+        "equipo_visitante": "Juventud Antoniana",
+        "goles_local": 1,
+        "goles_visitante": 3,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Tucumán Central",
+        "equipo_visitante": "Bartolomé Mitre (Posadas)",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "San Martín de Formosa",
+        "equipo_visitante": "Defensores Pto. Vilelas",
+        "goles_local": 2,
+        "goles_visitante": 1,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Boca Unidos de Corrientes",
+        "equipo_visitante": "Sarmiento De La Banda",
+        "goles_local": 3,
+        "goles_visitante": 1,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Juventud Antoniana",
+        "equipo_visitante": "Sol De América",
+        "goles_local": 2,
+        "goles_visitante": 1,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Defensores Pto. Vilelas",
+        "equipo_visitante": "Tucumán Central",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Bartolomé Mitre (Posadas)",
+        "equipo_visitante": "Boca Unidos de Corrientes",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Sarmiento De La Banda",
+        "equipo_visitante": "Sarmiento de Resistencia",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Boca Unidos de Corrientes",
+        "equipo_visitante": "Defensores Pto. Vilelas",
+        "goles_local": 2,
+        "goles_visitante": 4,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Tucumán Central",
+        "equipo_visitante": "San Martín de Formosa",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Sol De América",
+        "equipo_visitante": "Sarmiento De La Banda",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Sarmiento de Resistencia",
+        "equipo_visitante": "Bartolomé Mitre (Posadas)",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Bartolomé Mitre (Posadas)",
+        "equipo_visitante": "Sol De América",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "San Martín de Formosa",
+        "equipo_visitante": "Boca Unidos de Corrientes",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Sarmiento De La Banda",
+        "equipo_visitante": "Juventud Antoniana",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Defensores Pto. Vilelas",
+        "equipo_visitante": "Sarmiento de Resistencia",
+        "goles_local": 2,
+        "goles_visitante": 2,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Juventud Antoniana",
+        "equipo_visitante": "Bartolomé Mitre (Posadas)",
+        "goles_local": 1,
+        "goles_visitante": 2,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Sarmiento de Resistencia",
+        "equipo_visitante": "San Martín de Formosa",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Sol De América",
+        "equipo_visitante": "Defensores Pto. Vilelas",
+        "goles_local": 2,
+        "goles_visitante": 1,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Boca Unidos de Corrientes",
+        "equipo_visitante": "Tucumán Central",
+        "goles_local": 3,
+        "goles_visitante": 1,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Tucumán Central",
+        "equipo_visitante": "Sarmiento de Resistencia",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Defensores Pto. Vilelas",
+        "equipo_visitante": "Juventud Antoniana",
+        "goles_local": 0,
+        "goles_visitante": 1,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "San Martín de Formosa",
+        "equipo_visitante": "Sol De América",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Bartolomé Mitre (Posadas)",
+        "equipo_visitante": "Sarmiento De La Banda",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Sarmiento de Resistencia",
+        "equipo_visitante": "Boca Unidos de Corrientes",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Sol De América",
+        "equipo_visitante": "Tucumán Central",
+        "goles_local": 3,
+        "goles_visitante": 0,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Sarmiento De La Banda",
+        "equipo_visitante": "Defensores Pto. Vilelas",
+        "goles_local": 1,
+        "goles_visitante": 2,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Juventud Antoniana",
+        "equipo_visitante": "San Martín de Formosa",
+        "goles_local": 0,
+        "goles_visitante": 3,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Defensores Pto. Vilelas",
+        "equipo_visitante": "Bartolomé Mitre (Posadas)",
+        "goles_local": 1,
+        "goles_visitante": 3,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Boca Unidos de Corrientes",
+        "equipo_visitante": "Sol De América",
+        "goles_local": 0,
+        "goles_visitante": 1,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Tucumán Central",
+        "equipo_visitante": "Juventud Antoniana",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "San Martín de Formosa",
+        "equipo_visitante": "Sarmiento De La Banda",
+        "goles_local": 4,
+        "goles_visitante": 2,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Juventud Antoniana",
+        "equipo_visitante": "Boca Unidos de Corrientes",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Bartolomé Mitre (Posadas)",
+        "equipo_visitante": "San Martín de Formosa",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Sol De América",
+        "equipo_visitante": "Sarmiento de Resistencia",
+        "goles_local": 3,
+        "goles_visitante": 0,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Sarmiento De La Banda",
+        "equipo_visitante": "Tucumán Central",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Juventud Antoniana",
+        "equipo_visitante": "Sarmiento de Resistencia",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Bartolomé Mitre (Posadas)",
+        "equipo_visitante": "Tucumán Central",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Sarmiento De La Banda",
+        "equipo_visitante": "Boca Unidos de Corrientes",
+        "goles_local": 3,
+        "goles_visitante": 0,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Defensores Pto. Vilelas",
+        "equipo_visitante": "San Martín de Formosa",
+        "goles_local": 2,
+        "goles_visitante": 3,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Boca Unidos de Corrientes",
+        "equipo_visitante": "Bartolomé Mitre (Posadas)",
+        "goles_local": 2,
+        "goles_visitante": 1,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Sol De América",
+        "equipo_visitante": "Juventud Antoniana",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Tucumán Central",
+        "equipo_visitante": "Defensores Pto. Vilelas",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Sarmiento de Resistencia",
+        "equipo_visitante": "Sarmiento De La Banda",
+        "goles_local": 0,
+        "goles_visitante": 1,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Defensores Pto. Vilelas",
+        "equipo_visitante": "Boca Unidos de Corrientes",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Bartolomé Mitre (Posadas)",
+        "equipo_visitante": "Sarmiento de Resistencia",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Sarmiento De La Banda",
+        "equipo_visitante": "Sol De América",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "San Martín de Formosa",
+        "equipo_visitante": "Tucumán Central",
+        "goles_local": 3,
+        "goles_visitante": 2,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Juventud Antoniana",
+        "equipo_visitante": "Sarmiento De La Banda",
+        "goles_local": 0,
+        "goles_visitante": 1,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Boca Unidos de Corrientes",
+        "equipo_visitante": "San Martín de Formosa",
+        "goles_local": 3,
+        "goles_visitante": 1,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Sol De América",
+        "equipo_visitante": "Bartolomé Mitre (Posadas)",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Sarmiento de Resistencia",
+        "equipo_visitante": "Defensores Pto. Vilelas",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Bartolomé Mitre (Posadas)",
+        "equipo_visitante": "Juventud Antoniana",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Defensores Pto. Vilelas",
+        "equipo_visitante": "Sol De América",
+        "goles_local": 2,
+        "goles_visitante": 1,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "San Martín de Formosa",
+        "equipo_visitante": "Sarmiento de Resistencia",
+        "goles_local": 3,
+        "goles_visitante": 0,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Tucumán Central",
+        "equipo_visitante": "Boca Unidos de Corrientes",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Sol De América",
+        "equipo_visitante": "San Martín de Formosa",
+        "goles_local": 1,
+        "goles_visitante": 2,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Juventud Antoniana",
+        "equipo_visitante": "Defensores Pto. Vilelas",
+        "goles_local": 4,
+        "goles_visitante": 0,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Sarmiento de Resistencia",
+        "equipo_visitante": "Tucumán Central",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Sarmiento De La Banda",
+        "equipo_visitante": "Bartolomé Mitre (Posadas)",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "2"
+      },
+      {
+        "equipo_local": "Atenas Río Cuarto",
+        "equipo_visitante": "Cipolletti",
+        "goles_local": 3,
+        "goles_visitante": 1,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "San Martín de Mendoza",
+        "equipo_visitante": "Juventud Unida San Luis",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Costa Brava (Gral Pico)",
+        "equipo_visitante": "Fundación Amigos por el Deporte",
+        "goles_local": 3,
+        "goles_visitante": 0,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Huracán Las Heras",
+        "equipo_visitante": "Argentino Monte Maíz",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Fundación Amigos por el Deporte",
+        "equipo_visitante": "Deportivo Rincón",
+        "goles_local": 2,
+        "goles_visitante": 2,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Juventud Unida San Luis",
+        "equipo_visitante": "Huracán Las Heras",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Cipolletti",
+        "equipo_visitante": "San Martín de Mendoza",
+        "goles_local": 3,
+        "goles_visitante": 0,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Argentino Monte Maíz",
+        "equipo_visitante": "Costa Brava (Gral Pico)",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Costa Brava (Gral Pico)",
+        "equipo_visitante": "Juventud Unida San Luis",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Deportivo Rincón",
+        "equipo_visitante": "Argentino Monte Maíz",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Huracán Las Heras",
+        "equipo_visitante": "Cipolletti",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "San Martín de Mendoza",
+        "equipo_visitante": "Atenas Río Cuarto",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Juventud Unida San Luis",
+        "equipo_visitante": "Deportivo Rincón",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Cipolletti",
+        "equipo_visitante": "Costa Brava (Gral Pico)",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Argentino Monte Maíz",
+        "equipo_visitante": "Fundación Amigos por el Deporte",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Atenas Río Cuarto",
+        "equipo_visitante": "Huracán Las Heras",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Deportivo Rincón",
+        "equipo_visitante": "Cipolletti",
+        "goles_local": 1,
+        "goles_visitante": 2,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Fundación Amigos por el Deporte",
+        "equipo_visitante": "Juventud Unida San Luis",
+        "goles_local": 1,
+        "goles_visitante": 3,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Huracán Las Heras",
+        "equipo_visitante": "San Martín de Mendoza",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Costa Brava (Gral Pico)",
+        "equipo_visitante": "Atenas Río Cuarto",
+        "goles_local": 0,
+        "goles_visitante": 1,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Cipolletti",
+        "equipo_visitante": "Fundación Amigos por el Deporte",
+        "goles_local": 2,
+        "goles_visitante": 1,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Juventud Unida San Luis",
+        "equipo_visitante": "Argentino Monte Maíz",
+        "goles_local": 1,
+        "goles_visitante": 2,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "San Martín de Mendoza",
+        "equipo_visitante": "Costa Brava (Gral Pico)",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Atenas Río Cuarto",
+        "equipo_visitante": "Deportivo Rincón",
+        "goles_local": 3,
+        "goles_visitante": 1,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Costa Brava (Gral Pico)",
+        "equipo_visitante": "Huracán Las Heras",
+        "goles_local": 1,
+        "goles_visitante": 2,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Fundación Amigos por el Deporte",
+        "equipo_visitante": "Atenas Río Cuarto",
+        "goles_local": 4,
+        "goles_visitante": 0,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Deportivo Rincón",
+        "equipo_visitante": "San Martín de Mendoza",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Argentino Monte Maíz",
+        "equipo_visitante": "Cipolletti",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Cipolletti",
+        "equipo_visitante": "Juventud Unida San Luis",
+        "goles_local": 0,
+        "goles_visitante": 1,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Atenas Río Cuarto",
+        "equipo_visitante": "Argentino Monte Maíz",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Huracán Las Heras",
+        "equipo_visitante": "Deportivo Rincón",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "San Martín de Mendoza",
+        "equipo_visitante": "Fundación Amigos por el Deporte",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Fundación Amigos por el Deporte",
+        "equipo_visitante": "Huracán Las Heras",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Deportivo Rincón",
+        "equipo_visitante": "Costa Brava (Gral Pico)",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Juventud Unida San Luis",
+        "equipo_visitante": "Atenas Río Cuarto",
+        "goles_local": 0,
+        "goles_visitante": 1,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Argentino Monte Maíz",
+        "equipo_visitante": "San Martín de Mendoza",
+        "goles_local": 4,
+        "goles_visitante": 1,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Argentino Monte Maíz",
+        "equipo_visitante": "Huracán Las Heras",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Juventud Unida San Luis",
+        "equipo_visitante": "San Martín de Mendoza",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Fundación Amigos por el Deporte",
+        "equipo_visitante": "Costa Brava (Gral Pico)",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Cipolletti",
+        "equipo_visitante": "Atenas Río Cuarto",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Costa Brava (Gral Pico)",
+        "equipo_visitante": "Argentino Monte Maíz",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Deportivo Rincón",
+        "equipo_visitante": "Fundación Amigos por el Deporte",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "San Martín de Mendoza",
+        "equipo_visitante": "Cipolletti",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Huracán Las Heras",
+        "equipo_visitante": "Juventud Unida San Luis",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Juventud Unida San Luis",
+        "equipo_visitante": "Costa Brava (Gral Pico)",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Argentino Monte Maíz",
+        "equipo_visitante": "Deportivo Rincón",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Cipolletti",
+        "equipo_visitante": "Huracán Las Heras",
+        "goles_local": 3,
+        "goles_visitante": 0,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Atenas Río Cuarto",
+        "equipo_visitante": "San Martín de Mendoza",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Fundación Amigos por el Deporte",
+        "equipo_visitante": "Argentino Monte Maíz",
+        "goles_local": 2,
+        "goles_visitante": 2,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Deportivo Rincón",
+        "equipo_visitante": "Juventud Unida San Luis",
+        "goles_local": 2,
+        "goles_visitante": 1,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Huracán Las Heras",
+        "equipo_visitante": "Atenas Río Cuarto",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Costa Brava (Gral Pico)",
+        "equipo_visitante": "Cipolletti",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Juventud Unida San Luis",
+        "equipo_visitante": "Fundación Amigos por el Deporte",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "San Martín de Mendoza",
+        "equipo_visitante": "Huracán Las Heras",
+        "goles_local": 3,
+        "goles_visitante": 1,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Cipolletti",
+        "equipo_visitante": "Deportivo Rincón",
+        "goles_local": 2,
+        "goles_visitante": 1,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Atenas Río Cuarto",
+        "equipo_visitante": "Costa Brava (Gral Pico)",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Fundación Amigos por el Deporte",
+        "equipo_visitante": "Cipolletti",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Deportivo Rincón",
+        "equipo_visitante": "Atenas Río Cuarto",
+        "goles_local": 0,
+        "goles_visitante": 1,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Argentino Monte Maíz",
+        "equipo_visitante": "Juventud Unida San Luis",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Costa Brava (Gral Pico)",
+        "equipo_visitante": "San Martín de Mendoza",
+        "goles_local": 2,
+        "goles_visitante": 1,
+        "zona": "3"
+      },
+      {
+        "equipo_local": "Sol de Mayo",
+        "equipo_visitante": "Germinal",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Kimberley Mar Del Plata",
+        "equipo_visitante": "Villa Mitre",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Guillermo Brown",
+        "equipo_visitante": "Santamarina Tandil",
+        "goles_local": 2,
+        "goles_visitante": 2,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Olimpo",
+        "equipo_visitante": "Alvarado",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Santamarina Tandil",
+        "equipo_visitante": "Sol de Mayo",
+        "goles_local": 0,
+        "goles_visitante": 2,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Germinal",
+        "equipo_visitante": "Kimberley Mar Del Plata",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Alvarado",
+        "equipo_visitante": "Guillermo Brown",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Villa Mitre",
+        "equipo_visitante": "Círculo Deportivo",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Sol de Mayo",
+        "equipo_visitante": "Alvarado",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Círculo Deportivo",
+        "equipo_visitante": "Germinal",
+        "goles_local": 2,
+        "goles_visitante": 1,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Kimberley Mar Del Plata",
+        "equipo_visitante": "Santamarina Tandil",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Guillermo Brown",
+        "equipo_visitante": "Olimpo",
+        "goles_local": 0,
+        "goles_visitante": 2,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Alvarado",
+        "equipo_visitante": "Kimberley Mar Del Plata",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Santamarina Tandil",
+        "equipo_visitante": "Círculo Deportivo",
+        "goles_local": 4,
+        "goles_visitante": 0,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Germinal",
+        "equipo_visitante": "Villa Mitre",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Olimpo",
+        "equipo_visitante": "Sol de Mayo",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Círculo Deportivo",
+        "equipo_visitante": "Alvarado",
+        "goles_local": 0,
+        "goles_visitante": 1,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Kimberley Mar Del Plata",
+        "equipo_visitante": "Olimpo",
+        "goles_local": 0,
+        "goles_visitante": 1,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Sol de Mayo",
+        "equipo_visitante": "Guillermo Brown",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Villa Mitre",
+        "equipo_visitante": "Santamarina Tandil",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Santamarina Tandil",
+        "equipo_visitante": "Germinal",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Alvarado",
+        "equipo_visitante": "Villa Mitre",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Guillermo Brown",
+        "equipo_visitante": "Kimberley Mar Del Plata",
+        "goles_local": 3,
+        "goles_visitante": 4,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Olimpo",
+        "equipo_visitante": "Círculo Deportivo",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Círculo Deportivo",
+        "equipo_visitante": "Guillermo Brown",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Kimberley Mar Del Plata",
+        "equipo_visitante": "Sol de Mayo",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Germinal",
+        "equipo_visitante": "Alvarado",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Villa Mitre",
+        "equipo_visitante": "Olimpo",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Sol de Mayo",
+        "equipo_visitante": "Círculo Deportivo",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Guillermo Brown",
+        "equipo_visitante": "Villa Mitre",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Alvarado",
+        "equipo_visitante": "Santamarina Tandil",
+        "goles_local": 3,
+        "goles_visitante": 0,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Olimpo",
+        "equipo_visitante": "Germinal",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Germinal",
+        "equipo_visitante": "Guillermo Brown",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Villa Mitre",
+        "equipo_visitante": "Sol de Mayo",
+        "goles_local": 2,
+        "goles_visitante": 1,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Círculo Deportivo",
+        "equipo_visitante": "Kimberley Mar Del Plata",
+        "goles_local": 0,
+        "goles_visitante": 1,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Santamarina Tandil",
+        "equipo_visitante": "Olimpo",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Santamarina Tandil",
+        "equipo_visitante": "Guillermo Brown",
+        "goles_local": 0,
+        "goles_visitante": 2,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Alvarado",
+        "equipo_visitante": "Olimpo",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Germinal",
+        "equipo_visitante": "Sol de Mayo",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Villa Mitre",
+        "equipo_visitante": "Kimberley Mar Del Plata",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Kimberley Mar Del Plata",
+        "equipo_visitante": "Germinal",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Guillermo Brown",
+        "equipo_visitante": "Alvarado",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Sol de Mayo",
+        "equipo_visitante": "Santamarina Tandil",
+        "goles_local": 3,
+        "goles_visitante": 2,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Círculo Deportivo",
+        "equipo_visitante": "Villa Mitre",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Germinal",
+        "equipo_visitante": "Círculo Deportivo",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Alvarado",
+        "equipo_visitante": "Sol de Mayo",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Olimpo",
+        "equipo_visitante": "Guillermo Brown",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Santamarina Tandil",
+        "equipo_visitante": "Kimberley Mar Del Plata",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Sol de Mayo",
+        "equipo_visitante": "Olimpo",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Kimberley Mar Del Plata",
+        "equipo_visitante": "Alvarado",
+        "goles_local": 2,
+        "goles_visitante": 2,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Villa Mitre",
+        "equipo_visitante": "Germinal",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Círculo Deportivo",
+        "equipo_visitante": "Santamarina Tandil",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Alvarado",
+        "equipo_visitante": "Círculo Deportivo",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Olimpo",
+        "equipo_visitante": "Kimberley Mar Del Plata",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Santamarina Tandil",
+        "equipo_visitante": "Villa Mitre",
+        "goles_local": 0,
+        "goles_visitante": 2,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Guillermo Brown",
+        "equipo_visitante": "Sol de Mayo",
+        "goles_local": 0,
+        "goles_visitante": 1,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Kimberley Mar Del Plata",
+        "equipo_visitante": "Guillermo Brown",
+        "goles_local": 3,
+        "goles_visitante": 0,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Círculo Deportivo",
+        "equipo_visitante": "Olimpo",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Villa Mitre",
+        "equipo_visitante": "Alvarado",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "4"
+      },
+      {
+        "equipo_local": "Germinal",
+        "equipo_visitante": "Santamarina Tandil",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "4"
+      }
+    ],
+    "simulacion_corrida": false
+  }
+]

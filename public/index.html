@@ -516,6 +516,11 @@
     transition: background 0.25s ease, color 0.25s ease;
     letter-spacing:0.05em;
   }
+  /* Fallback genérico para zone-tabs sin color específico (ej: Federal A,
+     que tiene 4 zonas "1".."4" y "RA"/"RB" en la Reválida) -- las reglas
+     con [data-zone="A"/"B"] de abajo tienen más especificidad y ganan
+     cuando corresponde. */
+  .zone-tab.active{ background: var(--zone-a-dim); color: var(--zone-a); }
   .zone-tab.active[data-zone="A"]{ background: var(--zone-a-dim); color: var(--zone-a); }
   .zone-tab.active[data-zone="B"]{ background: var(--zone-b-dim); color: var(--zone-b); }
   .zone-tab.active[data-zona="A"]{ background: var(--zone-a-dim); color: var(--zone-a); }
@@ -808,7 +813,7 @@
      mismo peso visual (color y grosor) que ya usa el select "Elegí un
      equipo"— en vez de quedar flotando sin límites como el resto de
      .search-section en esta liga. */
-  #campeon-section-lpf, #campeon-section-bmetro{
+  #campeon-section-lpf, #campeon-section-bmetro, #campeon-section-federal{
     border: 1px solid var(--line); border-radius: var(--radius);
     padding-bottom: 28px;
   }
@@ -821,18 +826,23 @@
   #campeon-equipo:focus{ border-color: var(--azul); }
   #campeon-equipo:disabled{ cursor:wait; opacity:0.5; }
   /* estos controles viven fuera del hero: botón en versión "de contenido" */
-  #campeon-section .btn-simular, #campeon-section-lpf .btn-simular, #campeon-section-copa .btn-simular, #campeon-section-bmetro .btn-simular{ background: var(--btn-grad); color: var(--btn-ink); }
-  #campeon-section .sim-status, #campeon-section-lpf .sim-status, #campeon-section-copa .sim-status, #campeon-section-bmetro .sim-status{ color: var(--ink-dim); }
-  #campeon-section .sim-status.error, #campeon-section-lpf .sim-status.error, #campeon-section-copa .sim-status.error, #campeon-section-bmetro .sim-status.error{ color: var(--danger); }
-  #campeon-section .sim-status.ok, #campeon-section-lpf .sim-status.ok, #campeon-section-copa .sim-status.ok, #campeon-section-bmetro .sim-status.ok{ color: var(--zone-a); }
-  #campeon-equipo-lpf, #campeon-equipo-copa, #campeon-equipo-bmetro{
+  #campeon-section .btn-simular, #campeon-section-lpf .btn-simular, #campeon-section-copa .btn-simular, #campeon-section-bmetro .btn-simular, #campeon-section-federal .btn-simular{ background: var(--btn-grad); color: var(--btn-ink); }
+  #campeon-section .sim-status, #campeon-section-lpf .sim-status, #campeon-section-copa .sim-status, #campeon-section-bmetro .sim-status, #campeon-section-federal .sim-status{ color: var(--ink-dim); }
+  #campeon-section .sim-status.error, #campeon-section-lpf .sim-status.error, #campeon-section-copa .sim-status.error, #campeon-section-bmetro .sim-status.error, #campeon-section-federal .sim-status.error{ color: var(--danger); }
+  #campeon-section .sim-status.ok, #campeon-section-lpf .sim-status.ok, #campeon-section-copa .sim-status.ok, #campeon-section-bmetro .sim-status.ok, #campeon-section-federal .sim-status.ok{ color: var(--zone-a); }
+  #campeon-equipo-lpf, #campeon-equipo-copa, #campeon-equipo-bmetro, #campeon-equipo-federal{
     font-family:'JetBrains Mono'; font-size:13px; font-weight:600; color: var(--ink);
     background: var(--bg-panel); border:1px solid var(--line); border-radius: var(--radius-sm);
     padding: 10px 12px; outline:none; transition: border-color 0.15s, opacity 0.15s; min-width:220px;
   }
-  #campeon-equipo-lpf:hover:not(:disabled), #campeon-equipo-copa:hover:not(:disabled), #campeon-equipo-bmetro:hover:not(:disabled){ border-color: var(--azul); }
-  #campeon-equipo-lpf:focus, #campeon-equipo-copa:focus, #campeon-equipo-bmetro:focus{ border-color: var(--azul); }
-  #campeon-equipo-lpf:disabled, #campeon-equipo-copa:disabled, #campeon-equipo-bmetro:disabled{ cursor:wait; opacity:0.5; }
+  #campeon-equipo-lpf:hover:not(:disabled), #campeon-equipo-copa:hover:not(:disabled), #campeon-equipo-bmetro:hover:not(:disabled), #campeon-equipo-federal:hover:not(:disabled){ border-color: var(--azul); }
+  #campeon-equipo-lpf:focus, #campeon-equipo-copa:focus, #campeon-equipo-bmetro:focus, #campeon-equipo-federal:focus{ border-color: var(--azul); }
+  #campeon-equipo-lpf:disabled, #campeon-equipo-copa:disabled, #campeon-equipo-bmetro:disabled, #campeon-equipo-federal:disabled{ cursor:wait; opacity:0.5; }
+  /* Opciones del desplegable: el navegador no hereda var(--bg-panel) en
+     <option>, así que hay que fijar el color a mano en ambos modos —
+     misma lógica que ya usan Copa y B Metro para este mismo select. */
+  #campeon-equipo-federal option{ background:#FFFFFF; color:#182847; }
+  body.dark #campeon-equipo-federal option{ background:#16233B; color:#F5F7FA; }
   .campeon-summary{
     font-family:'JetBrains Mono'; font-size:13px; color:var(--ink-dim); text-align:center;
     padding:14px; background:var(--bg-panel); border:1px solid var(--line); border-radius: var(--radius);
@@ -1391,6 +1401,14 @@
   body.liga-lpf .torneo-logo[data-liga="lpf"],
   body.liga-copa .torneo-logo[data-liga="copa"],
   body.liga-bmetro .torneo-logo[data-liga="bmetro"]{ display:block; }
+  body.liga-federal .torneo-logo[data-liga="federal"]{ display:block; }
+  /* Filas de tabla del Federal A: clasifica a la fase siguiente / posible
+     mejor 5° (zonas de 9) / desciende (Reválida 1ª Etapa, según la lista
+     definitiva `revalida.descensos` que ya viene calculada del backend). */
+  #tabla-federal-pf-body tr.clasifica td, #tabla-federal-2f-body tr.clasifica td,
+  #tabla-federal-r1-body tr.clasifica td{ background: color-mix(in srgb, var(--zone-a) 8%, transparent); }
+  #tabla-federal-pf-body tr.quinto-posible td{ background: color-mix(in srgb, var(--amber) 10%, transparent); }
+  #tabla-federal-r1-body tr.desciende td{ background: color-mix(in srgb, var(--danger) 10%, transparent); }
   @media (max-width:700px){
     .torneo-logo{ width:72px; height:72px; padding:11px; }
   }
@@ -1629,6 +1647,8 @@
            onerror="this.remove()">
       <img class="torneo-logo" data-liga="bmetro" src="logos-torneos/b-metropolitana.png" alt=""
            onerror="this.remove()">
+      <img class="torneo-logo" data-liga="federal" src="logos-torneos/federal-a.png" alt=""
+           onerror="this.remove()">
     </div>
     <div class="eyebrow" id="hero-eyebrow">SIMULACIÓN MONTE CARLO — <span id="hero-n">0</span> CORRIDAS</div>
     <h1 class="display">SIMULADOR <span id="hero-title-span">PRIMERA NACIONAL</span></h1>
@@ -1694,6 +1714,20 @@
       <div id="sim-status-bmetro" class="sim-status"></div>
       <div id="last-update-bmetro" class="last-update"></div>
     </div>
+
+    <div class="sim-control" id="sim-control-federal" style="display:none">
+      <div class="sim-select-row">
+        <label for="sim-count-federal">Cantidad de simulaciones</label>
+        <input type="number" id="sim-count-federal" value="500" min="50" max="5000" step="1">
+        <span class="rango">(50–5000)</span>
+      </div>
+      <div class="btn-row">
+        <button id="btn-simular-federal" class="btn-simular">▶ Correr nueva simulación</button>
+        <button id="btn-actualizar-federal" class="btn-actualizar">⟳ Actualizar desde Promiedos</button>
+      </div>
+      <div id="sim-status-federal" class="sim-status"></div>
+      <div id="last-update-federal" class="last-update"></div>
+    </div>
   </div>
 
   <div class="liga-tabs">
@@ -1702,6 +1736,7 @@
       <button class="liga-tab" data-liga="copa">Copa Argentina</button>
       <button class="liga-tab active" data-liga="nacional">Primera Nacional</button>
       <button class="liga-tab" data-liga="bmetro">B Metropolitana</button>
+      <button class="liga-tab" data-liga="federal">Federal A</button>
     </div>
     <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Cambiar entre modo claro y oscuro">
       <span id="theme-toggle-icon">🌙</span><span id="theme-toggle-label">Oscuro</span>
@@ -2077,6 +2112,147 @@
 
   </div><!-- /vista-bmetro -->
 
+  <div id="vista-federal" style="display:none">
+
+  <div class="search-section" id="search-section-federal">
+    <div class="search-box">
+      <input type="text" id="team-search-federal" list="team-list-federal" placeholder="Buscar equipo… (ej: Douglas Haig, Sportivo Belgrano)" autocomplete="off">
+      <datalist id="team-list-federal"></datalist>
+    </div>
+    <div class="search-hint">Escribí el nombre del equipo para ver su tabla, chances de ascenso y descenso</div>
+    <div id="search-result-federal"></div>
+  </div>
+
+  <div class="search-section" id="campeon-section-federal">
+    <div class="section-head" style="margin-bottom:14px;">
+      <span class="idx">🏆</span><h2 style="font-size:18px;">Simulá hasta que tu equipo ascienda</h2><div class="rule"></div>
+    </div>
+    <p class="section-note" style="margin:0 0 16px; text-align:center; max-width:none;">
+      Elegí un equipo: corremos el torneo completo (Primera Fase, Segunda Fase, camino al 1° ascenso y toda
+      la Reválida), uno tras otro, hasta encontrar la primera vez que consigue el ascenso — directo o por
+      Reválida. Te mostramos esa corrida puntual.
+    </p>
+    <div class="campeon-controls">
+      <select id="campeon-equipo-federal"><option value="">Elegí un equipo…</option></select>
+      <button id="btn-campeon-federal" class="btn-simular">🏆 Simular hasta el ascenso</button>
+    </div>
+    <div id="campeon-status-federal" class="sim-status"></div>
+    <div id="campeon-resultado-federal"></div>
+  </div>
+
+  <section id="sec-pf-federal">
+    <div class="section-head"><span class="idx">01</span><h2>Primera Fase — tabla por zona</h2><div class="rule"></div></div>
+    <p class="section-note">4 zonas (Zona 1 de 10 equipos, Zonas 2/3/4 de 9). Clasifican a la Segunda Fase los 5 primeros de la Zona 1 y los 4 primeros de las Zonas 2/3/4, más el mejor 5° entre esas tres zonas (por diferencia de gol) — esa última definición no se resalta fila por fila porque depende de comparar entre zonas.</p>
+    <div class="zone-tabs" id="zone-tabs-federal-pf">
+      <div class="group">
+        <button class="zone-tab active" data-zona="1">ZONA 1</button>
+        <button class="zone-tab" data-zona="2">ZONA 2</button>
+        <button class="zone-tab" data-zona="3">ZONA 3</button>
+        <button class="zone-tab" data-zona="4">ZONA 4</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>GF</th><th>GC</th><th>DG</th></tr></thead>
+        <tbody id="tabla-federal-pf-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="sec-2f-federal">
+    <div class="section-head"><span class="idx">02</span><h2>Segunda Fase — tabla por zona</h2><div class="rule"></div></div>
+    <p class="section-note">2 zonas de 9. Los 4 primeros de cada zona clasifican a la Tercera Fase (camino al 1° ascenso); del 5° al 9° van a la Reválida Segunda Etapa.</p>
+    <div class="zone-tabs" id="zone-tabs-federal-2f">
+      <div class="group">
+        <button class="zone-tab active" data-zona="A">ZONA A</button>
+        <button class="zone-tab" data-zona="B">ZONA B</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>GF</th><th>GC</th><th>DG</th></tr></thead>
+        <tbody id="tabla-federal-2f-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="sec-camino-federal">
+    <div class="section-head"><span class="idx">03</span><h2>Camino al 1° ascenso</h2><div class="rule"></div></div>
+    <p class="section-note">8 clubes de la Tercera Fase en adelante, todo a eliminación directa ida y vuelta, hasta la final a partido único (cancha neutral, con penales si hace falta) que define el primer ascenso.</p>
+    <div class="bracket-scroll">
+      <div class="bracket" id="bracket-camino-federal"></div>
+    </div>
+    <div class="campeon-anuncio-wrap" id="campeon-anuncio-camino-federal"></div>
+  </section>
+
+  <section id="sec-revalida-tabla-federal">
+    <div class="section-head"><span class="idx">04</span><h2>Reválida — Primera Etapa</h2><div class="rule"></div></div>
+    <p class="section-note">Los no clasificados de la Primera Fase, agrupados en 2 zonas (RA/RB). Sus puntos se combinan con los de la Primera Fase para el Régimen de Descenso: descienden 4 equipos en total, salvo que ya estén entre los 5 primeros de esta tabla (en ese caso se salvan y el descenso pasa al siguiente). Las filas resaltadas en rojo son los que finalmente descienden, según ese cálculo ya hecho por el backend.</p>
+    <div class="zone-tabs" id="zone-tabs-federal-r1">
+      <div class="group">
+        <button class="zone-tab active" data-zona="RA">ZONA RA</button>
+        <button class="zone-tab" data-zona="RB">ZONA RB</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>GF</th><th>GC</th><th>DG</th></tr></thead>
+        <tbody id="tabla-federal-r1-body"></tbody>
+      </table>
+    </div>
+    <div class="label" style="font-family:'JetBrains Mono'; font-size:11px; color:var(--danger); letter-spacing:0.08em; text-transform:uppercase; margin: 20px 0 8px;">Descienden</div>
+    <div id="descensos-federal"></div>
+  </section>
+
+  <section id="sec-revalida-bracket-federal">
+    <div class="section-head"><span class="idx">05</span><h2>Reválida — camino al 2° ascenso</h2><div class="rule"></div></div>
+    <p class="section-note">24 clubes resembrados por posición, eliminación directa ida y vuelta en 5 etapas hasta la final (6ª Etapa) que define el segundo ascenso. Es la única llave de todo el torneo que se define por penales en caso de empate; el resto se define por mejor ubicación.</p>
+    <div class="bracket-scroll">
+      <div class="bracket" id="bracket-revalida-federal"></div>
+    </div>
+    <div class="campeon-anuncio-wrap" id="campeon-anuncio-revalida-federal"></div>
+  </section>
+
+  <section id="sec-mc-federal">
+    <div class="section-head"><span class="idx">06</span><h2>Probabilidades — Monte Carlo</h2><div class="rule"></div></div>
+    <p class="section-note">Cada barra desglosa el % de simulaciones en que el equipo asciende directo (camino principal) o por la Reválida. A la derecha, el % de veces que descendió.</p>
+    <div class="legend">
+      <span><i style="background:var(--zone-a)"></i> Ascenso directo</span>
+      <span><i style="background:var(--zone-a); opacity:0.5"></i> Ascenso por Reválida</span>
+      <span><i style="background:var(--danger)"></i> % descenso</span>
+    </div>
+    <div id="mc-list-federal"></div>
+  </section>
+
+  <section id="sec-como-funciona-federal">
+    <div class="section-head"><span class="idx">07</span><h2>¿Cómo funciona?</h2><div class="rule"></div></div>
+    <p class="section-note">Todo lo que hay detrás del simulador: el modelo, los datos y las reglas del torneo.</p>
+    <div class="faq">
+      <details>
+        <summary>¿Qué es el Simulador del Torneo Federal A?</summary>
+        <div class="faq-a">Es una herramienta que simula hasta cinco mil veces el Torneo Federal A completo — Primera Fase, Segunda Fase, camino al 1° ascenso y toda la Reválida — para estimar las probabilidades de ascenso y descenso de cada equipo.</div>
+      </details>
+      <details>
+        <summary>¿Cómo se calculan las probabilidades?</summary>
+        <div class="faq-a">Usamos un modelo de Poisson que estima los goles de cada equipo según su ataque y defensa, ajustado por la forma reciente y con la corrección de Dixon-Coles. Sobre ese modelo corremos una simulación de Monte Carlo de todo el torneo hasta cinco mil veces.</div>
+      </details>
+      <details>
+        <summary>¿Cada cuánto se actualizan los datos?</summary>
+        <div class="faq-a">Los resultados se actualizan con los partidos jugados que se toman de Promiedos, y cada actualización vuelve a correr la simulación con la tabla al día.</div>
+      </details>
+      <details>
+        <summary>¿Cuántos equipos ascienden y descienden?</summary>
+        <div class="faq-a">Hay 2 ascensos: el primero sale de la Primera Fase → Segunda Fase → Tercera/Cuarta/Quinta Fase (eliminación directa hasta una final única). El segundo sale de la Reválida, que juegan los no clasificados directo más los eliminados en el camino, en 6 etapas de eliminación directa. Descienden 4 equipos, combinando los puntos de la Primera Fase con los de la Reválida Primera Etapa.</div>
+      </details>
+      <details>
+        <summary>¿El simulador es gratis?</summary>
+        <div class="faq-a">Sí, es completamente gratuito. Podés correr nuevas simulaciones y buscar a tu equipo para ver su probabilidad de ascenso o descenso.</div>
+      </details>
+    </div>
+  </section>
+
+  </div><!-- /vista-federal -->
+
   <div id="vista-copa" style="display:none">
 
   <div class="search-section">
@@ -2189,7 +2365,7 @@ function setApiActionsDisabled(disabled){
   document.querySelectorAll('.btn-simular, .btn-actualizar').forEach(btn => {
     btn.disabled = disabled;
   });
-  document.querySelectorAll('#sim-count, #sim-count-lpf, #sim-count-copa, #sim-count-bmetro, #campeon-equipo, #campeon-equipo-lpf, #campeon-equipo-copa, #campeon-equipo-bmetro').forEach(control => {
+  document.querySelectorAll('#sim-count, #sim-count-lpf, #sim-count-copa, #sim-count-bmetro, #sim-count-federal, #campeon-equipo, #campeon-equipo-lpf, #campeon-equipo-copa, #campeon-equipo-bmetro, #campeon-equipo-federal').forEach(control => {
     control.disabled = disabled;
   });
 }
@@ -2543,6 +2719,28 @@ const ESCUDOS = {
   'UAI Urquiza':'uaiurquiza',
   'Villa Dálmine':'villadalmine', 'Villa Dalmine':'villadalmine',
   'Villa San Carlos':'villasancarlos',
+
+    // FEDERAL A (equipos propios de esta categoría)
+  'El Linqueño':'el_linqueno', 'Independiente Chivilcoy':'independiente_chivilcoy', 'Douglas Haig':'douglas_haig',
+  '9 De Julio Rafaela':'9_de_julio', 'CSCyD Gimnasia y Esgrima (Chivilcoy)':'gimnasia_chivilcoy',
+  'Defensores Belgrano (VR)':'defensores_belgrano', 'Sportivo Las Parejas':'sportivo_atletico_club',
+  'Gimnasia de Concepción':'gimnasia_cdu',
+  'Juventud Antoniana':'juventud_antoniana', 'Bartolomé Mitre (Posadas)':'bartolome_mitre', 'Sol De América':'sol_de_america',
+  'Boca Unidos de Corrientes':'boca_unidos', 'Sarmiento de Resistencia':'sarmiento_resistencia',
+  'Costa Brava (Gral Pico)':'costa_brava', 'Sportivo Dock Sud':'dock_sud', 'Deportivo Dock Sud':'dock_sud', 'Dock  Sud':'dock_sud', 'Docksud':'dock_sud', 'DockSud':'dock_sud',
+  'Tucumán Central':'Tucuman_central', 'Defensores Pto. Vilelas':'Defensores_de_Vilelas', 'Güemes (Santiago del Estero)':'atletico_guemes',
+  'Atlético Escobar':'atletico_escobar',
+  'Flandria':'flandria',
+  'Juventud Unida San Luis':'juventud_unida_u', 'Tucumán Central':'Tucumán_Central', 'La Ferrere':'laferrere',
+  'Kimberley Mar Del Plata':'kimberley',  
+  'Santamarina Tandil':'santamarina',
+  'San Martín de Burzaco':'smburzaco', 'San Martín de Mendoza':'san_martin_mendoza', 'Fundación Amigos por el Deporte':'Amigos',
+  'Sportivo Italiano':'spitaliano',
+  'Gimnasia de Concepción':'gimansia_cdu', 'Talleres (RE)':'talleres_re', 'Talleres Remedios de Escalada':'talleres_re',
+  'Villa Mitre':'villa_mitre',
+  'Huracán Las Heras':'huracan_las_heras', 'UAI Urquiza':'uaiurquiza',
+  'Círculo Deportivo':'circulo_deportivo', 'Alvarado':'Alvarado',
+  'Sol de Mayo':'sol_de_mayo',
 };
 
 // Sin acentos, sin espacios ni símbolos, todo en minúscula — para poder
@@ -4150,6 +4348,544 @@ function renderCampeonResultadoBMetro(r){
 
 document.getElementById('btn-campeon-bmetro').addEventListener('click', simularHastaCampeonBMetro);
 
+/* ============================================================
+   FEDERAL A
+   ============================================================ */
+let DATA_FEDERAL;
+let zonaFederalPF = "1";
+let zonaFederal2F = "A";
+let zonaFederalR1 = "RA";
+
+async function cargarDatosFederal(){
+  try {
+    const respuesta = await fetch("./data_federal_a.json?t=" + Date.now());
+    if (!respuesta.ok) throw new Error("No se pudo cargar data_federal_a.json");
+    DATA_FEDERAL = await respuesta.json();
+    iniciarFederal();
+  } catch (e) {
+    const cont = document.getElementById('vista-federal');
+    if (cont) cont.innerHTML = `<div style="padding:24px 24px 0; max-width:720px; margin:0 auto; text-align:center; color:var(--muted); font-family:'JetBrains Mono'; font-size:13px;">
+      No se pudo cargar data_federal_a.json todavía (${e.message}). Corré <code>python main_federal.py</code> una vez para generarlo.
+    </div>`;
+  }
+}
+
+function iniciarFederal(){
+  renderTablaFederalPF(zonaFederalPF);
+  renderTablaFederal2F(zonaFederal2F);
+  renderTablaFederalR1(zonaFederalR1);
+  renderDescensosFederal();
+  renderCaminoFederal();
+  renderRevalidaBracketFederal();
+  renderMCFederal();
+  poblarSelectEquiposFederal();
+  TEAM_INDEX_FEDERAL = buildTeamIndexFederal();
+  poblarDatalistFederal(TEAM_INDEX_FEDERAL);
+  const busquedaFederal = document.getElementById('team-search-federal');
+  if (busquedaFederal && busquedaFederal.value) buscarEquipoFederal(busquedaFederal.value);
+  abrirFichaFederalDesdeUrl();
+  if (document.body.classList.contains('liga-federal')) actualizarHero('federal');
+}
+
+/* ---------- TABLAS (Primera Fase / Segunda Fase / Reválida 1ª Etapa) ---------- */
+function filaTablaFederalHTML(f, i, clase){
+  return `<tr class="${clase || ''}">
+    <td>${i + 1}</td><td>${escudoHTML(f.equipo)}${f.equipo}</td><td>${f.puntos}</td><td>${f.gf}</td><td>${f.gc}</td><td>${f.dg > 0 ? '+' + f.dg : f.dg}</td>
+  </tr>`;
+}
+
+function renderTablaFederalPF(zona){
+  const body = document.getElementById('tabla-federal-pf-body');
+  if (!body || !DATA_FEDERAL) return;
+  const filas = DATA_FEDERAL.primera_fase.tablas[zona] || [];
+  const nClasif = zona === '1' ? 5 : 4;
+  body.innerHTML = filas.map((f, i) => {
+    let clase = '';
+    if (i < nClasif) clase = 'clasifica';
+    else if (i === nClasif) clase = 'quinto-posible';
+    return filaTablaFederalHTML(f, i, clase);
+  }).join('');
+}
+
+function renderTablaFederal2F(zona){
+  const body = document.getElementById('tabla-federal-2f-body');
+  if (!body || !DATA_FEDERAL) return;
+  const filas = DATA_FEDERAL.segunda_fase.tablas[zona] || [];
+  body.innerHTML = filas.map((f, i) => filaTablaFederalHTML(f, i, i < 4 ? 'clasifica' : '')).join('');
+}
+
+function renderTablaFederalR1(zona){
+  const body = document.getElementById('tabla-federal-r1-body');
+  if (!body || !DATA_FEDERAL) return;
+  const descensos = new Set(DATA_FEDERAL.revalida.descensos || []);
+  const filas = DATA_FEDERAL.revalida.primera_etapa.tablas[zona] || [];
+  body.innerHTML = filas.map((f, i) => {
+    const clase = descensos.has(f.equipo) ? 'desciende' : (i < 5 ? 'clasifica' : '');
+    return filaTablaFederalHTML(f, i, clase);
+  }).join('');
+}
+
+function setZonaFederalPF(zona){
+  zonaFederalPF = zona;
+  document.querySelectorAll('#zone-tabs-federal-pf .zone-tab').forEach(b => b.classList.toggle('active', b.dataset.zona === zona));
+  renderTablaFederalPF(zona);
+}
+document.querySelectorAll('#zone-tabs-federal-pf .zone-tab').forEach(btn => {
+  btn.addEventListener('click', () => setZonaFederalPF(btn.dataset.zona));
+});
+
+function setZonaFederal2F(zona){
+  zonaFederal2F = zona;
+  document.querySelectorAll('#zone-tabs-federal-2f .zone-tab').forEach(b => b.classList.toggle('active', b.dataset.zona === zona));
+  renderTablaFederal2F(zona);
+}
+document.querySelectorAll('#zone-tabs-federal-2f .zone-tab').forEach(btn => {
+  btn.addEventListener('click', () => setZonaFederal2F(btn.dataset.zona));
+});
+
+function setZonaFederalR1(zona){
+  zonaFederalR1 = zona;
+  document.querySelectorAll('#zone-tabs-federal-r1 .zone-tab').forEach(b => b.classList.toggle('active', b.dataset.zona === zona));
+  renderTablaFederalR1(zona);
+}
+document.querySelectorAll('#zone-tabs-federal-r1 .zone-tab').forEach(btn => {
+  btn.addEventListener('click', () => setZonaFederalR1(btn.dataset.zona));
+});
+
+function renderDescensosFederal(){
+  const cont = document.getElementById('descensos-federal');
+  if (!cont || !DATA_FEDERAL) return;
+  const lista = DATA_FEDERAL.revalida.descensos || [];
+  cont.innerHTML = lista.map(equipo =>
+    `<div class="descenso-card"><span class="arrow">▼</span>${escudoHTML(equipo)}${equipo}</div>`
+  ).join('') || '<div class="no-result">Sin datos todavía</div>';
+}
+
+/* ---------- BRACKETS (camino principal y Reválida) ---------- */
+function renderCaminoFederal(){
+  const c = DATA_FEDERAL && DATA_FEDERAL.camino_principal;
+  const bracket = document.getElementById('bracket-camino-federal');
+  if (!bracket || !c) return;
+  let html = "";
+  html += `<div class="round">
+    <div class="round-title">Tercera Fase (ida y vuelta)</div>
+    <div class="round-body">${Object.values(c.tercera_fase).map(m => seriesHTML(m)).join("")}</div>
+  </div>`;
+  html += `<div class="round">
+    <div class="round-title">Cuarta Fase (ida y vuelta)</div>
+    <div class="round-body">${Object.values(c.cuarta_fase).map(m => seriesHTML(m)).join("")}</div>
+  </div>`;
+  html += `<div class="round final-col">
+    <div class="round-title">Final — 1° Ascenso</div>
+    <div class="round-body">${matchHTML(c.quinta_fase_final)}</div>
+  </div>`;
+  bracket.innerHTML = html;
+  const anuncio = document.getElementById('campeon-anuncio-camino-federal');
+  if (anuncio) anuncio.innerHTML = campeonAnuncioHTML(c.ascenso_1, '▲');
+}
+
+function renderRevalidaBracketFederal(){
+  const r = DATA_FEDERAL && DATA_FEDERAL.revalida;
+  const bracket = document.getElementById('bracket-revalida-federal');
+  if (!bracket || !r) return;
+  let html = "";
+  html += `<div class="round">
+    <div class="round-title">2ª Etapa</div>
+    <div class="round-body">${Object.values(r.segunda_etapa.resultados).map(m => seriesHTML(m)).join("")}</div>
+  </div>`;
+  html += `<div class="round">
+    <div class="round-title">3ª Etapa</div>
+    <div class="round-body">${Object.values(r.tercera_etapa.resultados).map(m => seriesHTML(m)).join("")}</div>
+  </div>`;
+  html += `<div class="round">
+    <div class="round-title">4ª Etapa</div>
+    <div class="round-body">${Object.values(r.cuarta_etapa.resultados).map(m => seriesHTML(m)).join("")}</div>
+  </div>`;
+  html += `<div class="round">
+    <div class="round-title">5ª Etapa</div>
+    <div class="round-body">${Object.values(r.quinta_etapa).map(m => seriesHTML(m)).join("")}</div>
+  </div>`;
+  html += `<div class="round final-col">
+    <div class="round-title">6ª Etapa — Final (2° Ascenso)</div>
+    <div class="round-body">${seriesHTML(r.sexta_etapa_final)}</div>
+  </div>`;
+  bracket.innerHTML = html;
+  const anuncio = document.getElementById('campeon-anuncio-revalida-federal');
+  if (anuncio) anuncio.innerHTML = campeonAnuncioHTML(r.ascenso_2, '▲');
+}
+
+/* ---------- MONTE CARLO ---------- */
+function renderMCFederal(){
+  const list = document.getElementById('mc-list-federal');
+  if (!list || !DATA_FEDERAL || !DATA_FEDERAL.monte_carlo) return;
+  list.innerHTML = "";
+  const zoneColor = 'var(--zone-a)';
+  DATA_FEDERAL.monte_carlo.forEach((f, i) => {
+    const row = document.createElement('div');
+    row.className = 'mc-row';
+    const directo = f['%ascenso_directo'];
+    const revalida = f['%ascenso_revalida'];
+    const asciende = f['%asciende'];
+    const descenso = f['%descenso'];
+    const descClass = descenso >= 25 ? 'high' : '';
+    row.innerHTML = `
+      <div class="pos">${i + 1}</div>
+      <div>
+        <div class="name"><span>${escudoHTML(f.equipo)}${f.equipo}</span><span class="pct" style="color:${zoneColor}">${fmtPct(asciende)} asciende</span></div>
+        <div class="mc-bar-track">
+          <div class="mc-bar-fill directo" style="width:${directo}%; background:${zoneColor}"></div>
+          <div class="mc-bar-fill reducido" style="left:${directo}%; width:${revalida}%; background:${zoneColor}"></div>
+        </div>
+        <div class="mc-sub">
+          <span><i class="dot" style="background:${zoneColor}"></i>${fmtPct(directo)} directo</span>
+          <span><i class="dot" style="background:${zoneColor}; opacity:0.5"></i>${fmtPct(revalida)} Reválida</span>
+        </div>
+      </div>
+      <div class="mc-desc">
+        <div class="desc-pct ${descClass}">${fmtPct(descenso)}</div>
+        <div class="desc-lbl">descenso</div>
+        <div class="desc-bar-track"><div class="desc-bar-fill" style="width:${Math.min(descenso, 100)}%"></div></div>
+      </div>
+    `;
+    list.appendChild(row);
+  });
+}
+
+/* ---------- BUSCADOR DE EQUIPOS ---------- */
+let TEAM_INDEX_FEDERAL = {};
+
+function buildTeamIndexFederal(){
+  const index = {};
+  if (!DATA_FEDERAL) return index;
+  const mc = DATA_FEDERAL.monte_carlo || [];
+  ['1', '2', '3', '4'].forEach(zona => {
+    const filas = DATA_FEDERAL.primera_fase.tablas[zona] || [];
+    const nClasif = zona === '1' ? 5 : 4;
+    filas.forEach((f, i) => {
+      const mcRow = mc.find(m => m.equipo === f.equipo) || {};
+      let estado = 'revalida';
+      if (i < nClasif) estado = 'clasifica';
+      else if (i === nClasif) estado = 'quinto-posible';
+      index[f.equipo] = {
+        equipo: f.equipo, zona, posicion: i + 1, total: filas.length, estado,
+        puntos: f.puntos, gf: f.gf, gc: f.gc, dg: f.dg,
+        ascenso_directo: mcRow['%ascenso_directo'] ?? 0,
+        ascenso_revalida: mcRow['%ascenso_revalida'] ?? 0,
+        asciende: mcRow['%asciende'] ?? 0,
+        descenso: mcRow['%descenso'] ?? 0,
+      };
+    });
+  });
+  return index;
+}
+
+function poblarDatalistFederal(index){
+  const dl = document.getElementById('team-list-federal');
+  if (!dl) return;
+  dl.innerHTML = Object.keys(index).sort().map(nombre => `<option value="${nombre}">`).join('');
+}
+
+const BADGE_ESTADO_FEDERAL = {
+  clasifica:       { bg: 'var(--zone-a-dim)',  color: 'var(--zone-a)', label: 'CLASIFICA A 2ª FASE', accent: 'var(--zone-a)' },
+  'quinto-posible':{ bg: 'var(--amber-dim)',   color: 'var(--amber)',  label: 'POSIBLE MEJOR 5°',    accent: 'var(--amber)' },
+  revalida:        { bg: 'var(--line)',        color: 'var(--muted)', label: 'REVÁLIDA 1ª ETAPA',    accent: 'var(--zone-a)' },
+};
+
+function renderTeamCardFederal(t){
+  const badge = BADGE_ESTADO_FEDERAL[t.estado] || BADGE_ESTADO_FEDERAL.revalida;
+  const descClass = t.descenso >= 25 ? 'high' : '';
+  return `
+    <div class="team-card">
+      <div class="tc-head">
+        <div class="tc-name">${escudoHTML(t.equipo)}${t.equipo}</div>
+        <span class="tc-zone" style="background:${badge.bg}; color:${badge.color}">${badge.label}</span>
+      </div>
+      <div class="tc-pos">Posición en Zona ${t.zona} (Primera Fase): <b>${t.posicion}°</b> de ${t.total} — <b>${t.puntos}</b> pts (DG ${t.dg > 0 ? '+' + t.dg : t.dg})</div>
+      <div class="tc-grid" style="margin-top:16px;">
+        <div class="tc-stat"><div class="v" style="color:${badge.accent}">${fmtPct(t.ascenso_directo)}</div><div class="l">Ascenso directo</div></div>
+        <div class="tc-stat"><div class="v" style="color:${badge.accent}">${fmtPct(t.ascenso_revalida)}</div><div class="l">Ascenso por Reválida</div></div>
+        <div class="tc-stat"><div class="v" style="color:${badge.accent}">${fmtPct(t.asciende)}</div><div class="l">Asciende (total)</div></div>
+        <div class="tc-stat"><div class="v ${descClass}" style="${t.descenso >= 25 ? 'color:var(--danger)' : ''}">${fmtPct(t.descenso)}</div><div class="l">Descenso</div></div>
+      </div>
+      <div class="tc-mc-title">Asciende (directo + Reválida) en ${fmtPct(t.asciende)} de las simulaciones</div>
+      <div class="mc-bar-track" style="margin-bottom:14px;">
+        <div class="mc-bar-fill directo" style="width:${t.ascenso_directo}%; background:${badge.accent}"></div>
+        <div class="mc-bar-fill reducido" style="left:${t.ascenso_directo}%; width:${t.ascenso_revalida}%; background:${badge.accent}"></div>
+      </div>
+      <div class="tc-share">
+        <button onclick="compartirLinkFederal('${t.equipo.replace(/'/g, "\\'")}', this)">🔗 Copiar link</button>
+        <button onclick="compartirImagen('${t.equipo.replace(/'/g, "\\'")}', this)">📷 Descargar imagen</button>
+      </div>
+    </div>
+  `;
+}
+
+function compartirLinkFederal(nombre, btn){
+  const url = new URL(window.location.href);
+  url.searchParams.delete('equipo');
+  url.searchParams.delete('equipo_lpf');
+  url.searchParams.delete('equipo_copa');
+  url.searchParams.delete('equipo_bmetro');
+  url.searchParams.set('equipo_federal', nombre);
+  navigator.clipboard.writeText(url.toString()).then(() => {
+    const original = btn.textContent;
+    btn.textContent = '✓ Copiado';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = original; btn.classList.remove('copied'); }, 1800);
+  }).catch(() => {
+    prompt('Copiá el link:', url.toString());
+  });
+}
+
+function buscarEquipoFederal(nombre){
+  const resultDiv = document.getElementById('search-result-federal');
+  if (!resultDiv) return;
+  if (!nombre || !nombre.trim()){
+    resultDiv.innerHTML = "";
+    return;
+  }
+  const index = TEAM_INDEX_FEDERAL;
+  const exacto = index[nombre];
+  if (exacto){
+    resultDiv.innerHTML = renderTeamCardFederal(exacto);
+    return;
+  }
+  const q = nombre.trim().toLowerCase();
+  const coincidencia = Object.values(index).find(t => t.equipo.toLowerCase().includes(q));
+  if (coincidencia){
+    resultDiv.innerHTML = renderTeamCardFederal(coincidencia);
+  } else {
+    resultDiv.innerHTML = `<div class="no-result">No se encontró ningún equipo llamado "${nombre}"</div>`;
+  }
+}
+
+document.getElementById('team-search-federal').addEventListener('input', (e) => buscarEquipoFederal(e.target.value));
+
+let _fichaFederalDesdeUrlAbierta = false;
+function abrirFichaFederalDesdeUrl(){
+  if (_fichaFederalDesdeUrlAbierta) return;
+  const equipoUrl = new URLSearchParams(window.location.search).get('equipo_federal');
+  if (!equipoUrl) return;
+  _fichaFederalDesdeUrlAbierta = true;
+  setLiga('federal');
+  const input = document.getElementById('team-search-federal');
+  if (input) input.value = equipoUrl;
+  buscarEquipoFederal(equipoUrl);
+}
+
+function poblarSelectEquiposFederal(){
+  const sel = document.getElementById('campeon-equipo-federal');
+  if (!sel || !DATA_FEDERAL) return;
+  const valorPrevio = sel.value;
+  const nombres = ['1', '2', '3', '4'].flatMap(z => (DATA_FEDERAL.primera_fase.tablas[z] || []).map(f => f.equipo)).sort();
+  sel.innerHTML = '<option value="">Elegí un equipo…</option>' +
+    nombres.map(n => `<option value="${n}">${n}</option>`).join('');
+  if (valorPrevio && nombres.includes(valorPrevio)) sel.value = valorPrevio;
+}
+
+/* ---------- SIMULAR / ACTUALIZAR ---------- */
+function leerNSimsFederal(){
+  const input = document.getElementById('sim-count-federal');
+  let n = parseInt(input.value, 10);
+  if (!Number.isFinite(n)) n = 500;
+  n = Math.max(50, Math.min(5000, n));
+  input.value = n;
+  return n;
+}
+
+async function correrSimulacionFederal(){
+  const btn = document.getElementById('btn-simular-federal');
+  const status = document.getElementById('sim-status-federal');
+  const input = document.getElementById('sim-count-federal');
+  const nSims = leerNSimsFederal();
+
+  if (!beginApiAction(status)) return;
+
+  btn.disabled = true;
+  input.disabled = true;
+  btn.textContent = "Simulando…";
+  status.classList.remove('error', 'ok');
+  status.textContent = `Corriendo ${nSims} simulaciones — puede tardar 1-2 minutos, no cierres esta pestaña.`;
+
+  try {
+    const cuerpo = await ejecutarSimulacion("simular-federal", { n_sims: Number(nSims) }, "/api/simular-federal", status);
+    DATA_FEDERAL = cuerpo;
+    iniciarFederal();
+    status.classList.add('ok');
+    status.textContent = "✓ Simulación actualizada (" + (DATA_FEDERAL.generado || "") + ")";
+  } catch (e) {
+    setApiErrorStatus(status, "No se pudo correr la simulación", e);
+  } finally {
+    btn.disabled = false;
+    input.disabled = false;
+    btn.textContent = "▶ Correr nueva simulación";
+    endApiAction();
+  }
+}
+document.getElementById('btn-simular-federal').addEventListener('click', correrSimulacionFederal);
+
+async function correrActualizacionFederal(){
+  const btn = document.getElementById('btn-actualizar-federal');
+  const status = document.getElementById('sim-status-federal');
+  const lastUpdate = document.getElementById('last-update-federal');
+  const input = document.getElementById('sim-count-federal');
+  const nSims = leerNSimsFederal();
+
+  if (!beginApiAction(status)) return;
+
+  btn.disabled = true;
+  input.disabled = true;
+  btn.textContent = "Buscando resultados…";
+  status.classList.remove('error', 'ok');
+  status.textContent = "Consultando Promiedos y re-simulando si hay partidos nuevos — puede tardar 1-2 minutos.";
+
+  try {
+    const respuesta = await apiFetch(apiUrl("/api/actualizar-federal"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ n_sims: Number(nSims) })
+    });
+    const cuerpo = await respuesta.json().catch(() => ({}));
+    if (!respuesta.ok) throw apiResponseError(respuesta, cuerpo);
+
+    if (cuerpo.actualizado) {
+      DATA_FEDERAL = cuerpo.datos;
+      iniciarFederal();
+      status.classList.add('ok');
+      status.textContent = `✓ Se cargaron ${cuerpo.cargados.length} partido(s) nuevo(s) y se re-simuló.`;
+    } else {
+      status.classList.add('ok');
+      status.textContent = "✓ Consultado — no había partidos nuevos jugados todavía.";
+    }
+
+    if (cuerpo.sin_matchear && cuerpo.sin_matchear.length){
+      status.textContent += ` (${cuerpo.sin_matchear.length} partido(s) de Promiedos no se pudieron identificar — revisar mapeo de nombres)`;
+    }
+
+    lastUpdate.textContent = "Última consulta a Promiedos: " + new Date().toLocaleString('es-AR');
+  } catch (e) {
+    setApiErrorStatus(status, "No se pudo actualizar", e);
+  } finally {
+    btn.disabled = false;
+    input.disabled = false;
+    btn.textContent = "⟳ Actualizar desde Promiedos";
+    endApiAction();
+  }
+}
+document.getElementById('btn-actualizar-federal').addEventListener('click', correrActualizacionFederal);
+
+/* ---------- SIMULAR HASTA EL ASCENSO ---------- */
+async function simularHastaCampeonFederal(){
+  const btn = document.getElementById('btn-campeon-federal');
+  const sel = document.getElementById('campeon-equipo-federal');
+  const status = document.getElementById('campeon-status-federal');
+  const resultado = document.getElementById('campeon-resultado-federal');
+  const equipo = sel.value;
+
+  status.classList.remove('error', 'ok');
+
+  if (!equipo){
+    status.classList.add('error');
+    status.textContent = "Elegí un equipo primero.";
+    return;
+  }
+
+  if (!beginApiAction(status)) return;
+
+  btn.disabled = true;
+  sel.disabled = true;
+  btn.textContent = "Simulando…";
+  status.textContent = `Corriendo torneos completos hasta que ${equipo} ascienda — puede tardar unos segundos.`;
+  resultado.innerHTML = "";
+
+  try {
+    const cuerpo = await ejecutarSimulacion("simular-campeon-federal", { equipo }, "/api/simular-campeon-federal", status);
+
+    if (!cuerpo.logrado) {
+      status.classList.add('error');
+      status.textContent = `No se logró el ascenso de ${equipo} en ${cuerpo.max_intentos} intentos simulados. Probá de nuevo — el azar puede variar.`;
+      return;
+    }
+
+    renderCampeonResultadoFederal(cuerpo);
+    status.classList.add('ok');
+    status.textContent = `✓ Encontrado en el intento N° ${cuerpo.intentos}`;
+  } catch (e) {
+    setApiErrorStatus(status, "No se pudo simular", e);
+  } finally {
+    btn.disabled = false;
+    sel.disabled = false;
+    btn.textContent = "🏆 Simular hasta el ascenso";
+    endApiAction();
+  }
+}
+
+function renderCampeonResultadoFederal(r){
+  const cont = document.getElementById('campeon-resultado-federal');
+  const via = r.via === 'directo' ? 'el camino principal (1° ascenso)' : 'la Reválida (2° ascenso)';
+
+  let zonaEquipo = null, filasZona = null;
+  for (const z of ['1', '2', '3', '4']){
+    const filas = r.primera_fase.tablas[z] || [];
+    if (filas.some(f => f.equipo === r.equipo)) { zonaEquipo = z; filasZona = filas; break; }
+  }
+  const nClasif = zonaEquipo === '1' ? 5 : 4;
+
+  const tablaHTML = filasZona ? `
+    <div style="margin-top:14px;">
+      <div class="label" style="font-family:'JetBrains Mono'; font-size:11px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:8px;">Primera Fase — Zona ${zonaEquipo}</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>GF</th><th>GC</th><th>DG</th></tr></thead>
+          <tbody>${filasZona.map((f, i) => {
+            const esObjetivo = f.equipo === r.equipo;
+            const clase = i < nClasif ? 'clasifica' : '';
+            return `<tr class="${clase}"${esObjetivo ? ' style="box-shadow: inset 3px 0 0 var(--amber);"' : ''}>
+              <td>${i + 1}</td><td>${escudoHTML(f.equipo)}${f.equipo}${esObjetivo ? ' 🏆' : ''}</td><td>${f.puntos}</td><td>${f.gf}</td><td>${f.gc}</td><td>${f.dg > 0 ? '+' + f.dg : f.dg}</td>
+            </tr>`;
+          }).join('')}</tbody>
+        </table>
+      </div>
+    </div>
+  ` : '';
+
+  const c = r.camino_principal;
+  const caminoHTML = `
+    <div class="label" style="font-family:'JetBrains Mono'; font-size:11px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin: 24px 0 4px;">Camino al 1° ascenso</div>
+    <div class="bracket-scroll"><div class="bracket">
+      <div class="round"><div class="round-title">Tercera Fase</div><div class="round-body">${Object.values(c.tercera_fase).map(m => seriesHTML(m)).join('')}</div></div>
+      <div class="round"><div class="round-title">Cuarta Fase</div><div class="round-body">${Object.values(c.cuarta_fase).map(m => seriesHTML(m)).join('')}</div></div>
+      <div class="round final-col"><div class="round-title">Final</div><div class="round-body">${matchHTML(c.quinta_fase_final)}</div></div>
+    </div></div>
+    <div class="campeon-anuncio-wrap">${campeonAnuncioHTML(c.ascenso_1, '▲')}</div>
+  `;
+
+  const rev = r.revalida;
+  const revalidaHTML = `
+    <div class="label" style="font-family:'JetBrains Mono'; font-size:11px; color:var(--danger); letter-spacing:0.08em; text-transform:uppercase; margin: 24px 0 4px;">Descienden</div>
+    <div>${(rev.descensos || []).map(eq => `<div class="descenso-card"><span class="arrow">▼</span>${escudoHTML(eq)}${eq}</div>`).join('')}</div>
+    <div class="label" style="font-family:'JetBrains Mono'; font-size:11px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin: 24px 0 4px;">Reválida — camino al 2° ascenso</div>
+    <div class="bracket-scroll"><div class="bracket">
+      <div class="round"><div class="round-title">2ª Etapa</div><div class="round-body">${Object.values(rev.segunda_etapa.resultados).map(m => seriesHTML(m)).join('')}</div></div>
+      <div class="round"><div class="round-title">3ª Etapa</div><div class="round-body">${Object.values(rev.tercera_etapa.resultados).map(m => seriesHTML(m)).join('')}</div></div>
+      <div class="round"><div class="round-title">4ª Etapa</div><div class="round-body">${Object.values(rev.cuarta_etapa.resultados).map(m => seriesHTML(m)).join('')}</div></div>
+      <div class="round"><div class="round-title">5ª Etapa</div><div class="round-body">${Object.values(rev.quinta_etapa).map(m => seriesHTML(m)).join('')}</div></div>
+      <div class="round final-col"><div class="round-title">6ª Etapa — Final</div><div class="round-body">${seriesHTML(rev.sexta_etapa_final)}</div></div>
+    </div></div>
+    <div class="campeon-anuncio-wrap">${campeonAnuncioHTML(rev.ascenso_2, '▲')}</div>
+  `;
+
+  cont.innerHTML = `
+    <div class="campeon-summary">🏆 <b>${r.equipo}</b> asciende en esta corrida simulada — vía <b>${via}</b>
+      (intento N° ${r.intentos} de una búsqueda al azar entre distintas corridas posibles)</div>
+    ${tablaHTML}
+    ${caminoHTML}
+    ${revalidaHTML}
+  `;
+}
+
+document.getElementById('btn-campeon-federal').addEventListener('click', simularHastaCampeonFederal);
+
 /* ---------- SELECTOR DE LIGA ---------- */
 const HERO_TEXTOS = {
   nacional: {
@@ -4175,6 +4911,12 @@ const HERO_TEXTOS = {
     titulo: "PRIMERA B METROPOLITANA",
     sub: "Temporada regular simulada con el mismo modelo Poisson ajustado por forma reciente y corrección Dixon-Coles: 1 ascenso directo (puntero) + 1 por el Torneo Reducido, tabla única sin zonas.",
     ascensosLbl: "Ascensos por edición",
+  },
+  federal: {
+    eyebrow: () => `SIMULACIÓN MONTE CARLO — <span id="hero-n">${(DATA_FEDERAL && DATA_FEDERAL.n_simulaciones) || 0}</span> CORRIDAS`,
+    titulo: "TORNEO FEDERAL A",
+    sub: "Primera Fase (4 zonas) + Segunda Fase (2 zonas) simuladas con el mismo modelo Poisson, seguidas del camino al 1° ascenso y las 6 etapas de la Reválida, todo a eliminación directa ida y vuelta.",
+    ascensosLbl: "Ascensos por edición",
   }
 };
 
@@ -4198,6 +4940,14 @@ function actualizarHero(liga){
     document.getElementById('meta-zonas').textContent = 1;
     document.getElementById('meta-ascensos').textContent = 2;
     document.getElementById('meta-descensos').textContent = (DATA_BMETRO && DATA_BMETRO.descensos && DATA_BMETRO.descensos.length) || 2;
+  } else if (liga === 'federal'){
+    const totalEquipos = DATA_FEDERAL
+      ? ['1', '2', '3', '4'].reduce((acc, z) => acc + (DATA_FEDERAL.primera_fase.tablas[z] || []).length, 0)
+      : 37;
+    document.getElementById('meta-equipos').textContent = totalEquipos;
+    document.getElementById('meta-zonas').textContent = 4;
+    document.getElementById('meta-ascensos').textContent = 2;
+    document.getElementById('meta-descensos').textContent = (DATA_FEDERAL && DATA_FEDERAL.revalida && DATA_FEDERAL.revalida.descensos && DATA_FEDERAL.revalida.descensos.length) || 4;
   } else if (DATA) {
     document.getElementById('meta-equipos').textContent = DATA.tablas.A.length + DATA.tablas.B.length;
     document.getElementById('meta-ascensos').textContent = 2;
@@ -4211,14 +4961,17 @@ function setLiga(liga){
   document.getElementById('vista-lpf').style.display = liga === 'lpf' ? '' : 'none';
   document.getElementById('vista-copa').style.display = liga === 'copa' ? '' : 'none';
   document.getElementById('vista-bmetro').style.display = liga === 'bmetro' ? '' : 'none';
+  document.getElementById('vista-federal').style.display = liga === 'federal' ? '' : 'none';
   document.getElementById('sim-control-nacional').style.display = liga === 'nacional' ? '' : 'none';
   document.getElementById('sim-control-lpf').style.display = liga === 'lpf' ? '' : 'none';
   document.getElementById('sim-control-copa').style.display = liga === 'copa' ? '' : 'none';
   document.getElementById('sim-control-bmetro').style.display = liga === 'bmetro' ? '' : 'none';
+  document.getElementById('sim-control-federal').style.display = liga === 'federal' ? '' : 'none';
   document.body.classList.toggle('liga-nacional', liga === 'nacional');
   document.body.classList.toggle('liga-lpf', liga === 'lpf');
   document.body.classList.toggle('liga-copa', liga === 'copa');
   document.body.classList.toggle('liga-bmetro', liga === 'bmetro');
+  document.body.classList.toggle('liga-federal', liga === 'federal');
   actualizarHero(liga);
   // El cuadro recién visible puede haber quedado con medidas en 0 (display:none
   // no dispara el MutationObserver de los brackets), así que se refresca a mano.
@@ -4644,6 +5397,7 @@ document.getElementById('btn-campeon-copa').addEventListener('click', simularHas
 cargarDatosLPF();
 cargarDatosCopa();
 cargarDatosBMetro();
+cargarDatosFederal();
 
 // Flechas de navegación para los cuadros (brackets): evitan tener que
 // arrastrar la barra de scroll horizontal para ver las rondas siguientes.

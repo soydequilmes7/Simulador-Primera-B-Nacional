@@ -1,1 +1,60 @@
 fecha,jornada,equipo_local,equipo_visitante,goles_local,goles_visitante
+,4,Douglas Haig,El Linqueño,1,0
+,5,Sportivo Belgrano,Douglas Haig,0,1
+,6,Douglas Haig,Independiente Chivilcoy,1,0
+,6,Sportivo Belgrano,El Linqueño,1,1
+,7,Independiente Chivilcoy,Sportivo Belgrano,0,3
+,8,Independiente Chivilcoy,El Linqueño,1,0
+,13,El Linqueño,Douglas Haig,2,0
+,14,Douglas Haig,Sportivo Belgrano,0,0
+,15,El Linqueño,Sportivo Belgrano,1,1
+,15,Independiente Chivilcoy,Douglas Haig,0,4
+,1,Sarmiento de Resistencia,Juventud Antoniana,1,3
+,3,Tucumán Central,San Martín de Formosa,2,0
+,5,Sarmiento de Resistencia,San Martín de Formosa,1,1
+,6,Tucumán Central,Sarmiento de Resistencia,1,1
+,7,Juventud Antoniana,San Martín de Formosa,0,3
+,8,Tucumán Central,Juventud Antoniana,1,0
+,10,Juventud Antoniana,Sarmiento de Resistencia,2,0
+,12,San Martín de Formosa,Tucumán Central,3,2
+,14,San Martín de Formosa,Sarmiento de Resistencia,3,0
+,15,Sarmiento de Resistencia,Tucumán Central,1,0
+,3,Huracán Las Heras,Cipolletti,1,1
+,5,Deportivo Rincón,Cipolletti,1,2
+,8,Huracán Las Heras,Deportivo Rincón,1,1
+,12,Cipolletti,Huracán Las Heras,3,0
+,14,Cipolletti,Deportivo Rincón,2,1
+,1,Sol de Mayo,Germinal,1,1
+,1,Olimpo,Alvarado,2,0
+,2,Alvarado,Guillermo Brown,2,0
+,2,Villa Mitre,Círculo Deportivo,2,0
+,3,Sol de Mayo,Alvarado,0,0
+,3,Círculo Deportivo,Germinal,2,1
+,3,Guillermo Brown,Olimpo,0,2
+,4,Germinal,Villa Mitre,1,0
+,4,Olimpo,Sol de Mayo,1,0
+,5,Círculo Deportivo,Alvarado,0,1
+,5,Sol de Mayo,Guillermo Brown,1,0
+,6,Alvarado,Villa Mitre,1,1
+,6,Olimpo,Círculo Deportivo,1,0
+,7,Círculo Deportivo,Guillermo Brown,1,1
+,7,Germinal,Alvarado,1,0
+,7,Villa Mitre,Olimpo,0,0
+,8,Sol de Mayo,Círculo Deportivo,0,0
+,8,Guillermo Brown,Villa Mitre,1,0
+,8,Olimpo,Germinal,1,0
+,9,Germinal,Guillermo Brown,1,1
+,9,Villa Mitre,Sol de Mayo,2,1
+,10,Alvarado,Olimpo,2,0
+,10,Germinal,Sol de Mayo,1,0
+,11,Guillermo Brown,Alvarado,0,0
+,11,Círculo Deportivo,Villa Mitre,0,0
+,12,Germinal,Círculo Deportivo,0,0
+,12,Alvarado,Sol de Mayo,2,0
+,12,Olimpo,Guillermo Brown,0,0
+,13,Sol de Mayo,Olimpo,1,1
+,13,Villa Mitre,Germinal,0,0
+,14,Alvarado,Círculo Deportivo,1,0
+,14,Guillermo Brown,Sol de Mayo,0,1
+,15,Círculo Deportivo,Olimpo,1,1
+,15,Villa Mitre,Alvarado,1,0

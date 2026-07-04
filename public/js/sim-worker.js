@@ -140,10 +140,14 @@ async function ejecutar(tarea, payload) {
     case "simular-bmetro":
       kwargs = { n_sims: clamp(payload.n_sims, 50, 5000, 500) };
       break;
+    case "simular-federal":
+      kwargs = { n_sims: clamp(payload.n_sims, 50, 5000, 500) };
+      break;
     case "simular-campeon":
     case "simular-campeon-lpf":
     case "simular-campeon-copa":
-    case "simular-campeon-bmetro": {
+    case "simular-campeon-bmetro":
+    case "simular-campeon-federal": {
       const equipo = String(payload.equipo || "").trim();
       if (!equipo) throw Object.assign(new Error("Falta indicar el equipo"), { status: 400 });
       kwargs = { equipo, max_intentos: clamp(payload.max_intentos, 100, 20000, 5000) };
