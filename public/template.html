@@ -813,7 +813,7 @@
      mismo peso visual (color y grosor) que ya usa el select "Elegí un
      equipo"— en vez de quedar flotando sin límites como el resto de
      .search-section en esta liga. */
-  #campeon-section-lpf, #campeon-section-bmetro{
+  #campeon-section-lpf, #campeon-section-bmetro, #campeon-section-federal{
     border: 1px solid var(--line); border-radius: var(--radius);
     padding-bottom: 28px;
   }
@@ -826,18 +826,23 @@
   #campeon-equipo:focus{ border-color: var(--azul); }
   #campeon-equipo:disabled{ cursor:wait; opacity:0.5; }
   /* estos controles viven fuera del hero: botón en versión "de contenido" */
-  #campeon-section .btn-simular, #campeon-section-lpf .btn-simular, #campeon-section-copa .btn-simular, #campeon-section-bmetro .btn-simular{ background: var(--btn-grad); color: var(--btn-ink); }
-  #campeon-section .sim-status, #campeon-section-lpf .sim-status, #campeon-section-copa .sim-status, #campeon-section-bmetro .sim-status{ color: var(--ink-dim); }
-  #campeon-section .sim-status.error, #campeon-section-lpf .sim-status.error, #campeon-section-copa .sim-status.error, #campeon-section-bmetro .sim-status.error{ color: var(--danger); }
-  #campeon-section .sim-status.ok, #campeon-section-lpf .sim-status.ok, #campeon-section-copa .sim-status.ok, #campeon-section-bmetro .sim-status.ok{ color: var(--zone-a); }
-  #campeon-equipo-lpf, #campeon-equipo-copa, #campeon-equipo-bmetro{
+  #campeon-section .btn-simular, #campeon-section-lpf .btn-simular, #campeon-section-copa .btn-simular, #campeon-section-bmetro .btn-simular, #campeon-section-federal .btn-simular{ background: var(--btn-grad); color: var(--btn-ink); }
+  #campeon-section .sim-status, #campeon-section-lpf .sim-status, #campeon-section-copa .sim-status, #campeon-section-bmetro .sim-status, #campeon-section-federal .sim-status{ color: var(--ink-dim); }
+  #campeon-section .sim-status.error, #campeon-section-lpf .sim-status.error, #campeon-section-copa .sim-status.error, #campeon-section-bmetro .sim-status.error, #campeon-section-federal .sim-status.error{ color: var(--danger); }
+  #campeon-section .sim-status.ok, #campeon-section-lpf .sim-status.ok, #campeon-section-copa .sim-status.ok, #campeon-section-bmetro .sim-status.ok, #campeon-section-federal .sim-status.ok{ color: var(--zone-a); }
+  #campeon-equipo-lpf, #campeon-equipo-copa, #campeon-equipo-bmetro, #campeon-equipo-federal{
     font-family:'JetBrains Mono'; font-size:13px; font-weight:600; color: var(--ink);
     background: var(--bg-panel); border:1px solid var(--line); border-radius: var(--radius-sm);
     padding: 10px 12px; outline:none; transition: border-color 0.15s, opacity 0.15s; min-width:220px;
   }
-  #campeon-equipo-lpf:hover:not(:disabled), #campeon-equipo-copa:hover:not(:disabled), #campeon-equipo-bmetro:hover:not(:disabled){ border-color: var(--azul); }
-  #campeon-equipo-lpf:focus, #campeon-equipo-copa:focus, #campeon-equipo-bmetro:focus{ border-color: var(--azul); }
-  #campeon-equipo-lpf:disabled, #campeon-equipo-copa:disabled, #campeon-equipo-bmetro:disabled{ cursor:wait; opacity:0.5; }
+  #campeon-equipo-lpf:hover:not(:disabled), #campeon-equipo-copa:hover:not(:disabled), #campeon-equipo-bmetro:hover:not(:disabled), #campeon-equipo-federal:hover:not(:disabled){ border-color: var(--azul); }
+  #campeon-equipo-lpf:focus, #campeon-equipo-copa:focus, #campeon-equipo-bmetro:focus, #campeon-equipo-federal:focus{ border-color: var(--azul); }
+  #campeon-equipo-lpf:disabled, #campeon-equipo-copa:disabled, #campeon-equipo-bmetro:disabled, #campeon-equipo-federal:disabled{ cursor:wait; opacity:0.5; }
+  /* Opciones del desplegable: el navegador no hereda var(--bg-panel) en
+     <option>, así que hay que fijar el color a mano en ambos modos —
+     misma lógica que ya usan Copa y B Metro para este mismo select. */
+  #campeon-equipo-federal option{ background:#FFFFFF; color:#182847; }
+  body.dark #campeon-equipo-federal option{ background:#16233B; color:#F5F7FA; }
   .campeon-summary{
     font-family:'JetBrains Mono'; font-size:13px; color:var(--ink-dim); text-align:center;
     padding:14px; background:var(--bg-panel); border:1px solid var(--line); border-radius: var(--radius);
@@ -2714,6 +2719,28 @@ const ESCUDOS = {
   'UAI Urquiza':'uaiurquiza',
   'Villa Dálmine':'villadalmine', 'Villa Dalmine':'villadalmine',
   'Villa San Carlos':'villasancarlos',
+
+    // FEDERAL A (equipos propios de esta categoría)
+  'El Linqueño':'el_linqueno', 'Independiente Chivilcoy':'independiente_chivilcoy', 'Douglas Haig':'douglas_haig',
+  '9 De Julio Rafaela':'9_de_julio', 'CSCyD Gimnasia y Esgrima (Chivilcoy)':'gimnasia_chivilcoy',
+  'Defensores Belgrano (VR)':'defensores_belgrano', 'Sportivo Las Parejas':'sportivo_atletico_club',
+  'Gimnasia de Concepción':'gimnasia_cdu',
+  'Juventud Antoniana':'juventud_antoniana', 'Bartolomé Mitre (Posadas)':'bartolome_mitre', 'Sol De América':'sol_de_america',
+  'Boca Unidos de Corrientes':'boca_unidos', 'Sarmiento de Resistencia':'sarmiento_resistencia',
+  'Costa Brava (Gral Pico)':'costa_brava', 'Sportivo Dock Sud':'dock_sud', 'Deportivo Dock Sud':'dock_sud', 'Dock  Sud':'dock_sud', 'Docksud':'dock_sud', 'DockSud':'dock_sud',
+  'Tucumán Central':'Tucuman_central', 'Defensores Pto. Vilelas':'Defensores_de_Vilelas', 'Güemes (Santiago del Estero)':'atletico_guemes',
+  'Atlético Escobar':'atletico_escobar',
+  'Flandria':'flandria',
+  'Juventud Unida San Luis':'juventud_unida_u', 'Tucumán Central':'Tucumán_Central', 'La Ferrere':'laferrere',
+  'Kimberley Mar Del Plata':'kimberley',  
+  'Santamarina Tandil':'santamarina',
+  'San Martín de Burzaco':'smburzaco', 'San Martín de Mendoza':'san_martin_mendoza', 'Fundación Amigos por el Deporte':'Amigos',
+  'Sportivo Italiano':'spitaliano',
+  'Gimnasia de Concepción':'gimansia_cdu', 'Talleres (RE)':'talleres_re', 'Talleres Remedios de Escalada':'talleres_re',
+  'Villa Mitre':'villa_mitre',
+  'Huracán Las Heras':'huracan_las_heras', 'UAI Urquiza':'uaiurquiza',
+  'Círculo Deportivo':'circulo_deportivo', 'Alvarado':'Alvarado',
+  'Sol de Mayo':'sol_de_mayo',
 };
 
 // Sin acentos, sin espacios ni símbolos, todo en minúscula — para poder

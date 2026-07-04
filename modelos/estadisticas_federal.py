@@ -114,13 +114,25 @@ class EstadisticasFederal(Estadisticas):
                                      self.tabla.set_index("equipo").iterrows()}
         self._fixture_primera_fase = self.fixture.copy()
 
+        # Snapshot de los puntos/gf/gc REALES de la Primera Fase (los que
+        # ya salieron de partidos jugados, según tabla_federal_a.csv).
+        # reiniciar_para_nueva_corrida() debe restaurar ESTOS valores
+        # antes de simular_primera_fase(), no ponerlos en cero -- cero
+        # es correcto para el arranque de la Segunda Fase y de la
+        # Reválida (que sí empiezan la tabla desde cero por reglamento,
+        # Art. 11), pero la Primera Fase arranca desde lo ya jugado.
+        self._puntajes_primera_fase = {
+            nombre: {"puntos": int(fila["puntos"]), "gf": int(fila["gf"]), "gc": int(fila["gc"])}
+            for nombre, fila in self.tabla.set_index("equipo").iterrows()
+        }
+
     def reiniciar_para_nueva_corrida(self) -> None:
         """Restaura zonas (1-4), fixture y puntajes al estado de arranque
         de la Primera Fase. Hay que llamarlo antes de cada corrida
         completa del torneo cuando se reutiliza la misma instancia (p.
         ej. cada repetición del Monte Carlo)."""
         self._asignar_zonas(self._zonas_primera_fase)
-        self._resetear_puntajes(list(self.equipos.keys()))
+        self._restaurar_puntajes_primera_fase()
         self._reset_fixture(self._fixture_primera_fase)
 
     def crear_equipos_federal(self) -> None:
@@ -144,6 +156,18 @@ class EstadisticasFederal(Estadisticas):
             equipo.puntos = 0
             equipo.goles_favor = 0
             equipo.goles_contra = 0
+
+    def _restaurar_puntajes_primera_fase(self) -> None:
+        """Restaura puntos/gf/gc de TODOS los equipos a los valores
+        reales de tabla_federal_a.csv (partidos ya jugados) -- a
+        diferencia de _resetear_puntajes(), que los pone en cero. Se usa
+        antes de simular_primera_fase(), porque esa fase NO arranca
+        desde cero: ya viene con puntos de jornadas jugadas."""
+        for nombre, valores in self._puntajes_primera_fase.items():
+            equipo = self.equipos[nombre]
+            equipo.puntos = valores["puntos"]
+            equipo.goles_favor = valores["gf"]
+            equipo.goles_contra = valores["gc"]
 
     def _asignar_zonas(self, mapa_zona: dict[str, str]) -> None:
         """equipo.zona = zona para cada entrada de mapa_zona (nombre ->
