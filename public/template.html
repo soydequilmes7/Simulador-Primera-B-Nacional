@@ -1599,8 +1599,10 @@
      — Lenguaje visual completamente distinto de las otras 4 categorías:
        en vez de un modo claro con fondo blanco y acentos azul/dorado,
        Federal A es una marca OSCURA, mineral y premium: degradado negro →
-       verde petróleo (#103A38), grafito, blanco puro y una textura
-       topográfica casi imperceptible. Sin azul, sin dorado.
+       grafito → azul petróleo muy profundo, blanco puro y una textura
+       topográfica casi imperceptible. El verde/teal queda reservado
+       exclusivamente como acento (hover, bordes, focos y pequeños
+       resaltados) — nunca como superficie grande. Sin dorado.
      — Tipografía propia: Anton (condensada, institucional) para títulos,
        Manrope para UI/texto y Space Grotesk para cifras y etiquetas
        técnicas — nada del Oswald/Inter/JetBrains de las demás.
@@ -1613,7 +1615,7 @@
      simulador no se toca. ===================================================================== */
   body.liga-federal{
     /* -------- estado por defecto: GRAFITO -------- */
-    --bg: #0B1413;
+    --bg: #0A0D12;
     --bg-panel: rgba(255,255,255,0.035);
     --bg-panel-2: rgba(255,255,255,0.06);
     --line: rgba(255,255,255,0.13);
@@ -1651,11 +1653,11 @@
     --card-shadow: 0 10px 30px rgba(0,0,0,0.45);
     --card-shadow-hover: 0 16px 42px rgba(0,0,0,0.6);
     --card-grad: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015));
-    --hero-bg: linear-gradient(160deg, #070B0A 0%, #0C201E 52%, #103A38 100%);
+    --hero-bg: linear-gradient(160deg, #05070A 0%, #0B1420 52%, #123044 100%);
     --hero-ink: #FFFFFF;
     --hero-dim: #A7B7B4;
     --hero-accent: #FFFFFF;          /* aro blanco del escudo */
-    --tabs-bg: rgba(9,15,14,0.86);
+    --tabs-bg: rgba(8,11,16,0.86);
     --btn-grad: rgba(255,255,255,0.045);
     --btn-ink: #FFFFFF;
     --table-head-bg: rgba(255,255,255,0.04);
@@ -1678,7 +1680,7 @@
        base `body.liga-federal` y, de lo contrario, filtraría los acentos
        dorado/azul de Nacional en modo oscuro. Mismos valores petróleo, con
        fondos aún más profundos. */
-    --bg: #060C0B;
+    --bg: #05070A;
     --bg-panel: rgba(255,255,255,0.03);
     --bg-panel-2: rgba(255,255,255,0.05);
     --line: rgba(255,255,255,0.11);
@@ -1707,11 +1709,11 @@
     --relegation-accent: #E0685A;
     --relegation-text: #F2A99E;
 
-    --hero-bg: linear-gradient(160deg, #030807 0%, #071A18 52%, #0C302E 100%);
+    --hero-bg: linear-gradient(160deg, #020304 0%, #060C14 52%, #0A2030 100%);
     --hero-ink: #FFFFFF;
     --hero-dim: #A7B7B4;
     --hero-accent: #FFFFFF;
-    --tabs-bg: rgba(4,9,8,0.9);
+    --tabs-bg: rgba(3,5,9,0.9);
     --btn-grad: rgba(255,255,255,0.045);
     --btn-ink: #FFFFFF;
     --table-head-bg: rgba(255,255,255,0.04);
@@ -1727,8 +1729,8 @@
   body.liga-federal::before{
     content:""; position:fixed; inset:0; z-index:-2; pointer-events:none;
     background:
-      radial-gradient(1200px 700px at 78% -12%, rgba(16,58,56,0.55), transparent 60%),
-      radial-gradient(900px 600px at 8% 108%, rgba(16,58,56,0.4), transparent 60%);
+      radial-gradient(1200px 700px at 78% -12%, rgba(10,34,51,0.55), transparent 60%),
+      radial-gradient(900px 600px at 8% 108%, rgba(10,34,51,0.4), transparent 60%);
   }
   body.liga-federal::after{
     content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
@@ -1815,7 +1817,7 @@
   body.liga-federal .federal-crest-disc{
     position:relative; width:118px; height:118px; border-radius:50%;
     background:
-      radial-gradient(circle at 50% 34%, #145049 0%, #0D2E2C 60%, #081A19 100%);
+      radial-gradient(circle at 50% 34%, #163A4C 0%, #0D2430 60%, #050F16 100%);
     border:3px solid #FFFFFF;
     box-shadow: 0 10px 30px rgba(0,0,0,0.55), inset 0 0 22px rgba(0,0,0,0.5);
     display:flex; align-items:center; justify-content:center;
@@ -1910,7 +1912,7 @@
   }
   body.liga-federal .liga-tab{ font-family:'Anton', sans-serif; font-weight:400; letter-spacing:0.06em; }
   body.liga-federal .liga-tab.active{
-    background: linear-gradient(160deg, #103A38, #0B2A28);
+    background: linear-gradient(160deg, #123044, #0A1C2A);
     color:#FFFFFF; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.22);
   }
   body.liga-federal .liga-tab:not(.active){ color: var(--muted); }
@@ -1947,7 +1949,7 @@
   }
   body.liga-federal #campeon-equipo-federal:hover:not(:disabled),
   body.liga-federal #campeon-equipo-federal:focus{ border-color:#37B8A8; }
-  body.liga-federal #campeon-equipo-federal option{ background:#0D2422; color:#F1F5F4; }
+  body.liga-federal #campeon-equipo-federal option{ background:#0D1A22; color:#F1F5F4; }
 
   /* acentos de sección y probabilidades en petróleo */
   body.liga-federal .section-head .idx{ color:#4FB3A6; font-weight:700; }
