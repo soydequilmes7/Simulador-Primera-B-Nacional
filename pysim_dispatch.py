@@ -27,6 +27,7 @@ from main import correr_simulacion, simular_hasta_campeon
 from main_lpf import correr_simulacion_lpf, simular_hasta_campeon_lpf
 from main_copa import correr_simulacion_copa, simular_hasta_campeon_copa
 from main_bmetro import correr_simulacion_bmetro, simular_hasta_ascenso_bmetro
+from main_federal import correr_simulacion_federal, simular_hasta_ascenso_federal
 
 
 def simular(n_sims):
@@ -71,6 +72,15 @@ def simular_campeon_bmetro(equipo_objetivo, max_intentos):
     return _envolver_hasta_campeon(resultado, equipo_objetivo, max_intentos)
 
 
+def simular_federal(n_sims):
+    return correr_simulacion_federal(n_sims=n_sims, imprimir=False, guardar_json=False)
+
+
+def simular_campeon_federal(equipo_objetivo, max_intentos):
+    resultado = simular_hasta_ascenso_federal(equipo_objetivo, max_intentos=max_intentos, imprimir=False)
+    return _envolver_hasta_campeon(resultado, equipo_objetivo, max_intentos)
+
+
 _TAREAS = {
     "simular": lambda kwargs: simular(kwargs["n_sims"]),
     "simular-lpf": lambda kwargs: simular_lpf(kwargs["n_sims"]),
@@ -80,6 +90,8 @@ _TAREAS = {
     "simular-campeon-copa": lambda kwargs: simular_campeon_copa(kwargs["equipo"], kwargs["max_intentos"]),
     "simular-bmetro": lambda kwargs: simular_bmetro(kwargs["n_sims"]),
     "simular-campeon-bmetro": lambda kwargs: simular_campeon_bmetro(kwargs["equipo"], kwargs["max_intentos"]),
+    "simular-federal": lambda kwargs: simular_federal(kwargs["n_sims"]),
+    "simular-campeon-federal": lambda kwargs: simular_campeon_federal(kwargs["equipo"], kwargs["max_intentos"]),
 }
 
 

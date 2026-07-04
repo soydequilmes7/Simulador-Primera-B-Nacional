@@ -37,6 +37,8 @@ from actualizar_resultados import actualizar
 from actualizar_resultados_lpf import actualizar as actualizar_lpf
 from actualizar_resultados_copa import actualizar as actualizar_copa
 from main_copa import correr_simulacion_copa
+from actualizar_resultados_federal import actualizar as actualizar_federal
+from main_federal import correr_simulacion_federal
 
 # Archivos de código fuente que necesita el simulador corriendo en el
 # navegador (Pyodide/Web Worker, ver public/js/sim-worker.js). Se sirven
@@ -53,6 +55,9 @@ PYSIM_SOURCE_FILES = [
     "modelos/estadisticas_copa.py",
     "main_bmetro.py",
     "modelos/estadisticas_bmetro.py",
+    "main_federal.py",
+    "modelos/estadisticas_federal.py",
+    "fixture_generator.py",
 ]
 # El código fuente no cambia mientras el proceso está corriendo, así que se
 # lee y cachea una sola vez.
@@ -145,6 +150,7 @@ _lock_nacional = ReadWriteLock()
 _lock_lpf = ReadWriteLock()
 _lock_copa = ReadWriteLock()
 _lock_bmetro = ReadWriteLock()
+_lock_federal = ReadWriteLock()
 
 
 class SimularBody(BaseModel):
@@ -161,6 +167,10 @@ class SimularCopaBody(BaseModel):
 
 class SimularBmetroBody(BaseModel):
     n_sims: int = N_SIMULACIONES
+
+
+class SimularFederalBody(BaseModel):
+    n_sims: int = 500
 
 
 class SimularCampeonBody(BaseModel):
@@ -327,6 +337,31 @@ def datos_bmetro():
         return JSONResponse(status_code=500, content={"error": str(e)})
     finally:
         _lock_bmetro.release_read()
+
+
+@app.get("/api/datos-federal")
+def datos_federal():
+    """Igual que /api/datos-bmetro pero con los CSV del Federal A
+    (tabla con las 4 zonas, fixture, resultados)."""
+    ocupado = _adquirir_lectura(
+        _lock_federal,
+        "Hay una actualización de Federal A en curso. Esperá unos segundos y probá de nuevo.",
+    )
+    if ocupado:
+        return ocupado
+    try:
+        datos_dir = rutas.datos_dir()
+        archivos = {}
+        for nombre in ["tabla_federal_a.csv", "fixture_federal_a.csv", "resultados_federal_a.csv"]:
+            ruta = datos_dir / nombre
+            if not ruta.exists():
+                return JSONResponse(status_code=500, content={"error": f"Falta {nombre} en datos/"})
+            archivos[nombre] = ruta.read_text(encoding="utf-8")
+        return {"files": archivos}
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
+    finally:
+        _lock_federal.release_read()
 
 
 @app.get("/")
@@ -570,6 +605,74 @@ def simular_campeon_bmetro_endpoint(body: SimularCampeonBody):
         return JSONResponse(status_code=500, content={"error": str(e)})
     finally:
         _lock_bmetro.release_read()
+
+
+@app.post("/api/simular-federal")
+def simular_federal_endpoint(body: SimularFederalBody = SimularFederalBody()):
+    """Corre el Torneo Federal A completo (5 Fases + Reválida de 6
+    Etapas) + Monte Carlo, y devuelve el resultado directo."""
+    n_sims = max(50, min(2000, body.n_sims))
+
+    ocupado = _adquirir_lectura(
+        _lock_federal,
+        "Hay una actualización de Federal A en curso. Esperá unos segundos y probá de nuevo.",
+    )
+    if ocupado:
+        return ocupado
+    try:
+        datos = pysim_dispatch.simular_federal(n_sims)
+        return datos
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
+    finally:
+        _lock_federal.release_read()
+
+
+@app.post("/api/actualizar-federal")
+def actualizar_federal_endpoint(body: SimularFederalBody = SimularFederalBody()):
+    """Scrapea Promiedos (Federal A) y, si hay partidos nuevos, actualiza
+    fixture/resultados/tabla y re-simula."""
+    n_sims = max(50, min(2000, body.n_sims))
+
+    ocupado = _adquirir_escritura(
+        _lock_federal,
+        "Hay simulaciones o una actualización de Federal A en curso. Esperá unos segundos y probá de nuevo.",
+    )
+    if ocupado:
+        return ocupado
+    try:
+        resultado = actualizar_federal(n_sims=n_sims, correr_simulacion_fn=correr_simulacion_federal, imprimir=False)
+        return resultado
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
+    finally:
+        _lock_federal.release_write()
+
+
+@app.post("/api/simular-campeon-federal")
+def simular_campeon_federal_endpoint(body: SimularCampeonBody):
+    """Corre simular_hasta_ascenso_federal() del equipo pedido y
+    devuelve esa corrida completa (vía directa o Reválida)."""
+    equipo_objetivo = body.equipo.strip()
+    if not equipo_objetivo:
+        return JSONResponse(status_code=400, content={"error": "Falta indicar el equipo"})
+
+    max_intentos = _clamp_max_intentos(body.max_intentos)
+
+    ocupado = _adquirir_lectura(
+        _lock_federal,
+        "Hay una actualización de Federal A en curso. Esperá unos segundos y probá de nuevo.",
+    )
+    if ocupado:
+        return ocupado
+    try:
+        return pysim_dispatch.simular_campeon_federal(equipo_objetivo, max_intentos)
+    except ValueError as e:
+        return JSONResponse(status_code=400, content={"error": str(e)})
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
+    finally:
+        _lock_federal.release_read()
 
 
 @app.post("/api/actualizar")

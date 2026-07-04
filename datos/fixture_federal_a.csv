@@ -1,0 +1,307 @@
+fecha,jornada,equipo_local,equipo_visitante
+,1,El Linqueño,Sportivo Belgrano
+,1,Gimnasia y Esgrima de Chivilcoy,9 de Julio
+,1,Independiente Chivilcoy,Sportivo AC
+,1,Douglas Haig,Gimnasia y Esgrima de Concepción del Uruguay
+,1,Escobar FC,Defensores de Belgrano de V. Ramallo
+,2,9 de Julio,El Linqueño
+,2,Sportivo AC,Sportivo Belgrano
+,2,Gimnasia y Esgrima de Concepción del Uruguay,Gimnasia y Esgrima de Chivilcoy
+,2,Defensores de Belgrano de V. Ramallo,Independiente Chivilcoy
+,2,Escobar FC,Douglas Haig
+,3,El Linqueño,Sportivo AC
+,3,9 de Julio,Gimnasia y Esgrima de Concepción del Uruguay
+,3,Sportivo Belgrano,Defensores de Belgrano de V. Ramallo
+,3,Gimnasia y Esgrima de Chivilcoy,Escobar FC
+,3,Independiente Chivilcoy,Douglas Haig
+,4,Gimnasia y Esgrima de Concepción del Uruguay,El Linqueño
+,4,Defensores de Belgrano de V. Ramallo,Sportivo AC
+,4,Escobar FC,9 de Julio
+,4,Douglas Haig,Sportivo Belgrano
+,4,Independiente Chivilcoy,Gimnasia y Esgrima de Chivilcoy
+,5,El Linqueño,Defensores de Belgrano de V. Ramallo
+,5,Gimnasia y Esgrima de Concepción del Uruguay,Escobar FC
+,5,Sportivo AC,Douglas Haig
+,5,9 de Julio,Independiente Chivilcoy
+,5,Sportivo Belgrano,Gimnasia y Esgrima de Chivilcoy
+,6,Escobar FC,El Linqueño
+,6,Douglas Haig,Defensores de Belgrano de V. Ramallo
+,6,Independiente Chivilcoy,Gimnasia y Esgrima de Concepción del Uruguay
+,6,Gimnasia y Esgrima de Chivilcoy,Sportivo AC
+,6,Sportivo Belgrano,9 de Julio
+,7,El Linqueño,Douglas Haig
+,7,Escobar FC,Independiente Chivilcoy
+,7,Defensores de Belgrano de V. Ramallo,Gimnasia y Esgrima de Chivilcoy
+,7,Gimnasia y Esgrima de Concepción del Uruguay,Sportivo Belgrano
+,7,Sportivo AC,9 de Julio
+,8,Independiente Chivilcoy,El Linqueño
+,8,Gimnasia y Esgrima de Chivilcoy,Douglas Haig
+,8,Sportivo Belgrano,Escobar FC
+,8,9 de Julio,Defensores de Belgrano de V. Ramallo
+,8,Sportivo AC,Gimnasia y Esgrima de Concepción del Uruguay
+,9,El Linqueño,Gimnasia y Esgrima de Chivilcoy
+,9,Independiente Chivilcoy,Sportivo Belgrano
+,9,Douglas Haig,9 de Julio
+,9,Escobar FC,Sportivo AC
+,9,Defensores de Belgrano de V. Ramallo,Gimnasia y Esgrima de Concepción del Uruguay
+,10,Sportivo Belgrano,El Linqueño
+,10,9 de Julio,Gimnasia y Esgrima de Chivilcoy
+,10,Sportivo AC,Independiente Chivilcoy
+,10,Gimnasia y Esgrima de Concepción del Uruguay,Douglas Haig
+,10,Defensores de Belgrano de V. Ramallo,Escobar FC
+,11,El Linqueño,9 de Julio
+,11,Sportivo Belgrano,Sportivo AC
+,11,Gimnasia y Esgrima de Chivilcoy,Gimnasia y Esgrima de Concepción del Uruguay
+,11,Independiente Chivilcoy,Defensores de Belgrano de V. Ramallo
+,11,Douglas Haig,Escobar FC
+,12,Sportivo AC,El Linqueño
+,12,Gimnasia y Esgrima de Concepción del Uruguay,9 de Julio
+,12,Defensores de Belgrano de V. Ramallo,Sportivo Belgrano
+,12,Escobar FC,Gimnasia y Esgrima de Chivilcoy
+,12,Douglas Haig,Independiente Chivilcoy
+,13,El Linqueño,Gimnasia y Esgrima de Concepción del Uruguay
+,13,Sportivo AC,Defensores de Belgrano de V. Ramallo
+,13,9 de Julio,Escobar FC
+,13,Sportivo Belgrano,Douglas Haig
+,13,Gimnasia y Esgrima de Chivilcoy,Independiente Chivilcoy
+,14,Defensores de Belgrano de V. Ramallo,El Linqueño
+,14,Escobar FC,Gimnasia y Esgrima de Concepción del Uruguay
+,14,Douglas Haig,Sportivo AC
+,14,Independiente Chivilcoy,9 de Julio
+,14,Gimnasia y Esgrima de Chivilcoy,Sportivo Belgrano
+,15,El Linqueño,Escobar FC
+,15,Defensores de Belgrano de V. Ramallo,Douglas Haig
+,15,Gimnasia y Esgrima de Concepción del Uruguay,Independiente Chivilcoy
+,15,Sportivo AC,Gimnasia y Esgrima de Chivilcoy
+,15,9 de Julio,Sportivo Belgrano
+,16,Douglas Haig,El Linqueño
+,16,Independiente Chivilcoy,Escobar FC
+,16,Gimnasia y Esgrima de Chivilcoy,Defensores de Belgrano de V. Ramallo
+,16,Sportivo Belgrano,Gimnasia y Esgrima de Concepción del Uruguay
+,16,9 de Julio,Sportivo AC
+,17,El Linqueño,Independiente Chivilcoy
+,17,Douglas Haig,Gimnasia y Esgrima de Chivilcoy
+,17,Escobar FC,Sportivo Belgrano
+,17,Defensores de Belgrano de V. Ramallo,9 de Julio
+,17,Gimnasia y Esgrima de Concepción del Uruguay,Sportivo AC
+,18,Gimnasia y Esgrima de Chivilcoy,El Linqueño
+,18,Sportivo Belgrano,Independiente Chivilcoy
+,18,9 de Julio,Douglas Haig
+,18,Sportivo AC,Escobar FC
+,18,Gimnasia y Esgrima de Concepción del Uruguay,Defensores de Belgrano de V. Ramallo
+,1,Tucumán Central,Boca Unidos
+,1,San Martín de Formosa,Bartolomé Mitre
+,1,Sol de América,Sarmiento de La Banda
+,1,Sarmiento de Resistencia,Defensores de Puerto Vilelas
+,2,Boca Unidos,Juventud Antoniana
+,2,Sarmiento de La Banda,Tucumán Central
+,2,Defensores de Puerto Vilelas,San Martín de Formosa
+,2,Sarmiento de Resistencia,Sol de América
+,3,Juventud Antoniana,Bartolomé Mitre
+,3,Boca Unidos,Sarmiento de La Banda
+,3,Tucumán Central,Sarmiento de Resistencia
+,3,San Martín de Formosa,Sol de América
+,4,Sarmiento de La Banda,Juventud Antoniana
+,4,Defensores de Puerto Vilelas,Bartolomé Mitre
+,4,Sarmiento de Resistencia,Boca Unidos
+,4,San Martín de Formosa,Tucumán Central
+,5,Juventud Antoniana,Defensores de Puerto Vilelas
+,5,Sarmiento de La Banda,Sarmiento de Resistencia
+,5,Bartolomé Mitre,Sol de América
+,5,Boca Unidos,San Martín de Formosa
+,6,Sarmiento de Resistencia,Juventud Antoniana
+,6,Sol de América,Defensores de Puerto Vilelas
+,6,San Martín de Formosa,Sarmiento de La Banda
+,6,Tucumán Central,Bartolomé Mitre
+,7,Juventud Antoniana,Sol de América
+,7,Sarmiento de Resistencia,San Martín de Formosa
+,7,Defensores de Puerto Vilelas,Tucumán Central
+,7,Bartolomé Mitre,Boca Unidos
+,8,San Martín de Formosa,Juventud Antoniana
+,8,Tucumán Central,Sol de América
+,8,Boca Unidos,Defensores de Puerto Vilelas
+,8,Bartolomé Mitre,Sarmiento de La Banda
+,9,Juventud Antoniana,Tucumán Central
+,9,Sol de América,Boca Unidos
+,9,Sarmiento de Resistencia,Bartolomé Mitre
+,9,Defensores de Puerto Vilelas,Sarmiento de La Banda
+,10,Boca Unidos,Tucumán Central
+,10,Bartolomé Mitre,San Martín de Formosa
+,10,Sarmiento de La Banda,Sol de América
+,10,Defensores de Puerto Vilelas,Sarmiento de Resistencia
+,11,Juventud Antoniana,Boca Unidos
+,11,Tucumán Central,Sarmiento de La Banda
+,11,San Martín de Formosa,Defensores de Puerto Vilelas
+,11,Sol de América,Sarmiento de Resistencia
+,12,Bartolomé Mitre,Juventud Antoniana
+,12,Sarmiento de La Banda,Boca Unidos
+,12,Sarmiento de Resistencia,Tucumán Central
+,12,Sol de América,San Martín de Formosa
+,13,Juventud Antoniana,Sarmiento de La Banda
+,13,Bartolomé Mitre,Defensores de Puerto Vilelas
+,13,Boca Unidos,Sarmiento de Resistencia
+,13,Tucumán Central,San Martín de Formosa
+,14,Defensores de Puerto Vilelas,Juventud Antoniana
+,14,Sarmiento de Resistencia,Sarmiento de La Banda
+,14,Sol de América,Bartolomé Mitre
+,14,San Martín de Formosa,Boca Unidos
+,15,Juventud Antoniana,Sarmiento de Resistencia
+,15,Defensores de Puerto Vilelas,Sol de América
+,15,Sarmiento de La Banda,San Martín de Formosa
+,15,Bartolomé Mitre,Tucumán Central
+,16,Sol de América,Juventud Antoniana
+,16,San Martín de Formosa,Sarmiento de Resistencia
+,16,Tucumán Central,Defensores de Puerto Vilelas
+,16,Boca Unidos,Bartolomé Mitre
+,17,Juventud Antoniana,San Martín de Formosa
+,17,Sol de América,Tucumán Central
+,17,Defensores de Puerto Vilelas,Boca Unidos
+,17,Sarmiento de La Banda,Bartolomé Mitre
+,18,Tucumán Central,Juventud Antoniana
+,18,Boca Unidos,Sol de América
+,18,Bartolomé Mitre,Sarmiento de Resistencia
+,18,Sarmiento de La Banda,Defensores de Puerto Vilelas
+,1,Deportivo Rincón,Deportivo Argentino
+,1,Huracán Las Heras,Atenas
+,1,AC San Martín,Costa Brava
+,1,FADEP,Juventud Unida Universitario
+,2,Deportivo Argentino,Cipolletti
+,2,Costa Brava,Deportivo Rincón
+,2,Juventud Unida Universitario,Huracán Las Heras
+,2,FADEP,AC San Martín
+,3,Cipolletti,Atenas
+,3,Deportivo Argentino,Costa Brava
+,3,Deportivo Rincón,FADEP
+,3,Huracán Las Heras,AC San Martín
+,4,Costa Brava,Cipolletti
+,4,Juventud Unida Universitario,Atenas
+,4,FADEP,Deportivo Argentino
+,4,Huracán Las Heras,Deportivo Rincón
+,5,Cipolletti,Juventud Unida Universitario
+,5,Costa Brava,FADEP
+,5,Atenas,AC San Martín
+,5,Deportivo Argentino,Huracán Las Heras
+,6,FADEP,Cipolletti
+,6,AC San Martín,Juventud Unida Universitario
+,6,Huracán Las Heras,Costa Brava
+,6,Deportivo Rincón,Atenas
+,7,Cipolletti,AC San Martín
+,7,FADEP,Huracán Las Heras
+,7,Juventud Unida Universitario,Deportivo Rincón
+,7,Atenas,Deportivo Argentino
+,8,Huracán Las Heras,Cipolletti
+,8,Deportivo Rincón,AC San Martín
+,8,Deportivo Argentino,Juventud Unida Universitario
+,8,Atenas,Costa Brava
+,9,Cipolletti,Deportivo Rincón
+,9,AC San Martín,Deportivo Argentino
+,9,FADEP,Atenas
+,9,Juventud Unida Universitario,Costa Brava
+,10,Deportivo Argentino,Deportivo Rincón
+,10,Atenas,Huracán Las Heras
+,10,Costa Brava,AC San Martín
+,10,Juventud Unida Universitario,FADEP
+,11,Cipolletti,Deportivo Argentino
+,11,Deportivo Rincón,Costa Brava
+,11,Huracán Las Heras,Juventud Unida Universitario
+,11,AC San Martín,FADEP
+,12,Atenas,Cipolletti
+,12,Costa Brava,Deportivo Argentino
+,12,FADEP,Deportivo Rincón
+,12,AC San Martín,Huracán Las Heras
+,13,Cipolletti,Costa Brava
+,13,Atenas,Juventud Unida Universitario
+,13,Deportivo Argentino,FADEP
+,13,Deportivo Rincón,Huracán Las Heras
+,14,Juventud Unida Universitario,Cipolletti
+,14,FADEP,Costa Brava
+,14,AC San Martín,Atenas
+,14,Huracán Las Heras,Deportivo Argentino
+,15,Cipolletti,FADEP
+,15,Juventud Unida Universitario,AC San Martín
+,15,Costa Brava,Huracán Las Heras
+,15,Atenas,Deportivo Rincón
+,16,AC San Martín,Cipolletti
+,16,Huracán Las Heras,FADEP
+,16,Deportivo Rincón,Juventud Unida Universitario
+,16,Deportivo Argentino,Atenas
+,17,Cipolletti,Huracán Las Heras
+,17,AC San Martín,Deportivo Rincón
+,17,Juventud Unida Universitario,Deportivo Argentino
+,17,Costa Brava,Atenas
+,18,Deportivo Rincón,Cipolletti
+,18,Deportivo Argentino,AC San Martín
+,18,Atenas,FADEP
+,18,Costa Brava,Juventud Unida Universitario
+,1,Guillermo Brown,Kimberley
+,1,Sol de Mayo,Alvarado
+,1,Olimpo,Círculo Deportivo
+,1,Villa Mitre,Santamarina
+,2,Kimberley,Germinal
+,2,Círculo Deportivo,Guillermo Brown
+,2,Santamarina,Sol de Mayo
+,2,Villa Mitre,Olimpo
+,3,Germinal,Alvarado
+,3,Kimberley,Círculo Deportivo
+,3,Guillermo Brown,Villa Mitre
+,3,Sol de Mayo,Olimpo
+,4,Círculo Deportivo,Germinal
+,4,Santamarina,Alvarado
+,4,Villa Mitre,Kimberley
+,4,Sol de Mayo,Guillermo Brown
+,5,Germinal,Santamarina
+,5,Círculo Deportivo,Villa Mitre
+,5,Alvarado,Olimpo
+,5,Kimberley,Sol de Mayo
+,6,Villa Mitre,Germinal
+,6,Olimpo,Santamarina
+,6,Sol de Mayo,Círculo Deportivo
+,6,Guillermo Brown,Alvarado
+,7,Germinal,Olimpo
+,7,Villa Mitre,Sol de Mayo
+,7,Santamarina,Guillermo Brown
+,7,Alvarado,Kimberley
+,8,Sol de Mayo,Germinal
+,8,Guillermo Brown,Olimpo
+,8,Kimberley,Santamarina
+,8,Alvarado,Círculo Deportivo
+,9,Germinal,Guillermo Brown
+,9,Olimpo,Kimberley
+,9,Villa Mitre,Alvarado
+,9,Santamarina,Círculo Deportivo
+,10,Kimberley,Guillermo Brown
+,10,Alvarado,Sol de Mayo
+,10,Círculo Deportivo,Olimpo
+,10,Santamarina,Villa Mitre
+,11,Germinal,Kimberley
+,11,Guillermo Brown,Círculo Deportivo
+,11,Sol de Mayo,Santamarina
+,11,Olimpo,Villa Mitre
+,12,Alvarado,Germinal
+,12,Círculo Deportivo,Kimberley
+,12,Villa Mitre,Guillermo Brown
+,12,Olimpo,Sol de Mayo
+,13,Germinal,Círculo Deportivo
+,13,Alvarado,Santamarina
+,13,Kimberley,Villa Mitre
+,13,Guillermo Brown,Sol de Mayo
+,14,Santamarina,Germinal
+,14,Villa Mitre,Círculo Deportivo
+,14,Olimpo,Alvarado
+,14,Sol de Mayo,Kimberley
+,15,Germinal,Villa Mitre
+,15,Santamarina,Olimpo
+,15,Círculo Deportivo,Sol de Mayo
+,15,Alvarado,Guillermo Brown
+,16,Olimpo,Germinal
+,16,Sol de Mayo,Villa Mitre
+,16,Guillermo Brown,Santamarina
+,16,Kimberley,Alvarado
+,17,Germinal,Sol de Mayo
+,17,Olimpo,Guillermo Brown
+,17,Santamarina,Kimberley
+,17,Círculo Deportivo,Alvarado
+,18,Guillermo Brown,Germinal
+,18,Kimberley,Olimpo
+,18,Alvarado,Villa Mitre
+,18,Círculo Deportivo,Santamarina
