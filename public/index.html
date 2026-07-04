@@ -1710,6 +1710,7 @@
       </div>
       <div class="btn-row">
         <button id="btn-simular-bmetro" class="btn-simular">▶ Correr nueva simulación</button>
+        <button id="btn-actualizar-bmetro" class="btn-actualizar">⟳ Actualizar desde Promiedos</button>
       </div>
       <div id="sim-status-bmetro" class="sim-status"></div>
       <div id="last-update-bmetro" class="last-update"></div>
@@ -2842,11 +2843,15 @@ function matchHTML(m, roundLabel){
 // backend. A diferencia de matchHTML() (partido único), acá no hay goles
 // por fila individual: se muestra el resultado agregado en "detalle".
 function seriesHTML(m){
-  const xGana = m.campeon === m.equipo_x;
-  return `<div class="match" data-local="${m.equipo_x}" data-visitante="${m.equipo_y}" data-avanza="${m.campeon || ''}">
-    <div class="row ${xGana ? 'winner':''}"><span>${escudoHTML(m.equipo_x)}${m.equipo_x}</span></div>
-    <div class="row ${!xGana ? 'winner':''}"><span>${escudoHTML(m.equipo_y)}${m.equipo_y}</span></div>
-    <div class="leg-detail">${m.detalle}</div>
+  const equipoX = m.equipo_x ?? m.local;
+  const equipoY = m.equipo_y ?? m.visitante;
+  const campeon = m.campeon ?? m.avanza;
+  const detalle = m.detalle ?? `${m.golesLocal ?? m.goles_x ?? ''}-${m.golesVisitante ?? m.goles_y ?? ''}`;
+  const xGana = campeon === equipoX;
+  return `<div class="match" data-local="${equipoX}" data-visitante="${equipoY}" data-avanza="${campeon || ''}">
+    <div class="row ${xGana ? 'winner':''}"><span>${escudoHTML(equipoX)}${equipoX}</span></div>
+    <div class="row ${!xGana ? 'winner':''}"><span>${escudoHTML(equipoY)}${equipoY}</span></div>
+    <div class="leg-detail">${detalle}</div>
   </div>`;
 }
 
@@ -4125,6 +4130,57 @@ async function correrSimulacionBMetro(){
 }
 
 document.getElementById('btn-simular-bmetro').addEventListener('click', correrSimulacionBMetro);
+
+async function correrActualizacionBMetro(){
+  const btn = document.getElementById('btn-actualizar-bmetro');
+  const status = document.getElementById('sim-status-bmetro');
+  const lastUpdate = document.getElementById('last-update-bmetro');
+  const input = document.getElementById('sim-count-bmetro');
+  const nSims = leerNSimsBMetro();
+
+  if (!beginApiAction(status)) return;
+
+  btn.disabled = true;
+  input.disabled = true;
+  btn.textContent = "Buscando resultados…";
+  status.classList.remove('error', 'ok');
+  status.textContent = "Consultando Promiedos y re-simulando si hay partidos nuevos — puede tardar 1-2 minutos.";
+
+  try {
+    const respuesta = await apiFetch(apiUrl("/api/actualizar-bmetro"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ n_sims: Number(nSims) })
+    });
+    const cuerpo = await respuesta.json().catch(() => ({}));
+    if (!respuesta.ok) throw apiResponseError(respuesta, cuerpo);
+
+    if (cuerpo.actualizado) {
+      DATA_BMETRO = cuerpo.datos;
+      iniciarBMetro();
+      status.classList.add('ok');
+      status.textContent = `✓ Se cargaron ${cuerpo.cargados.length} partido(s) nuevo(s) y se re-simuló.`;
+    } else {
+      status.classList.add('ok');
+      status.textContent = "✓ Consultado — no había partidos nuevos jugados todavía.";
+    }
+
+    if (cuerpo.sin_matchear && cuerpo.sin_matchear.length){
+      status.textContent += ` (${cuerpo.sin_matchear.length} partido(s) de Promiedos no se pudieron identificar — revisar mapeo de nombres)`;
+    }
+
+    lastUpdate.textContent = "Última consulta a Promiedos: " + new Date().toLocaleString('es-AR');
+  } catch (e) {
+    setApiErrorStatus(status, "No se pudo actualizar", e);
+  } finally {
+    btn.disabled = false;
+    input.disabled = false;
+    btn.textContent = "⟳ Actualizar desde Promiedos";
+    endApiAction();
+  }
+}
+
+document.getElementById('btn-actualizar-bmetro').addEventListener('click', correrActualizacionBMetro);
 
 function renderTablaBMetro(){
   const body = document.getElementById('tabla-bmetro-body');

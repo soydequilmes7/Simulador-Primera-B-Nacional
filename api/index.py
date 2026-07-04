@@ -37,6 +37,8 @@ from actualizar_resultados import actualizar
 from actualizar_resultados_lpf import actualizar as actualizar_lpf
 from actualizar_resultados_copa import actualizar as actualizar_copa
 from main_copa import correr_simulacion_copa
+from actualizar_resultados_bmetro import actualizar as actualizar_bmetro
+from main_bmetro import correr_simulacion_bmetro
 from actualizar_resultados_federal import actualizar as actualizar_federal
 from main_federal import correr_simulacion_federal
 
@@ -605,6 +607,27 @@ def simular_campeon_bmetro_endpoint(body: SimularCampeonBody):
         return JSONResponse(status_code=500, content={"error": str(e)})
     finally:
         _lock_bmetro.release_read()
+
+
+@app.post("/api/actualizar-bmetro")
+def actualizar_bmetro_endpoint(body: SimularBmetroBody = SimularBmetroBody()):
+    """Scrapea Promiedos (B Metropolitana) y, si hay partidos nuevos,
+    actualiza fixture/resultados/tabla y re-simula."""
+    n_sims = _clamp_n_sims(body.n_sims)
+
+    ocupado = _adquirir_escritura(
+        _lock_bmetro,
+        "Hay simulaciones o una actualización de B Metropolitana en curso. Esperá unos segundos y probá de nuevo.",
+    )
+    if ocupado:
+        return ocupado
+    try:
+        resultado = actualizar_bmetro(n_sims=n_sims, correr_simulacion_fn=correr_simulacion_bmetro, imprimir=False)
+        return resultado
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
+    finally:
+        _lock_bmetro.release_write()
 
 
 @app.post("/api/simular-federal")
