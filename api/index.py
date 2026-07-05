@@ -41,6 +41,8 @@ from actualizar_resultados_bmetro import actualizar as actualizar_bmetro
 from main_bmetro import correr_simulacion_bmetro
 from actualizar_resultados_federal import actualizar as actualizar_federal
 from main_federal import correr_simulacion_federal
+from actualizar_resultados_primerac import actualizar as actualizar_primerac
+from main_primerac import correr_simulacion as correr_simulacion_primerac
 
 # Archivos de código fuente que necesita el simulador corriendo en el
 # navegador (Pyodide/Web Worker, ver public/js/sim-worker.js). Se sirven
@@ -61,6 +63,8 @@ PYSIM_SOURCE_FILES = [
     "modelos/estadisticas_federal.py",
     "modelos/motor_vectorizado.py",
     "fixture_generator.py",
+    "main_primerac.py",
+    "modelos/estadisticas_primerac.py",
 ]
 # El código fuente no cambia mientras el proceso está corriendo, así que se
 # lee y cachea una sola vez.
@@ -154,6 +158,7 @@ _lock_lpf = ReadWriteLock()
 _lock_copa = ReadWriteLock()
 _lock_bmetro = ReadWriteLock()
 _lock_federal = ReadWriteLock()
+_lock_primerac = ReadWriteLock()
 
 
 class SimularBody(BaseModel):
@@ -174,6 +179,10 @@ class SimularBmetroBody(BaseModel):
 
 class SimularFederalBody(BaseModel):
     n_sims: int = 500
+
+
+class SimularPrimeraCBody(BaseModel):
+    n_sims: int = 1000
 
 
 class SimularCampeonBody(BaseModel):
@@ -365,6 +374,33 @@ def datos_federal():
         return JSONResponse(status_code=500, content={"error": str(e)})
     finally:
         _lock_federal.release_read()
+
+
+@app.get("/api/datos-primerac")
+def datos_primerac():
+    """Igual que /api/datos-federal pero con los CSV de Primera C
+    (tabla con las 2 zonas, fixture, resultados), para que el simulador
+    en el navegador (Web Worker con Pyodide) arranque con los mismos
+    datos que usaría el backend."""
+    ocupado = _adquirir_lectura(
+        _lock_primerac,
+        "Hay una actualización de Primera C en curso. Esperá unos segundos y probá de nuevo.",
+    )
+    if ocupado:
+        return ocupado
+    try:
+        datos_dir = rutas.datos_dir()
+        archivos = {}
+        for nombre in ["tabla_primerac.csv", "fixture_primerac.csv", "resultados_primerac.csv"]:
+            ruta = datos_dir / nombre
+            if not ruta.exists():
+                return JSONResponse(status_code=500, content={"error": f"Falta {nombre} en datos/"})
+            archivos[nombre] = ruta.read_text(encoding="utf-8")
+        return {"files": archivos}
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
+    finally:
+        _lock_primerac.release_read()
 
 
 @app.get("/")
@@ -697,6 +733,75 @@ def simular_campeon_federal_endpoint(body: SimularCampeonBody):
         return JSONResponse(status_code=500, content={"error": str(e)})
     finally:
         _lock_federal.release_read()
+
+
+@app.post("/api/simular-primerac")
+def simular_primerac_endpoint(body: SimularPrimeraCBody = SimularPrimeraCBody()):
+    """Corre la simulación completa de Primera C (fase de zonas + Final
+    por el 1er ascenso + Torneo Reducido) + Monte Carlo, y devuelve el
+    resultado directo."""
+    n_sims = _clamp_n_sims(body.n_sims)
+
+    ocupado = _adquirir_lectura(
+        _lock_primerac,
+        "Hay una actualización de Primera C en curso. Esperá unos segundos y probá de nuevo.",
+    )
+    if ocupado:
+        return ocupado
+    try:
+        datos = pysim_dispatch.simular_primerac(n_sims)
+        return datos
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
+    finally:
+        _lock_primerac.release_read()
+
+
+@app.post("/api/actualizar-primerac")
+def actualizar_primerac_endpoint(body: SimularPrimeraCBody = SimularPrimeraCBody()):
+    """Scrapea Promiedos (Primera C) y, si hay partidos nuevos, actualiza
+    fixture/resultados/tabla y re-simula."""
+    n_sims = _clamp_n_sims(body.n_sims)
+
+    ocupado = _adquirir_escritura(
+        _lock_primerac,
+        "Hay simulaciones o una actualización de Primera C en curso. Esperá unos segundos y probá de nuevo.",
+    )
+    if ocupado:
+        return ocupado
+    try:
+        resultado = actualizar_primerac(n_sims=n_sims, correr_simulacion_fn=correr_simulacion_primerac, imprimir=False)
+        return resultado
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
+    finally:
+        _lock_primerac.release_write()
+
+
+@app.post("/api/simular-campeon-primerac")
+def simular_campeon_primerac_endpoint(body: SimularCampeonBody):
+    """Corre simular_hasta_campeon() (Primera C) del equipo pedido y
+    devuelve esa corrida completa (vía Final directa o Reducido)."""
+    equipo_objetivo = body.equipo.strip()
+    if not equipo_objetivo:
+        return JSONResponse(status_code=400, content={"error": "Falta indicar el equipo"})
+
+    max_intentos = _clamp_max_intentos(body.max_intentos)
+
+    ocupado = _adquirir_lectura(
+        _lock_primerac,
+        "Hay una actualización de Primera C en curso. Esperá unos segundos y probá de nuevo.",
+    )
+    if ocupado:
+        return ocupado
+    try:
+        return pysim_dispatch.simular_campeon_primerac(equipo_objetivo, max_intentos)
+    except ValueError as e:
+        return JSONResponse(status_code=400, content={"error": str(e)})
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
+    finally:
+        _lock_primerac.release_read()
 
 
 @app.post("/api/actualizar")
