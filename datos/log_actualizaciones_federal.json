@@ -1790,5 +1790,3324 @@
       }
     ],
     "simulacion_corrida": false
+  },
+  {
+    "timestamp": "2026-07-05T13:03:56",
+    "partidos_cargados": [],
+    "sin_matchear": [
+      {
+        "jornada": 1,
+        "equipo_local": "Sportivo Belgrano",
+        "equipo_visitante": "9 De Julio Rafaela",
+        "goles_local": 3,
+        "goles_visitante": 0,
+        "zona": "1",
+        "goleadores_local": {
+          "German Lesman": 1,
+          "Agustin Pastorelli": 1,
+          "Juan Bono": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 1,
+        "equipo_local": "Sarmiento de Resistencia",
+        "equipo_visitante": "Juventud Antoniana",
+        "goles_local": 1,
+        "goles_visitante": 3,
+        "zona": "2",
+        "goleadores_local": {
+          "Max Pared": 1
+        },
+        "goleadores_visitante": {
+          "Matias Vicedo": 1,
+          "Pablo Palacios": 1,
+          "Martin Esparza": 1
+        }
+      },
+      {
+        "jornada": 1,
+        "equipo_local": "Atenas Río Cuarto",
+        "equipo_visitante": "Cipolletti",
+        "goles_local": 3,
+        "goles_visitante": 1,
+        "zona": "3",
+        "goleadores_local": {
+          "Paulo Oballes": 1,
+          "A. Mainero": 1,
+          "Jonathan Barrera": 1
+        },
+        "goleadores_visitante": {
+          "Federico Acevedo": 1
+        }
+      },
+      {
+        "jornada": 1,
+        "equipo_local": "San Martín de Mendoza",
+        "equipo_visitante": "Juventud Unida San Luis",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "3",
+        "goleadores_local": {},
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 1,
+        "equipo_local": "Costa Brava (Gral Pico)",
+        "equipo_visitante": "Fundación Amigos por el Deporte",
+        "goles_local": 3,
+        "goles_visitante": 0,
+        "zona": "3",
+        "goleadores_local": {
+          "Joaquin Garoni": 1,
+          "Mariano Rivadeneira": 1,
+          "Jeronimo Gutierrez": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 1,
+        "equipo_local": "Sol de Mayo",
+        "equipo_visitante": "Germinal",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "4",
+        "goleadores_local": {
+          "Hector Morales": 1
+        },
+        "goleadores_visitante": {
+          "Nicolas Macaroff": 1
+        }
+      },
+      {
+        "jornada": 1,
+        "equipo_local": "El Linqueño",
+        "equipo_visitante": "Sportivo Las Parejas",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "1",
+        "goleadores_local": {
+          "M. Pavón Zárate": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 1,
+        "equipo_local": "Independiente Chivilcoy",
+        "equipo_visitante": "Atlético Escobar",
+        "goles_local": 2,
+        "goles_visitante": 1,
+        "zona": "1",
+        "goleadores_local": {
+          "L. Retamozo": 1,
+          "B. Benítez": 1
+        },
+        "goleadores_visitante": {
+          "Lucas Núñez": 1
+        }
+      },
+      {
+        "jornada": 1,
+        "equipo_local": "Defensores Pto. Vilelas",
+        "equipo_visitante": "Gimnasia de Concepción",
+        "goles_local": 2,
+        "goles_visitante": 1,
+        "zona": "2",
+        "goleadores_local": {
+          "Enzo Luna": 1,
+          "Lautaro Principiano": 1
+        },
+        "goleadores_visitante": {
+          "Nicolas Gomez": 1
+        }
+      },
+      {
+        "jornada": 1,
+        "equipo_local": "Kimberley Mar Del Plata",
+        "equipo_visitante": "Villa Mitre",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "4",
+        "goleadores_local": {
+          "Rodrigo Ríos": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 1,
+        "equipo_local": "Guillermo Brown",
+        "equipo_visitante": "Santamarina Tandil",
+        "goles_local": 2,
+        "goles_visitante": 2,
+        "zona": "4",
+        "goleadores_local": {
+          "Emanuel Moreno": 1,
+          "Ignacio Zappulla": 1
+        },
+        "goleadores_visitante": {
+          "Nicolás Franco": 1,
+          "Luciano Domínguez": 1
+        }
+      },
+      {
+        "jornada": 1,
+        "equipo_local": "Olimpo",
+        "equipo_visitante": "Alvarado",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "4",
+        "goleadores_local": {
+          "Martin Ferreyra": 1,
+          "Diego Ramírez": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 1,
+        "equipo_local": "Tucumán Central",
+        "equipo_visitante": "Bartolomé Mitre (Posadas)",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "2",
+        "goleadores_local": {
+          "B. Collante": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 1,
+        "equipo_local": "San Martín de Formosa",
+        "equipo_visitante": "Defensores Pto. Vilelas",
+        "goles_local": 2,
+        "goles_visitante": 1,
+        "zona": "2",
+        "goleadores_local": {
+          "L. Ceratto": 1,
+          "Agustin Griego": 1
+        },
+        "goleadores_visitante": {
+          "G. Ríos": 1
+        }
+      },
+      {
+        "jornada": 1,
+        "equipo_local": "Huracán Las Heras",
+        "equipo_visitante": "Argentino Monte Maíz",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "3",
+        "goleadores_local": {},
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 1,
+        "equipo_local": "Boca Unidos de Corrientes",
+        "equipo_visitante": "Sarmiento De La Banda",
+        "goles_local": 3,
+        "goles_visitante": 1,
+        "zona": "2",
+        "goleadores_local": {
+          "Lautaro Ludueña": 1,
+          "Cristian Gabriel Chavez": 1,
+          "Leandro Gomez": 1
+        },
+        "goleadores_visitante": {
+          "Pablo Lopez": 1
+        }
+      },
+      {
+        "jornada": 1,
+        "equipo_local": "Douglas Haig",
+        "equipo_visitante": "CSCyD Gimnasia y Esgrima (Chivilcoy)",
+        "goles_local": 2,
+        "goles_visitante": 1,
+        "zona": "1",
+        "goleadores_local": {
+          "Jonathan Palacio": 1,
+          "Lucas López": 1
+        },
+        "goleadores_visitante": {
+          "Marcos Salvaggio": 1
+        }
+      },
+      {
+        "jornada": 2,
+        "equipo_local": "Juventud Antoniana",
+        "equipo_visitante": "Sol De América",
+        "goles_local": 2,
+        "goles_visitante": 1,
+        "zona": "2",
+        "goleadores_local": {
+          "P. Palacios Alvarenga": 1,
+          "Pedro Muné": 1
+        },
+        "goleadores_visitante": {
+          "B. Di Martino": 1
+        }
+      },
+      {
+        "jornada": 2,
+        "equipo_local": "Fundación Amigos por el Deporte",
+        "equipo_visitante": "Deportivo Rincón",
+        "goles_local": 2,
+        "goles_visitante": 2,
+        "zona": "3",
+        "goleadores_local": {
+          "Juan Albertinazzi": 1,
+          "Nahuel Iribarren": 1
+        },
+        "goleadores_visitante": {
+          "Matías Domínguez": 1,
+          "Juan Albertinazzi": 1
+        }
+      },
+      {
+        "jornada": 2,
+        "equipo_local": "Defensores Pto. Vilelas",
+        "equipo_visitante": "Tucumán Central",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "2",
+        "goleadores_local": {
+          "G. Ríos": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 2,
+        "equipo_local": "Juventud Unida San Luis",
+        "equipo_visitante": "Huracán Las Heras",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "3",
+        "goleadores_local": {
+          "E. Sosa": 1,
+          "Lautaro Lucero": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 2,
+        "equipo_local": "Santamarina Tandil",
+        "equipo_visitante": "Sol de Mayo",
+        "goles_local": 0,
+        "goles_visitante": 2,
+        "zona": "4",
+        "goleadores_local": {},
+        "goleadores_visitante": {
+          "Ignacio Lucero": 1,
+          "S. Jara": 1
+        }
+      },
+      {
+        "jornada": 2,
+        "equipo_local": "9 De Julio Rafaela",
+        "equipo_visitante": "Independiente Chivilcoy",
+        "goles_local": 3,
+        "goles_visitante": 2,
+        "zona": "1",
+        "goleadores_local": {
+          "Laureano Troncoso": 1,
+          "Nicolas Del Sole": 1,
+          "T. Bonilla": 1
+        },
+        "goleadores_visitante": {
+          "F. Aman": 1,
+          "B. Benítez": 1
+        }
+      },
+      {
+        "jornada": 2,
+        "equipo_local": "Germinal",
+        "equipo_visitante": "Kimberley Mar Del Plata",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "4",
+        "goleadores_local": {},
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 2,
+        "equipo_local": "CSCyD Gimnasia y Esgrima (Chivilcoy)",
+        "equipo_visitante": "Sportivo Belgrano",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "1",
+        "goleadores_local": {},
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 2,
+        "equipo_local": "Alvarado",
+        "equipo_visitante": "Guillermo Brown",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "4",
+        "goleadores_local": {
+          "Facundo Centurion": 1,
+          "Tomás Fernández": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 2,
+        "equipo_local": "Cipolletti",
+        "equipo_visitante": "San Martín de Mendoza",
+        "goles_local": 3,
+        "goles_visitante": 0,
+        "zona": "3",
+        "goleadores_local": {
+          "Federico Acevedo": 1,
+          "Martin Peralta": 1,
+          "Andres Almiron": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 2,
+        "equipo_local": "Defensores Pto. Vilelas",
+        "equipo_visitante": "El Linqueño",
+        "goles_local": 3,
+        "goles_visitante": 1,
+        "zona": "2",
+        "goleadores_local": {
+          "Tomás Bacas": 1,
+          "Enzo Luna": 1,
+          "Mateo Tuset": 1
+        },
+        "goleadores_visitante": {
+          "Facundo Meli": 1
+        }
+      },
+      {
+        "jornada": 2,
+        "equipo_local": "Villa Mitre",
+        "equipo_visitante": "Círculo Deportivo",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "4",
+        "goleadores_local": {
+          "Pablo Mujica": 1,
+          "M. Escobar": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 2,
+        "equipo_local": "Argentino Monte Maíz",
+        "equipo_visitante": "Costa Brava (Gral Pico)",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "3",
+        "goleadores_local": {},
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 2,
+        "equipo_local": "Gimnasia de Concepción",
+        "equipo_visitante": "Douglas Haig",
+        "goles_local": 1,
+        "goles_visitante": 3,
+        "zona": "1",
+        "goleadores_local": {
+          "J. Benítez": 1
+        },
+        "goleadores_visitante": {
+          "Lucas López": 1,
+          "Guillermo Pereira": 1,
+          "J. Castellano": 1
+        }
+      },
+      {
+        "jornada": 2,
+        "equipo_local": "Bartolomé Mitre (Posadas)",
+        "equipo_visitante": "Boca Unidos de Corrientes",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "2",
+        "goleadores_local": {
+          "Matias Espindola": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 2,
+        "equipo_local": "Sarmiento De La Banda",
+        "equipo_visitante": "Sarmiento de Resistencia",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "2",
+        "goleadores_local": {
+          "Carlos Nuñez": 1
+        },
+        "goleadores_visitante": {
+          "Emiliano Bogado": 1
+        }
+      },
+      {
+        "jornada": 2,
+        "equipo_local": "Atlético Escobar",
+        "equipo_visitante": "Sportivo Las Parejas",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "1",
+        "goleadores_local": {
+          "Nicolás Cupolo": 1
+        },
+        "goleadores_visitante": {
+          "Nicolás Cupolo": 1
+        }
+      },
+      {
+        "jornada": 3,
+        "equipo_local": "Sol de Mayo",
+        "equipo_visitante": "Alvarado",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "4",
+        "goleadores_local": {},
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 3,
+        "equipo_local": "Círculo Deportivo",
+        "equipo_visitante": "Germinal",
+        "goles_local": 2,
+        "goles_visitante": 1,
+        "zona": "4",
+        "goleadores_local": {
+          "Quimey Marín": 1,
+          "Imanol Iriberri": 1
+        },
+        "goleadores_visitante": {
+          "Nicolás Rios": 1
+        }
+      },
+      {
+        "jornada": 3,
+        "equipo_local": "Boca Unidos de Corrientes",
+        "equipo_visitante": "Defensores Pto. Vilelas",
+        "goles_local": 2,
+        "goles_visitante": 4,
+        "zona": "2",
+        "goleadores_local": {
+          "Claudio Alonso": 1,
+          "Martin Ojeda": 1
+        },
+        "goleadores_visitante": {
+          "Gustavo Carballo": 1,
+          "G. Cañete": 2,
+          "J. Molina": 1
+        }
+      },
+      {
+        "jornada": 3,
+        "equipo_local": "Costa Brava (Gral Pico)",
+        "equipo_visitante": "Juventud Unida San Luis",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "3",
+        "goleadores_local": {
+          "Tomás Garro": 1
+        },
+        "goleadores_visitante": {
+          "Lautaro Lucero": 1
+        }
+      },
+      {
+        "jornada": 3,
+        "equipo_local": "Kimberley Mar Del Plata",
+        "equipo_visitante": "Santamarina Tandil",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "4",
+        "goleadores_local": {},
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 3,
+        "equipo_local": "Guillermo Brown",
+        "equipo_visitante": "Olimpo",
+        "goles_local": 0,
+        "goles_visitante": 2,
+        "zona": "4",
+        "goleadores_local": {},
+        "goleadores_visitante": {
+          "Braian Guille": 1,
+          "Enzo Coacci": 1
+        }
+      },
+      {
+        "jornada": 3,
+        "equipo_local": "El Linqueño",
+        "equipo_visitante": "Atlético Escobar",
+        "goles_local": 2,
+        "goles_visitante": 1,
+        "zona": "1",
+        "goleadores_local": {
+          "Nelly Córdoba": 1,
+          "L. Núñez": 1
+        },
+        "goleadores_visitante": {
+          "N. Luna": 1
+        }
+      },
+      {
+        "jornada": 3,
+        "equipo_local": "Sportivo Las Parejas",
+        "equipo_visitante": "9 De Julio Rafaela",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "1",
+        "goleadores_local": {
+          "Leonardo Rolon": 1
+        },
+        "goleadores_visitante": {
+          "Martino Uriona": 1
+        }
+      },
+      {
+        "jornada": 3,
+        "equipo_local": "Independiente Chivilcoy",
+        "equipo_visitante": "CSCyD Gimnasia y Esgrima (Chivilcoy)",
+        "goles_local": 3,
+        "goles_visitante": 0,
+        "zona": "1",
+        "goleadores_local": {
+          "L. Retamozo": 1,
+          "T. Hernández": 2
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 3,
+        "equipo_local": "Tucumán Central",
+        "equipo_visitante": "San Martín de Formosa",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "2",
+        "goleadores_local": {
+          "B. Ruíz Rodríguez": 1,
+          "B. Collante": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 3,
+        "equipo_local": "Deportivo Rincón",
+        "equipo_visitante": "Argentino Monte Maíz",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "3",
+        "goleadores_local": {
+          "Cristian Estigarribia": 1,
+          "Facundo Miguel": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 3,
+        "equipo_local": "Huracán Las Heras",
+        "equipo_visitante": "Cipolletti",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "3",
+        "goleadores_local": {
+          "Facundo Romero": 1
+        },
+        "goleadores_visitante": {
+          "Martin Peralta": 1
+        }
+      },
+      {
+        "jornada": 3,
+        "equipo_local": "Sol De América",
+        "equipo_visitante": "Sarmiento De La Banda",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "2",
+        "goleadores_local": {
+          "José Cabañas": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 3,
+        "equipo_local": "San Martín de Mendoza",
+        "equipo_visitante": "Atenas Río Cuarto",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "3",
+        "goleadores_local": {
+          "Andrés Ferro": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 3,
+        "equipo_local": "Douglas Haig",
+        "equipo_visitante": "Defensores Pto. Vilelas",
+        "goles_local": 3,
+        "goles_visitante": 2,
+        "zona": "1",
+        "goleadores_local": {
+          "Guillermo Pereira": 1,
+          "Jonathan Palacio": 1,
+          "S. Fiorito": 1
+        },
+        "goleadores_visitante": {
+          "Enzo Luna": 2
+        }
+      },
+      {
+        "jornada": 3,
+        "equipo_local": "Sarmiento de Resistencia",
+        "equipo_visitante": "Bartolomé Mitre (Posadas)",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "2",
+        "goleadores_local": {},
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 3,
+        "equipo_local": "Sportivo Belgrano",
+        "equipo_visitante": "Gimnasia de Concepción",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "1",
+        "goleadores_local": {},
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 4,
+        "equipo_local": "Alvarado",
+        "equipo_visitante": "Kimberley Mar Del Plata",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "4",
+        "goleadores_local": {},
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 4,
+        "equipo_local": "Bartolomé Mitre (Posadas)",
+        "equipo_visitante": "Sol De América",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "2",
+        "goleadores_local": {},
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 4,
+        "equipo_local": "Santamarina Tandil",
+        "equipo_visitante": "Círculo Deportivo",
+        "goles_local": 4,
+        "goles_visitante": 0,
+        "zona": "4",
+        "goleadores_local": {
+          "Juan Mateo Ijurco": 1,
+          "Diego Sosa": 2,
+          "N. Franco": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 4,
+        "equipo_local": "Gimnasia de Concepción",
+        "equipo_visitante": "Independiente Chivilcoy",
+        "goles_local": 0,
+        "goles_visitante": 1,
+        "zona": "1",
+        "goleadores_local": {},
+        "goleadores_visitante": {
+          "L. Retamozo": 1
+        }
+      },
+      {
+        "jornada": 4,
+        "equipo_local": "Germinal",
+        "equipo_visitante": "Villa Mitre",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "4",
+        "goleadores_local": {
+          "Thomas Olivieri": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 4,
+        "equipo_local": "Olimpo",
+        "equipo_visitante": "Sol de Mayo",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "4",
+        "goleadores_local": {
+          "Cristian Amarilla": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 4,
+        "equipo_local": "Juventud Unida San Luis",
+        "equipo_visitante": "Deportivo Rincón",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "3",
+        "goleadores_local": {},
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 4,
+        "equipo_local": "Cipolletti",
+        "equipo_visitante": "Costa Brava (Gral Pico)",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "3",
+        "goleadores_local": {
+          "Federico Acevedo": 1
+        },
+        "goleadores_visitante": {
+          "Jeronimo Gutierrez": 1
+        }
+      },
+      {
+        "jornada": 4,
+        "equipo_local": "Defensores Pto. Vilelas",
+        "equipo_visitante": "Sportivo Belgrano",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "2",
+        "goleadores_local": {
+          "N. Marnini": 1
+        },
+        "goleadores_visitante": {
+          "E. Mercado": 1
+        }
+      },
+      {
+        "jornada": 4,
+        "equipo_local": "CSCyD Gimnasia y Esgrima (Chivilcoy)",
+        "equipo_visitante": "Sportivo Las Parejas",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "1",
+        "goleadores_local": {
+          "Marcos Salvaggio": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 4,
+        "equipo_local": "Argentino Monte Maíz",
+        "equipo_visitante": "Fundación Amigos por el Deporte",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "3",
+        "goleadores_local": {},
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 4,
+        "equipo_local": "Douglas Haig",
+        "equipo_visitante": "El Linqueño",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "1",
+        "goleadores_local": {
+          "Jonathan Palacio": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 4,
+        "equipo_local": "Atenas Río Cuarto",
+        "equipo_visitante": "Huracán Las Heras",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "3",
+        "goleadores_local": {},
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 4,
+        "equipo_local": "9 De Julio Rafaela",
+        "equipo_visitante": "Atlético Escobar",
+        "goles_local": 4,
+        "goles_visitante": 1,
+        "zona": "1",
+        "goleadores_local": {
+          "Laureano Troncoso": 1,
+          "Nicolas Del Sole": 1,
+          "F. García": 1,
+          "Tomás Bonilla": 1
+        },
+        "goleadores_visitante": {
+          "Martin Sosa": 1
+        }
+      },
+      {
+        "jornada": 4,
+        "equipo_local": "San Martín de Formosa",
+        "equipo_visitante": "Boca Unidos de Corrientes",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "2",
+        "goleadores_local": {
+          "L. Ceratto": 1
+        },
+        "goleadores_visitante": {
+          "Martin Ojeda": 1
+        }
+      },
+      {
+        "jornada": 4,
+        "equipo_local": "Sarmiento De La Banda",
+        "equipo_visitante": "Juventud Antoniana",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "2",
+        "goleadores_local": {},
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 4,
+        "equipo_local": "Defensores Pto. Vilelas",
+        "equipo_visitante": "Sarmiento de Resistencia",
+        "goles_local": 2,
+        "goles_visitante": 2,
+        "zona": "2",
+        "goleadores_local": {
+          "Joaquín Acevedo": 1,
+          "G. Cañete": 1
+        },
+        "goleadores_visitante": {
+          "Pedro Martínez": 1,
+          "C. Almirón": 1
+        }
+      },
+      {
+        "jornada": 5,
+        "equipo_local": "Atlético Escobar",
+        "equipo_visitante": "CSCyD Gimnasia y Esgrima (Chivilcoy)",
+        "goles_local": 0,
+        "goles_visitante": 2,
+        "zona": "1",
+        "goleadores_local": {},
+        "goleadores_visitante": {
+          "Brian Visser": 1,
+          "Marcos Salvaggio": 1
+        }
+      },
+      {
+        "jornada": 5,
+        "equipo_local": "Sportivo Belgrano",
+        "equipo_visitante": "Douglas Haig",
+        "goles_local": 0,
+        "goles_visitante": 1,
+        "zona": "1",
+        "goleadores_local": {},
+        "goleadores_visitante": {
+          "Marcos Giménez": 1
+        }
+      },
+      {
+        "jornada": 5,
+        "equipo_local": "Juventud Antoniana",
+        "equipo_visitante": "Bartolomé Mitre (Posadas)",
+        "goles_local": 1,
+        "goles_visitante": 2,
+        "zona": "2",
+        "goleadores_local": {
+          "Pedro Muné": 1
+        },
+        "goleadores_visitante": {
+          "Rodrigo Cerdán": 1,
+          "Lucciano Arraya": 1
+        }
+      },
+      {
+        "jornada": 5,
+        "equipo_local": "Círculo Deportivo",
+        "equipo_visitante": "Alvarado",
+        "goles_local": 0,
+        "goles_visitante": 1,
+        "zona": "4",
+        "goleadores_local": {},
+        "goleadores_visitante": {
+          "Tomás Fernández": 1
+        }
+      },
+      {
+        "jornada": 5,
+        "equipo_local": "Independiente Chivilcoy",
+        "equipo_visitante": "Defensores Pto. Vilelas",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "1",
+        "goleadores_local": {
+          "F. Aman": 1
+        },
+        "goleadores_visitante": {
+          "Federico Gay": 1
+        }
+      },
+      {
+        "jornada": 5,
+        "equipo_local": "Kimberley Mar Del Plata",
+        "equipo_visitante": "Olimpo",
+        "goles_local": 0,
+        "goles_visitante": 1,
+        "zona": "4",
+        "goleadores_local": {},
+        "goleadores_visitante": {
+          "Cristian Ibarra": 1
+        }
+      },
+      {
+        "jornada": 5,
+        "equipo_local": "Sarmiento de Resistencia",
+        "equipo_visitante": "San Martín de Formosa",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "2",
+        "goleadores_local": {
+          "Maximiliano Ibáñez": 1
+        },
+        "goleadores_visitante": {
+          "R. Ledesma": 1
+        }
+      },
+      {
+        "jornada": 5,
+        "equipo_local": "Deportivo Rincón",
+        "equipo_visitante": "Cipolletti",
+        "goles_local": 1,
+        "goles_visitante": 2,
+        "zona": "3",
+        "goleadores_local": {
+          "Cristian Canga": 1
+        },
+        "goleadores_visitante": {
+          "Maximiliano López": 2
+        }
+      },
+      {
+        "jornada": 5,
+        "equipo_local": "Sol De América",
+        "equipo_visitante": "Defensores Pto. Vilelas",
+        "goles_local": 2,
+        "goles_visitante": 1,
+        "zona": "2",
+        "goleadores_local": {
+          "B. Di Martino": 1,
+          "Mariano Mendoza": 1
+        },
+        "goleadores_visitante": {
+          "R. Montenegro": 1
+        }
+      },
+      {
+        "jornada": 5,
+        "equipo_local": "Sol de Mayo",
+        "equipo_visitante": "Guillermo Brown",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "4",
+        "goleadores_local": {
+          "Santiago Jara": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 5,
+        "equipo_local": "Boca Unidos de Corrientes",
+        "equipo_visitante": "Tucumán Central",
+        "goles_local": 3,
+        "goles_visitante": 1,
+        "zona": "2",
+        "goleadores_local": {
+          "L. Mendoza": 1,
+          "Lúcio Velazco": 1,
+          "Leandro Gomez": 1
+        },
+        "goleadores_visitante": {
+          "Aaron Smith": 1
+        }
+      },
+      {
+        "jornada": 5,
+        "equipo_local": "Fundación Amigos por el Deporte",
+        "equipo_visitante": "Juventud Unida San Luis",
+        "goles_local": 1,
+        "goles_visitante": 3,
+        "zona": "3",
+        "goleadores_local": {
+          "Gonzalo Klusener": 1
+        },
+        "goleadores_visitante": {
+          "Eber Garro": 1,
+          "Alexis González": 2
+        }
+      },
+      {
+        "jornada": 5,
+        "equipo_local": "Sportivo Las Parejas",
+        "equipo_visitante": "Gimnasia de Concepción",
+        "goles_local": 2,
+        "goles_visitante": 1,
+        "zona": "1",
+        "goleadores_local": {
+          "A. Schmidt": 1,
+          "Ignacio González": 1
+        },
+        "goleadores_visitante": {
+          "Augusto Sonzogni": 1
+        }
+      },
+      {
+        "jornada": 5,
+        "equipo_local": "El Linqueño",
+        "equipo_visitante": "9 De Julio Rafaela",
+        "goles_local": 0,
+        "goles_visitante": 3,
+        "zona": "1",
+        "goleadores_local": {},
+        "goleadores_visitante": {
+          "Laureano Troncoso": 2,
+          "Tomás Bonilla": 1
+        }
+      },
+      {
+        "jornada": 5,
+        "equipo_local": "Huracán Las Heras",
+        "equipo_visitante": "San Martín de Mendoza",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "3",
+        "goleadores_local": {
+          "Enzo Montenegro": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 5,
+        "equipo_local": "Villa Mitre",
+        "equipo_visitante": "Santamarina Tandil",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "4",
+        "goleadores_local": {},
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 5,
+        "equipo_local": "Costa Brava (Gral Pico)",
+        "equipo_visitante": "Atenas Río Cuarto",
+        "goles_local": 0,
+        "goles_visitante": 1,
+        "zona": "3",
+        "goleadores_local": {},
+        "goleadores_visitante": {
+          "Agustin Galeazzi": 1
+        }
+      },
+      {
+        "jornada": 6,
+        "equipo_local": "Tucumán Central",
+        "equipo_visitante": "Sarmiento de Resistencia",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "2",
+        "goleadores_local": {
+          "Daniel Gómez": 1
+        },
+        "goleadores_visitante": {
+          "L. Genolet": 1
+        }
+      },
+      {
+        "jornada": 6,
+        "equipo_local": "Defensores Pto. Vilelas",
+        "equipo_visitante": "Juventud Antoniana",
+        "goles_local": 0,
+        "goles_visitante": 1,
+        "zona": "2",
+        "goleadores_local": {},
+        "goleadores_visitante": {
+          "Jhon Palacios": 1
+        }
+      },
+      {
+        "jornada": 6,
+        "equipo_local": "Santamarina Tandil",
+        "equipo_visitante": "Germinal",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "4",
+        "goleadores_local": {},
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 6,
+        "equipo_local": "Alvarado",
+        "equipo_visitante": "Villa Mitre",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "4",
+        "goleadores_local": {
+          "Santiago Gutierrez": 1
+        },
+        "goleadores_visitante": {
+          "Jeronimo Almada": 1
+        }
+      },
+      {
+        "jornada": 6,
+        "equipo_local": "Cipolletti",
+        "equipo_visitante": "Fundación Amigos por el Deporte",
+        "goles_local": 2,
+        "goles_visitante": 1,
+        "zona": "3",
+        "goleadores_local": {
+          "Martin Peralta": 1,
+          "Federico Acevedo": 1
+        },
+        "goleadores_visitante": {
+          "Gonzalo Klusener": 1
+        }
+      },
+      {
+        "jornada": 6,
+        "equipo_local": "Juventud Unida San Luis",
+        "equipo_visitante": "Argentino Monte Maíz",
+        "goles_local": 1,
+        "goles_visitante": 2,
+        "zona": "3",
+        "goleadores_local": {
+          "Martino Dorato": 1
+        },
+        "goleadores_visitante": {
+          "Gabriel Sarmiento": 1,
+          "Ignacio Blangetti": 1
+        }
+      },
+      {
+        "jornada": 6,
+        "equipo_local": "Gimnasia de Concepción",
+        "equipo_visitante": "Atlético Escobar",
+        "goles_local": 1,
+        "goles_visitante": 2,
+        "zona": "1",
+        "goleadores_local": {
+          "Augusto Sonzogni": 1
+        },
+        "goleadores_visitante": {
+          "Jonathan Benitez": 1,
+          "N. Luna": 1
+        }
+      },
+      {
+        "jornada": 6,
+        "equipo_local": "Guillermo Brown",
+        "equipo_visitante": "Kimberley Mar Del Plata",
+        "goles_local": 3,
+        "goles_visitante": 4,
+        "zona": "4",
+        "goleadores_local": {
+          "Martin Rivero": 1,
+          "Emanuel Moreno": 1,
+          "Ignacio Zappulla": 1
+        },
+        "goleadores_visitante": {
+          "Santiago Castillo": 2,
+          "L. Iriarte": 2
+        }
+      },
+      {
+        "jornada": 6,
+        "equipo_local": "Douglas Haig",
+        "equipo_visitante": "Independiente Chivilcoy",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "1",
+        "goleadores_local": {
+          "Jonathan Palacio": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 6,
+        "equipo_local": "Defensores Pto. Vilelas",
+        "equipo_visitante": "Sportivo Las Parejas",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "2",
+        "goleadores_local": {
+          "Eloy Roige": 1,
+          "Enzo Luna": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 6,
+        "equipo_local": "CSCyD Gimnasia y Esgrima (Chivilcoy)",
+        "equipo_visitante": "9 De Julio Rafaela",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "1",
+        "goleadores_local": {
+          "Sebastián Marfort": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 6,
+        "equipo_local": "Sportivo Belgrano",
+        "equipo_visitante": "El Linqueño",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "1",
+        "goleadores_local": {
+          "Emanuel Mercado": 1
+        },
+        "goleadores_visitante": {
+          "M. Pavón Zárate": 1
+        }
+      },
+      {
+        "jornada": 6,
+        "equipo_local": "San Martín de Mendoza",
+        "equipo_visitante": "Costa Brava (Gral Pico)",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "3",
+        "goleadores_local": {},
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 6,
+        "equipo_local": "San Martín de Formosa",
+        "equipo_visitante": "Sol De América",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "2",
+        "goleadores_local": {
+          "Gervasio Nuñez": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 6,
+        "equipo_local": "Bartolomé Mitre (Posadas)",
+        "equipo_visitante": "Sarmiento De La Banda",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "2",
+        "goleadores_local": {},
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 6,
+        "equipo_local": "Atenas Río Cuarto",
+        "equipo_visitante": "Deportivo Rincón",
+        "goles_local": 3,
+        "goles_visitante": 1,
+        "zona": "3",
+        "goleadores_local": {
+          "Rafael Rios": 1,
+          "Alejo Mainero": 2
+        },
+        "goleadores_visitante": {
+          "Ezequiel Ávila": 1
+        }
+      },
+      {
+        "jornada": 6,
+        "equipo_local": "Olimpo",
+        "equipo_visitante": "Círculo Deportivo",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "4",
+        "goleadores_local": {
+          "Federico González": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 7,
+        "equipo_local": "Círculo Deportivo",
+        "equipo_visitante": "Guillermo Brown",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "4",
+        "goleadores_local": {
+          "Ciro Rius": 1
+        },
+        "goleadores_visitante": {
+          "Patricio Cucchi": 1
+        }
+      },
+      {
+        "jornada": 7,
+        "equipo_local": "Costa Brava (Gral Pico)",
+        "equipo_visitante": "Huracán Las Heras",
+        "goles_local": 1,
+        "goles_visitante": 2,
+        "zona": "3",
+        "goleadores_local": {
+          "Ezequiel Riera": 1
+        },
+        "goleadores_visitante": {
+          "Rodrigo Arciero": 1,
+          "Juan Bonet": 1
+        }
+      },
+      {
+        "jornada": 7,
+        "equipo_local": "Independiente Chivilcoy",
+        "equipo_visitante": "Sportivo Belgrano",
+        "goles_local": 0,
+        "goles_visitante": 3,
+        "zona": "1",
+        "goleadores_local": {},
+        "goleadores_visitante": {
+          "German Lesman": 1,
+          "Alfio Lehmann": 1,
+          "Emanuel Mercado": 1
+        }
+      },
+      {
+        "jornada": 7,
+        "equipo_local": "Kimberley Mar Del Plata",
+        "equipo_visitante": "Sol de Mayo",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "4",
+        "goleadores_local": {},
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 7,
+        "equipo_local": "Fundación Amigos por el Deporte",
+        "equipo_visitante": "Atenas Río Cuarto",
+        "goles_local": 4,
+        "goles_visitante": 0,
+        "zona": "3",
+        "goleadores_local": {
+          "F. Pérez": 1,
+          "Matias Navarro": 1,
+          "Gonzalo Klusener": 1,
+          "B. Cuello": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 7,
+        "equipo_local": "Deportivo Rincón",
+        "equipo_visitante": "San Martín de Mendoza",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "3",
+        "goleadores_local": {
+          "Rodrigo Herrera": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 7,
+        "equipo_local": "Atlético Escobar",
+        "equipo_visitante": "Defensores Pto. Vilelas",
+        "goles_local": 3,
+        "goles_visitante": 2,
+        "zona": "1",
+        "goleadores_local": {
+          "Tobias Portillo": 1,
+          "Ian Pezzani": 1,
+          "N. Luna": 1
+        },
+        "goleadores_visitante": {
+          "Jeremías Bertacín": 1,
+          "Alexandro Ponce": 1
+        }
+      },
+      {
+        "jornada": 7,
+        "equipo_local": "Germinal",
+        "equipo_visitante": "Alvarado",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "4",
+        "goleadores_local": {
+          "Gabriel Navarro": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 7,
+        "equipo_local": "Villa Mitre",
+        "equipo_visitante": "Olimpo",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "4",
+        "goleadores_local": {},
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 7,
+        "equipo_local": "Argentino Monte Maíz",
+        "equipo_visitante": "Cipolletti",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "3",
+        "goleadores_local": {
+          "Hugo Vera": 1,
+          "Ramiro Lasserre": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 7,
+        "equipo_local": "9 De Julio Rafaela",
+        "equipo_visitante": "Gimnasia de Concepción",
+        "goles_local": 4,
+        "goles_visitante": 1,
+        "zona": "1",
+        "goleadores_local": {
+          "Nicolas Del Sole": 1,
+          "Laureano Troncoso": 1,
+          "Maximiliano Solari": 1,
+          "F. García": 1
+        },
+        "goleadores_visitante": {
+          "Nicolás Germanier": 1
+        }
+      },
+      {
+        "jornada": 7,
+        "equipo_local": "El Linqueño",
+        "equipo_visitante": "CSCyD Gimnasia y Esgrima (Chivilcoy)",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "1",
+        "goleadores_local": {
+          "Benjamín González": 1
+        },
+        "goleadores_visitante": {
+          "Ramiro Medina": 1
+        }
+      },
+      {
+        "jornada": 7,
+        "equipo_local": "Sportivo Las Parejas",
+        "equipo_visitante": "Douglas Haig",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "1",
+        "goleadores_local": {},
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 7,
+        "equipo_local": "Sarmiento de Resistencia",
+        "equipo_visitante": "Boca Unidos de Corrientes",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "2",
+        "goleadores_local": {
+          "Hernan Gonzalez": 1
+        },
+        "goleadores_visitante": {
+          "L. Mendoza": 1
+        }
+      },
+      {
+        "jornada": 7,
+        "equipo_local": "Sol De América",
+        "equipo_visitante": "Tucumán Central",
+        "goles_local": 3,
+        "goles_visitante": 0,
+        "zona": "2",
+        "goleadores_local": {
+          "F. Pardo": 1,
+          "José Cabañas": 1,
+          "J. Sosa": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 7,
+        "equipo_local": "Sarmiento De La Banda",
+        "equipo_visitante": "Defensores Pto. Vilelas",
+        "goles_local": 1,
+        "goles_visitante": 2,
+        "zona": "2",
+        "goleadores_local": {
+          "Pablo Lopez": 1
+        },
+        "goleadores_visitante": {
+          "M. Acevedo": 1,
+          "Gustavo Carballo": 1
+        }
+      },
+      {
+        "jornada": 7,
+        "equipo_local": "Juventud Antoniana",
+        "equipo_visitante": "San Martín de Formosa",
+        "goles_local": 0,
+        "goles_visitante": 3,
+        "zona": "2",
+        "goleadores_local": {},
+        "goleadores_visitante": {
+          "Gervasio Nuñez": 2,
+          "Mauro Siergiejuk": 1
+        }
+      },
+      {
+        "jornada": 8,
+        "equipo_local": "Independiente Chivilcoy",
+        "equipo_visitante": "El Linqueño",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "1",
+        "goleadores_local": {
+          "B. Benítez": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 8,
+        "equipo_local": "Defensores Pto. Vilelas",
+        "equipo_visitante": "Bartolomé Mitre (Posadas)",
+        "goles_local": 1,
+        "goles_visitante": 3,
+        "zona": "2",
+        "goleadores_local": {
+          "L. Niz": 1
+        },
+        "goleadores_visitante": {
+          "Javier Peñazola": 2,
+          "Á. Klusener": 1
+        }
+      },
+      {
+        "jornada": 8,
+        "equipo_local": "Sol de Mayo",
+        "equipo_visitante": "Círculo Deportivo",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "4",
+        "goleadores_local": {},
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 8,
+        "equipo_local": "Guillermo Brown",
+        "equipo_visitante": "Villa Mitre",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "4",
+        "goleadores_local": {
+          "Santos Bacigalupe": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 8,
+        "equipo_local": "Alvarado",
+        "equipo_visitante": "Santamarina Tandil",
+        "goles_local": 3,
+        "goles_visitante": 0,
+        "zona": "4",
+        "goleadores_local": {
+          "Matías Mansilla": 1,
+          "German Cervera": 2
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 8,
+        "equipo_local": "Cipolletti",
+        "equipo_visitante": "Juventud Unida San Luis",
+        "goles_local": 0,
+        "goles_visitante": 1,
+        "zona": "3",
+        "goleadores_local": {},
+        "goleadores_visitante": {
+          "Lautaro Figueroa": 1
+        }
+      },
+      {
+        "jornada": 8,
+        "equipo_local": "Atenas Río Cuarto",
+        "equipo_visitante": "Argentino Monte Maíz",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "3",
+        "goleadores_local": {
+          "Alejo Mainero": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 8,
+        "equipo_local": "Gimnasia de Concepción",
+        "equipo_visitante": "CSCyD Gimnasia y Esgrima (Chivilcoy)",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "1",
+        "goleadores_local": {
+          "Facundo Laumann": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 8,
+        "equipo_local": "Olimpo",
+        "equipo_visitante": "Germinal",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "4",
+        "goleadores_local": {
+          "Joaquin Susvielles": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 8,
+        "equipo_local": "Huracán Las Heras",
+        "equipo_visitante": "Deportivo Rincón",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "3",
+        "goleadores_local": {
+          "A. Araujo": 1
+        },
+        "goleadores_visitante": {
+          "Cristóbal Valbuena": 1
+        }
+      },
+      {
+        "jornada": 8,
+        "equipo_local": "San Martín de Mendoza",
+        "equipo_visitante": "Fundación Amigos por el Deporte",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "3",
+        "goleadores_local": {
+          "Ricardo Dichiara": 1
+        },
+        "goleadores_visitante": {
+          "Lautaro Taboada": 1
+        }
+      },
+      {
+        "jornada": 8,
+        "equipo_local": "Sportivo Belgrano",
+        "equipo_visitante": "Sportivo Las Parejas",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "1",
+        "goleadores_local": {
+          "Juan Bono": 1,
+          "Emanuel Mercado": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 8,
+        "equipo_local": "Douglas Haig",
+        "equipo_visitante": "Atlético Escobar",
+        "goles_local": 4,
+        "goles_visitante": 1,
+        "zona": "1",
+        "goleadores_local": {
+          "Jonathan Palacio": 2,
+          "S. Fiorito": 1,
+          "L. Rosciano": 1
+        },
+        "goleadores_visitante": {
+          "Tobias Portillo": 1
+        }
+      },
+      {
+        "jornada": 8,
+        "equipo_local": "Defensores Pto. Vilelas",
+        "equipo_visitante": "9 De Julio Rafaela",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "2",
+        "goleadores_local": {},
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 8,
+        "equipo_local": "Boca Unidos de Corrientes",
+        "equipo_visitante": "Sol De América",
+        "goles_local": 0,
+        "goles_visitante": 1,
+        "zona": "2",
+        "goleadores_local": {},
+        "goleadores_visitante": {
+          "B. Di Martino": 1
+        }
+      },
+      {
+        "jornada": 8,
+        "equipo_local": "Tucumán Central",
+        "equipo_visitante": "Juventud Antoniana",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "2",
+        "goleadores_local": {
+          "B. Ruíz Rodríguez": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 8,
+        "equipo_local": "San Martín de Formosa",
+        "equipo_visitante": "Sarmiento De La Banda",
+        "goles_local": 4,
+        "goles_visitante": 2,
+        "zona": "2",
+        "goleadores_local": {
+          "Ricardo Tapia": 1,
+          "Dylan Leiva": 1,
+          "R. Ledesma": 1,
+          "Agustin Griego": 1
+        },
+        "goleadores_visitante": {
+          "Agustin Griego": 1,
+          "Cristian Diaz": 1
+        }
+      },
+      {
+        "jornada": 9,
+        "equipo_local": "CSCyD Gimnasia y Esgrima (Chivilcoy)",
+        "equipo_visitante": "Defensores Pto. Vilelas",
+        "goles_local": 3,
+        "goles_visitante": 0,
+        "zona": "1",
+        "goleadores_local": {
+          "Mauro Gutierrez": 1,
+          "Patricio Ferreira": 2
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 9,
+        "equipo_local": "Fundación Amigos por el Deporte",
+        "equipo_visitante": "Huracán Las Heras",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "3",
+        "goleadores_local": {
+          "T. Satti": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 9,
+        "equipo_local": "Deportivo Rincón",
+        "equipo_visitante": "Costa Brava (Gral Pico)",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "3",
+        "goleadores_local": {
+          "Cristian Canga": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 9,
+        "equipo_local": "El Linqueño",
+        "equipo_visitante": "Gimnasia de Concepción",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "1",
+        "goleadores_local": {},
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 9,
+        "equipo_local": "Germinal",
+        "equipo_visitante": "Guillermo Brown",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "4",
+        "goleadores_local": {
+          "Ignacio Teran": 1
+        },
+        "goleadores_visitante": {
+          "Patricio Cucchi": 1
+        }
+      },
+      {
+        "jornada": 9,
+        "equipo_local": "Villa Mitre",
+        "equipo_visitante": "Sol de Mayo",
+        "goles_local": 2,
+        "goles_visitante": 1,
+        "zona": "4",
+        "goleadores_local": {
+          "Enzo González": 1,
+          "Thiago Pérez": 1
+        },
+        "goleadores_visitante": {
+          "K. Pereira": 1
+        }
+      },
+      {
+        "jornada": 9,
+        "equipo_local": "Círculo Deportivo",
+        "equipo_visitante": "Kimberley Mar Del Plata",
+        "goles_local": 0,
+        "goles_visitante": 1,
+        "zona": "4",
+        "goleadores_local": {},
+        "goleadores_visitante": {
+          "Santiago Castillo": 1
+        }
+      },
+      {
+        "jornada": 9,
+        "equipo_local": "Juventud Unida San Luis",
+        "equipo_visitante": "Atenas Río Cuarto",
+        "goles_local": 0,
+        "goles_visitante": 1,
+        "zona": "3",
+        "goleadores_local": {},
+        "goleadores_visitante": {
+          "Facundo Quiroga": 1
+        }
+      },
+      {
+        "jornada": 9,
+        "equipo_local": "Argentino Monte Maíz",
+        "equipo_visitante": "San Martín de Mendoza",
+        "goles_local": 4,
+        "goles_visitante": 1,
+        "zona": "3",
+        "goleadores_local": {
+          "Ignacio Blangetti": 1,
+          "Ramiro Lasserre": 1,
+          "Jorge Tejada": 1,
+          "Hugo Vera": 1
+        },
+        "goleadores_visitante": {
+          "Andrés Ferro": 1
+        }
+      },
+      {
+        "jornada": 9,
+        "equipo_local": "9 De Julio Rafaela",
+        "equipo_visitante": "Douglas Haig",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "1",
+        "goleadores_local": {
+          "Maximiliano Solari": 1,
+          "Tomas Androetto": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 9,
+        "equipo_local": "Atlético Escobar",
+        "equipo_visitante": "Sportivo Belgrano",
+        "goles_local": 1,
+        "goles_visitante": 3,
+        "zona": "1",
+        "goleadores_local": {
+          "Hugo Paniagua": 1
+        },
+        "goleadores_visitante": {
+          "Alfio Lehmann": 1,
+          "Emanuel Mercado": 1,
+          "Hugo Paniagua": 1
+        }
+      },
+      {
+        "jornada": 9,
+        "equipo_local": "Juventud Antoniana",
+        "equipo_visitante": "Boca Unidos de Corrientes",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "2",
+        "goleadores_local": {},
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 9,
+        "equipo_local": "Sportivo Las Parejas",
+        "equipo_visitante": "Independiente Chivilcoy",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "1",
+        "goleadores_local": {
+          "G. Villalba": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 9,
+        "equipo_local": "Bartolomé Mitre (Posadas)",
+        "equipo_visitante": "San Martín de Formosa",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "2",
+        "goleadores_local": {
+          "Oscar Piris": 1,
+          "Javier Peñazola": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 9,
+        "equipo_local": "Sol De América",
+        "equipo_visitante": "Sarmiento de Resistencia",
+        "goles_local": 3,
+        "goles_visitante": 0,
+        "zona": "2",
+        "goleadores_local": {
+          "B. Di Martino": 1,
+          "S. Jiménez": 2
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 9,
+        "equipo_local": "Sarmiento De La Banda",
+        "equipo_visitante": "Tucumán Central",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "2",
+        "goleadores_local": {
+          "Pablo Lopez": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 9,
+        "equipo_local": "Santamarina Tandil",
+        "equipo_visitante": "Olimpo",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "4",
+        "goleadores_local": {},
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 10,
+        "equipo_local": "Juventud Antoniana",
+        "equipo_visitante": "Sarmiento de Resistencia",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "2",
+        "goleadores_local": {
+          "Pedro Muné": 1,
+          "Jhon Palacios": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 10,
+        "equipo_local": "Argentino Monte Maíz",
+        "equipo_visitante": "Huracán Las Heras",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "3",
+        "goleadores_local": {
+          "Ramiro Lasserre": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 10,
+        "equipo_local": "Juventud Unida San Luis",
+        "equipo_visitante": "San Martín de Mendoza",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "3",
+        "goleadores_local": {
+          "Lautaro Lucero": 1
+        },
+        "goleadores_visitante": {
+          "Ricardo Dichiara": 1
+        }
+      },
+      {
+        "jornada": 10,
+        "equipo_local": "CSCyD Gimnasia y Esgrima (Chivilcoy)",
+        "equipo_visitante": "Douglas Haig",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "1",
+        "goleadores_local": {
+          "Lucio Almada": 1,
+          "Mauro Gutierrez": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 10,
+        "equipo_local": "9 De Julio Rafaela",
+        "equipo_visitante": "Sportivo Belgrano",
+        "goles_local": 0,
+        "goles_visitante": 2,
+        "zona": "1",
+        "goleadores_local": {},
+        "goleadores_visitante": {
+          "German Lesman": 1,
+          "Juan Bono": 1
+        }
+      },
+      {
+        "jornada": 10,
+        "equipo_local": "Gimnasia de Concepción",
+        "equipo_visitante": "Defensores Pto. Vilelas",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "1",
+        "goleadores_local": {
+          "Nicolás Germanier": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 10,
+        "equipo_local": "Santamarina Tandil",
+        "equipo_visitante": "Guillermo Brown",
+        "goles_local": 0,
+        "goles_visitante": 2,
+        "zona": "4",
+        "goleadores_local": {},
+        "goleadores_visitante": {
+          "Martin Rivero": 1,
+          "Branco Mera": 1
+        }
+      },
+      {
+        "jornada": 10,
+        "equipo_local": "Fundación Amigos por el Deporte",
+        "equipo_visitante": "Costa Brava (Gral Pico)",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "3",
+        "goleadores_local": {
+          "Lautaro Taboada": 1,
+          "Gonzalo Klusener": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 10,
+        "equipo_local": "Alvarado",
+        "equipo_visitante": "Olimpo",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "4",
+        "goleadores_local": {
+          "Santiago Gutierrez": 2
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 10,
+        "equipo_local": "Sportivo Las Parejas",
+        "equipo_visitante": "El Linqueño",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "1",
+        "goleadores_local": {
+          "Agustin Zanoni": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 10,
+        "equipo_local": "Germinal",
+        "equipo_visitante": "Sol de Mayo",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "4",
+        "goleadores_local": {
+          "Jorge Velazquez": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 10,
+        "equipo_local": "Cipolletti",
+        "equipo_visitante": "Atenas Río Cuarto",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "3",
+        "goleadores_local": {
+          "Federico Acevedo": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 10,
+        "equipo_local": "Atlético Escobar",
+        "equipo_visitante": "Independiente Chivilcoy",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "1",
+        "goleadores_local": {},
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 10,
+        "equipo_local": "Villa Mitre",
+        "equipo_visitante": "Kimberley Mar Del Plata",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "4",
+        "goleadores_local": {},
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 10,
+        "equipo_local": "Bartolomé Mitre (Posadas)",
+        "equipo_visitante": "Tucumán Central",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "2",
+        "goleadores_local": {
+          "Á. Klusener": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 10,
+        "equipo_local": "Sarmiento De La Banda",
+        "equipo_visitante": "Boca Unidos de Corrientes",
+        "goles_local": 3,
+        "goles_visitante": 0,
+        "zona": "2",
+        "goleadores_local": {
+          "Pablo Lopez": 2,
+          "E. Gutiérrez": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 10,
+        "equipo_local": "Defensores Pto. Vilelas",
+        "equipo_visitante": "San Martín de Formosa",
+        "goles_local": 2,
+        "goles_visitante": 3,
+        "zona": "2",
+        "goleadores_local": {
+          "G. Ríos": 1,
+          "F. Farías": 1
+        },
+        "goleadores_visitante": {
+          "Gervasio Nuñez": 1,
+          "Oscar Chiquichano": 1,
+          "Mauro Siergiejuk": 1
+        }
+      },
+      {
+        "jornada": 11,
+        "equipo_local": "Kimberley Mar Del Plata",
+        "equipo_visitante": "Germinal",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "4",
+        "goleadores_local": {
+          "Santiago Castillo": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 11,
+        "equipo_local": "Sportivo Las Parejas",
+        "equipo_visitante": "Atlético Escobar",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "1",
+        "goleadores_local": {
+          "Agustin Zanoni": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 11,
+        "equipo_local": "Costa Brava (Gral Pico)",
+        "equipo_visitante": "Argentino Monte Maíz",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "3",
+        "goleadores_local": {
+          "I. Pipistrelli": 1,
+          "Jeronimo Gutierrez": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 11,
+        "equipo_local": "Deportivo Rincón",
+        "equipo_visitante": "Fundación Amigos por el Deporte",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "3",
+        "goleadores_local": {},
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 11,
+        "equipo_local": "El Linqueño",
+        "equipo_visitante": "Defensores Pto. Vilelas",
+        "goles_local": 0,
+        "goles_visitante": 2,
+        "zona": "1",
+        "goleadores_local": {},
+        "goleadores_visitante": {
+          "Mateo Tuset": 1,
+          "Enzo Luna": 1
+        }
+      },
+      {
+        "jornada": 11,
+        "equipo_local": "Independiente Chivilcoy",
+        "equipo_visitante": "9 De Julio Rafaela",
+        "goles_local": 2,
+        "goles_visitante": 2,
+        "zona": "1",
+        "goleadores_local": {
+          "Leonardo Rodríguez": 1,
+          "B. Benítez": 1
+        },
+        "goleadores_visitante": {
+          "Maximiliano Solari": 1,
+          "Nicolas Del Sole": 1
+        }
+      },
+      {
+        "jornada": 11,
+        "equipo_local": "Guillermo Brown",
+        "equipo_visitante": "Alvarado",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "4",
+        "goleadores_local": {},
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 11,
+        "equipo_local": "Sol de Mayo",
+        "equipo_visitante": "Santamarina Tandil",
+        "goles_local": 3,
+        "goles_visitante": 2,
+        "zona": "4",
+        "goleadores_local": {
+          "Luciano Domínguez": 1,
+          "Fernando Valdebenito": 1,
+          "Santiago Jara": 1
+        },
+        "goleadores_visitante": {
+          "Matias Labaroni": 1,
+          "Nicolás Igartúa": 1
+        }
+      },
+      {
+        "jornada": 11,
+        "equipo_local": "Círculo Deportivo",
+        "equipo_visitante": "Villa Mitre",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "4",
+        "goleadores_local": {},
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 11,
+        "equipo_local": "Douglas Haig",
+        "equipo_visitante": "Gimnasia de Concepción",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "1",
+        "goleadores_local": {},
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 11,
+        "equipo_local": "Boca Unidos de Corrientes",
+        "equipo_visitante": "Bartolomé Mitre (Posadas)",
+        "goles_local": 2,
+        "goles_visitante": 1,
+        "zona": "2",
+        "goleadores_local": {
+          "L. Mendoza": 2
+        },
+        "goleadores_visitante": {
+          "Rodrigo Cerdán": 1
+        }
+      },
+      {
+        "jornada": 11,
+        "equipo_local": "Sol De América",
+        "equipo_visitante": "Juventud Antoniana",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "2",
+        "goleadores_local": {
+          "S. Jiménez": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 11,
+        "equipo_local": "San Martín de Mendoza",
+        "equipo_visitante": "Cipolletti",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "3",
+        "goleadores_local": {
+          "Juan José Almeida": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 11,
+        "equipo_local": "Huracán Las Heras",
+        "equipo_visitante": "Juventud Unida San Luis",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "3",
+        "goleadores_local": {
+          "Alejandro Toledo": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 11,
+        "equipo_local": "Sportivo Belgrano",
+        "equipo_visitante": "CSCyD Gimnasia y Esgrima (Chivilcoy)",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "1",
+        "goleadores_local": {
+          "Alfio Lehmann": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 11,
+        "equipo_local": "Tucumán Central",
+        "equipo_visitante": "Defensores Pto. Vilelas",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "2",
+        "goleadores_local": {
+          "B. Ruíz Rodríguez": 1,
+          "F. Smith": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 11,
+        "equipo_local": "Sarmiento de Resistencia",
+        "equipo_visitante": "Sarmiento De La Banda",
+        "goles_local": 0,
+        "goles_visitante": 1,
+        "zona": "2",
+        "goleadores_local": {},
+        "goleadores_visitante": {
+          "E. Gutiérrez": 1
+        }
+      },
+      {
+        "jornada": 12,
+        "equipo_local": "Defensores Pto. Vilelas",
+        "equipo_visitante": "Boca Unidos de Corrientes",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "2",
+        "goleadores_local": {
+          "L. Larrasábal": 2
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 12,
+        "equipo_local": "Bartolomé Mitre (Posadas)",
+        "equipo_visitante": "Sarmiento de Resistencia",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "2",
+        "goleadores_local": {
+          "Á. Klusener": 2
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 12,
+        "equipo_local": "Juventud Unida San Luis",
+        "equipo_visitante": "Costa Brava (Gral Pico)",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "3",
+        "goleadores_local": {},
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 12,
+        "equipo_local": "Germinal",
+        "equipo_visitante": "Círculo Deportivo",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "4",
+        "goleadores_local": {},
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 12,
+        "equipo_local": "Alvarado",
+        "equipo_visitante": "Sol de Mayo",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "4",
+        "goleadores_local": {
+          "Tomas Federico": 1,
+          "Lucas Chiozza": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 12,
+        "equipo_local": "Olimpo",
+        "equipo_visitante": "Guillermo Brown",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "4",
+        "goleadores_local": {},
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 12,
+        "equipo_local": "Argentino Monte Maíz",
+        "equipo_visitante": "Deportivo Rincón",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "3",
+        "goleadores_local": {
+          "Sebastián Gonzáles": 1,
+          "Hugo Vera": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 12,
+        "equipo_local": "Cipolletti",
+        "equipo_visitante": "Huracán Las Heras",
+        "goles_local": 3,
+        "goles_visitante": 0,
+        "zona": "3",
+        "goleadores_local": {
+          "Federico Acevedo": 2,
+          "Martin Peralta": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 12,
+        "equipo_local": "Atenas Río Cuarto",
+        "equipo_visitante": "San Martín de Mendoza",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "3",
+        "goleadores_local": {},
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 12,
+        "equipo_local": "Atlético Escobar",
+        "equipo_visitante": "El Linqueño",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "1",
+        "goleadores_local": {
+          "Dante Veron": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 12,
+        "equipo_local": "CSCyD Gimnasia y Esgrima (Chivilcoy)",
+        "equipo_visitante": "Independiente Chivilcoy",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "1",
+        "goleadores_local": {},
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 12,
+        "equipo_local": "9 De Julio Rafaela",
+        "equipo_visitante": "Sportivo Las Parejas",
+        "goles_local": 2,
+        "goles_visitante": 2,
+        "zona": "1",
+        "goleadores_local": {
+          "Laureano Troncoso": 2
+        },
+        "goleadores_visitante": {
+          "G. Schonfeld": 1,
+          "Marcos Fissore": 1
+        }
+      },
+      {
+        "jornada": 12,
+        "equipo_local": "Gimnasia de Concepción",
+        "equipo_visitante": "Sportivo Belgrano",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "1",
+        "goleadores_local": {
+          "D. Baltoré": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 12,
+        "equipo_local": "Defensores Pto. Vilelas",
+        "equipo_visitante": "Douglas Haig",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "2",
+        "goleadores_local": {
+          "M. Olego": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 12,
+        "equipo_local": "Santamarina Tandil",
+        "equipo_visitante": "Kimberley Mar Del Plata",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "4",
+        "goleadores_local": {
+          "Luciano Domínguez": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 12,
+        "equipo_local": "Sarmiento De La Banda",
+        "equipo_visitante": "Sol De América",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "2",
+        "goleadores_local": {
+          "Guillermo Guzmán": 1,
+          "Iván Garzón": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 12,
+        "equipo_local": "San Martín de Formosa",
+        "equipo_visitante": "Tucumán Central",
+        "goles_local": 3,
+        "goles_visitante": 2,
+        "zona": "2",
+        "goleadores_local": {
+          "Gervasio Nuñez": 1,
+          "Mauro Siergiejuk": 1,
+          "Ricardo Tapia": 1
+        },
+        "goleadores_visitante": {
+          "B. Collante": 1,
+          "F. Barrera": 1
+        }
+      },
+      {
+        "jornada": 13,
+        "equipo_local": "Juventud Antoniana",
+        "equipo_visitante": "Sarmiento De La Banda",
+        "goles_local": 0,
+        "goles_visitante": 1,
+        "zona": "2",
+        "goleadores_local": {},
+        "goleadores_visitante": {
+          "Guillermo Guzmán": 1
+        }
+      },
+      {
+        "jornada": 13,
+        "equipo_local": "Atlético Escobar",
+        "equipo_visitante": "9 De Julio Rafaela",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "1",
+        "goleadores_local": {
+          "Lucas Núñez": 1,
+          "Tobias Portillo": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 13,
+        "equipo_local": "Sportivo Las Parejas",
+        "equipo_visitante": "CSCyD Gimnasia y Esgrima (Chivilcoy)",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "1",
+        "goleadores_local": {},
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 13,
+        "equipo_local": "Fundación Amigos por el Deporte",
+        "equipo_visitante": "Argentino Monte Maíz",
+        "goles_local": 2,
+        "goles_visitante": 2,
+        "zona": "3",
+        "goleadores_local": {
+          "Gonzalo Klusener": 1,
+          "Matias Navarro": 1
+        },
+        "goleadores_visitante": {
+          "Jorge Tejada": 1,
+          "Ramiro Lasserre": 1
+        }
+      },
+      {
+        "jornada": 13,
+        "equipo_local": "Deportivo Rincón",
+        "equipo_visitante": "Juventud Unida San Luis",
+        "goles_local": 2,
+        "goles_visitante": 1,
+        "zona": "3",
+        "goleadores_local": {
+          "Ezequiel Ávila": 2
+        },
+        "goleadores_visitante": {
+          "Eber Garro": 1
+        }
+      },
+      {
+        "jornada": 13,
+        "equipo_local": "El Linqueño",
+        "equipo_visitante": "Douglas Haig",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "1",
+        "goleadores_local": {
+          "Joaquín Malinauskas": 1,
+          "M. Pavón Zárate": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 13,
+        "equipo_local": "Independiente Chivilcoy",
+        "equipo_visitante": "Gimnasia de Concepción",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "1",
+        "goleadores_local": {},
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 13,
+        "equipo_local": "Sol de Mayo",
+        "equipo_visitante": "Olimpo",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "4",
+        "goleadores_local": {
+          "Diego Zalazar": 1
+        },
+        "goleadores_visitante": {
+          "Antú Hernandez": 1
+        }
+      },
+      {
+        "jornada": 13,
+        "equipo_local": "Kimberley Mar Del Plata",
+        "equipo_visitante": "Alvarado",
+        "goles_local": 2,
+        "goles_visitante": 2,
+        "zona": "4",
+        "goleadores_local": {
+          "Tomás Loscalso": 1,
+          "Santiago Castillo": 1
+        },
+        "goleadores_visitante": {
+          "German Cervera": 2
+        }
+      },
+      {
+        "jornada": 13,
+        "equipo_local": "Villa Mitre",
+        "equipo_visitante": "Germinal",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "4",
+        "goleadores_local": {},
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 13,
+        "equipo_local": "Círculo Deportivo",
+        "equipo_visitante": "Santamarina Tandil",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "4",
+        "goleadores_local": {},
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 13,
+        "equipo_local": "Huracán Las Heras",
+        "equipo_visitante": "Atenas Río Cuarto",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "3",
+        "goleadores_local": {
+          "Alejandro Toledo": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 13,
+        "equipo_local": "Boca Unidos de Corrientes",
+        "equipo_visitante": "San Martín de Formosa",
+        "goles_local": 3,
+        "goles_visitante": 1,
+        "zona": "2",
+        "goleadores_local": {
+          "Claudio Alonso": 1,
+          "L. Mendoza": 1,
+          "Leandro Gomez": 1
+        },
+        "goleadores_visitante": {
+          "Pablo Moreyra": 1
+        }
+      },
+      {
+        "jornada": 13,
+        "equipo_local": "Sol De América",
+        "equipo_visitante": "Bartolomé Mitre (Posadas)",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "2",
+        "goleadores_local": {},
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 13,
+        "equipo_local": "Sarmiento de Resistencia",
+        "equipo_visitante": "Defensores Pto. Vilelas",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "2",
+        "goleadores_local": {
+          "Cristian Maidana": 1,
+          "Maximiliano Ibáñez": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 13,
+        "equipo_local": "Costa Brava (Gral Pico)",
+        "equipo_visitante": "Cipolletti",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "3",
+        "goleadores_local": {
+          "Jeronimo Gutierrez": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 13,
+        "equipo_local": "Sportivo Belgrano",
+        "equipo_visitante": "Defensores Pto. Vilelas",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "1",
+        "goleadores_local": {
+          "Jonathan Paiz": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 14,
+        "equipo_local": "Juventud Unida San Luis",
+        "equipo_visitante": "Fundación Amigos por el Deporte",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "3",
+        "goleadores_local": {},
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 14,
+        "equipo_local": "CSCyD Gimnasia y Esgrima (Chivilcoy)",
+        "equipo_visitante": "Atlético Escobar",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "1",
+        "goleadores_local": {
+          "Ramiro Medina": 1,
+          "Marcos Salvaggio": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 14,
+        "equipo_local": "Douglas Haig",
+        "equipo_visitante": "Sportivo Belgrano",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "1",
+        "goleadores_local": {},
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 14,
+        "equipo_local": "Alvarado",
+        "equipo_visitante": "Círculo Deportivo",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "4",
+        "goleadores_local": {
+          "German Cervera": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 14,
+        "equipo_local": "Olimpo",
+        "equipo_visitante": "Kimberley Mar Del Plata",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "4",
+        "goleadores_local": {},
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 14,
+        "equipo_local": "Bartolomé Mitre (Posadas)",
+        "equipo_visitante": "Juventud Antoniana",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "2",
+        "goleadores_local": {},
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 14,
+        "equipo_local": "Santamarina Tandil",
+        "equipo_visitante": "Villa Mitre",
+        "goles_local": 0,
+        "goles_visitante": 2,
+        "zona": "4",
+        "goleadores_local": {},
+        "goleadores_visitante": {
+          "Jeronimo Almada": 1,
+          "S. Gómez": 1
+        }
+      },
+      {
+        "jornada": 14,
+        "equipo_local": "San Martín de Mendoza",
+        "equipo_visitante": "Huracán Las Heras",
+        "goles_local": 3,
+        "goles_visitante": 1,
+        "zona": "3",
+        "goleadores_local": {
+          "Diego Gonzalez": 1,
+          "Exequiel Batistella": 1,
+          "Ricardo Herensperger": 1
+        },
+        "goleadores_visitante": {
+          "F. Cortés": 1
+        }
+      },
+      {
+        "jornada": 14,
+        "equipo_local": "Guillermo Brown",
+        "equipo_visitante": "Sol de Mayo",
+        "goles_local": 0,
+        "goles_visitante": 1,
+        "zona": "4",
+        "goleadores_local": {},
+        "goleadores_visitante": {
+          "Emiliano Soria": 1
+        }
+      },
+      {
+        "jornada": 14,
+        "equipo_local": "Cipolletti",
+        "equipo_visitante": "Deportivo Rincón",
+        "goles_local": 2,
+        "goles_visitante": 1,
+        "zona": "3",
+        "goleadores_local": {
+          "Maximiliano López": 1,
+          "Andres Almiron": 1
+        },
+        "goleadores_visitante": {
+          "Cristian Estigarribia": 1
+        }
+      },
+      {
+        "jornada": 14,
+        "equipo_local": "Defensores Pto. Vilelas",
+        "equipo_visitante": "Independiente Chivilcoy",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "2",
+        "goleadores_local": {
+          "Eloy Roige": 1,
+          "M. Olego": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 14,
+        "equipo_local": "Defensores Pto. Vilelas",
+        "equipo_visitante": "Sol De América",
+        "goles_local": 2,
+        "goles_visitante": 1,
+        "zona": "2",
+        "goleadores_local": {
+          "G. Ríos": 1,
+          "G. Carballo": 1
+        },
+        "goleadores_visitante": {
+          "J. Sosa": 1
+        }
+      },
+      {
+        "jornada": 14,
+        "equipo_local": "Gimnasia de Concepción",
+        "equipo_visitante": "Sportivo Las Parejas",
+        "goles_local": 0,
+        "goles_visitante": 1,
+        "zona": "1",
+        "goleadores_local": {},
+        "goleadores_visitante": {
+          "Ignacio González": 1
+        }
+      },
+      {
+        "jornada": 14,
+        "equipo_local": "San Martín de Formosa",
+        "equipo_visitante": "Sarmiento de Resistencia",
+        "goles_local": 3,
+        "goles_visitante": 0,
+        "zona": "2",
+        "goleadores_local": {
+          "Mauro Siergiejuk": 1,
+          "Dylan Leiva": 1,
+          "Ricardo Tapia": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 14,
+        "equipo_local": "Tucumán Central",
+        "equipo_visitante": "Boca Unidos de Corrientes",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "2",
+        "goleadores_local": {
+          "V. Montenegro": 2
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 14,
+        "equipo_local": "Atenas Río Cuarto",
+        "equipo_visitante": "Costa Brava (Gral Pico)",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "3",
+        "goleadores_local": {
+          "Alejo Mainero": 1
+        },
+        "goleadores_visitante": {
+          "Jeronimo Gutierrez": 1
+        }
+      },
+      {
+        "jornada": 14,
+        "equipo_local": "9 De Julio Rafaela",
+        "equipo_visitante": "El Linqueño",
+        "goles_local": 3,
+        "goles_visitante": 2,
+        "zona": "1",
+        "goleadores_local": {
+          "Laureano Troncoso": 3
+        },
+        "goleadores_visitante": {
+          "Andres Mc Cormick": 1,
+          "Facundo Meli": 1
+        }
+      },
+      {
+        "jornada": 15,
+        "equipo_local": "Fundación Amigos por el Deporte",
+        "equipo_visitante": "Cipolletti",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "3",
+        "goleadores_local": {},
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 15,
+        "equipo_local": "Deportivo Rincón",
+        "equipo_visitante": "Atenas Río Cuarto",
+        "goles_local": 0,
+        "goles_visitante": 1,
+        "zona": "3",
+        "goleadores_local": {},
+        "goleadores_visitante": {
+          "Alejo Mainero": 1
+        }
+      },
+      {
+        "jornada": 15,
+        "equipo_local": "Argentino Monte Maíz",
+        "equipo_visitante": "Juventud Unida San Luis",
+        "goles_local": 0,
+        "goles_visitante": 0,
+        "zona": "3",
+        "goleadores_local": {},
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 15,
+        "equipo_local": "Sportivo Las Parejas",
+        "equipo_visitante": "Defensores Pto. Vilelas",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "1",
+        "goleadores_local": {
+          "Agustin Zanoni": 1
+        },
+        "goleadores_visitante": {
+          "Eloy Roige": 1
+        }
+      },
+      {
+        "jornada": 15,
+        "equipo_local": "El Linqueño",
+        "equipo_visitante": "Sportivo Belgrano",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "1",
+        "goleadores_local": {
+          "Facundo Meli": 1
+        },
+        "goleadores_visitante": {
+          "Emanuel Mercado": 1
+        }
+      },
+      {
+        "jornada": 15,
+        "equipo_local": "Independiente Chivilcoy",
+        "equipo_visitante": "Douglas Haig",
+        "goles_local": 0,
+        "goles_visitante": 4,
+        "zona": "1",
+        "goleadores_local": {},
+        "goleadores_visitante": {
+          "Carlos Arriola": 1,
+          "Joaquín Castellano": 2,
+          "S. Fiorito": 1
+        }
+      },
+      {
+        "jornada": 15,
+        "equipo_local": "Kimberley Mar Del Plata",
+        "equipo_visitante": "Guillermo Brown",
+        "goles_local": 3,
+        "goles_visitante": 0,
+        "zona": "4",
+        "goleadores_local": {
+          "Santiago Castillo": 1,
+          "De Gaetani": 1,
+          "Mauricio Miori": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 15,
+        "equipo_local": "Círculo Deportivo",
+        "equipo_visitante": "Olimpo",
+        "goles_local": 1,
+        "goles_visitante": 1,
+        "zona": "4",
+        "goleadores_local": {
+          "Imanol Iriberri": 1
+        },
+        "goleadores_visitante": {
+          "Federico González": 1
+        }
+      },
+      {
+        "jornada": 15,
+        "equipo_local": "Villa Mitre",
+        "equipo_visitante": "Alvarado",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "4",
+        "goleadores_local": {
+          "V. Ayala": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 15,
+        "equipo_local": "Germinal",
+        "equipo_visitante": "Santamarina Tandil",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "4",
+        "goleadores_local": {
+          "Damian De Hoyos": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 15,
+        "equipo_local": "Sol De América",
+        "equipo_visitante": "San Martín de Formosa",
+        "goles_local": 1,
+        "goles_visitante": 2,
+        "zona": "2",
+        "goleadores_local": {
+          "J. Cabañas": 1
+        },
+        "goleadores_visitante": {
+          "Marcelo Bobadilla": 1,
+          "Ricardo Tapia": 1
+        }
+      },
+      {
+        "jornada": 15,
+        "equipo_local": "Costa Brava (Gral Pico)",
+        "equipo_visitante": "San Martín de Mendoza",
+        "goles_local": 2,
+        "goles_visitante": 1,
+        "zona": "3",
+        "goleadores_local": {
+          "Pablo Aguero": 1,
+          "Agustin López": 1
+        },
+        "goleadores_visitante": {
+          "Andrés Ferro": 1
+        }
+      },
+      {
+        "jornada": 15,
+        "equipo_local": "Atlético Escobar",
+        "equipo_visitante": "Gimnasia de Concepción",
+        "goles_local": 2,
+        "goles_visitante": 1,
+        "zona": "1",
+        "goleadores_local": {
+          "R. Villalba": 1,
+          "Lucas Núñez": 1
+        },
+        "goleadores_visitante": {
+          "Micael Bogado": 1
+        }
+      },
+      {
+        "jornada": 15,
+        "equipo_local": "Juventud Antoniana",
+        "equipo_visitante": "Defensores Pto. Vilelas",
+        "goles_local": 4,
+        "goles_visitante": 0,
+        "zona": "2",
+        "goleadores_local": {
+          "Pedro Muné": 2,
+          "Matias Vicedo": 1,
+          "Martin Esparza": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 15,
+        "equipo_local": "9 De Julio Rafaela",
+        "equipo_visitante": "CSCyD Gimnasia y Esgrima (Chivilcoy)",
+        "goles_local": 2,
+        "goles_visitante": 1,
+        "zona": "1",
+        "goleadores_local": {
+          "Laureano Troncoso": 1,
+          "F. García": 1
+        },
+        "goleadores_visitante": {
+          "Marcos Salvaggio": 1
+        }
+      },
+      {
+        "jornada": 15,
+        "equipo_local": "Sarmiento de Resistencia",
+        "equipo_visitante": "Tucumán Central",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "2",
+        "goleadores_local": {
+          "Maximiliano Ibáñez": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 15,
+        "equipo_local": "Sarmiento De La Banda",
+        "equipo_visitante": "Bartolomé Mitre (Posadas)",
+        "goles_local": 1,
+        "goles_visitante": 0,
+        "zona": "2",
+        "goleadores_local": {
+          "Ramiro Veliz": 1
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 16,
+        "equipo_local": "Huracán Las Heras",
+        "equipo_visitante": "Costa Brava (Gral Pico)",
+        "goles_local": 2,
+        "goles_visitante": 0,
+        "zona": "3",
+        "goleadores_local": {
+          "Juan Bonet": 2
+        },
+        "goleadores_visitante": {}
+      },
+      {
+        "jornada": 16,
+        "equipo_local": "Defensores Pto. Vilelas",
+        "equipo_visitante": "Sarmiento De La Banda",
+        "goles_local": 3,
+        "goles_visitante": 0,
+        "zona": "2",
+        "goleadores_local": {
+          "G. Ríos": 1,
+          "Gonzalo Cañete": 1,
+          "R. Montenegro": 1
+        },
+        "goleadores_visitante": {}
+      }
+    ],
+    "simulacion_corrida": false
   }
 ]

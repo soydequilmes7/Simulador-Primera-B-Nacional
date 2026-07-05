@@ -187,6 +187,263 @@ class EstadisticasFederal(Estadisticas):
             equipo.goles_favor = totales["gf"]
             equipo.goles_contra = totales["gc"]
 
+    # ------------------------------------------------------------------
+    # MONTE CARLO VECTORIZADO (Primera Fase, Segunda Fase y Reválida 1ª
+    # Etapa -- las tres rondas de todos-contra-todos, que juntas son 153
+    # de los ~231 partidos de una corrida completa). Reemplaza, para esas
+    # tres fases, el bucle repetición-por-repetición (simular_partido()
+    # llamado una vez por partido y por repetición) por UN solo bloque de
+    # operaciones NumPy para las S repeticiones a la vez -- mismo modelo
+    # matemático que simular_partido()/_simular_fase_regular_vectorizado()
+    # de la clase base (Dixon-Coles + shock Gamma + muestreo acumulado),
+    # solo que generalizado para que cada partido pueda tener un rating
+    # DISTINTO por repetición (porque quién ocupa cada posición de la
+    # Segunda Fase y de la Reválida varía según cómo termine la Primera
+    # Fase en cada repetición).
+    #
+    # Las llaves de eliminación (Tercera Fase en adelante + toda la
+    # Reválida de la Etapa 2 a la 6, ~65 partidos) siguen corriendo
+    # repetición por repetición: dependen secuencialmente de quién ganó
+    # cada cruce anterior, lo que las hace mucho más difíciles de
+    # vectorizar y son una fracción menor del costo total.
+    # ------------------------------------------------------------------
+    @staticmethod
+    def _rankear_zona_vectorizado(puntos: np.ndarray, gf: np.ndarray, gc: np.ndarray) -> np.ndarray:
+        """puntos/gf/gc: arrays (n_equipos_zona, S). Devuelve (n_equipos_zona, S)
+        con los ÍNDICES DENTRO DE LA ZONA ordenados de mejor a peor por
+        columna (repetición), según puntos desc -> dg desc -> gf desc
+        (mismo criterio que _armar_tabla_final, sin el criterio de goles
+        de visitante -- misma simplificación documentada en el módulo).
+        Combina los 3 criterios en una sola clave numérica para poder
+        ordenar con un solo argsort vectorizado en vez de una comparación
+        multi-criterio partido a partido."""
+        dg = gf - gc
+        compuesto = (puntos.astype(np.int64) * 100_000_000
+                     + (dg.astype(np.int64) + 100_000) * 10_000
+                     + gf.astype(np.int64))
+        return np.argsort(-compuesto, axis=0, kind="stable")
+
+    def _simular_ronda_slots_vectorizada(
+        self,
+        lambda_local_base: np.ndarray,
+        lambda_visitante_base: np.ndarray,
+        idx_local: np.ndarray,
+        idx_visitante: np.ndarray,
+        n_slots: int,
+        S: int,
+        mascara_partido: np.ndarray | None = None,
+        max_elems_por_bloque: int = 8_000_000,
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+        """Generaliza _simular_fase_regular_vectorizado() de la clase base
+        para un round-robin de 'lugares' (slots) en vez de equipos fijos:
+        cada slot puede estar ocupado por un equipo distinto en cada
+        repetición (por eso lambda_local_base/lambda_visitante_base ya
+        vienen con forma (n_partidos, S) -- el rating del equipo que
+        ocupa cada lugar EN ESA repetición, resuelto por el llamador antes
+        de invocar este método -- en vez de (n_partidos,) fijo).
+
+        idx_local/idx_visitante: (n_partidos,) índices de slot (0..n_slots-1)
+        que juegan cada partido de la ronda -- el FIXTURE de posiciones es
+        el mismo para las S repeticiones, lo único que cambia es el rating.
+
+        mascara_partido: (n_partidos, S) opcional, 1.0 si el partido cuenta
+        en esa repetición y 0.0 si no (se usa para las zonas de la
+        Reválida, que según la repetición tienen 9 o 10 equipos reales:
+        el slot 'de más' se trata como comodín y sus partidos se
+        descartan con la máscara en las repeticiones donde no aplica, sin
+        tener que armar un fixture distinto por repetición).
+
+        Devuelve (puntos, gf, gc), cada uno (n_slots, S)."""
+        M = len(idx_local)
+        k = self._RANGO_GOLES
+        fact = self._FACTORIALES
+        max_goles = self._MAX_GOLES
+        n_marcadores = (max_goles + 1) * (max_goles + 1)
+
+        puntos_tot = np.zeros((n_slots, S), dtype=np.int64)
+        gf_tot = np.zeros((n_slots, S), dtype=np.int64)
+        gc_tot = np.zeros((n_slots, S), dtype=np.int64)
+
+        tanda = max(1, min(S, max_elems_por_bloque // max(1, M * n_marcadores)))
+        RHO = -0.1
+        K_SHOCK = self.K_SHOCK_PARTIDO
+
+        for inicio in range(0, S, tanda):
+            s = min(tanda, S - inicio)
+            ll_base = lambda_local_base[:, inicio:inicio + s]
+            lv_base = lambda_visitante_base[:, inicio:inicio + s]
+
+            shock_local = np.random.gamma(shape=K_SHOCK, scale=1 / K_SHOCK, size=(M, s))
+            shock_visitante = np.random.gamma(shape=K_SHOCK, scale=1 / K_SHOCK, size=(M, s))
+            lambda_local = ll_base * shock_local
+            lambda_visitante = lv_base * shock_visitante
+
+            p_x = (lambda_local[..., None] ** k) * np.exp(-lambda_local)[..., None] / fact
+            p_y = (lambda_visitante[..., None] ** k) * np.exp(-lambda_visitante)[..., None] / fact
+            probs = p_x[..., :, None] * p_y[..., None, :]
+
+            probs[..., 0, 0] *= 1 - lambda_local * lambda_visitante * RHO
+            probs[..., 1, 0] *= 1 + lambda_visitante * RHO
+            probs[..., 0, 1] *= 1 + lambda_local * RHO
+            probs[..., 1, 1] *= 1 - RHO
+
+            flat = probs.reshape(M, s, n_marcadores)
+            flat = flat / flat.sum(axis=-1, keepdims=True)
+            cumulativo = np.cumsum(flat, axis=-1)
+            r = np.random.random((M, s, 1))
+            idx_marcador = (cumulativo < r).sum(axis=-1)
+
+            goles_local = idx_marcador // (max_goles + 1)
+            goles_visitante = idx_marcador % (max_goles + 1)
+
+            gana_local = goles_local > goles_visitante
+            gana_visitante = goles_local < goles_visitante
+            empate = ~gana_local & ~gana_visitante
+            pts_local = np.where(gana_local, 3, np.where(empate, 1, 0))
+            pts_visitante = np.where(gana_visitante, 3, np.where(empate, 1, 0))
+
+            if mascara_partido is not None:
+                m = mascara_partido[:, inicio:inicio + s]
+                pts_local, pts_visitante = pts_local * m, pts_visitante * m
+                goles_local, goles_visitante = goles_local * m, goles_visitante * m
+
+            bloque_puntos = puntos_tot[:, inicio:inicio + s]
+            bloque_gf = gf_tot[:, inicio:inicio + s]
+            bloque_gc = gc_tot[:, inicio:inicio + s]
+            np.add.at(bloque_puntos, idx_local, pts_local)
+            np.add.at(bloque_puntos, idx_visitante, pts_visitante)
+            np.add.at(bloque_gf, idx_local, goles_local)
+            np.add.at(bloque_gf, idx_visitante, goles_visitante)
+            np.add.at(bloque_gc, idx_local, goles_visitante)
+            np.add.at(bloque_gc, idx_visitante, goles_local)
+
+        return puntos_tot, gf_tot, gc_tot
+
+    def simular_temporada_vectorizada(self, S: int) -> dict:
+        """Corre Primera Fase + Segunda Fase + Reválida 1ª Etapa para las
+        S repeticiones A LA VEZ (vectorizado; ver el bloque de arriba).
+        Devuelve un dict con todo lo necesario para reconstruir, PARA
+        CADA REPETICIÓN, las tablas de esas 3 fases en el mismo shape de
+        DataFrame que devuelven simular_primera_fase()/
+        simular_segunda_fase()/simular_revalida_primera_etapa() -- así
+        clasificados_primera_fase()/clasificados_segunda_fase()/
+        calcular_descensos() (y de ahí en adelante toda la cadena de
+        llaves de eliminación) NO cambian ni una línea: siguen recibiendo
+        exactamente las mismas tablas que antes, solo que ahora se
+        construyen a partir de un array ya simulado en vez de volver a
+        simular partido por partido en cada repetición.
+
+        Usar junto con extraer_tablas_repeticion() (en main_federal.py)."""
+        self.reiniciar_para_nueva_corrida()
+        nombres = list(self.equipos.keys())
+        idx_por_nombre = {n: i for i, n in enumerate(nombres)}
+
+        totales_pf = self._simular_fase_regular_vectorizado(S)
+        zonas = {z: [n for n in nombres if self.equipos[n].zona == z] for z in ZONAS_PRIMERA_FASE}
+        idx_zona = {z: np.array([idx_por_nombre[n] for n in equipos]) for z, equipos in zonas.items()}
+
+        puntos_pf, gf_pf, gc_pf = {}, {}, {}
+        for z, equipos in zonas.items():
+            puntos_pf[z] = np.stack([totales_pf[n]["puntos"] for n in equipos])
+            gf_pf[z] = np.stack([totales_pf[n]["gf"] for n in equipos])
+            gc_pf[z] = np.stack([totales_pf[n]["gc"] for n in equipos])
+        orden_pf = {z: self._rankear_zona_vectorizado(puntos_pf[z], gf_pf[z], gc_pf[z]) for z in ZONAS_PRIMERA_FASE}
+
+        # Mejor quinto (Art. 12.3): comparar el 5° de las zonas 2/3/4.
+        quinto_dg, quinto_gf = {}, {}
+        for z in ("2", "3", "4"):
+            pos5 = orden_pf[z][CLASIFICAN_ZONA_NUEVE, :]
+            quinto_gf[z] = np.take_along_axis(gf_pf[z], pos5[None, :], axis=0)[0]
+            quinto_gc = np.take_along_axis(gc_pf[z], pos5[None, :], axis=0)[0]
+            quinto_dg[z] = quinto_gf[z] - quinto_gc
+        compuesto_quintos = (np.stack([quinto_dg[z] for z in ("2", "3", "4")]).astype(np.int64) * 1_000_000
+                             + np.stack([quinto_gf[z] for z in ("2", "3", "4")]).astype(np.int64))
+        mejor_quinto_zona_i = np.argmax(compuesto_quintos, axis=0)  # (S,) 0='2',1='3',2='4'
+
+        # ---- Segunda Fase: slots de Zona A y Zona B ----
+        slots_a = np.stack(
+            [idx_zona["1"][orden_pf["1"][i, :]] for i in range(CLASIFICAN_ZONA_DIEZ)]
+            + [idx_zona["2"][orden_pf["2"][i, :]] for i in range(CLASIFICAN_ZONA_NUEVE)]
+        )
+        quinto_equipo_idx = {z: idx_zona[z][orden_pf[z][CLASIFICAN_ZONA_NUEVE, :]] for z in ("2", "3", "4")}
+        mejor_quinto_equipo = np.select(
+            [mejor_quinto_zona_i == 0, mejor_quinto_zona_i == 1, mejor_quinto_zona_i == 2],
+            [quinto_equipo_idx["2"], quinto_equipo_idx["3"], quinto_equipo_idx["4"]],
+        )
+        slots_b = np.stack(
+            [idx_zona["3"][orden_pf["3"][i, :]] for i in range(CLASIFICAN_ZONA_NUEVE)]
+            + [idx_zona["4"][orden_pf["4"][i, :]] for i in range(CLASIFICAN_ZONA_NUEVE)]
+            + [mejor_quinto_equipo]
+        )
+        puntos_a, gf_a, gc_a = self._simular_zona_slots_vectorizada(nombres, slots_a, S)
+        puntos_b, gf_b, gc_b = self._simular_zona_slots_vectorizada(nombres, slots_b, S)
+
+        # ---- Reválida 1ª Etapa: slots de Zona A y Zona B (con slot(s)
+        # fantasma para el/los 5° condicional(es)) ----
+        slots_ra = np.stack(
+            [idx_zona["1"][orden_pf["1"][i, :]] for i in range(CLASIFICAN_ZONA_DIEZ, 10)]
+            + [idx_zona["2"][orden_pf["2"][i, :]] for i in range(CLASIFICAN_ZONA_NUEVE + 1, 9)]
+            + [quinto_equipo_idx["2"]]
+        )
+        reales_ra = np.stack([np.ones(S, dtype=bool)] * 9 + [mejor_quinto_zona_i != 0])
+
+        slots_rb = np.stack(
+            [idx_zona["3"][orden_pf["3"][i, :]] for i in range(CLASIFICAN_ZONA_NUEVE + 1, 9)]
+            + [idx_zona["4"][orden_pf["4"][i, :]] for i in range(CLASIFICAN_ZONA_NUEVE + 1, 9)]
+            + [quinto_equipo_idx["3"], quinto_equipo_idx["4"]]
+        )
+        reales_rb = np.stack([np.ones(S, dtype=bool)] * 8 + [mejor_quinto_zona_i != 1, mejor_quinto_zona_i != 2])
+
+        puntos_ra, gf_ra, gc_ra = self._simular_zona_slots_vectorizada(nombres, slots_ra, S, es_real_slot=reales_ra)
+        puntos_rb, gf_rb, gc_rb = self._simular_zona_slots_vectorizada(nombres, slots_rb, S, es_real_slot=reales_rb)
+
+        return {
+            "nombres": nombres, "S": S,
+            "zonas_pf": zonas, "puntos_pf": puntos_pf, "gf_pf": gf_pf, "gc_pf": gc_pf, "orden_pf": orden_pf,
+            "slots_a": slots_a, "puntos_a": puntos_a, "gf_a": gf_a, "gc_a": gc_a,
+            "slots_b": slots_b, "puntos_b": puntos_b, "gf_b": gf_b, "gc_b": gc_b,
+            "slots_ra": slots_ra, "reales_ra": reales_ra, "puntos_ra": puntos_ra, "gf_ra": gf_ra, "gc_ra": gc_ra,
+            "slots_rb": slots_rb, "reales_rb": reales_rb, "puntos_rb": puntos_rb, "gf_rb": gf_rb, "gc_rb": gc_rb,
+        }
+
+    def _simular_zona_slots_vectorizada(
+        self, nombres: list[str], equipo_en_slot: np.ndarray, S: int, es_real_slot: np.ndarray | None = None,
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+        """Envoltorio de _simular_ronda_slots_vectorizada(): a partir de
+        equipo_en_slot (n_slots, S, índices GLOBALES de equipo), gatherea
+        los ratings de ataque/defensa de quien ocupa cada lugar en cada
+        repetición, arma el fixture de una rueda entre los slots, y
+        simula. es_real_slot (n_slots, S) opcional enmascara los
+        partidos donde alguno de los dos lados es un slot fantasma (ver
+        docstring de _simular_ronda_slots_vectorizada)."""
+        n_slots = equipo_en_slot.shape[0]
+        al = np.array([self.equipos[n].ataque_local for n in nombres])
+        dv = np.array([self.equipos[n].defensa_visitante for n in nombres])
+        av = np.array([self.equipos[n].ataque_visitante for n in nombres])
+        dl = np.array([self.equipos[n].defensa_local for n in nombres])
+
+        ataque_local_slot = al[equipo_en_slot]
+        defensa_visitante_slot = dv[equipo_en_slot]
+        ataque_visitante_slot = av[equipo_en_slot]
+        defensa_local_slot = dl[equipo_en_slot]
+
+        from fixture_generator import generar_fixture_una_rueda
+        partidos = generar_fixture_una_rueda(list(range(n_slots)))
+        idx_local = np.array([p.equipo_local for p in partidos])
+        idx_visitante = np.array([p.equipo_visitante for p in partidos])
+
+        lambda_local_base = ataque_local_slot[idx_local] * defensa_visitante_slot[idx_visitante] * self.PROMEDIO_GF_LOCAL_LIGA
+        lambda_visitante_base = ataque_visitante_slot[idx_visitante] * defensa_local_slot[idx_local] * self.PROMEDIO_GF_VISITANTE_LIGA
+
+        mascara = None
+        if es_real_slot is not None:
+            mascara = (es_real_slot[idx_local] & es_real_slot[idx_visitante]).astype(np.float64)
+
+        return self._simular_ronda_slots_vectorizada(
+            lambda_local_base, lambda_visitante_base, idx_local, idx_visitante, n_slots, S,
+            mascara_partido=mascara,
+        )
+
     def _asignar_zonas(self, mapa_zona: dict[str, str]) -> None:
         """equipo.zona = zona para cada entrada de mapa_zona (nombre ->
         zona). Es lo que usa simular_fase_regular()/_armar_tabla_final()
@@ -424,6 +681,20 @@ class EstadisticasFederal(Estadisticas):
         tablas = self.simular_fase_regular()
         return {"RA": tablas["RA"], "RB": tablas["RB"]}
 
+    _PARTIDOS_PRIMERA_FASE_POR_ZONA = {ZONA_DIEZ: 18, "2": 16, "3": 16, "4": 16}
+    """Partidos totales que juega cada equipo en la Primera Fase (rueda
+    doble completa): depende solo de la zona de origen, no del resultado
+    de ningún partido. Zona de 10 (par, sin descanso): 9 partidos por
+    rueda x2 = 18. Zonas de 9 (impar, un descanso por rueda): 8 x2 = 16."""
+
+    def _zona_origen_por_equipo(self) -> dict[str, str]:
+        """{equipo: zona ('1'..'4')} de Primera Fase, cacheado -- viene
+        de self.tabla (no se pisa entre fases, a diferencia de
+        equipo.zona en tiempo de ejecución)."""
+        if getattr(self, "_zona_origen_cache", None) is None:
+            self._zona_origen_cache = dict(zip(self.tabla["equipo"], self.tabla["zona"]))
+        return self._zona_origen_cache
+
     def _combinar_pf_y_revalida_1a_etapa(
         self,
         tablas_primera_fase: dict[str, pd.DataFrame],
@@ -437,24 +708,34 @@ class EstadisticasFederal(Estadisticas):
         todos jugaron la misma cantidad de partidos, ordenar por
         promedio o por puntos da exactamente el mismo resultado, así que
         usarlo para las dos zonas no contradice que el Art. solo pida
-        'Tabla General de Puntos' para B)."""
+        'Tabla General de Puntos' para B).
+
+        partidos_jugados se calcula por CONSTANTES según el tamaño de
+        cada zona (ver _PARTIDOS_PRIMERA_FASE_POR_ZONA), no contando
+        filas de self.resultados como antes: eso UNDERCOUNTEABA
+        (self.resultados solo tiene partidos reales de Primera Fase; la
+        porción de Reválida -- 100% simulada, nunca "real" -- daba
+        siempre 0) y además recorría todo el DataFrame por cada equipo y
+        por cada repetición del Monte Carlo."""
+        zona_origen = self._zona_origen_por_equipo()
 
         def combinar(zona_revalida: str, zonas_primera_fase: list[str]) -> pd.DataFrame:
+            tabla_r1 = tablas_revalida_1a_etapa[zona_revalida]
+            partidos_revalida = len(tabla_r1) - 1  # una rueda simple: n_miembros - 1
+
             equipos_pf = pd.concat([tablas_primera_fase[z] for z in zonas_primera_fase]).set_index("equipo")
-            filas = []
-            for _, fila in tablas_revalida_1a_etapa[zona_revalida].iterrows():
-                nombre = fila["equipo"]
-                base = equipos_pf.loc[nombre]
-                pj = (self._partidos_jugados_zona(nombre, zonas_primera_fase)
-                      + self._partidos_jugados_zona(nombre, [zona_revalida]))
-                filas.append({
-                    "equipo": nombre,
-                    "puntos": int(base["puntos"]) + int(fila["puntos"]),
-                    "gf": int(base["gf"]) + int(fila["gf"]),
-                    "gc": int(base["gc"]) + int(fila["gc"]),
-                    "partidos_jugados": pj,
-                })
-            tabla = pd.DataFrame(filas)
+            base = equipos_pf.loc[tabla_r1["equipo"]].reset_index()
+
+            tabla = pd.DataFrame({
+                "equipo": tabla_r1["equipo"].values,
+                "puntos": base["puntos"].values + tabla_r1["puntos"].values,
+                "gf": base["gf"].values + tabla_r1["gf"].values,
+                "gc": base["gc"].values + tabla_r1["gc"].values,
+                "partidos_jugados": [
+                    self._PARTIDOS_PRIMERA_FASE_POR_ZONA[zona_origen[eq]] + partidos_revalida
+                    for eq in tabla_r1["equipo"]
+                ],
+            })
             tabla["dg"] = tabla["gf"] - tabla["gc"]
             tabla["promedio"] = (tabla["puntos"] / tabla["partidos_jugados"]).round(3)
             return tabla
@@ -505,17 +786,6 @@ class EstadisticasFederal(Estadisticas):
             return cola[:DESCENSOS_POR_ZONA_REVALIDA]
 
         return descensos_de(combinada_a, "RA") + descensos_de(combinada_b, "RB")
-
-    def _partidos_jugados_zona(self, equipo: str, zonas: list[str]) -> int:
-        """Partidos jugados por `equipo` en self.resultados, filtrando
-        por si hace falta distinguir fases (acá se usa antes de
-        sobreescribir self.resultados entre fases, ver main_federal.py:
-        cada fase corre calcular_estadisticas()/guarda su cuenta antes
-        de pasar a la siguiente)."""
-        jugados = self.resultados[
-            (self.resultados["equipo_local"] == equipo) | (self.resultados["equipo_visitante"] == equipo)
-        ]
-        return len(jugados)
 
     # ------------------------------------------------------------------
     # REVÁLIDA - SEGUNDA ETAPA (24 clubes, resiembra + ida y vuelta)

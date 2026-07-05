@@ -57,6 +57,7 @@ PYSIM_SOURCE_FILES = [
     "modelos/estadisticas_bmetro.py",
     "main_federal.py",
     "modelos/estadisticas_federal.py",
+    "modelos/motor_vectorizado.py",
     "fixture_generator.py",
 ]
 _pysim_source_cache = None

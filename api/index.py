@@ -59,6 +59,7 @@ PYSIM_SOURCE_FILES = [
     "modelos/estadisticas_bmetro.py",
     "main_federal.py",
     "modelos/estadisticas_federal.py",
+    "modelos/motor_vectorizado.py",
     "fixture_generator.py",
 ]
 # El código fuente no cambia mientras el proceso está corriendo, así que se

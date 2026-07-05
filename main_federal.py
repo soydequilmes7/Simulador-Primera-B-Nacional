@@ -15,6 +15,7 @@ import datetime
 import json
 
 import pandas as pd
+import numpy as np
 
 import rutas
 from modelos.estadisticas_federal import EstadisticasFederal, ResultadoSerie
@@ -175,6 +176,69 @@ def _armar_datos_web(corrida: dict, monte_carlo: list[dict], n_sims: int, equipo
     }
 
 
+def _tabla_desde_arrays(nombres_zona: list[str], orden: np.ndarray, puntos: np.ndarray,
+                         gf: np.ndarray, gc: np.ndarray, s: int) -> pd.DataFrame:
+    """Arma un DataFrame equipo/puntos/gf/gc/dg -- mismo shape que
+    _armar_tabla_final() -- ya ordenado de mejor a peor, para la
+    repetición `s` de un array vectorizado (orden[:,s] trae los índices
+    LOCALES a la zona, ya ordenados)."""
+    idx = orden[:, s]
+    p, g, c = puntos[idx, s], gf[idx, s], gc[idx, s]
+    return pd.DataFrame({
+        "equipo": [nombres_zona[i] for i in idx],
+        "puntos": p, "gf": g, "gc": c, "dg": g - c,
+    })
+
+
+def _tabla_slots_desde_arrays(nombres_globales: list[str], slots: np.ndarray, puntos: np.ndarray,
+                               gf: np.ndarray, gc: np.ndarray, s: int,
+                               reales: np.ndarray | None = None) -> pd.DataFrame:
+    """Igual que _tabla_desde_arrays() pero para una zona armada por
+    slots (Segunda Fase / Reválida 1ª Etapa), donde slots[:,s] ya son
+    índices GLOBALES de equipo (no locales a una zona fija) y hay que
+    ordenar por (puntos, dg, gf) porque no vienen pre-ordenados como los
+    de Primera Fase. `reales` descarta los slots fantasma inactivos en
+    esta repetición (Reválida, zonas de 9 en vez de 10)."""
+    idx_equipo = slots[:, s]
+    p, g, c = puntos[:, s], gf[:, s], gc[:, s]
+    if reales is not None:
+        activos = reales[:, s]
+        idx_equipo, p, g, c = idx_equipo[activos], p[activos], g[activos], c[activos]
+    tabla = pd.DataFrame({
+        "equipo": [nombres_globales[i] for i in idx_equipo],
+        "puntos": p, "gf": g, "gc": c, "dg": g - c,
+    })
+    return tabla.sort_values(by=["puntos", "dg", "gf"], ascending=False, kind="stable").reset_index(drop=True)
+
+
+def _extraer_tablas_repeticion(vec: dict, s: int) -> tuple[dict, dict, dict]:
+    """A partir del dict que devuelve simular_temporada_vectorizada(),
+    arma (tablas_pf, tablas_2f, tablas_r1) para la repetición `s`, en el
+    mismo shape que devuelven simular_primera_fase()/
+    simular_segunda_fase()/simular_revalida_primera_etapa() -- así
+    clasificados_primera_fase()/clasificados_segunda_fase()/
+    calcular_descensos()/armar_revalida_segunda_etapa() se usan TAL CUAL,
+    sin cambiar ninguna línea de esos métodos."""
+    nombres = vec["nombres"]
+
+    tablas_pf = {
+        z: _tabla_desde_arrays(vec["zonas_pf"][z], vec["orden_pf"][z], vec["puntos_pf"][z],
+                                vec["gf_pf"][z], vec["gc_pf"][z], s)
+        for z in ("1", "2", "3", "4")
+    }
+    tablas_2f = {
+        "A": _tabla_slots_desde_arrays(nombres, vec["slots_a"], vec["puntos_a"], vec["gf_a"], vec["gc_a"], s),
+        "B": _tabla_slots_desde_arrays(nombres, vec["slots_b"], vec["puntos_b"], vec["gf_b"], vec["gc_b"], s),
+    }
+    tablas_r1 = {
+        "RA": _tabla_slots_desde_arrays(nombres, vec["slots_ra"], vec["puntos_ra"], vec["gf_ra"], vec["gc_ra"], s,
+                                         reales=vec["reales_ra"]),
+        "RB": _tabla_slots_desde_arrays(nombres, vec["slots_rb"], vec["puntos_rb"], vec["gf_rb"], vec["gc_rb"], s,
+                                         reales=vec["reales_rb"]),
+    }
+    return tablas_pf, tablas_2f, tablas_r1
+
+
 def correr_simulacion_federal(n_sims: int = 500, imprimir: bool = True, guardar_json: bool = True) -> dict:
     """Corre el Torneo Federal A completo una vez (para mostrar cómo
     terminó esa corrida puntual) + un Monte Carlo de `n_sims` repeticiones
@@ -196,15 +260,40 @@ def correr_simulacion_federal(n_sims: int = 500, imprimir: bool = True, guardar_
     equipos = list(e.equipos.keys())
     contador = {nombre: {"ascenso_1": 0, "ascenso_2": 0, "descenso": 0} for nombre in equipos}
 
+    if imprimir:
+        print(f"\nCorriendo Monte Carlo ({n_sims} simulaciones, Primera/Segunda Fase y "
+              f"Reválida 1ª Etapa vectorizadas)...")
+
+    vec = e.simular_temporada_vectorizada(n_sims)
     paso = max(1, n_sims // 10)
-    for i in range(n_sims):
-        resultado = _correr_torneo_completo(e)
-        contador[resultado["ascenso_1"]]["ascenso_1"] += 1
-        contador[resultado["ascenso_2"]]["ascenso_2"] += 1
-        for nombre in resultado["descensos"]:
+    for s in range(n_sims):
+        tablas_pf, tablas_2f, tablas_r1 = _extraer_tablas_repeticion(vec, s)
+        clasif_pf = e.clasificados_primera_fase(tablas_pf)
+        clasif_2f = e.clasificados_segunda_fase(tablas_2f)
+
+        resultados_3f = e.jugar_tercera_fase(clasif_2f["tercera_fase"])
+        resultados_4f = e.jugar_cuarta_fase(resultados_3f)
+        resultado_5f = e.jugar_quinta_fase(resultados_4f)
+
+        descensos = e.calcular_descensos(tablas_pf, tablas_r1, clasif_pf)
+        posiciones_r2 = e.armar_revalida_segunda_etapa(
+            resultados_3f, tablas_2f, clasif_2f["revalida_segunda_etapa_2f"], tablas_pf, tablas_r1
+        )
+        resultados_r2 = e.jugar_revalida_segunda_etapa(posiciones_r2)
+        posiciones_r3 = e.armar_revalida_tercera_etapa(resultados_r2, resultados_4f, tablas_2f)
+        resultados_r3 = e.jugar_revalida_tercera_etapa(posiciones_r3)
+        posiciones_r4 = e.armar_revalida_cuarta_etapa(resultados_r3, resultado_5f)
+        resultados_r4 = e.jugar_revalida_cuarta_etapa(posiciones_r4)
+        resultados_r5 = e.jugar_revalida_quinta_etapa(resultados_r4)
+        resultado_r6 = e.jugar_revalida_sexta_etapa(resultados_r5)
+
+        contador[resultado_5f.ganador]["ascenso_1"] += 1
+        contador[resultado_r6.ganador]["ascenso_2"] += 1
+        for nombre in descensos:
             contador[nombre]["descenso"] += 1
-        if imprimir and (i + 1) % paso == 0:
-            print(f"  {i + 1}/{n_sims} simulaciones...")
+
+        if imprimir and (s + 1) % paso == 0:
+            print(f"  {s + 1}/{n_sims} simulaciones...")
 
     monte_carlo = []
     for nombre, datos in contador.items():
