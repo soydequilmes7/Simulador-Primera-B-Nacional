@@ -124,6 +124,8 @@ class Handler(SimpleHTTPRequestHandler):
             self._manejar_datos_csv(["tabla_bmetro.csv", "fixture_bmetro.csv", "resultados_bmetro.csv"])
         elif self.path == "/api/datos-federal":
             self._manejar_datos_csv(["tabla_federal_a.csv", "fixture_federal_a.csv", "resultados_federal_a.csv"])
+        elif self.path == "/api/datos-primerac":
+            self._manejar_datos_csv(["tabla_primerac.csv", "fixture_primerac.csv", "resultados_primerac.csv"])
         else:
             super().do_GET()
 
@@ -156,6 +158,8 @@ class Handler(SimpleHTTPRequestHandler):
                 self._responder_json(200, {"files": league_csv_files("bmetro")})
             elif "federal" in nombres[0]:
                 self._responder_json(200, {"files": league_csv_files("federal_a")})
+            elif "primerac" in nombres[0]:
+                self._responder_json(200, {"files": league_csv_files("primerac")})
             else:
                 self._responder_json(500, {"error": f"Dataset no soportado: {nombres}"})
         except Exception as e:

@@ -24,66 +24,24 @@ Uso programático:
     from main_primerac import correr_simulacion as correr_simulacion_primerac
     resultado = actualizar(correr_simulacion_fn=correr_simulacion_primerac)
 """
-import csv
-import json
-import os
 from datetime import datetime
 
-try:
-    import rutas
-    _DATOS_DIR = rutas.datos_dir()
-except ImportError:
-    _DATOS_DIR = None
+from db.repository import bootstrap_league_from_csv, transaction
 
 from scraper_promiedos_primerac import obtener_partidos_jugados_primerac
-from calcular_tabla_primerac import actualizar_tabla_con_partidos
+from calcular_tabla_primerac import aplicar_partidos
 
 CAMPOS_FIXTURE = ["fecha", "jornada", "equipo_local", "equipo_visitante"]
 CAMPOS_RESULTADOS = ["fecha", "jornada", "equipo_local", "equipo_visitante",
                       "goles_local", "goles_visitante"]
 
-NOMBRE_FIXTURE = "fixture_primerac.csv"
-NOMBRE_RESULTADOS = "resultados_primerac.csv"
-NOMBRE_TABLA = "tabla_primerac.csv"
-NOMBRE_LOG = "log_actualizaciones_primerac.json"
-
-
-def _ruta(nombre_archivo):
-    if _DATOS_DIR is not None:
-        return str(_DATOS_DIR / nombre_archivo)
-    return nombre_archivo
-
-
-def _leer_csv(path, campos_esperados):
-    if not os.path.exists(path):
-        return []
-    with open(path, newline="", encoding="utf-8") as f:
-        return list(csv.DictReader(f))
-
-
-def _escribir_csv(path, filas, campos):
-    with open(path, "w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=campos)
-        writer.writeheader()
-        writer.writerows(filas)
-
-
 def actualizar(n_sims=1000, correr_simulacion_fn=None, imprimir=True):
     ahora = datetime.now().isoformat(timespec="seconds")
+    bootstrap_league_from_csv("primerac")
 
-    fixture_csv = _ruta(NOMBRE_FIXTURE)
-    resultados_csv = _ruta(NOMBRE_RESULTADOS)
-    tabla_csv = _ruta(NOMBRE_TABLA)
-
-    if not os.path.exists(tabla_csv):
-        raise FileNotFoundError(
-            f"No existe {tabla_csv} todavía. Antes de correr este script hay que "
-            "hacer el bootstrap inicial: correr scraper_promiedos_primerac.py una "
-            "vez y después construir_tabla_inicial() de calcular_tabla_primerac.py."
-        )
-
-    fixture = _leer_csv(fixture_csv, CAMPOS_FIXTURE)
-    resultados = _leer_csv(resultados_csv, CAMPOS_RESULTADOS)
+    with transaction() as repo:
+        fixture = repo.match_records("primerac", "pending")
+        resultados = repo.match_records("primerac", "played")
 
     if imprimir:
         print(f"[{ahora}] Scrapeando Promiedos (Primera C)...")
@@ -140,9 +98,12 @@ def actualizar(n_sims=1000, correr_simulacion_fn=None, imprimir=True):
 
     fixture_restante = [f for i, f in enumerate(fixture) if i not in indices_a_borrar]
 
-    _escribir_csv(fixture_csv, fixture_restante, CAMPOS_FIXTURE)
-    _escribir_csv(resultados_csv, resultados, CAMPOS_RESULTADOS)
-    actualizar_tabla_con_partidos(cargados, tabla_path=tabla_csv, imprimir=imprimir)
+    with transaction() as repo:
+        repo.replace_matches("primerac", fixture_restante, resultados)
+        tabla_nueva = aplicar_partidos(repo.standing_records("primerac"), cargados)
+        repo.upsert_standings("primerac", tabla_nueva)
+        if imprimir:
+            print(f"  tabla_primerac.csv actualizada con {len(cargados)} partido(s) nuevo(s).")
 
     datos = None
     simulacion_corrida = False
@@ -172,24 +133,8 @@ def actualizar(n_sims=1000, correr_simulacion_fn=None, imprimir=True):
 
 
 def _guardar_log(timestamp, cargados, sin_matchear, simulacion_corrida):
-    log_path = _ruta(NOMBRE_LOG)
-    historial = []
-    if os.path.exists(log_path):
-        try:
-            with open(log_path, encoding="utf-8") as f:
-                historial = json.load(f)
-        except (json.JSONDecodeError, OSError):
-            historial = []
-
-    historial.append({
-        "timestamp": timestamp,
-        "partidos_cargados": cargados,
-        "sin_matchear": sin_matchear,
-        "simulacion_corrida": simulacion_corrida,
-    })
-
-    with open(log_path, "w", encoding="utf-8") as f:
-        json.dump(historial, f, ensure_ascii=False, indent=2)
+    with transaction() as repo:
+        repo.log_update("primerac", cargados, sin_matchear, simulacion_corrida, timestamp=timestamp)
 
 
 if __name__ == "__main__":

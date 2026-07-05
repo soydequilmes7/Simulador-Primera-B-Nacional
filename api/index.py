@@ -369,14 +369,7 @@ def datos_primerac():
     if ocupado:
         return ocupado
     try:
-        datos_dir = rutas.datos_dir()
-        archivos = {}
-        for nombre in ["tabla_primerac.csv", "fixture_primerac.csv", "resultados_primerac.csv"]:
-            ruta = datos_dir / nombre
-            if not ruta.exists():
-                return JSONResponse(status_code=500, content={"error": f"Falta {nombre} en datos/"})
-            archivos[nombre] = ruta.read_text(encoding="utf-8")
-        return {"files": archivos}
+        return {"files": league_csv_files("primerac")}
     except Exception as e:
         return _error_response(e)
     finally:
