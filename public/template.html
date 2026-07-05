@@ -1402,6 +1402,12 @@
   body.liga-copa .torneo-logo[data-liga="copa"],
   body.liga-bmetro .torneo-logo[data-liga="bmetro"]{ display:block; }
   body.liga-federal .torneo-logo[data-liga="federal"]{ display:block; }
+
+  /* Escudos de Federal A y B Metropolitana un poco más grandes que el resto */
+  body.liga-bmetro .torneo-logo[data-liga="bmetro"],
+  body.liga-federal .torneo-logo[data-liga="federal"]{
+    width:116px; height:116px; padding:16px;
+  }
   /* Filas de tabla del Federal A: clasifica a la fase siguiente / posible
      mejor 5° (zonas de 9) / desciende (Reválida 1ª Etapa, según la lista
      definitiva `revalida.descensos` que ya viene calculada del backend). */
@@ -1411,6 +1417,10 @@
   #tabla-federal-r1-body tr.desciende td{ background: color-mix(in srgb, var(--danger) 10%, transparent); }
   @media (max-width:700px){
     .torneo-logo{ width:72px; height:72px; padding:11px; }
+    body.liga-bmetro .torneo-logo[data-liga="bmetro"],
+    body.liga-federal .torneo-logo[data-liga="federal"]{
+      width:92px; height:92px; padding:13px;
+    }
   }
 
   /* ---- Tipografía del hero: más aire, jerarquía más clara ---- */
@@ -1796,48 +1806,9 @@
   body.liga-federal .hero h1 span{ color:#FFFFFF; }   /* "TORNEO FEDERAL A" blanco puro */
   body.liga-federal .hero p.sub{ color: var(--hero-dim); max-width:560px; }
 
-  /* Emblema del hero: aro blanco (crest) con disco petróleo y monograma
-     "FA", envuelto en un halo circular muy sutil. Reemplaza al escudo
-     .torneo-logo (cuyo asset no existe para esta liga) y se convierte en
-     el protagonista, inspirado en el aro blanco del escudo oficial. */
+  /* Emblema del hero: se usa el logo oficial federal-a.png (igual que en
+     el resto de las ligas). El crest dibujado a mano queda deshabilitado. */
   .federal-crest{ display:none; }
-  body.liga-federal .torneo-logo[data-liga="federal"]{ display:none; }
-  body.liga-federal .federal-crest{
-    display:flex; align-items:center; justify-content:center;
-    position:relative; width:132px; height:132px; margin:0 auto 20px;
-    opacity:0; animation: fade-in 0.7s ease forwards 0.05s;
-  }
-  /* halo: aro blanco difuso girando la mirada hacia el emblema */
-  body.liga-federal .federal-crest::before{
-    content:""; position:absolute; width:210px; height:210px; border-radius:50%;
-    border:1px solid rgba(255,255,255,0.16);
-    box-shadow: 0 0 0 1px rgba(255,255,255,0.04), inset 0 0 60px rgba(55,184,168,0.14);
-    background: radial-gradient(circle, rgba(55,184,168,0.10), transparent 62%);
-  }
-  body.liga-federal .federal-crest-disc{
-    position:relative; width:118px; height:118px; border-radius:50%;
-    background:
-      radial-gradient(circle at 50% 34%, #163A4C 0%, #0D2430 60%, #050F16 100%);
-    border:3px solid #FFFFFF;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.55), inset 0 0 22px rgba(0,0,0,0.5);
-    display:flex; align-items:center; justify-content:center;
-  }
-  /* aro interior fino (doble aro del crest) */
-  body.liga-federal .federal-crest-disc::after{
-    content:""; position:absolute; inset:9px; border-radius:50%;
-    border:1px solid rgba(255,255,255,0.32);
-  }
-  body.liga-federal .federal-crest-mono{
-    font-family:'Anton', sans-serif; font-size:44px; letter-spacing:0.02em;
-    color:#FFFFFF; line-height:1; text-shadow:0 2px 10px rgba(0,0,0,0.5);
-    position:relative;
-  }
-  @media (max-width:700px){
-    body.liga-federal .federal-crest{ width:112px; height:112px; }
-    body.liga-federal .federal-crest::before{ width:176px; height:176px; }
-    body.liga-federal .federal-crest-disc{ width:100px; height:100px; }
-    body.liga-federal .federal-crest-mono{ font-size:38px; }
-  }
 
   /* ---- Contadores = placas metálicas / paneles técnicos ---- */
   body.liga-federal .hero .meta{ gap:12px; margin-top:32px; }
@@ -1961,7 +1932,6 @@
   body.liga-federal .faq summary::after{ color:#4FB3A6; }
 
   @media (prefers-reduced-motion: reduce){
-    body.liga-federal .federal-crest{ animation:none; opacity:1; }
     body.liga-federal .hero .meta > div{ transition:none; }
   }
 
@@ -2020,9 +1990,6 @@
            onerror="this.remove()">
       <img class="torneo-logo" data-liga="federal" src="logos-torneos/federal-a.png" alt=""
            onerror="this.remove()">
-      <div class="federal-crest" aria-hidden="true">
-        <div class="federal-crest-disc"><span class="federal-crest-mono">FA</span></div>
-      </div>
     </div>
     <div class="eyebrow" id="hero-eyebrow">SIMULACIÓN MONTE CARLO — <span id="hero-n">0</span> CORRIDAS</div>
     <h1 class="display">SIMULADOR <span id="hero-title-span">PRIMERA NACIONAL</span></h1>
@@ -4979,11 +4946,14 @@ function buildTeamIndexFederal(){
   const index = {};
   if (!DATA_FEDERAL) return index;
   const mc = DATA_FEDERAL.monte_carlo || [];
+  const rachas = DATA_FEDERAL.rachas || {};
   ['1', '2', '3', '4'].forEach(zona => {
     const filas = DATA_FEDERAL.primera_fase.tablas[zona] || [];
     const nClasif = zona === '1' ? 5 : 4;
     filas.forEach((f, i) => {
       const mcRow = mc.find(m => m.equipo === f.equipo) || {};
+      // Más reciente primero en la ficha (vienen en orden cronológico).
+      const ultimos5 = [...(rachas[f.equipo] || [])].reverse();
       let estado = 'revalida';
       if (i < nClasif) estado = 'clasifica';
       else if (i === nClasif) estado = 'quinto-posible';
@@ -4994,6 +4964,7 @@ function buildTeamIndexFederal(){
         ascenso_revalida: mcRow['%ascenso_revalida'] ?? 0,
         asciende: mcRow['%asciende'] ?? 0,
         descenso: mcRow['%descenso'] ?? 0,
+        ultimos5
       };
     });
   });
@@ -5032,6 +5003,10 @@ function renderTeamCardFederal(t){
       <div class="mc-bar-track" style="margin-bottom:14px;">
         <div class="mc-bar-fill directo" style="width:${t.ascenso_directo}%; background:${badge.accent}"></div>
         <div class="mc-bar-fill reducido" style="left:${t.ascenso_directo}%; width:${t.ascenso_revalida}%; background:${badge.accent}"></div>
+      </div>
+      <div class="tc-racha">
+        <div class="tc-racha-title">Últimos partidos</div>
+        ${renderRacha(t.ultimos5)}
       </div>
       <div class="tc-share">
         <button onclick="compartirLinkFederal('${t.equipo.replace(/'/g, "\\'")}', this)">🔗 Copiar link</button>

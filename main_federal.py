@@ -72,6 +72,7 @@ def _preparar_motor() -> EstadisticasFederal:
     e = EstadisticasFederal()
     e.cargar_datos_federal()
     e.crear_equipos_federal()
+    e.calcular_estadisticas()
     e.calcular_ratings()
     return e
 
@@ -128,7 +129,7 @@ def _correr_torneo_completo(e: EstadisticasFederal) -> dict:
     }
 
 
-def _armar_datos_web(corrida: dict, monte_carlo: list[dict], n_sims: int) -> dict:
+def _armar_datos_web(corrida: dict, monte_carlo: list[dict], n_sims: int, equipos: dict | None = None) -> dict:
     return {
         "liga": "federal_a",
         "generado": datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
@@ -167,6 +168,10 @@ def _armar_datos_web(corrida: dict, monte_carlo: list[dict], n_sims: int) -> dic
             "ascenso_2": corrida["ascenso_2"],
         },
         "monte_carlo": monte_carlo,
+        "rachas": {
+            nombre: equipo.ultimos10[-5:]
+            for nombre, equipo in (equipos or {}).items()
+        },
     }
 
 
@@ -213,7 +218,7 @@ def correr_simulacion_federal(n_sims: int = 500, imprimir: bool = True, guardar_
         })
     monte_carlo.sort(key=lambda f: (-f["%asciende"], -f["%ascenso_directo"], f["equipo"]))
 
-    datos_web = _armar_datos_web(corrida, monte_carlo, n_sims)
+    datos_web = _armar_datos_web(corrida, monte_carlo, n_sims, equipos=e.equipos)
 
     if guardar_json:
         ruta = rutas.public_dir() / RUTA_JSON_FEDERAL_DEFAULT
@@ -259,7 +264,7 @@ def simular_hasta_ascenso_federal(equipo_objetivo: str, max_intentos: int = 3000
             if imprimir:
                 print(f"\n¡{equipo_objetivo} ASCENDIÓ ({via}) en el intento {intento}!")
             return {"equipo": equipo_objetivo, "intentos": intento, "via": via,
-                    **_armar_datos_web(corrida, monte_carlo=[], n_sims=0)}
+                    **_armar_datos_web(corrida, monte_carlo=[], n_sims=0, equipos=e.equipos)}
 
     if imprimir:
         print(f"\nNo se logró el ascenso de {equipo_objetivo} en {max_intentos} intentos.")
