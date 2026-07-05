@@ -24,7 +24,7 @@ resultados_bmetro.csv vacíos.
 Uso:
     python scraper_promiedos_bmetro.py
 
-Escribe (o pisa) fixture_bmetro.csv y resultados_bmetro.csv en api/datos/
+Escribe (o pisa) fixture_bmetro.csv y resultados_bmetro.csv en datos/
 (relativo a este archivo, no a la carpeta donde se corra), con las mismas
 columnas que el resto del proyecto:
 
@@ -44,11 +44,12 @@ import time
 import urllib.error
 import urllib.request
 
+import rutas
+
 # Carpeta donde el resto del proyecto guarda los datos (tabla, fixture,
 # resultados, data_bmetro.json). Se calcula relativa a este archivo para
 # que funcione sin importar desde dónde se lo ejecute.
-DATOS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "api", "datos")
-os.makedirs(DATOS_DIR, exist_ok=True)
+DATOS_DIR = str(rutas.datos_dir())
 
 BASE_URL = "https://api.promiedos.com.ar"
 LEAGUE_ID = "fahh"
@@ -162,6 +163,8 @@ def obtener_partidos_bmetro(verbose=True):
 def escribir_csvs(partidos, fixture_path=FIXTURE_CSV, resultados_path=RESULTADOS_CSV):
     jugados = [p for p in partidos if p["jugado"]]
     pendientes = [p for p in partidos if not p["jugado"]]
+    os.makedirs(os.path.dirname(fixture_path), exist_ok=True)
+    os.makedirs(os.path.dirname(resultados_path), exist_ok=True)
 
     with open(fixture_path, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)

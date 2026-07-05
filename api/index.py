@@ -32,7 +32,7 @@ from pydantic import BaseModel
 
 import rutas
 import pysim_dispatch
-from db.client import database_schema, database_url
+from db.client import DatabaseConfigError, database_schema, database_url
 from db.repository import cup_csv_files, league_csv_files
 from main_lpf import correr_simulacion_lpf
 from actualizar_resultados import actualizar
@@ -87,6 +87,18 @@ MAX_INTENTOS_CAMPEON_MIN = 100
 MAX_INTENTOS_CAMPEON_MAX = 20000
 
 app = FastAPI(title="Simulador Primera Nacional API")
+
+
+def _error_response(exc: Exception) -> JSONResponse:
+    if isinstance(exc, DatabaseConfigError):
+        return JSONResponse(
+            status_code=503,
+            content={
+                "error": str(exc),
+                "config_error": True,
+            },
+        )
+    return JSONResponse(status_code=500, content={"error": str(exc)})
 
 # Sin credenciales/cookies de por medio; el dashboard puede terminar
 # sirviéndose desde otro dominio/proyecto que este mismo, así que se
@@ -226,8 +238,11 @@ def _adquirir_escritura(lock: ReadWriteLock, mensaje: str):
 
 @app.get("/api/health")
 def health():
-    database_url()
-    return {"ok": True, "storage": "supabase", "schema": database_schema()}
+    try:
+        database_url()
+        return {"ok": True, "storage": "supabase", "schema": database_schema()}
+    except Exception as e:
+        return _error_response(e)
 
 
 @app.get("/api/pysim-source")
@@ -261,7 +276,7 @@ def datos_nacional():
     try:
         return {"files": league_csv_files("nacional")}
     except Exception as e:
-        return JSONResponse(status_code=500, content={"error": str(e)})
+        return _error_response(e)
     finally:
         _lock_nacional.release_read()
 
@@ -280,7 +295,7 @@ def datos_copa():
     try:
         return {"files": cup_csv_files()}
     except Exception as e:
-        return JSONResponse(status_code=500, content={"error": str(e)})
+        return _error_response(e)
     finally:
         _lock_copa.release_read()
 
@@ -298,7 +313,7 @@ def datos_lpf():
     try:
         return {"files": league_csv_files("lpf")}
     except Exception as e:
-        return JSONResponse(status_code=500, content={"error": str(e)})
+        return _error_response(e)
     finally:
         _lock_lpf.release_read()
 
@@ -318,7 +333,7 @@ def datos_bmetro():
     try:
         return {"files": league_csv_files("bmetro")}
     except Exception as e:
-        return JSONResponse(status_code=500, content={"error": str(e)})
+        return _error_response(e)
     finally:
         _lock_bmetro.release_read()
 
@@ -336,7 +351,7 @@ def datos_federal():
     try:
         return {"files": league_csv_files("federal_a")}
     except Exception as e:
-        return JSONResponse(status_code=500, content={"error": str(e)})
+        return _error_response(e)
     finally:
         _lock_federal.release_read()
 
@@ -354,16 +369,9 @@ def datos_primerac():
     if ocupado:
         return ocupado
     try:
-        datos_dir = rutas.datos_dir()
-        archivos = {}
-        for nombre in ["tabla_primerac.csv", "fixture_primerac.csv", "resultados_primerac.csv"]:
-            ruta = datos_dir / nombre
-            if not ruta.exists():
-                return JSONResponse(status_code=500, content={"error": f"Falta {nombre} en datos/"})
-            archivos[nombre] = ruta.read_text(encoding="utf-8")
-        return {"files": archivos}
+        return {"files": league_csv_files("primerac")}
     except Exception as e:
-        return JSONResponse(status_code=500, content={"error": str(e)})
+        return _error_response(e)
     finally:
         _lock_primerac.release_read()
 
@@ -389,7 +397,7 @@ def simular(body: SimularBody = SimularBody()):
         datos = pysim_dispatch.simular(n_sims)
         return datos
     except Exception as e:
-        return JSONResponse(status_code=500, content={"error": str(e)})
+        return _error_response(e)
     finally:
         _lock_nacional.release_read()
 
@@ -419,7 +427,7 @@ def simular_campeon(body: SimularCampeonBody):
         # no existe (con sugerencias si hay coincidencias parciales)
         return JSONResponse(status_code=400, content={"error": str(e)})
     except Exception as e:
-        return JSONResponse(status_code=500, content={"error": str(e)})
+        return _error_response(e)
     finally:
         _lock_nacional.release_read()
 
@@ -441,7 +449,7 @@ def simular_lpf(body: SimularLPFBody = SimularLPFBody()):
         datos = pysim_dispatch.simular_lpf(n_sims)
         return datos
     except Exception as e:
-        return JSONResponse(status_code=500, content={"error": str(e)})
+        return _error_response(e)
     finally:
         _lock_lpf.release_read()
 
@@ -462,7 +470,7 @@ def actualizar_lpf_endpoint(body: SimularLPFBody = SimularLPFBody()):
         resultado = actualizar_lpf(n_sims=n_sims, correr_simulacion_fn=correr_simulacion_lpf, imprimir=False)
         return resultado
     except Exception as e:
-        return JSONResponse(status_code=500, content={"error": str(e)})
+        return _error_response(e)
     finally:
         _lock_lpf.release_write()
 
@@ -488,7 +496,7 @@ def simular_campeon_lpf(body: SimularCampeonBody):
     except ValueError as e:
         return JSONResponse(status_code=400, content={"error": str(e)})
     except Exception as e:
-        return JSONResponse(status_code=500, content={"error": str(e)})
+        return _error_response(e)
     finally:
         _lock_lpf.release_read()
 
@@ -508,7 +516,7 @@ def simular_copa_endpoint(body: SimularCopaBody = SimularCopaBody()):
     try:
         return pysim_dispatch.simular_copa(n_sims)
     except Exception as e:
-        return JSONResponse(status_code=500, content={"error": str(e)})
+        return _error_response(e)
     finally:
         _lock_copa.release_read()
 
@@ -529,7 +537,7 @@ def actualizar_copa_endpoint(body: SimularCopaBody = SimularCopaBody()):
         resultado = actualizar_copa(n_sims=n_sims, correr_simulacion_fn=correr_simulacion_copa, imprimir=False)
         return resultado
     except Exception as e:
-        return JSONResponse(status_code=500, content={"error": str(e)})
+        return _error_response(e)
     finally:
         _lock_copa.release_write()
 
@@ -555,7 +563,7 @@ def simular_campeon_copa_endpoint(body: SimularCampeonBody):
     except ValueError as e:
         return JSONResponse(status_code=400, content={"error": str(e)})
     except Exception as e:
-        return JSONResponse(status_code=500, content={"error": str(e)})
+        return _error_response(e)
     finally:
         _lock_copa.release_read()
 
@@ -577,7 +585,7 @@ def simular_bmetro_endpoint(body: SimularBmetroBody = SimularBmetroBody()):
         datos = pysim_dispatch.simular_bmetro(n_sims)
         return datos
     except Exception as e:
-        return JSONResponse(status_code=500, content={"error": str(e)})
+        return _error_response(e)
     finally:
         _lock_bmetro.release_read()
 
@@ -606,7 +614,7 @@ def simular_campeon_bmetro_endpoint(body: SimularCampeonBody):
         # equipo no existe (con sugerencias si hay coincidencias parciales)
         return JSONResponse(status_code=400, content={"error": str(e)})
     except Exception as e:
-        return JSONResponse(status_code=500, content={"error": str(e)})
+        return _error_response(e)
     finally:
         _lock_bmetro.release_read()
 
@@ -627,7 +635,7 @@ def actualizar_bmetro_endpoint(body: SimularBmetroBody = SimularBmetroBody()):
         resultado = actualizar_bmetro(n_sims=n_sims, correr_simulacion_fn=correr_simulacion_bmetro, imprimir=False)
         return resultado
     except Exception as e:
-        return JSONResponse(status_code=500, content={"error": str(e)})
+        return _error_response(e)
     finally:
         _lock_bmetro.release_write()
 
@@ -648,7 +656,7 @@ def simular_federal_endpoint(body: SimularFederalBody = SimularFederalBody()):
         datos = pysim_dispatch.simular_federal(n_sims)
         return datos
     except Exception as e:
-        return JSONResponse(status_code=500, content={"error": str(e)})
+        return _error_response(e)
     finally:
         _lock_federal.release_read()
 
@@ -669,7 +677,7 @@ def actualizar_federal_endpoint(body: SimularFederalBody = SimularFederalBody())
         resultado = actualizar_federal(n_sims=n_sims, correr_simulacion_fn=correr_simulacion_federal, imprimir=False)
         return resultado
     except Exception as e:
-        return JSONResponse(status_code=500, content={"error": str(e)})
+        return _error_response(e)
     finally:
         _lock_federal.release_write()
 
@@ -695,7 +703,7 @@ def simular_campeon_federal_endpoint(body: SimularCampeonBody):
     except ValueError as e:
         return JSONResponse(status_code=400, content={"error": str(e)})
     except Exception as e:
-        return JSONResponse(status_code=500, content={"error": str(e)})
+        return _error_response(e)
     finally:
         _lock_federal.release_read()
 
@@ -717,7 +725,7 @@ def simular_primerac_endpoint(body: SimularPrimeraCBody = SimularPrimeraCBody())
         datos = pysim_dispatch.simular_primerac(n_sims)
         return datos
     except Exception as e:
-        return JSONResponse(status_code=500, content={"error": str(e)})
+        return _error_response(e)
     finally:
         _lock_primerac.release_read()
 
@@ -738,7 +746,7 @@ def actualizar_primerac_endpoint(body: SimularPrimeraCBody = SimularPrimeraCBody
         resultado = actualizar_primerac(n_sims=n_sims, correr_simulacion_fn=correr_simulacion_primerac, imprimir=False)
         return resultado
     except Exception as e:
-        return JSONResponse(status_code=500, content={"error": str(e)})
+        return _error_response(e)
     finally:
         _lock_primerac.release_write()
 
@@ -764,7 +772,7 @@ def simular_campeon_primerac_endpoint(body: SimularCampeonBody):
     except ValueError as e:
         return JSONResponse(status_code=400, content={"error": str(e)})
     except Exception as e:
-        return JSONResponse(status_code=500, content={"error": str(e)})
+        return _error_response(e)
     finally:
         _lock_primerac.release_read()
 
@@ -785,7 +793,7 @@ def actualizar_endpoint(body: SimularBody = SimularBody()):
         resultado = actualizar(n_sims=n_sims, imprimir=False)
         return resultado
     except Exception as e:
-        return JSONResponse(status_code=500, content={"error": str(e)})
+        return _error_response(e)
     finally:
         _lock_nacional.release_write()
 

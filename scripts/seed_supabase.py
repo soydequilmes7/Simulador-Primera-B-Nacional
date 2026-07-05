@@ -37,6 +37,11 @@ LEAGUE_FILES = {
         "fixture": "fixture_federal_a.csv",
         "resultados": "resultados_federal_a.csv",
     },
+    "primerac": {
+        "tabla": "tabla_primerac.csv",
+        "fixture": "fixture_primerac.csv",
+        "resultados": "resultados_primerac.csv",
+    },
 }
 
 

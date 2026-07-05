@@ -215,6 +215,30 @@ desde `requirements.txt`, carga la variable `app`, y sirve los archivos
 de `public/` como sitio estático (el dashboard). La versión de Python
 queda fijada en `.python-version`.
 
+En Vercel, `render.yaml` no carga variables de entorno. Configurar estas
+variables en Project Settings > Environment Variables, o con la CLI, para
+los ambientes que correspondan:
+
+```bash
+vercel env add SUPABASE_DB_URL production
+vercel env add SUPABASE_SCHEMA production
+```
+
+Para previews, repetir con `preview`. Después de cambiar variables de entorno
+hay que crear un deployment nuevo (`vercel deploy --prod` o redeploy desde el
+dashboard), porque Vercel no las aplica a deployments anteriores.
+
+Usar como `SUPABASE_DB_URL` el connection string del pooler de Supabase
+compatible con IPv4, preferentemente el Transaction pooler en puerto `6543`:
+
+```text
+postgresql://postgres.<project_ref>:<password>@aws-<region>.pooler.supabase.com:6543/postgres
+```
+
+Evitar el host directo `db.<project_ref>.supabase.co:5432` en Vercel salvo que
+el proyecto tenga conectividad IPv4 dedicada, porque el directo de Supabase
+resuelve por IPv6 y Vercel no siempre puede conectarse a ese destino.
+
 Para validar el build local antes de subir:
 
 ```bash

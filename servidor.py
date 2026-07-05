@@ -40,6 +40,7 @@ from main_bmetro import correr_simulacion_bmetro, simular_hasta_ascenso_bmetro
 from actualizar_resultados_bmetro import actualizar as actualizar_bmetro
 from main_federal import correr_simulacion_federal, simular_hasta_ascenso_federal
 from actualizar_resultados_federal import actualizar as actualizar_federal
+from db.client import DatabaseConfigError
 from db.repository import cup_csv_files, league_csv_files
 import rutas
 
@@ -84,6 +85,12 @@ MAX_INTENTOS_CAMPEON_DEFAULT = 5000
 MAX_INTENTOS_CAMPEON_MIN = 100
 MAX_INTENTOS_CAMPEON_MAX = 20000
 
+
+def _error_http(exc):
+    if isinstance(exc, DatabaseConfigError):
+        return 503, {"error": str(exc), "config_error": True}
+    return 500, {"error": str(exc)}
+
 # Cada cuántas horas se corre la actualización automática sola en segundo
 # plano. Poné None para desactivar el auto-update y usar solo el botón manual.
 ACTUALIZAR_CADA_HORAS = 6
@@ -117,6 +124,8 @@ class Handler(SimpleHTTPRequestHandler):
             self._manejar_datos_csv(["tabla_bmetro.csv", "fixture_bmetro.csv", "resultados_bmetro.csv"])
         elif self.path == "/api/datos-federal":
             self._manejar_datos_csv(["tabla_federal_a.csv", "fixture_federal_a.csv", "resultados_federal_a.csv"])
+        elif self.path == "/api/datos-primerac":
+            self._manejar_datos_csv(["tabla_primerac.csv", "fixture_primerac.csv", "resultados_primerac.csv"])
         else:
             super().do_GET()
 
@@ -131,13 +140,13 @@ class Handler(SimpleHTTPRequestHandler):
                 _pysim_source_cache = archivos
             self._responder_json(200, {"files": _pysim_source_cache})
         except Exception as e:
-            self._responder_json(500, {"error": str(e)})
+            self._responder_json(*_error_http(e))
 
     def _manejar_datos_nacional(self):
         try:
             self._responder_json(200, {"files": league_csv_files("nacional")})
         except Exception as e:
-            self._responder_json(500, {"error": str(e)})
+            self._responder_json(*_error_http(e))
 
     def _manejar_datos_csv(self, nombres):
         """Handler genérico: devuelve {files: {nombre: contenido}} para la
@@ -149,16 +158,18 @@ class Handler(SimpleHTTPRequestHandler):
                 self._responder_json(200, {"files": league_csv_files("bmetro")})
             elif "federal" in nombres[0]:
                 self._responder_json(200, {"files": league_csv_files("federal_a")})
+            elif "primerac" in nombres[0]:
+                self._responder_json(200, {"files": league_csv_files("primerac")})
             else:
                 self._responder_json(500, {"error": f"Dataset no soportado: {nombres}"})
         except Exception as e:
-            self._responder_json(500, {"error": str(e)})
+            self._responder_json(*_error_http(e))
 
     def _manejar_datos_lpf(self):
         try:
             self._responder_json(200, {"files": league_csv_files("lpf")})
         except Exception as e:
-            self._responder_json(500, {"error": str(e)})
+            self._responder_json(*_error_http(e))
 
     def do_POST(self):
         if self.path == "/api/simular":
@@ -228,7 +239,7 @@ class Handler(SimpleHTTPRequestHandler):
             self._responder_json(200, datos)
         except Exception as e:
             print(f">>> ERROR al simular: {e}")
-            self._responder_json(500, {"error": str(e)})
+            self._responder_json(*_error_http(e))
         finally:
             lock_simulacion.release()
 
@@ -244,7 +255,7 @@ class Handler(SimpleHTTPRequestHandler):
             self._responder_json(200, resultado)
         except Exception as e:
             print(f">>> ERROR al actualizar: {e}")
-            self._responder_json(500, {"error": str(e)})
+            self._responder_json(*_error_http(e))
         finally:
             lock_simulacion.release()
 
@@ -263,7 +274,7 @@ class Handler(SimpleHTTPRequestHandler):
             self._responder_json(200, datos)
         except Exception as e:
             print(f">>> ERROR al simular LPF: {e}")
-            self._responder_json(500, {"error": str(e)})
+            self._responder_json(*_error_http(e))
         finally:
             lock_simulacion.release()
 
@@ -281,7 +292,7 @@ class Handler(SimpleHTTPRequestHandler):
             self._responder_json(200, resultado)
         except Exception as e:
             print(f">>> ERROR al actualizar LPF: {e}")
-            self._responder_json(500, {"error": str(e)})
+            self._responder_json(*_error_http(e))
         finally:
             lock_simulacion.release()
 
@@ -301,7 +312,7 @@ class Handler(SimpleHTTPRequestHandler):
             self._responder_json(200, datos)
         except Exception as e:
             print(f">>> ERROR al simular Primera C: {e}")
-            self._responder_json(500, {"error": str(e)})
+            self._responder_json(*_error_http(e))
         finally:
             lock_simulacion.release()
 
@@ -319,7 +330,7 @@ class Handler(SimpleHTTPRequestHandler):
             self._responder_json(200, resultado)
         except Exception as e:
             print(f">>> ERROR al actualizar Primera C: {e}")
-            self._responder_json(500, {"error": str(e)})
+            self._responder_json(*_error_http(e))
         finally:
             lock_simulacion.release()
 
@@ -366,7 +377,7 @@ class Handler(SimpleHTTPRequestHandler):
             self._responder_json(400, {"error": "Body inválido"})
         except Exception as e:
             print(f">>> ERROR al simular hasta campeón Primera C: {e}")
-            self._responder_json(500, {"error": str(e)})
+            self._responder_json(*_error_http(e))
         finally:
             lock_simulacion.release()
 
@@ -416,7 +427,7 @@ class Handler(SimpleHTTPRequestHandler):
             self._responder_json(400, {"error": "Body inválido"})
         except Exception as e:
             print(f">>> ERROR al simular hasta campeón: {e}")
-            self._responder_json(500, {"error": str(e)})
+            self._responder_json(*_error_http(e))
         finally:
             lock_simulacion.release()
 
@@ -463,7 +474,7 @@ class Handler(SimpleHTTPRequestHandler):
             self._responder_json(400, {"error": "Body inválido"})
         except Exception as e:
             print(f">>> ERROR al simular hasta campeón LPF: {e}")
-            self._responder_json(500, {"error": str(e)})
+            self._responder_json(*_error_http(e))
         finally:
             lock_simulacion.release()
 
@@ -481,7 +492,7 @@ class Handler(SimpleHTTPRequestHandler):
             self._responder_json(200, datos)
         except Exception as e:
             print(f">>> ERROR al simular Copa: {e}")
-            self._responder_json(500, {"error": str(e)})
+            self._responder_json(*_error_http(e))
         finally:
             lock_simulacion.release()
 
@@ -499,7 +510,7 @@ class Handler(SimpleHTTPRequestHandler):
             self._responder_json(200, resultado)
         except Exception as e:
             print(f">>> ERROR al actualizar Copa: {e}")
-            self._responder_json(500, {"error": str(e)})
+            self._responder_json(*_error_http(e))
         finally:
             lock_simulacion.release()
 
@@ -538,7 +549,7 @@ class Handler(SimpleHTTPRequestHandler):
             self._responder_json(400, {"error": "Body inválido"})
         except Exception as e:
             print(f">>> ERROR al simular hasta campeón Copa: {e}")
-            self._responder_json(500, {"error": str(e)})
+            self._responder_json(*_error_http(e))
         finally:
             lock_simulacion.release()
 
@@ -557,7 +568,7 @@ class Handler(SimpleHTTPRequestHandler):
             self._responder_json(200, datos)
         except Exception as e:
             print(f">>> ERROR al simular B Metro: {e}")
-            self._responder_json(500, {"error": str(e)})
+            self._responder_json(*_error_http(e))
         finally:
             lock_simulacion.release()
 
@@ -575,7 +586,7 @@ class Handler(SimpleHTTPRequestHandler):
             self._responder_json(200, resultado)
         except Exception as e:
             print(f">>> ERROR al actualizar B Metro: {e}")
-            self._responder_json(500, {"error": str(e)})
+            self._responder_json(*_error_http(e))
         finally:
             lock_simulacion.release()
 
@@ -622,7 +633,7 @@ class Handler(SimpleHTTPRequestHandler):
             self._responder_json(400, {"error": "Body inválido"})
         except Exception as e:
             print(f">>> ERROR al simular hasta ascenso B Metro: {e}")
-            self._responder_json(500, {"error": str(e)})
+            self._responder_json(*_error_http(e))
         finally:
             lock_simulacion.release()
 
@@ -640,7 +651,7 @@ class Handler(SimpleHTTPRequestHandler):
             self._responder_json(200, datos)
         except Exception as e:
             print(f">>> ERROR al simular Federal A: {e}")
-            self._responder_json(500, {"error": str(e)})
+            self._responder_json(*_error_http(e))
         finally:
             lock_simulacion.release()
 
@@ -658,7 +669,7 @@ class Handler(SimpleHTTPRequestHandler):
             self._responder_json(200, resultado)
         except Exception as e:
             print(f">>> ERROR al actualizar Federal A: {e}")
-            self._responder_json(500, {"error": str(e)})
+            self._responder_json(*_error_http(e))
         finally:
             lock_simulacion.release()
 
@@ -701,7 +712,7 @@ class Handler(SimpleHTTPRequestHandler):
             self._responder_json(400, {"error": "Body inválido"})
         except Exception as e:
             print(f">>> ERROR al simular hasta ascenso Federal A: {e}")
-            self._responder_json(500, {"error": str(e)})
+            self._responder_json(*_error_http(e))
         finally:
             lock_simulacion.release()
 

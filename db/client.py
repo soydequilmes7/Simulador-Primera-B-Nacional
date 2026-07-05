@@ -33,7 +33,7 @@ def database_schema() -> str:
 
 @contextmanager
 def get_connection():
-    conn = psycopg.connect(database_url(), row_factory=dict_row)
+    conn = psycopg.connect(database_url(), row_factory=dict_row, prepare_threshold=None)
     try:
         schema = database_schema()
         with conn.cursor() as cur:
@@ -45,4 +45,3 @@ def get_connection():
         raise
     finally:
         conn.close()
-

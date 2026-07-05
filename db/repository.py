@@ -7,6 +7,7 @@ import json
 from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import datetime
+from pathlib import Path
 from typing import Any, Iterable
 
 import pandas as pd
@@ -37,6 +38,7 @@ COMPETITIONS = {
     "lpf": CompetitionSpec("lpf", "Liga Profesional"),
     "bmetro": CompetitionSpec("bmetro", "Primera B Metropolitana"),
     "federal_a": CompetitionSpec("federal_a", "Federal A"),
+    "primerac": CompetitionSpec("primerac", "Primera C"),
     "copa": CompetitionSpec("copa", "Copa Argentina"),
 }
 
@@ -45,6 +47,7 @@ TABLE_FILE_SLUGS = {
     "tablalpf.csv": "lpf",
     "tabla_bmetro.csv": "bmetro",
     "tabla_federal_a.csv": "federal_a",
+    "tabla_primerac.csv": "primerac",
 }
 
 
@@ -103,6 +106,39 @@ class SimulatorRepository:
         if row is None:
             raise RuntimeError(f"No hay temporada activa para {competition_slug}")
         return int(row["id"])
+
+    def ensure_competition_season(self, competition_slug: str) -> int:
+        spec = COMPETITIONS[competition_slug]
+        self._execute(
+            """
+            insert into competitions (slug, name) values (%s, %s)
+            on conflict (slug) do update set name = excluded.name
+            """,
+            (spec.slug, spec.name),
+        )
+        self._execute(
+            """
+            insert into seasons (competition_slug, name, year, active)
+            values (%s, %s, %s, true)
+            on conflict (competition_slug, name) do update set
+                year = excluded.year,
+                active = true
+            """,
+            (spec.slug, spec.season, int(spec.season)),
+        )
+        return self.season_id(competition_slug)
+
+    def league_seed_counts(self, competition_slug: str) -> dict[str, int]:
+        season_id = self.season_id(competition_slug)
+        standings = self._execute_one(
+            "select count(*) as n from standings where competition_slug = %s and season_id = %s",
+            (competition_slug, season_id),
+        )
+        matches = self._execute_one(
+            "select count(*) as n from matches where competition_slug = %s and season_id = %s",
+            (competition_slug, season_id),
+        )
+        return {"standings": int(standings["n"]), "matches": int(matches["n"])}
 
     def league_data(self, competition_slug: str) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         return (
@@ -434,7 +470,43 @@ def transaction():
         yield SimulatorRepository(conn)
 
 
+LEAGUE_FILE_SPECS = {
+    "nacional": ("tabla.csv", "fixture.csv", "resultados.csv"),
+    "lpf": ("tablalpf.csv", "fixture_lpf.csv", "resultados_lpf.csv"),
+    "bmetro": ("tabla_bmetro.csv", "fixture_bmetro.csv", "resultados_bmetro.csv"),
+    "federal_a": ("tabla_federal_a.csv", "fixture_federal_a.csv", "resultados_federal_a.csv"),
+    "primerac": ("tabla_primerac.csv", "fixture_primerac.csv", "resultados_primerac.csv"),
+}
+
+
+def bootstrap_league_from_csv(competition_slug: str) -> bool:
+    """Seed a league from bundled CSVs only when its DB rows are absent."""
+    tabla_name, fixture_name, resultados_name = LEAGUE_FILE_SPECS[competition_slug]
+    datos_dir = Path(__file__).resolve().parent.parent / "datos"
+
+    def read_csv(name: str) -> list[dict]:
+        with open(datos_dir / name, newline="", encoding="utf-8") as f:
+            return [row for row in csv.DictReader(f) if row]
+
+    with transaction() as repo:
+        repo.ensure_competition_season(competition_slug)
+        counts = repo.league_seed_counts(competition_slug)
+        if counts["standings"] and counts["matches"]:
+            return False
+
+        repo.upsert_standings(competition_slug, read_csv(tabla_name))
+        repo.replace_matches(
+            competition_slug,
+            read_csv(fixture_name),
+            read_csv(resultados_name),
+        )
+        return True
+
+
 def league_csv_files(competition_slug: str) -> dict[str, str]:
+    if competition_slug == "primerac":
+        bootstrap_league_from_csv("primerac")
+
     repo = repository()
     resultados, fixture, tabla = repo.league_data(competition_slug)
     if competition_slug == "nacional":
@@ -456,6 +528,7 @@ def league_csv_files(competition_slug: str) -> dict[str, str]:
     prefixes = {
         "bmetro": ("tabla_bmetro.csv", "fixture_bmetro.csv", "resultados_bmetro.csv"),
         "federal_a": ("tabla_federal_a.csv", "fixture_federal_a.csv", "resultados_federal_a.csv"),
+        "primerac": ("tabla_primerac.csv", "fixture_primerac.csv", "resultados_primerac.csv"),
     }
     tabla_name, fixture_name, resultados_name = prefixes[competition_slug]
     return {

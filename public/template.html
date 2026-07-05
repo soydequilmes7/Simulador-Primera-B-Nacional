@@ -3156,6 +3156,7 @@ function apiResponseError(respuesta, cuerpo){
   const error = new Error(cuerpo.error || `El servidor respondió con error ${respuesta.status}`);
   error.status = respuesta.status;
   error.busy = Boolean(cuerpo.busy);
+  error.config = Boolean(cuerpo.config_error);
   return error;
 }
 
@@ -3177,12 +3178,12 @@ async function apiFetch(url, options = {}){
 }
 
 function apiErrorSuffix(error){
-  return error.status === 409 || error.timeout ? "" : " — revisá que la API esté disponible.";
+  return error.status === 409 || error.timeout || error.config ? "" : " — revisá que la API esté disponible.";
 }
 
 function setApiErrorStatus(status, prefix, error){
   status.classList.add('error');
-  if (error.status === 409){
+  if (error.status === 409 || error.config){
     status.textContent = error.message;
     return;
   }

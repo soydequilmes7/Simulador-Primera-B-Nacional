@@ -26,10 +26,14 @@ def league_data(competition_slug: str):
             "lpf": ("resultados_lpf.csv", "fixture_lpf.csv", "tablalpf.csv"),
             "bmetro": ("resultados_bmetro.csv", "fixture_bmetro.csv", "tabla_bmetro.csv"),
             "federal_a": ("resultados_federal_a.csv", "fixture_federal_a.csv", "tabla_federal_a.csv"),
+            "primerac": ("resultados_primerac.csv", "fixture_primerac.csv", "tabla_primerac.csv"),
         }[competition_slug]
         return tuple(pd.read_csv(_csv_path(nombre)) for nombre in nombres)
 
-    from db.repository import repository
+    from db.repository import bootstrap_league_from_csv, repository
+
+    if competition_slug == "primerac":
+        bootstrap_league_from_csv("primerac")
 
     return repository().league_data(competition_slug)
 
@@ -70,4 +74,3 @@ def save_simulation_output(key: str, competition_slug: str, payload: dict, n_sim
     from db.repository import repository
 
     repository().save_simulation_output(key, competition_slug, payload, n_simulaciones)
-
