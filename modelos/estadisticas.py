@@ -2,6 +2,7 @@ import math
 import pandas as pd
 import numpy as np
 
+import data_access
 import rutas
 from modelos import equipo
 from modelos.equipo import Equipo
@@ -30,12 +31,9 @@ class Estadisticas:
 
     def cargar_datos(self):
 
-        print("Leyendo archivos...")
+        print("Leyendo datos...")
 
-        datos_dir = rutas.datos_dir()
-        self.resultados = pd.read_csv(datos_dir / "resultados.csv")
-        self.fixture = pd.read_csv(datos_dir / "fixture.csv")
-        self.tabla = pd.read_csv(datos_dir / "tabla.csv")
+        self.resultados, self.fixture, self.tabla = data_access.league_data("nacional")
 
         print(f"Resultados: {len(self.resultados)}")
         print(f"Fixture: {len(self.fixture)}")
@@ -885,10 +883,9 @@ class Estadisticas:
         """
         columnas = ["jugador", "equipo", "goles", "proyeccion", "proyeccion_min", "proyeccion_max"]
         try:
-            goleadores = pd.read_csv(rutas.datos_dir() / "goleadores.csv")
-        except FileNotFoundError:
-            print("\n[aviso] No existe datos/goleadores.csv todavía — corré "
-                  "backfill_goleadores.py una vez para poder calcular esto.")
+            goleadores = data_access.scorer_totals_df("nacional")
+        except Exception as e:
+            print(f"\n[aviso] No se pudieron cargar goleadores: {e}")
             return pd.DataFrame(columns=columnas)
 
         if goleadores.empty:
@@ -1083,6 +1080,3 @@ class Estadisticas:
         print("(más bajo = mejor; si el modelo < baseline, los ratings agregan valor real)")
 
         return brier_modelo_prom, brier_baseline_prom, pd.DataFrame(detalle)
-        
-
-        

@@ -4,7 +4,7 @@ api/index.py
 
 Backend FastAPI/ASGI. Expone la misma funcionalidad que servidor.py
 (simular / actualizar) y también puede servir el dashboard estático en
-Render. Ver rutas.py para el manejo de datos persistentes.
+Render. La persistencia runtime usa Supabase Postgres.
 
 Local (con uvicorn instalado):
     uvicorn api.index:app --reload
@@ -32,6 +32,8 @@ from pydantic import BaseModel
 
 import rutas
 import pysim_dispatch
+from db.client import database_schema, database_url
+from db.repository import cup_csv_files, league_csv_files
 from main_lpf import correr_simulacion_lpf
 from actualizar_resultados import actualizar
 from actualizar_resultados_lpf import actualizar as actualizar_lpf
@@ -47,6 +49,7 @@ from main_federal import correr_simulacion_federal
 # tal cual están en el repo -- sin duplicar lógica -- vía /api/pysim-source.
 PYSIM_SOURCE_FILES = [
     "rutas.py",
+    "data_access.py",
     "main.py",
     "main_lpf.py",
     "pysim_dispatch.py",
@@ -214,7 +217,8 @@ def _adquirir_escritura(lock: ReadWriteLock, mensaje: str):
 
 @app.get("/api/health")
 def health():
-    return {"ok": True}
+    database_url()
+    return {"ok": True, "storage": "supabase", "schema": database_schema()}
 
 
 @app.get("/api/pysim-source")
@@ -246,22 +250,7 @@ def datos_nacional():
     if ocupado:
         return ocupado
     try:
-        datos_dir = rutas.datos_dir()
-        archivos = {}
-        for nombre, requerido in [
-            ("resultados.csv", True),
-            ("fixture.csv", True),
-            ("tabla.csv", True),
-            ("goleadores.csv", False),
-        ]:
-            ruta = datos_dir / nombre
-            if ruta.exists():
-                archivos[nombre] = ruta.read_text(encoding="utf-8")
-            elif requerido:
-                return JSONResponse(status_code=500, content={"error": f"Falta {nombre} en datos/"})
-            else:
-                archivos[nombre] = ""
-        return {"files": archivos}
+        return {"files": league_csv_files("nacional")}
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
     finally:
@@ -280,10 +269,7 @@ def datos_copa():
     if ocupado:
         return ocupado
     try:
-        ruta = rutas.datos_dir() / "copa_argentina.csv"
-        if not ruta.exists():
-            return JSONResponse(status_code=500, content={"error": "Falta copa_argentina.csv en datos/"})
-        return {"files": {"copa_argentina.csv": ruta.read_text(encoding="utf-8")}}
+        return {"files": cup_csv_files()}
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
     finally:
@@ -301,14 +287,7 @@ def datos_lpf():
     if ocupado:
         return ocupado
     try:
-        datos_dir = rutas.datos_dir()
-        archivos = {}
-        for nombre in ["tablalpf.csv", "fixture_lpf.csv", "resultados_lpf.csv", "promedios_lpf.csv"]:
-            ruta = datos_dir / nombre
-            if not ruta.exists():
-                return JSONResponse(status_code=500, content={"error": f"Falta {nombre} en datos/"})
-            archivos[nombre] = ruta.read_text(encoding="utf-8")
-        return {"files": archivos}
+        return {"files": league_csv_files("lpf")}
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
     finally:
@@ -328,14 +307,7 @@ def datos_bmetro():
     if ocupado:
         return ocupado
     try:
-        datos_dir = rutas.datos_dir()
-        archivos = {}
-        for nombre in ["tabla_bmetro.csv", "fixture_bmetro.csv", "resultados_bmetro.csv"]:
-            ruta = datos_dir / nombre
-            if not ruta.exists():
-                return JSONResponse(status_code=500, content={"error": f"Falta {nombre} en datos/"})
-            archivos[nombre] = ruta.read_text(encoding="utf-8")
-        return {"files": archivos}
+        return {"files": league_csv_files("bmetro")}
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
     finally:
@@ -353,14 +325,7 @@ def datos_federal():
     if ocupado:
         return ocupado
     try:
-        datos_dir = rutas.datos_dir()
-        archivos = {}
-        for nombre in ["tabla_federal_a.csv", "fixture_federal_a.csv", "resultados_federal_a.csv"]:
-            ruta = datos_dir / nombre
-            if not ruta.exists():
-                return JSONResponse(status_code=500, content={"error": f"Falta {nombre} en datos/"})
-            archivos[nombre] = ruta.read_text(encoding="utf-8")
-        return {"files": archivos}
+        return {"files": league_csv_files("federal_a")}
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
     finally:
@@ -721,6 +686,8 @@ def actualizar_endpoint(body: SimularBody = SimularBody()):
 
 
 # En Render este mismo proceso sirve el dashboard de public/. En Vercel,
-# las rutas estáticas siguen siendo responsabilidad de Vercel y /api/*
-# llega a esta app por rewrite.
-app.mount("/", StaticFiles(directory=str(rutas.public_dir()), html=True), name="public")
+# public/ se sirve como salida estática separada y no forma parte del bundle
+# Python, así que el mount solo se instala cuando el directorio existe.
+_public_dir = rutas.public_dir()
+if _public_dir.exists():
+    app.mount("/", StaticFiles(directory=str(_public_dir), html=True), name="public")

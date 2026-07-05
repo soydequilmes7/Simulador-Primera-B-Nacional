@@ -40,6 +40,7 @@ from dataclasses import dataclass, field
 import numpy as np
 import pandas as pd
 
+import data_access
 import rutas
 from modelos.estadisticas import Estadisticas
 
@@ -88,20 +89,17 @@ class EstadisticasFederal(Estadisticas):
     # Carga de datos
     # ------------------------------------------------------------------
     def cargar_datos_federal(self) -> None:
-        """Lee tabla_federal_a.csv (posiciones a hoy, con zona '1'..'4'),
-        fixture_federal_a.csv y resultados_federal_a.csv."""
-        print("Leyendo archivos de Federal A...")
-        datos_dir = rutas.datos_dir()
+        """Lee posiciones, fixture y resultados actuales del Federal A."""
+        print("Leyendo datos de Federal A...")
 
-        self.tabla = pd.read_csv(datos_dir / "tabla_federal_a.csv", dtype={"zona": str})
-        self.fixture = pd.read_csv(datos_dir / "fixture_federal_a.csv")
+        self.resultados, self.fixture, self.tabla = data_access.league_data("federal_a")
+        self.tabla["zona"] = self.tabla["zona"].astype(str)
         # dtype explícito: con 0 filas (antes del primer resultado real
         # cargado por el scraper) pandas no tiene de dónde inferir que
         # 'jornada'/goles son numéricas y las deja como object.
-        self.resultados = pd.read_csv(
-            datos_dir / "resultados_federal_a.csv",
-            dtype={"jornada": "int64", "goles_local": "int64", "goles_visitante": "int64"},
-        )
+        for col in ("jornada", "goles_local", "goles_visitante"):
+            if col in self.resultados.columns and not self.resultados.empty:
+                self.resultados[col] = self.resultados[col].astype("int64")
 
         self.validar_datos()
         print(f"Clubes: {len(self.tabla)} | Fixture Primera Fase: {len(self.fixture)} partidos")

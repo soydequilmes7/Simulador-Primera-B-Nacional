@@ -2,17 +2,11 @@
 """
 rutas.py
 
-Resuelve dónde leer/escribir los archivos de datos según el entorno:
+Helpers de rutas del repo.
 
-- Local (servidor.py, CLI): lee y escribe directo en la carpeta del repo.
-- Render: lee y escribe en SIMULADOR_STATE_DIR (por default /var/data si
-  está definida la variable RENDER), pensado para montar ahí un Persistent
-  Disk. La primera vez copia datos/ y public/ desde el repo.
-- Vercel Functions: mantiene el fallback viejo a /tmp, sembrado con una
-  copia de datos/ la primera vez que se necesita.
-
-IMPORTANTE - /tmp en Vercel no es durable. En Render, la persistencia real
-depende de que SIMULADOR_STATE_DIR apunte a un Persistent Disk.
+La persistencia runtime vive en Supabase Postgres. Estos paths se usan
+solo para servir assets estáticos, para el script de seed que lee los CSV
+commiteados, y para el filesystem virtual de Pyodide en el navegador.
 """
 import os
 import shutil
@@ -30,13 +24,6 @@ def en_render() -> bool:
 
 
 def base_escribible() -> Path:
-    configurada = os.environ.get("SIMULADOR_STATE_DIR")
-    if configurada:
-        return Path(configurada)
-    if en_render():
-        return Path("/var/data")
-    if en_vercel():
-        return Path("/tmp")
     return REPO_DIR
 
 
@@ -67,7 +54,4 @@ def public_dir() -> Path:
 
 
 def log_path() -> Path:
-    base = base_escribible()
-    if base != REPO_DIR:
-        base.mkdir(parents=True, exist_ok=True)
-    return base / "log_actualizaciones.json"
+    return REPO_DIR / "log_actualizaciones.json"

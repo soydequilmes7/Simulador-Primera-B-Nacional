@@ -5,7 +5,7 @@ main_federal.py
 Orquestador del Torneo Federal A: encadena las fases de EstadisticasFederal
 (Primera Fase -> Segunda Fase -> Tercera/Cuarta/Quinta Fase, en paralelo
 con la Reválida de 6 Etapas) para una corrida completa, arma el JSON que
-consume la web (public/data_federal_a.json) y corre el Monte Carlo.
+consume la web y corre el Monte Carlo.
 Mismo rol que main.py/main_lpf.py/main_copa.py/main_bmetro.py para sus
 respectivas ligas.
 """
@@ -17,6 +17,7 @@ import json
 import pandas as pd
 import numpy as np
 
+import data_access
 import rutas
 from modelos.estadisticas_federal import EstadisticasFederal, ResultadoSerie
 
@@ -310,12 +311,9 @@ def correr_simulacion_federal(n_sims: int = 500, imprimir: bool = True, guardar_
     datos_web = _armar_datos_web(corrida, monte_carlo, n_sims, equipos=e.equipos)
 
     if guardar_json:
-        ruta = rutas.public_dir() / RUTA_JSON_FEDERAL_DEFAULT
-        ruta.parent.mkdir(parents=True, exist_ok=True)
-        with open(ruta, "w", encoding="utf-8") as f:
-            json.dump(datos_web, f, ensure_ascii=False, indent=2)
+        data_access.save_simulation_output("federal_a", "federal_a", datos_web, n_sims)
         if imprimir:
-            print(f"\nJSON guardado en {ruta}")
+            print("\nJSON guardado en Supabase")
 
     return datos_web
 

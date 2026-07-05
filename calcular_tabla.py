@@ -24,9 +24,7 @@ Uso:
                                                # que usa
                                                # actualizar_resultados.py
 """
-import csv
-
-import rutas
+from db.repository import repository
 
 CAMPOS_TABLA = [
     "zona", "posicion", "equipo", "partidos_jugados", "ganados",
@@ -39,8 +37,7 @@ CAMPOS_NUMERICOS = [
 
 
 def _leer_tabla():
-    with open(rutas.datos_dir() / "tabla.csv", newline="", encoding="utf-8") as f:
-        filas = list(csv.DictReader(f))
+    filas = repository().standing_records("nacional")
     for f in filas:
         for campo in CAMPOS_NUMERICOS:
             f[campo] = int(f[campo])
@@ -119,13 +116,8 @@ def aplicar_partidos(filas_tabla, partidos):
 
 
 def guardar_tabla(filas):
-    """Escribe datos/tabla.csv con las filas dadas."""
-    datos_dir = rutas.datos_dir()
-    datos_dir.mkdir(exist_ok=True)
-    with open(datos_dir / "tabla.csv", "w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=CAMPOS_TABLA)
-        writer.writeheader()
-        writer.writerows(filas)
+    """Persiste la tabla actual en Supabase."""
+    repository().upsert_standings("nacional", filas)
 
 
 def actualizar_tabla_con_partidos(partidos_nuevos, imprimir=True):

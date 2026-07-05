@@ -144,7 +144,7 @@ Endpoints:
 - `POST /api/simular` — body opcional `{"n_sims": 500}` (50-5000). Corre la
   simulación y devuelve el resultado en la respuesta.
 - `POST /api/actualizar` — body opcional `{"n_sims": 500}`. Scrapea
-  Promiedos, actualiza `datos/` y re-simula si hay partidos nuevos.
+  Promiedos, actualiza Supabase y re-simula si hay partidos nuevos.
 - `POST /api/simular-lpf`
 - `POST /api/actualizar-lpf`
 - `POST /api/simular-campeon`
@@ -157,9 +157,8 @@ El repo incluye `render.yaml` para crear un Web Service de Python con:
 - Build Command: `pip install -r requirements.txt`
 - Start Command: `uvicorn api.index:app --host 0.0.0.0 --port $PORT`
 - Health Check Path: `/api/health`
-- Persistent Disk: `/var/data`
 - Variables: `PYTHON_VERSION=3.12`, `RENDER=true`,
-  `SIMULADOR_STATE_DIR=/var/data`
+  `SUPABASE_DB_URL`, `SUPABASE_SCHEMA=public`
 
 Pasos:
 
@@ -177,18 +176,32 @@ Luego en Render:
 Render va a exponer el backend y el dashboard en la URL `*.onrender.com`.
 `/api/health` debe responder `{"ok": true}` cuando el deploy esté listo.
 
-#### Persistencia en Render
+### Persistencia con Supabase
 
-`/api/actualizar` y `/api/actualizar-lpf` escriben CSV, logs y los JSON del
-dashboard. Para que esos cambios sobrevivan reinicios y redeploys, el servicio
-usa `SIMULADOR_STATE_DIR=/var/data` y monta ahí un Persistent Disk.
+La persistencia runtime usa Supabase Postgres. No hay fallback a CSV: si
+`SUPABASE_DB_URL` falta o la conexión falla, los endpoints que leen datos
+fallan explícitamente.
 
-En el primer arranque con el disk vacío, `rutas.py` copia `datos/` y `public/`
-desde el repo a `/var/data`. Después de eso, Render lee y escribe contra esas
-copias persistentes.
+Variables necesarias:
 
-Si querés correr el servicio en Render Free sin disk, quitá `disk` y cambiá
-`plan: free` en `render.yaml`, pero las actualizaciones dejarán de ser durables.
+- `SUPABASE_DB_URL`: connection string Postgres/pooler de Supabase.
+- `SUPABASE_SCHEMA`: schema a usar, por defecto `public`.
+
+Crear schema y poblar datos iniciales sin depender de `psql`:
+
+```bash
+export SUPABASE_DB_URL='postgresql://postgres.<project_ref>:<password>@aws-...pooler.supabase.com:6543/postgres'
+python3 scripts/apply_migrations.py
+python3 scripts/seed_supabase.py
+```
+
+`https://<project_ref>.supabase.co` es la URL HTTP del proyecto, no la URL
+Postgres. La connection string correcta se copia desde Supabase Dashboard >
+Project Settings > Database > Connection string.
+
+El script de seed lee los CSV commiteados en `datos/`, inserta/upsertea ligas,
+temporadas, equipos, alias, partidos, tablas, goleadores, promedios LPF y Copa,
+y se puede correr más de una vez sin duplicar datos.
 
 ### Desplegar en Vercel
 
@@ -209,28 +222,10 @@ vercel pull --yes --environment preview  # solo si el proyecto no está linkeado
 vercel build
 ```
 
-### ⚠️ Limitación importante: persistencia en Vercel
-
-El filesystem de un deploy de Vercel es de **solo lectura** (salvo
-`/tmp`, que no persiste entre cold starts, no se comparte entre
-instancias y se pierde en cada redeploy). Esto afecta a `/api/actualizar`,
-que scrapea Promiedos y actualiza `datos/fixture.csv`, `resultados.csv`,
-`tabla.csv` y `goleadores.csv`:
-
-- Esos cambios se escriben en `/tmp` (ver `rutas.py`), así que el endpoint
-  funciona de punta a punta dentro de una misma instancia tibia.
-- Pero no son durables: una instancia nueva (cold start, redeploy, otra
-  región) vuelve a arrancar desde los CSV commiteados en el repo.
-
-Si necesitás que los datos actualizados persistan de verdad entre
-requests, las opciones son: migrar `datos/` a una base de datos real
-(Vercel Postgres, KV, etc.), o seguir corriendo `actualizar_resultados.py`
-en un entorno con filesystem persistente (local, o un job de CI que
-commitee los CSV actualizados) y dejar que Vercel solo sirva `/api/simular`
-y el dashboard estático.
-
-`/api/simular` no tiene este problema: es puramente de lectura + cómputo,
-no necesita escribir nada.
+Con Supabase configurado, Vercel y Render comparten la misma persistencia:
+`/api/actualizar-*` escribe en Postgres, `simulation_outputs` cachea los JSON
+del dashboard, y `/api/datos-*` construye CSV en memoria desde la base para el
+worker Pyodide del navegador.
 
 ---
 

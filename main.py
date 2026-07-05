@@ -1,6 +1,7 @@
 import json
 import datetime
 
+import data_access
 import rutas
 from modelos import estadisticas
 from modelos.estadisticas import Estadisticas
@@ -8,13 +9,8 @@ from modelos.estadisticas import Estadisticas
 
 def correr_simulacion(n_sims=1000, imprimir=True, guardar_json=True):
     """Corre toda la simulación (fase regular, final de ascenso, reducido y
-    Monte Carlo) y devuelve el diccionario de resultados. Si guardar_json es
-    True (default), además lo guarda en public/data.json. La usan tanto
-    main.py (línea de comandos) y servidor.py (botón "Correr nueva
-    simulación" de la página web) -- con guardar_json=True, para que la
-    página estática quede al día -- como api/index.py, que puede usar
-    guardar_json=False cuando el resultado se devuelve directo en la
-    respuesta HTTP."""
+    Monte Carlo) y devuelve el diccionario de resultados. Si guardar_json
+    es True (default), cachea la salida en Supabase."""
 
     if imprimir:
         print("=" * 45)
@@ -77,7 +73,7 @@ def correr_simulacion(n_sims=1000, imprimir=True, guardar_json=True):
         print(goleadores_df.head(15).to_string())
 
     # =================================================================
-    # EXPORTACIÓN A JSON PARA LA PÁGINA WEB
+    # ARMADO DEL JSON PARA LA PÁGINA WEB / API
     # =================================================================
     if imprimir and guardar_json:
         print("\nGuardando resultados en data.json para la web...")
@@ -141,15 +137,12 @@ def correr_simulacion(n_sims=1000, imprimir=True, guardar_json=True):
         }
     }
 
-    # Guardar en la carpeta public
     if guardar_json:
-        ruta_data_json = rutas.public_dir() / "data.json"
         try:
-            with open(ruta_data_json, "w", encoding="utf-8") as file:
-                json.dump(datos_web, file, ensure_ascii=False, indent=4)
-            print("¡Archivo data.json generado con éxito en la carpeta public!")
+            data_access.save_simulation_output("nacional", "nacional", datos_web, n_sims)
+            print("Resultado de simulación guardado en Supabase.")
         except Exception as e:
-            print(f"Error al guardar el archivo JSON: {e}")
+            print(f"Error al guardar la simulación en Supabase: {e}")
 
     return datos_web
 

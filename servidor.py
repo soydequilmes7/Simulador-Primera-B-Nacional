@@ -2,15 +2,15 @@
 Servidor local para el Simulador Primera Nacional.
 
 Hace tres cosas:
-  1. Sirve los archivos de la carpeta public (template.html, data.json)
+  1. Sirve los archivos de la carpeta public
      igual que "python -m http.server", para que abras la página en el navegador.
   2. Escucha POST /api/simular: cuando apretás el botón "Correr nueva
      simulación" en la web, corre la simulación completa (estadisticas.py +
-     main.py), regenera public/data.json y le devuelve el resultado al
+     main.py), cachea la salida en Supabase y le devuelve el resultado al
      navegador, sin que tengas que volver a la terminal.
   3. Escucha POST /api/actualizar: scrapea los resultados jugados desde Promiedos,
-     completa fixture.csv -> resultados.csv y corre la simulación si hay
-     partidos nuevos. Además, cada ACTUALIZAR_CADA_HORAS corre esto solo
+     actualiza Supabase y corre la simulación si hay partidos nuevos.
+     Además, cada ACTUALIZAR_CADA_HORAS corre esto solo
      en segundo plano, sin que tengas que apretar nada.
 
 Cómo usarlo:
@@ -38,6 +38,7 @@ from main_bmetro import correr_simulacion_bmetro, simular_hasta_ascenso_bmetro
 from actualizar_resultados_bmetro import actualizar as actualizar_bmetro
 from main_federal import correr_simulacion_federal, simular_hasta_ascenso_federal
 from actualizar_resultados_federal import actualizar as actualizar_federal
+from db.repository import cup_csv_files, league_csv_files
 import rutas
 
 # Mismos archivos que sirve api/index.py en /api/pysim-source, para que
@@ -45,6 +46,7 @@ import rutas
 # desarrollo, no solo en Render.
 PYSIM_SOURCE_FILES = [
     "rutas.py",
+    "data_access.py",
     "main.py",
     "main_lpf.py",
     "pysim_dispatch.py",
@@ -129,21 +131,7 @@ class Handler(SimpleHTTPRequestHandler):
 
     def _manejar_datos_nacional(self):
         try:
-            datos_dir = rutas.datos_dir()
-            archivos = {}
-            for nombre, requerido in [
-                ("resultados.csv", True), ("fixture.csv", True),
-                ("tabla.csv", True), ("goleadores.csv", False),
-            ]:
-                ruta = datos_dir / nombre
-                if ruta.exists():
-                    archivos[nombre] = ruta.read_text(encoding="utf-8")
-                elif requerido:
-                    self._responder_json(500, {"error": f"Falta {nombre} en datos/"})
-                    return
-                else:
-                    archivos[nombre] = ""
-            self._responder_json(200, {"files": archivos})
+            self._responder_json(200, {"files": league_csv_files("nacional")})
         except Exception as e:
             self._responder_json(500, {"error": str(e)})
 
@@ -151,29 +139,20 @@ class Handler(SimpleHTTPRequestHandler):
         """Handler genérico: devuelve {files: {nombre: contenido}} para la
         lista de CSVs pedida (lo usa /api/datos-copa)."""
         try:
-            datos_dir = rutas.datos_dir()
-            archivos = {}
-            for nombre in nombres:
-                ruta = datos_dir / nombre
-                if not ruta.exists():
-                    self._responder_json(500, {"error": f"Falta {nombre} en datos/"})
-                    return
-                archivos[nombre] = ruta.read_text(encoding="utf-8")
-            self._responder_json(200, {"files": archivos})
+            if nombres == ["copa_argentina.csv"]:
+                self._responder_json(200, {"files": cup_csv_files()})
+            elif "bmetro" in nombres[0]:
+                self._responder_json(200, {"files": league_csv_files("bmetro")})
+            elif "federal" in nombres[0]:
+                self._responder_json(200, {"files": league_csv_files("federal_a")})
+            else:
+                self._responder_json(500, {"error": f"Dataset no soportado: {nombres}"})
         except Exception as e:
             self._responder_json(500, {"error": str(e)})
 
     def _manejar_datos_lpf(self):
         try:
-            datos_dir = rutas.datos_dir()
-            archivos = {}
-            for nombre in ["tablalpf.csv", "fixture_lpf.csv", "resultados_lpf.csv", "promedios_lpf.csv"]:
-                ruta = datos_dir / nombre
-                if not ruta.exists():
-                    self._responder_json(500, {"error": f"Falta {nombre} en datos/"})
-                    return
-                archivos[nombre] = ruta.read_text(encoding="utf-8")
-            self._responder_json(200, {"files": archivos})
+            self._responder_json(200, {"files": league_csv_files("lpf")})
         except Exception as e:
             self._responder_json(500, {"error": str(e)})
 
