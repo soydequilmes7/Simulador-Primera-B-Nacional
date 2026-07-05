@@ -30,8 +30,10 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
 from main import correr_simulacion, simular_hasta_campeon
 from main_lpf import correr_simulacion_lpf, simular_hasta_campeon_lpf
+from main_primerac import correr_simulacion as correr_simulacion_primerac, simular_hasta_campeon as simular_hasta_campeon_primerac
 from actualizar_resultados import actualizar
 from actualizar_resultados_lpf import actualizar as actualizar_lpf
+from actualizar_resultados_primerac import actualizar as actualizar_primerac
 from main_copa import correr_simulacion_copa, simular_hasta_campeon_copa
 from actualizar_resultados_copa import actualizar as actualizar_copa
 from main_bmetro import correr_simulacion_bmetro, simular_hasta_ascenso_bmetro
@@ -59,6 +61,8 @@ PYSIM_SOURCE_FILES = [
     "modelos/estadisticas_federal.py",
     "modelos/motor_vectorizado.py",
     "fixture_generator.py",
+    "main_primerac.py",
+    "modelos/estadisticas_primerac.py",
 ]
 _pysim_source_cache = None
 
@@ -190,6 +194,12 @@ class Handler(SimpleHTTPRequestHandler):
             self._manejar_actualizar_lpf()
         elif self.path == "/api/simular-campeon-lpf":
             self._manejar_simular_campeon_lpf()
+        elif self.path == "/api/simular-primerac":
+            self._manejar_simular_primerac()
+        elif self.path == "/api/actualizar-primerac":
+            self._manejar_actualizar_primerac()
+        elif self.path == "/api/simular-campeon-primerac":
+            self._manejar_simular_campeon_primerac()
         elif self.path == "/api/simular-copa":
             self._manejar_simular_copa()
         elif self.path == "/api/actualizar-copa":
@@ -292,6 +302,91 @@ class Handler(SimpleHTTPRequestHandler):
             self._responder_json(200, resultado)
         except Exception as e:
             print(f">>> ERROR al actualizar LPF: {e}")
+            self._responder_json(500, {"error": str(e)})
+        finally:
+            lock_simulacion.release()
+
+    def _manejar_simular_primerac(self):
+        """Corre una simulación completa de Primera C (fase de zonas,
+        Final por el 1er Ascenso, Reducido por el 2do y Monte Carlo)
+        pedida desde el selector de liga de la web, con el n_sims del
+        body."""
+        n_sims = self._leer_n_sims()
+        if not lock_simulacion.acquire(blocking=False):
+            self._responder_json(409, {"error": "Ya hay una simulación corriendo, esperá a que termine"})
+            return
+        try:
+            print(f"\n>>> Corriendo nueva simulación de Primera C pedida desde la web ({n_sims} corridas)...")
+            datos = correr_simulacion_primerac(imprimir=True, n_sims=n_sims)
+            print(">>> Simulación de Primera C terminada y data_primerac.json actualizado.\n")
+            self._responder_json(200, datos)
+        except Exception as e:
+            print(f">>> ERROR al simular Primera C: {e}")
+            self._responder_json(500, {"error": str(e)})
+        finally:
+            lock_simulacion.release()
+
+    def _manejar_actualizar_primerac(self):
+        """Scrapea Promiedos (Primera C) y, si hay partidos nuevos,
+        actualiza los CSV y re-simula con correr_simulacion_primerac."""
+        n_sims = self._leer_n_sims()
+        if not lock_simulacion.acquire(blocking=False):
+            self._responder_json(409, {"error": "Ya hay una simulación/actualización corriendo, esperá a que termine"})
+            return
+        try:
+            print(f"\n>>> Actualización Primera C pedida desde la web (Promiedos), {n_sims} corridas si hay partidos nuevos...")
+            resultado = actualizar_primerac(n_sims=n_sims, correr_simulacion_fn=correr_simulacion_primerac, imprimir=True)
+            print(">>> Actualización Primera C terminada.\n")
+            self._responder_json(200, resultado)
+        except Exception as e:
+            print(f">>> ERROR al actualizar Primera C: {e}")
+            self._responder_json(500, {"error": str(e)})
+        finally:
+            lock_simulacion.release()
+
+    def _manejar_simular_campeon_primerac(self):
+        """Corre simular_hasta_campeon_primerac() del equipo pedido desde
+        la web (vía ascenso directo o Reducido) y devuelve esa temporada
+        completa. No toca data_primerac.json: es una corrida aparte."""
+        if not lock_simulacion.acquire(blocking=False):
+            self._responder_json(409, {"error": "Ya hay una simulación corriendo, esperá a que termine"})
+            return
+        try:
+            largo = int(self.headers.get("Content-Length", 0))
+            cuerpo_raw = self.rfile.read(largo) if largo > 0 else b"{}"
+            datos = json.loads(cuerpo_raw) if cuerpo_raw else {}
+
+            equipo_objetivo = str(datos.get("equipo", "")).strip()
+            if not equipo_objetivo:
+                self._responder_json(400, {"error": "Falta indicar el equipo"})
+                return
+
+            try:
+                max_intentos = int(datos.get("max_intentos", MAX_INTENTOS_CAMPEON_DEFAULT))
+            except (ValueError, TypeError):
+                max_intentos = MAX_INTENTOS_CAMPEON_DEFAULT
+            max_intentos = max(MAX_INTENTOS_CAMPEON_MIN, min(MAX_INTENTOS_CAMPEON_MAX, max_intentos))
+
+            print(f"\n>>> Simulando hasta el ascenso de {equipo_objetivo} (Primera C) pedido desde la web ({max_intentos} intentos máx)...")
+            resultado = simular_hasta_campeon_primerac(equipo_objetivo, max_intentos=max_intentos, imprimir=True)
+
+            if resultado is None:
+                print(f">>> No se logró el ascenso de {equipo_objetivo} en {max_intentos} intentos.\n")
+                self._responder_json(200, {
+                    "logrado": False,
+                    "equipo": equipo_objetivo,
+                    "max_intentos": max_intentos,
+                })
+                return
+
+            print(f">>> {equipo_objetivo} ascendió en el intento {resultado['intentos']}.\n")
+            self._responder_json(200, {"logrado": True, **resultado})
+        except ValueError as e:
+            self._responder_json(400, {"error": str(e)})
+        except json.JSONDecodeError:
+            self._responder_json(400, {"error": "Body inválido"})
+        except Exception as e:
+            print(f">>> ERROR al simular hasta campeón Primera C: {e}")
             self._responder_json(500, {"error": str(e)})
         finally:
             lock_simulacion.release()

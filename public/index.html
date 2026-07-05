@@ -9,7 +9,7 @@
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Anton&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Anton&family=Manrope:wght@400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
   /* =====================================================================
@@ -1389,8 +1389,11 @@
   .torneo-logo{
     /* Fondo blanco sólido (no vidrio): varios escudos de torneo tienen
        colores oscuros que se perdían contra el hero navy con el fondo
-       traslúcido anterior. Blanco opaco garantiza contraste siempre. */
-    display:none; width:92px; height:92px; object-fit:contain; padding:14px;
+       traslúcido anterior. Blanco opaco garantiza contraste siempre.
+       Tamaño unificado para las 6 ligas (se tomó como referencia el
+       tamaño que antes tenían sólo B Metro/Federal A, más grande que
+       el resto, para que no haya escudos de torneo que se vean chicos). */
+    display:none; width:116px; height:116px; object-fit:contain; padding:16px;
     border-radius:50%;
     background: #FFFFFF;
     border: 2px solid var(--hero-accent);
@@ -1402,12 +1405,8 @@
   body.liga-copa .torneo-logo[data-liga="copa"],
   body.liga-bmetro .torneo-logo[data-liga="bmetro"]{ display:block; }
   body.liga-federal .torneo-logo[data-liga="federal"]{ display:block; }
+  body.liga-primerac .torneo-logo[data-liga="primerac"]{ display:block; }
 
-  /* Escudos de Federal A y B Metropolitana un poco más grandes que el resto */
-  body.liga-bmetro .torneo-logo[data-liga="bmetro"],
-  body.liga-federal .torneo-logo[data-liga="federal"]{
-    width:116px; height:116px; padding:16px;
-  }
   /* Filas de tabla del Federal A: clasifica a la fase siguiente / posible
      mejor 5° (zonas de 9) / desciende (Reválida 1ª Etapa, según la lista
      definitiva `revalida.descensos` que ya viene calculada del backend). */
@@ -1416,11 +1415,7 @@
   #tabla-federal-pf-body tr.quinto-posible td{ background: color-mix(in srgb, var(--amber) 10%, transparent); }
   #tabla-federal-r1-body tr.desciende td{ background: color-mix(in srgb, var(--danger) 10%, transparent); }
   @media (max-width:700px){
-    .torneo-logo{ width:72px; height:72px; padding:11px; }
-    body.liga-bmetro .torneo-logo[data-liga="bmetro"],
-    body.liga-federal .torneo-logo[data-liga="federal"]{
-      width:92px; height:92px; padding:13px;
-    }
+    .torneo-logo{ width:92px; height:92px; padding:13px; }
   }
 
   /* ---- Tipografía del hero: más aire, jerarquía más clara ---- */
@@ -1935,11 +1930,366 @@
     body.liga-federal .hero .meta > div{ transition:none; }
   }
 
+  /* =====================================================================
+     PRIMERA C · identidad propia
+     — Lenguaje visual propio, sin nada en común con Nacional/LPF/Copa/
+       B Metro/Federal A: blanco + dorado mate + gris claro, hero LUMINOSO
+       (nunca oscuro), mucho aire, líneas finas en vez de sombras pesadas
+       y formas geométricas/arcos muy sutiles inspirados en el escudo
+       oficial (el arco superior redondeado y el vértice inferior de la
+       "pointed shield", más el chevron interno) sin reproducirlo.
+     — Tipografía propia: Poppins para todo (títulos, UI, tablas), la
+       única sección que no usa Oswald/Inter/JetBrains/Manrope/Anton/
+       Space Grotesk/Plus Jakarta del resto del sitio.
+     — Esquinas suaves pero comedidas (menos "burbuja" que B Metro),
+       bordes finos color hueso, tablas planas de alto contraste tipo
+       editorial en vez de cards separadas.
+     Todo se apoya en las mismas variables --bg/--ink/--amber/etc. que ya
+     usa el resto de las ligas: la lógica del simulador no se toca.
+     ===================================================================== */
+  body.liga-primerac{
+    /* -------- modo CLARO (identidad por defecto) -------- */
+    --bg: linear-gradient(180deg, #FFFFFF 0%, #F8F6F1 100%);
+    --bg-panel: #FFFFFF;
+    --bg-panel-2: #F6F4EE;
+    --line: #E7E2D5;
+    --ink: #2A2620;
+    --ink-dim: #6E6656;
+    --muted: #A79D89;
+
+    /* acento único: dorado mate */
+    --amber: #A6873D;
+    --amber-dim: #F4EEDC;
+
+    --zone-a: #A6873D;
+    --zone-a-dim: #F4EEDC;
+    --zone-b: #7C7365;
+    --zone-b-dim: #EFECE4;
+    --danger: #A23B3B;
+    --danger-dim: #F5E2DF;
+    --azul: #7C7365;
+    --azul-dim: #EFECE4;
+
+    /* tokens semánticos para tabla de posiciones */
+    --leader-bg: #F7F1E1;
+    --leader-accent: #A6873D;
+    --leader-text: #7C5F22;
+    --qualified-bg: #F1EFE9;
+    --qualified-accent: #7C7365;
+    --qualified-text: #55503F;
+    --relegation-bg: #F5E2DF;
+    --relegation-accent: #A23B3B;
+    --relegation-text: #7C2E2E;
+
+    /* forma: líneas finas, radios comedidos, sombras casi imperceptibles */
+    --radius: 14px;
+    --radius-sm: 10px;
+    --card-shadow: 0 4px 18px rgba(120,100,55,0.07);
+    --card-shadow-hover: 0 10px 28px rgba(120,100,55,0.12);
+    --card-grad: linear-gradient(180deg, #FFFFFF 0%, #FDFBF7 100%);
+    --hero-bg: linear-gradient(160deg, #FFFFFF 0%, #FBF8F1 55%, #F3ECDC 100%);
+    --hero-ink: #2A2620;
+    --hero-dim: #8C826D;
+    --hero-accent: #A6873D;
+    --tabs-bg: rgba(255,255,255,0.88);
+    --btn-grad: linear-gradient(135deg, #BB9C5C 0%, #93763A 100%);
+    --btn-ink: #FFFFFF;
+    --table-head-bg: #FBF9F3;
+    --hover-lift: translateY(-2px);
+    --bracket-line: #A6873D;
+    --bracket-line-glow: rgba(166,135,61,0.22);
+  }
+  body.dark.liga-primerac{
+    /* -------- modo OSCURO: grafito cálido, nunca negro puro, el dorado
+       sigue siendo el único acento -------- */
+    --bg: linear-gradient(180deg, #201C15 0%, #26221A 100%);
+    --bg-panel: #2B2620;
+    --bg-panel-2: #322C23;
+    --line: rgba(196,167,102,0.22);
+    --ink: #F3EFE5;
+    --ink-dim: #CDC3AF;
+    --muted: #948A74;
+
+    --amber: #D4B876;
+    --amber-dim: rgba(212,184,118,0.14);
+    --zone-a: #D4B876;
+    --zone-a-dim: rgba(212,184,118,0.14);
+    --zone-b: #A79C85;
+    --zone-b-dim: rgba(167,156,133,0.14);
+    --danger: #E08C82;
+    --danger-dim: rgba(224,140,130,0.14);
+    --azul: #A79C85;
+    --azul-dim: rgba(167,156,133,0.14);
+
+    --leader-bg: rgba(212,184,118,0.14);
+    --leader-accent: #D4B876;
+    --leader-text: #E9D19B;
+    --qualified-bg: rgba(167,156,133,0.12);
+    --qualified-accent: #A79C85;
+    --qualified-text: #CDC3AF;
+    --relegation-bg: rgba(224,140,130,0.12);
+    --relegation-accent: #E08C82;
+    --relegation-text: #F0B3AC;
+
+    --card-shadow: 0 10px 28px rgba(0,0,0,0.35);
+    --card-shadow-hover: 0 16px 38px rgba(0,0,0,0.45);
+    --card-grad: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+    --hero-bg: linear-gradient(160deg, #201C15 0%, #272219 55%, #2E2820 100%);
+    --hero-ink: #F3EFE5;
+    --hero-dim: #B7AC93;
+    --hero-accent: #D4B876;
+    --tabs-bg: rgba(32,28,21,0.9);
+    --btn-grad: linear-gradient(135deg, #D4B876 0%, #A6873D 100%);
+    --btn-ink: #201C15;
+    --table-head-bg: rgba(212,184,118,0.06);
+    --bracket-line: #D4B876;
+    --bracket-line-glow: rgba(212,184,118,0.32);
+  }
+
+  /* ---- Botón principal/secundario propios: pisan el borde institucional
+     genérico (body:not(.liga-lpf)) porque este bloque va después en el
+     documento. Dorado sólido con texto blanco / contorno dorado fino. ---- */
+  body.liga-primerac .btn-simular{
+    border: none; border-radius: 999px;
+    box-shadow: 0 8px 22px rgba(166,135,61,0.30);
+  }
+  body.liga-primerac .btn-simular:hover:not(:disabled){
+    background: var(--btn-grad); filter:brightness(1.06);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(166,135,61,0.38);
+  }
+  body.liga-primerac .btn-actualizar{
+    border: 1px solid #C9B27A; border-radius: 999px; color: var(--hero-ink);
+  }
+  body.liga-primerac .btn-actualizar:hover:not(:disabled){
+    background: rgba(166,135,61,0.10); border-color: var(--amber); color: var(--hero-ink);
+  }
+
+  /* ---- Hero: luminoso y minimalista, con arcos dorados concéntricos muy
+     tenues detrás del escudo (eco del borde superior redondeado del
+     crest oficial) en vez del halo/textura navy de las otras ligas. ---- */
+  body.liga-primerac .hero{
+    padding-top: 72px;
+  }
+  body.liga-primerac .hero::before{
+    content:"";
+    position:absolute; inset:0; pointer-events:none;
+    background:
+      radial-gradient(620px 460px at 50% -200px, rgba(166,135,61,0.14), transparent 65%),
+      repeating-radial-gradient(circle at 50% -40px, transparent 0, transparent 42px, rgba(166,135,61,0.05) 43px, transparent 45px);
+  }
+  body.liga-primerac .hero::after{
+    height:2px;
+    background: linear-gradient(90deg, transparent, #A6873D 25%, #D9C48A 50%, #A6873D 75%, transparent);
+    opacity:0.8;
+  }
+  /* dos trazos curvos finos, apenas visibles, en las esquinas del hero:
+     el geométrico "sutil" que pidió la identidad, sin sobrecargar */
+  body.liga-primerac .hero .coauthors{ z-index:3; }
+  body.liga-primerac .torneo-logo[data-liga="primerac"]{
+    border-color: var(--amber);
+    box-shadow: 0 10px 26px rgba(120,100,55,0.16), 0 0 0 4px rgba(166,135,61,0.06) inset;
+  }
+  body.liga-primerac .hero .eyebrow{ letter-spacing:0.34em; font-weight:600; }
+  body.liga-primerac .hero h1{
+    letter-spacing:0.01em; text-shadow:none;
+  }
+  body.liga-primerac .hero p.sub{ max-width:580px; }
+
+  /* halo geométrico de fondo para toda la página: dos formas romboidales
+     doradas casi imperceptibles ancladas a las esquinas de la ventana,
+     inspiradas en las facetas del escudo (no en su contorno exacto) */
+  body.liga-primerac::before, body.liga-primerac::after{
+    content:""; position:fixed; z-index:-1; pointer-events:none;
+    width:420px; height:420px; filter: blur(6px);
+    border-radius: 30% 70% 68% 32% / 40% 35% 65% 60%;
+  }
+  body.liga-primerac::before{
+    top:-160px; left:-200px;
+    background: radial-gradient(circle at 30% 30%, rgba(166,135,61,0.09), transparent 72%);
+  }
+  body.liga-primerac::after{
+    bottom:-180px; right:-200px;
+    background: radial-gradient(circle at 70% 70%, rgba(166,135,61,0.07), transparent 72%);
+  }
+
+  /* ---- Tarjetas de estadísticas del hero: chip plano, hueso claro, con
+     filete dorado fino en vez de las tarjetas translúcidas sobre fondo
+     oscuro que usan el resto de las ligas ---- */
+  body.liga-primerac .hero .meta{ gap:14px; margin-top:30px; }
+  body.liga-primerac .hero .meta div{
+    background:#FFFFFF; border:1px solid #EBE4D0; border-radius:12px;
+    padding:12px 20px; min-width:112px;
+    box-shadow: 0 4px 14px rgba(120,100,55,0.08);
+  }
+  body.liga-primerac .hero .meta div:hover{
+    border-color: var(--amber); transform: var(--hover-lift);
+  }
+  body.liga-primerac .hero .meta .num{ color:#8A6E2E; }
+  body.liga-primerac .hero .meta .lbl{ color:#8C826D; }
+
+  /* ---- Input de simulaciones: línea fina + foco dorado, sin el fondo
+     translúcido pensado para hero oscuro ---- */
+  body.liga-primerac #sim-count-primerac{
+    font-family:'Poppins'; font-size:13px; font-weight:600; color:#2A2620;
+    background:#FFFFFF; border:1px solid #DED6BE; border-radius:999px;
+    padding:10px 16px; width:96px; text-align:center; outline:none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  body.liga-primerac #sim-count-primerac:hover:not(:disabled){ border-color:#C9B27A; }
+  body.liga-primerac #sim-count-primerac:focus{ border-color: var(--amber); box-shadow: 0 0 0 3px rgba(166,135,61,0.2); }
+  body.liga-primerac #sim-count-primerac:disabled{ cursor:wait; opacity:0.5; }
+  body.liga-primerac #sim-count-primerac::-webkit-inner-spin-button,
+  body.liga-primerac #sim-count-primerac::-webkit-outer-spin-button{ opacity:0.6; }
+  body.liga-primerac .sim-select-row label{ color: var(--hero-dim); }
+
+  /* ---- Navegación entre torneos: pestaña activa en dorado mate sólido,
+     grupo con filete hueso y esquinas totalmente redondeadas ---- */
+  body.liga-primerac .liga-tabs .group{ border:1px solid #EBE4D0; border-radius:999px; box-shadow:none; }
+  body.liga-primerac .liga-tab.active{
+    background: linear-gradient(135deg, #BB9C5C, #93763A);
+    color:#FFFFFF;
+  }
+  body.liga-primerac .liga-tab:not(.active):hover{ color:#8A6E2E; background: var(--amber-dim); }
+  body.liga-primerac .theme-toggle{ border-radius:999px; }
+  body.liga-primerac .theme-toggle:hover{ color:#8A6E2E; border-color:#C9B27A; }
+
+  /* ---- Pestañas de zona (Zona A / Zona B): mismo lenguaje pill dorado ---- */
+  body.liga-primerac .zone-tabs .group{ border:1px solid #EBE4D0; border-radius:999px; box-shadow:none; }
+  body.liga-primerac .zone-tab.active{ background: var(--amber-dim); color:#8A6E2E; font-weight:700; }
+  body.liga-primerac .zone-tab:not(.active):hover{ color: var(--ink-dim); }
+
+  /* ---- Encabezados de sección: sin mayúsculas forzadas (look editorial,
+     más elegante) + numeral dorado ---- */
+  body.liga-primerac .section-head .idx{ color: var(--amber); font-weight:700; font-family:'Poppins'; }
+  body.liga-primerac .section-head h2{
+    font-family:'Poppins'; text-transform:none; letter-spacing:0; font-weight:600;
+  }
+  body.liga-primerac .section-head .rule{ background: linear-gradient(90deg, var(--line), transparent); }
+
+  /* ---- Tabla de posiciones: plana, editorial, con encabezado hueso y
+     filete dorado — en vez de las filas-card separadas de B Metro ---- */
+  body.liga-primerac .table-wrap{ box-shadow: var(--card-shadow); border-color: var(--line); }
+  body.liga-primerac thead th{
+    font-family:'Poppins'; font-weight:600; font-size:10px; letter-spacing:0.08em;
+    border-bottom: 2px solid var(--amber-dim);
+  }
+  body.liga-primerac tbody td{ font-family:'Poppins'; font-weight:400; }
+  body.liga-primerac tbody td:nth-child(2){ font-family:'Poppins'; font-weight:500; }
+  body.liga-primerac tbody tr.punta td:nth-child(2){ color: var(--leader-text); font-weight:700; }
+
+  /* ---- Cards genéricas (match, ascenso, team-card, faq, mc-row): borde
+     hueso fino y sombra casi imperceptible en vez del vidrio/gradiente
+     de las otras 5 ligas ---- */
+  body.liga-primerac .match,
+  body.liga-primerac .ascenso-card,
+  body.liga-primerac .team-card,
+  body.liga-primerac .faq details,
+  body.liga-primerac #mc-list-primerac .mc-row,
+  body.liga-primerac .campeon-summary,
+  body.liga-primerac #campeon-section-primerac{
+    border-color: var(--line);
+    background: var(--card-grad, var(--bg-panel));
+    background-color: var(--bg-panel);
+  }
+  body.liga-primerac .match:hover{ border-color: var(--amber); }
+  body.liga-primerac .match .row.winner{ color: var(--amber); }
+  body.liga-primerac .ascenso-score .team.win{ color: var(--amber); }
+  body.liga-primerac .ascenso-footer b,
+  body.liga-primerac .campeon-summary b,
+  body.liga-primerac .final-col .campeon,
+  body.liga-primerac .campeon-anuncio{ color: var(--amber); }
+  body.liga-primerac #campeon-section-primerac{ border-radius: var(--radius); padding-bottom:28px; }
+  body.liga-primerac .team-card .tc-name{ font-family:'Poppins'; text-transform:none; letter-spacing:0; font-weight:600; }
+  body.liga-primerac .team-card .tc-stat{ background: var(--bg-panel-2); }
+  body.liga-primerac .racha-badge.v{ background: var(--amber); }
+
+  /* ---- Select "Elegí un equipo" e input de búsqueda: línea fina hueso,
+     foco dorado, tipografía Poppins ---- */
+  body.liga-primerac #campeon-equipo-primerac{
+    font-family:'Poppins'; font-weight:500; color: var(--ink);
+    background: var(--bg-panel); border:1px solid var(--line); border-radius:999px;
+    padding:10px 18px;
+  }
+  body.liga-primerac #campeon-equipo-primerac:hover:not(:disabled),
+  body.liga-primerac #campeon-equipo-primerac:focus{ border-color: var(--amber); }
+  body.liga-primerac #campeon-equipo-primerac option{ background:#FFFFFF; color:#2A2620; }
+  body.dark.liga-primerac #campeon-equipo-primerac option{ background:#2B2620; color:#F3EFE5; }
+  body.liga-primerac .search-box input{ border-radius:999px; }
+  body.liga-primerac .search-box input:focus{ border-color: var(--amber); box-shadow: 0 0 0 3px var(--amber-dim); }
+  body.liga-primerac .search-hint{ font-family:'Poppins'; }
+
+  /* ---- Bracket del Torneo Reducido: líneas de cuadro doradas, ya
+     resuelto por --bracket-line/--bracket-line-glow ---- */
+  body.liga-primerac .round-title{ color: var(--muted); letter-spacing:0.1em; }
+
+  /* ---- Monte Carlo: barra "directo" en dorado sólido, "reducido" en
+     dorado atenuado (ya resuelto por currentColor/--zone-a via JS) ---- */
+  body.liga-primerac .mc-row .name .pct{ font-family:'Poppins'; }
+  body.liga-primerac .legend{ font-family:'Poppins'; }
+
+  /* ---- FAQ ---- */
+  body.liga-primerac .faq summary{ font-family:'Poppins'; text-transform:none; letter-spacing:0; font-weight:600; }
+  body.liga-primerac .faq summary::after{ color: var(--amber); }
+
+  /* ---- Tipografía propia: Poppins en absolutamente todo el alcance de
+     esta liga — títulos, UI, tablas, cifras — para diferenciarse del
+     Oswald + Inter + JetBrains Mono (y del resto de fuentes) que usan
+     las otras 5 categorías. ---- */
+  body.liga-primerac{ font-family:'Poppins', sans-serif; }
+  body.liga-primerac input,
+  body.liga-primerac button,
+  body.liga-primerac select{ font-family:'Poppins', sans-serif; }
+  body.liga-primerac .display,
+  body.liga-primerac .hero h1{
+    font-family:'Poppins', sans-serif; text-transform:none; letter-spacing:0; font-weight:700;
+  }
+  body.liga-primerac .mono,
+  body.liga-primerac .eyebrow,
+  body.liga-primerac tbody td,
+  body.liga-primerac thead th,
+  body.liga-primerac .hero .meta .num,
+  body.liga-primerac .hero .meta .lbl,
+  body.liga-primerac .round-title,
+  body.liga-primerac .sim-select-row label,
+  body.liga-primerac .sim-status,
+  body.liga-primerac .last-update,
+  body.liga-primerac .btn-simular,
+  body.liga-primerac .btn-actualizar,
+  body.liga-primerac .mc-row .pos,
+  body.liga-primerac .mc-row .name .pct,
+  body.liga-primerac .campeon-summary{
+    font-family:'Poppins', sans-serif;
+  }
+
+  @media (max-width:600px){
+    body.liga-primerac::before, body.liga-primerac::after{ width:260px; height:260px; }
+    body.liga-primerac .hero{ padding-top:56px; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    body.liga-primerac .hero .meta div,
+    body.liga-primerac .btn-simular,
+    body.liga-primerac #mc-list-primerac .mc-row{ transition:none; }
+  }
+
   /* ---- Escudos de equipos ---- */
   .escudo{ width:24px; height:24px; object-fit:contain; vertical-align:-6px; margin-right:8px; }
   .tc-name .escudo{ width:34px; height:34px; vertical-align:-8px; margin-right:10px; }
   .match .row .escudo, .copa-card li .escudo, .descenso-card .escudo{ width:20px; height:20px; vertical-align:-5px; margin-right:7px; }
   .campeon .escudo, .ascenso-score .team .escudo{ width:22px; height:22px; vertical-align:-5px; margin-right:7px; }
+
+  /* Escudos de equipo de B Metropolitana, Federal A y Primera C: se veían
+     chicos en relación al resto de la interfaz, así que se agrandan un
+     poco (misma proporción entre los 4 contextos: tabla/buscador, ficha
+     de equipo, cuadros/partidos y marcador de ida-vuelta). */
+  body.liga-bmetro .escudo, body.liga-federal .escudo, body.liga-primerac .escudo{ width:29px; height:29px; }
+  body.liga-bmetro .tc-name .escudo, body.liga-federal .tc-name .escudo, body.liga-primerac .tc-name .escudo{ width:40px; height:40px; }
+  body.liga-bmetro .match .row .escudo, body.liga-bmetro .copa-card li .escudo, body.liga-bmetro .descenso-card .escudo,
+  body.liga-federal .match .row .escudo, body.liga-federal .copa-card li .escudo, body.liga-federal .descenso-card .escudo,
+  body.liga-primerac .match .row .escudo, body.liga-primerac .copa-card li .escudo, body.liga-primerac .descenso-card .escudo{ width:24px; height:24px; }
+  body.liga-bmetro .campeon .escudo, body.liga-bmetro .ascenso-score .team .escudo,
+  body.liga-federal .campeon .escudo, body.liga-federal .ascenso-score .team .escudo,
+  body.liga-primerac .campeon .escudo, body.liga-primerac .ascenso-score .team .escudo{ width:26px; height:26px; }
 </style>
 </head>
 <body>
@@ -1989,6 +2339,8 @@
       <img class="torneo-logo" data-liga="bmetro" src="logos-torneos/b-metropolitana.png" alt=""
            onerror="this.remove()">
       <img class="torneo-logo" data-liga="federal" src="logos-torneos/federal-a.png" alt=""
+           onerror="this.remove()">
+      <img class="torneo-logo" data-liga="primerac" src="logos-torneos/primera-c.png" alt=""
            onerror="this.remove()">
     </div>
     <div class="eyebrow" id="hero-eyebrow">SIMULACIÓN MONTE CARLO — <span id="hero-n">0</span> CORRIDAS</div>
@@ -2070,6 +2422,20 @@
       <div id="sim-status-federal" class="sim-status"></div>
       <div id="last-update-federal" class="last-update"></div>
     </div>
+
+    <div class="sim-control" id="sim-control-primerac" style="display:none">
+      <div class="sim-select-row">
+        <label for="sim-count-primerac">Cantidad de simulaciones</label>
+        <input type="number" id="sim-count-primerac" value="1000" min="50" max="5000" step="1">
+        <span class="rango">(50–5000)</span>
+      </div>
+      <div class="btn-row">
+        <button id="btn-simular-primerac" class="btn-simular">▶ Correr nueva simulación</button>
+        <button id="btn-actualizar-primerac" class="btn-actualizar">⟳ Actualizar desde Promiedos</button>
+      </div>
+      <div id="sim-status-primerac" class="sim-status"></div>
+      <div id="last-update-primerac" class="last-update"></div>
+    </div>
   </div>
 
   <div class="liga-tabs">
@@ -2079,6 +2445,7 @@
       <button class="liga-tab active" data-liga="nacional">Primera Nacional</button>
       <button class="liga-tab" data-liga="bmetro">B Metropolitana</button>
       <button class="liga-tab" data-liga="federal">Federal A</button>
+      <button class="liga-tab" data-liga="primerac">Primera C</button>
     </div>
     <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Cambiar entre modo claro y oscuro">
       <span id="theme-toggle-icon">🌙</span><span id="theme-toggle-label">Oscuro</span>
@@ -2595,6 +2962,125 @@
 
   </div><!-- /vista-federal -->
 
+  <div id="vista-primerac" style="display:none">
+
+  <div class="search-section">
+    <div class="search-box">
+      <input type="text" id="team-search-primerac" list="team-list-primerac" placeholder="Buscar equipo… (ej: Cañuelas, Fénix, Sacachispas)" autocomplete="off">
+      <datalist id="team-list-primerac"></datalist>
+    </div>
+    <div class="search-hint">Escribí el nombre del equipo para ver su tabla, chances de ascenso y riesgo de terminar último</div>
+    <div id="search-result-primerac"></div>
+  </div>
+
+  <div class="search-section" id="campeon-section-primerac">
+    <div class="section-head" style="margin-bottom:14px;">
+      <span class="idx">🏆</span><h2 style="font-size:18px;">Simulá hasta que tu equipo ascienda</h2><div class="rule"></div>
+    </div>
+    <p class="section-note" style="margin:0 0 16px; text-align:center; max-width:none;">
+      Elegí un equipo: corremos temporadas completas (fase de zonas + Final por el 1er ascenso + Torneo Reducido),
+      una tras otra, hasta encontrar la primera en la que consigue el ascenso. Te mostramos esa temporada puntual:
+      cómo terminó cada zona, contra quién le tocó la final y cómo le fue en el Reducido.
+    </p>
+    <div class="campeon-controls">
+      <select id="campeon-equipo-primerac"><option value="">Elegí un equipo…</option></select>
+      <button id="btn-campeon-primerac" class="btn-simular">🏆 Simular hasta el ascenso</button>
+    </div>
+    <div id="campeon-status-primerac" class="sim-status"></div>
+    <div id="campeon-resultado-primerac"></div>
+  </div>
+
+  <div class="zone-tabs" id="zone-tabs-primerac">
+    <div class="group">
+      <button class="zone-tab active" data-zone="A">ZONA A</button>
+      <button class="zone-tab" data-zone="B">ZONA B</button>
+    </div>
+  </div>
+
+  <section id="sec-tabla-primerac">
+    <div class="section-head"><span class="idx">01</span><h2>Tabla final simulada</h2><div class="rule"></div></div>
+    <p class="section-note">Resultado de una corrida puntual de la fase de zonas: se completan los partidos pendientes del fixture sobre la base de los resultados ya jugados.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>GF</th><th>GC</th><th>DG</th></tr></thead>
+        <tbody id="tabla-body-primerac"></tbody>
+      </table>
+    </div>
+    <p class="section-note" style="margin-top:10px; text-align:left;">
+      <span style="display:inline-block; width:10px; height:10px; border-radius:2px; background:var(--relegation-accent); margin-right:6px; vertical-align:middle;"></span>
+      El último de cada zona no desciende directo: juega el partido de desafiliación (promoción) ante un equipo del Torneo Promocional Amateur para mantener la categoría.
+    </p>
+  </section>
+
+  <section id="sec-ascenso-primerac">
+    <div class="section-head"><span class="idx">02</span><h2>Camino al ascenso</h2><div class="rule"></div></div>
+    <p class="section-note">El puntero de cada zona define el primer ascenso en una final a ida y vuelta. El perdedor entra directo a la segunda fase del Reducido junto a los ganadores de la primera ronda.</p>
+
+    <div class="ascenso-card">
+      <div class="label">Final 1° ascenso (ida y vuelta)</div>
+      <div class="ascenso-score" id="final-ascenso-score-primerac"></div>
+      <div class="ascenso-footer" id="final-ascenso-footer-primerac"></div>
+    </div>
+
+    <div class="label" style="font-family:'JetBrains Mono'; font-size:11px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin: 24px 0 4px;">Torneo Reducido — 2° ascenso</div>
+    <div class="bracket-scroll">
+      <div class="bracket" id="bracket-primerac"></div>
+    </div>
+    <div class="campeon-anuncio-wrap" id="campeon-anuncio-reducido-primerac"></div>
+  </section>
+
+  <section id="sec-mc-primerac">
+    <div class="section-head"><span class="idx">03</span><h2>Probabilidades — Monte Carlo</h2><div class="rule"></div></div>
+    <p class="section-note">Cada barra desglosa el % de simulaciones en que el equipo asciende directo (puntero de zona) o por el Reducido. A la derecha, el % de veces que terminó último de su zona — lo que dispara el partido de desafiliación ante un equipo del Torneo Promocional Amateur (Primera C no tiene descenso directo).</p>
+    <div class="legend">
+      <span><i style="background:var(--zone-a)"></i> Ascenso directo</span>
+      <span><i style="background:var(--zone-a); opacity:0.5"></i> Ascenso por Reducido</span>
+      <span><i style="background:var(--danger)"></i> % riesgo de terminar último</span>
+    </div>
+    <div id="mc-list-primerac"></div>
+  </section>
+
+  <section id="sec-esperada-primerac">
+    <div class="section-head"><span class="idx">04</span><h2>Posición final esperada</h2><div class="rule"></div></div>
+    <p class="section-note">Puntos y posición promedio de cada equipo a lo largo de todas las simulaciones — la foto más estable de "dónde debería terminar" cada uno.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Equipo</th><th>Pts. prom.</th><th>Pos. prom.</th></tr></thead>
+        <tbody id="esperada-body-primerac"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="sec-como-funciona-primerac">
+    <div class="section-head"><span class="idx">05</span><h2>¿Cómo funciona?</h2><div class="rule"></div></div>
+    <p class="section-note">Todo lo que hay detrás del simulador: el modelo, los datos y las reglas del torneo.</p>
+
+    <div class="faq">
+      <details>
+        <summary>¿Qué es el Simulador de la Primera C?</summary>
+        <div class="faq-a">Es una herramienta que simula la temporada completa de la Primera C (fase de zonas, Final por el 1er ascenso y Torneo Reducido) para estimar probabilidades de ascenso, la tabla final proyectada y los goleadores.</div>
+      </details>
+      <details>
+        <summary>¿Cómo se calculan las probabilidades?</summary>
+        <div class="faq-a">Usamos un modelo de Poisson que estima los goles de cada equipo según su ataque y defensa (como local y como visitante), ajustado por la forma reciente. Sobre ese modelo corremos una simulación de Monte Carlo de toda la temporada.</div>
+      </details>
+      <details>
+        <summary>¿Cuántos equipos ascienden?</summary>
+        <div class="faq-a">La Primera C se divide en Zona A y Zona B, de 14 equipos cada una. Hay 2 ascensos: el primero lo define una final a ida y vuelta entre los punteros de cada zona, y el segundo sale del Torneo Reducido.</div>
+      </details>
+      <details>
+        <summary>¿Y el descenso?</summary>
+        <div class="faq-a">La Primera C no tiene descenso automático. El equipo que termina último en cada zona juega un partido de desafiliación contra un equipo del Torneo Promocional Amateur para definir si se queda en la categoría. Por eso el simulador muestra "riesgo de terminar último" en vez de un % de descenso.</div>
+      </details>
+      <details>
+        <summary>¿Cada cuánto se actualizan los datos?</summary>
+        <div class="faq-a">Los resultados se actualizan con los partidos jugados que se toman de Promiedos, y cada actualización vuelve a correr la simulación con la tabla al día.</div>
+      </details>
+    </div>
+  </section>
+
+  </div><!-- /vista-primerac -->
+
   <div id="vista-copa" style="display:none">
 
   <div class="search-section">
@@ -2707,7 +3193,7 @@ function setApiActionsDisabled(disabled){
   document.querySelectorAll('.btn-simular, .btn-actualizar').forEach(btn => {
     btn.disabled = disabled;
   });
-  document.querySelectorAll('#sim-count, #sim-count-lpf, #sim-count-copa, #sim-count-bmetro, #sim-count-federal, #campeon-equipo, #campeon-equipo-lpf, #campeon-equipo-copa, #campeon-equipo-bmetro, #campeon-equipo-federal').forEach(control => {
+  document.querySelectorAll('#sim-count, #sim-count-lpf, #sim-count-copa, #sim-count-bmetro, #sim-count-federal, #sim-count-primerac, #campeon-equipo, #campeon-equipo-lpf, #campeon-equipo-copa, #campeon-equipo-bmetro, #campeon-equipo-federal, #campeon-equipo-primerac').forEach(control => {
     control.disabled = disabled;
   });
 }
@@ -3038,7 +3524,7 @@ const ESCUDOS = {
   'Deportivo Rincón':'dep_rincon', 'Gimnasia y Esgrima (Chivilcoy)':'gimnasia_chivilcoy',
   'Ituzaingó':'ituzaingo', 'Olimpo':'olimpo', 'Real Pilar':'realpilar',
   'San Martín de Formosa':'san_martin_formosa', 'Sarmiento De La Banda':'sarmiento_lb',
-  'Sportivo Barracas':'sportivo_barracas', 'Sportivo Belgrano':'sportivo_belgrano',
+  'Sportivo Barracas':'sportivoBarracas', 'Sportivo Belgrano':'sportivo_belgrano',
 
   // Primera B Metropolitana (equipos propios de esta categoría)
   'Argentino de Quilmes':'argquilmes', 'Argentino Quilmes':'argquilmes', 'Argentino (Q)':'argquilmes',
@@ -3083,6 +3569,33 @@ const ESCUDOS = {
   'Huracán Las Heras':'huracan_las_heras', 'UAI Urquiza':'uaiurquiza',
   'Círculo Deportivo':'circulo_deportivo', 'Alvarado':'Alvarado',
   'Sol de Mayo':'sol_de_mayo',
+
+  // PRIMERA C (equipos propios de esta categoría)
+  'General Lamadrid':'lamadrid', 'Lamadrid':'lamadrid',
+  'Leones Unidos':'leones', 'Leones':'leones', 'Leones de Rosario FC':'leones',
+  'Centro Español':'centroespanol',
+  'Estrella del Sur':'estrella_del_sur',
+  'Leandro N. Alem':'leaalem', 'Leandro N Alem':'leaalem',
+  'Mercedes':'mercedes',
+  'Argentino de Rosario':'argentinorosario',
+  'Berazategui':'berazategui',
+  'Cañuelas':'canuelas',
+  'Central Ballester':'centralballester',
+  'Defensores de Cambaceres':'defcambaceres', 'Def. Cambaceres':'defcambaceres', 'Defensores Cambaceres':'defcambaceres',
+  'Deportivo Español':'depespanol',
+  'Deportivo Paraguayo':'depparaguayo',
+  'El Porvenir':'elporvenir',
+  'J.J. Urquiza':'jjurquiza', 'JJ Urquiza':'jjurquiza', 'Justo José Urquiza':'jjurquiza',
+  'Juventud Unida':'juventudunida', 'Juventud Unida SM':'juventudunida',
+  'Villa Lugano':'lugano', 'CA Lugano':'lugano',
+  'Luján':'lujan', 'Club Luján':'lujan',
+  'Muñiz':'muniz',
+  'Puerto Nuevo':'puertonuevo',
+  'Victoriano Arenas':'victoriano',
+  'Yupanqui':'yupanqui2',
+  'Atlas':'atlas', 'CA Atlas':'atlas',
+  'Fénix':'fenix', 'CA Fenix':'fenix',
+  'Central Córdoba':'centralcordoba3', 'Central Cordoba':'centralcordoba3',
 };
 
 // Sin acentos, sin espacios ni símbolos, todo en minúscula — para poder
@@ -3618,6 +4131,493 @@ document.getElementById('btn-campeon').addEventListener('click', simularHastaCam
 document.querySelectorAll('#zone-tabs-nacional .zone-tab').forEach(btn => {
   btn.addEventListener('click', () => setZone(btn.dataset.zone));
 });
+
+/* =====================================================================
+   PRIMERA C
+   ===================================================================== */
+let DATA_PRIMERAC;
+let zonaActualPrimeraC = "A";
+let TEAM_INDEX_PRIMERAC = {};
+
+async function cargarDatosPrimeraC(){
+  try {
+    const respuesta = await fetch("./data_primerac.json?t=" + Date.now());
+    if (!respuesta.ok) throw new Error("No se pudo cargar data_primerac.json");
+    DATA_PRIMERAC = await respuesta.json();
+    iniciarPrimeraC();
+  } catch (e) {
+    const cont = document.getElementById('bracket-primerac');
+    if (cont) cont.innerHTML = `<div class="no-result">No se pudo cargar data_primerac.json todavía (${e.message}). Corré <code>python main_primerac.py</code> una vez y subí el archivo generado.</div>`;
+  }
+}
+
+function iniciarPrimeraC(){
+  if (!DATA_PRIMERAC) return;
+  renderAscensoPrimeraC();
+  renderBracketPrimeraC();
+  setZonePrimeraC("A");
+
+  TEAM_INDEX_PRIMERAC = buildTeamIndexPrimeraC();
+  poblarDatalistPrimeraC(TEAM_INDEX_PRIMERAC);
+  poblarSelectEquiposPrimeraC(TEAM_INDEX_PRIMERAC);
+
+  const equipoUrl = new URLSearchParams(window.location.search).get('equipo');
+  if (equipoUrl && TEAM_INDEX_PRIMERAC[equipoUrl]){
+    document.getElementById('team-search-primerac').value = equipoUrl;
+    buscarEquipoPrimeraC(equipoUrl);
+  }
+  if (document.body.classList.contains('liga-primerac')) actualizarHero('primerac');
+}
+
+function renderTablaPrimeraC(zona){
+  const body = document.getElementById('tabla-body-primerac');
+  if (!body) return;
+  body.innerHTML = "";
+  const filas = DATA_PRIMERAC.tablas[zona];
+  filas.forEach((f, i) => {
+    const tr = document.createElement('tr');
+    if (i === 0) tr.classList.add('punta');
+    else if (i >= 1 && i <= 6) tr.classList.add('reducido');
+    if (i === filas.length - 1) tr.classList.add('descenso');
+    tr.innerHTML = `<td>${i+1}</td><td>${escudoHTML(f.equipo)}${f.equipo}</td><td>${f.puntos}</td><td>${f.gf}</td><td>${f.gc}</td><td>${f.dg > 0 ? '+'+f.dg : f.dg}</td>`;
+    body.appendChild(tr);
+  });
+}
+
+function renderAscensoPrimeraC(){
+  const fa = DATA_PRIMERAC.final_ascenso;
+  const scoreEl = document.getElementById("final-ascenso-score-primerac");
+  if (!scoreEl) return;
+  scoreEl.innerHTML = `
+      <span class="team ${fa.ganador===fa.equipo_a?"win":""}">
+          ${escudoHTML(fa.equipo_a)}${fa.equipo_a}
+      </span>
+
+      <span class="gscore">
+          ${fa.detalle_marcador[0]} - ${fa.detalle_marcador[1]}
+      </span>
+
+      <span class="team ${fa.ganador===fa.equipo_b?"win":""}">
+          ${escudoHTML(fa.equipo_b)}${fa.equipo_b}
+      </span>
+  `;
+  document.getElementById("final-ascenso-footer-primerac").innerHTML =
+    `Asciende directo: <b>${fa.ganador}</b> (${fa.texto}) · ${fa.perdedor} pasa a la segunda fase del Reducido`;
+}
+
+function renderBracketPrimeraC(){
+  const r = DATA_PRIMERAC.reducido;
+  const bracket = document.getElementById('bracket-primerac');
+  if (!bracket) return;
+  let html = "";
+
+  html += `<div class="round">
+    <div class="round-title">Primera fase</div>
+    <div class="round-body">${r.primera_fase.map(m => seriesHTML(m)).join("")}</div>
+  </div>`;
+
+  html += `<div class="round">
+    <div class="round-title">Segunda fase</div>
+    <div class="round-body">
+      ${r.segunda_fase.map(m => seriesHTML(m)).join("")}
+      <div class="match note">+ ${r.perdedor_final_ascenso} entra directo a semifinales (tabla general)</div>
+    </div>
+  </div>`;
+
+  html += `<div class="round">
+    <div class="round-title">Semifinales</div>
+    <div class="round-body">${r.semifinales.map(m => seriesHTML(m)).join("")}</div>
+  </div>`;
+
+  html += `<div class="round final-col">
+    <div class="round-title">Final (ida y vuelta)</div>
+    <div class="round-body">${seriesHTML(r.final)}</div>
+  </div>`;
+
+  bracket.innerHTML = html;
+  const anuncio = document.getElementById('campeon-anuncio-reducido-primerac');
+  if (anuncio) anuncio.innerHTML = campeonAnuncioHTML(r.final.campeon, '▲');
+}
+
+function renderMCPrimeraC(zona){
+  const list = document.getElementById('mc-list-primerac');
+  if (!list) return;
+  list.innerHTML = "";
+  const filas = DATA_PRIMERAC.monte_carlo[zona];
+  const zoneColor = zona === 'A' ? 'var(--zone-a)' : 'var(--zone-b)';
+  filas.forEach((f, i) => {
+    const row = document.createElement('div');
+    row.className = 'mc-row';
+    const directo = f['%ascenso_directo'];
+    const reducido = f['%ascenso_reducido'];
+    const riesgo = f.riesgo_ultimo ?? 0;
+    const riesgoClass = riesgo >= 25 ? 'high' : '';
+    row.innerHTML = `
+      <div class="pos">${i+1}</div>
+      <div>
+        <div class="name"><span>${escudoHTML(f.equipo)}${f.equipo}</span><span class="pct" style="color:${zoneColor}">${fmtPct(f.ascenso_total)} ascenso</span></div>
+        <div class="mc-bar-track">
+          <div class="mc-bar-fill directo" style="width:${directo}%; background:${zoneColor}"></div>
+          <div class="mc-bar-fill reducido" style="left:${directo}%; width:${reducido}%; background:${zoneColor}"></div>
+        </div>
+        <div class="mc-sub">
+          <span><i class="dot" style="background:${zoneColor}"></i>${fmtPct(directo)} directo</span>
+          <span><i class="dot" style="background:${zoneColor}; opacity:0.5"></i>${fmtPct(reducido)} reducido</span>
+        </div>
+      </div>
+      <div class="mc-desc">
+        <div class="desc-pct ${riesgoClass}">${fmtPct(riesgo)}</div>
+        <div class="desc-lbl">riesgo último</div>
+        <div class="desc-bar-track"><div class="desc-bar-fill" style="width:${Math.min(riesgo, 100)}%"></div></div>
+      </div>
+    `;
+    list.appendChild(row);
+  });
+}
+
+function renderEsperadaPrimeraC(zona){
+  const body = document.getElementById('esperada-body-primerac');
+  if (!body) return;
+  body.innerHTML = "";
+  DATA_PRIMERAC.tabla_esperada[zona].forEach((f, i) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${i+1}</td><td>${escudoHTML(f.equipo)}${f.equipo}</td><td>${f.puntos_prom}</td><td>${f.posicion_prom}</td>`;
+    body.appendChild(tr);
+  });
+}
+
+function setZonePrimeraC(zona){
+  zonaActualPrimeraC = zona;
+  document.querySelectorAll('#zone-tabs-primerac .zone-tab').forEach(b => b.classList.toggle('active', b.dataset.zone === zona));
+  renderTablaPrimeraC(zona);
+  renderMCPrimeraC(zona);
+  renderEsperadaPrimeraC(zona);
+}
+
+document.querySelectorAll('#zone-tabs-primerac .zone-tab').forEach(btn => {
+  btn.addEventListener('click', () => setZonePrimeraC(btn.dataset.zone));
+});
+
+/* ---------- BUSCADOR DE EQUIPOS (PRIMERA C) ---------- */
+function buildTeamIndexPrimeraC(){
+  const index = {};
+  ['A','B'].forEach(zona => {
+    const actual = (DATA_PRIMERAC.tabla_actual && DATA_PRIMERAC.tabla_actual[zona]) || DATA_PRIMERAC.tablas[zona];
+    const mc = DATA_PRIMERAC.monte_carlo[zona];
+    const esperada = DATA_PRIMERAC.tabla_esperada[zona];
+    const rachasZona = (DATA_PRIMERAC.rachas && DATA_PRIMERAC.rachas[zona]) || {};
+    actual.forEach((f, i) => {
+      const mcRow = mc.find(m => m.equipo === f.equipo) || {};
+      const espRow = esperada.find(e => e.equipo === f.equipo) || {};
+      const ultimos5 = [...(rachasZona[f.equipo] || [])].reverse();
+      index[f.equipo] = {
+        equipo: f.equipo, zona, posicion: f.posicion ?? (i + 1), total: actual.length,
+        puntos: f.puntos, gf: f.gf, gc: f.gc, dg: f.dg,
+        puntero_zona: mcRow['%puntero_zona'] ?? 0,
+        ascenso_directo: mcRow['%ascenso_directo'] ?? 0,
+        ascenso_reducido: mcRow['%ascenso_reducido'] ?? 0,
+        ascenso_total: mcRow['ascenso_total'] ?? 0,
+        riesgo_ultimo: mcRow['riesgo_ultimo'] ?? 0,
+        puntos_prom: espRow['puntos_prom'] ?? '—',
+        posicion_prom: espRow['posicion_prom'] ?? '—',
+        ultimos5
+      };
+    });
+  });
+  return index;
+}
+
+function poblarDatalistPrimeraC(index){
+  const dl = document.getElementById('team-list-primerac');
+  if (!dl) return;
+  dl.innerHTML = Object.keys(index).sort().map(nombre => `<option value="${nombre}">`).join('');
+}
+
+function renderTeamCardPrimeraC(t){
+  const zoneColor = t.zona === 'A' ? 'var(--zone-a)' : 'var(--zone-b)';
+  const zoneDim = t.zona === 'A' ? 'var(--zone-a-dim)' : 'var(--zone-b-dim)';
+  const riesgoClass = t.riesgo_ultimo >= 25 ? 'high' : '';
+  return `
+    <div class="team-card">
+      <div class="tc-head">
+        <div class="tc-name">${escudoHTML(t.equipo)}${t.equipo}</div>
+        <span class="tc-zone" style="background:${zoneDim}; color:${zoneColor}">ZONA ${t.zona}</span>
+      </div>
+      <div class="tc-pos">Posición actual: <b>${t.posicion}°</b> de ${t.total} — <b>${t.puntos}</b> pts (DG ${t.dg > 0 ? '+' + t.dg : t.dg})</div>
+      <div class="tc-grid" style="margin-top:16px;">
+        <div class="tc-stat"><div class="v" style="color:${zoneColor}">${fmtPct(t.puntero_zona)}</div><div class="l">Puntero de zona</div></div>
+        <div class="tc-stat"><div class="v" style="color:${zoneColor}">${fmtPct(t.ascenso_directo)}</div><div class="l">Ascenso directo</div></div>
+        <div class="tc-stat"><div class="v" style="color:${zoneColor}">${fmtPct(t.ascenso_reducido)}</div><div class="l">Ascenso reducido</div></div>
+        <div class="tc-stat"><div class="v ${riesgoClass}" style="${t.riesgo_ultimo >= 25 ? 'color:var(--danger)' : ''}">${fmtPct(t.riesgo_ultimo)}</div><div class="l">Riesgo último</div></div>
+      </div>
+      <div class="tc-mc-title">Ascenso total: ${fmtPct(t.ascenso_total)} de las simulaciones</div>
+      <div class="mc-bar-track" style="margin-bottom:14px;">
+        <div class="mc-bar-fill directo" style="width:${t.ascenso_directo}%; background:${zoneColor}"></div>
+        <div class="mc-bar-fill reducido" style="left:${t.ascenso_directo}%; width:${t.ascenso_reducido}%; background:${zoneColor}"></div>
+      </div>
+      <div class="tc-pos">Posición final promedio: <b>${t.posicion_prom}°</b> — Puntos promedio: <b>${t.puntos_prom}</b></div>
+      <div class="tc-racha">
+        <div class="tc-racha-title">Últimos partidos</div>
+        ${renderRacha(t.ultimos5)}
+      </div>
+      <div class="tc-share">
+        <button onclick="compartirLink('${t.equipo.replace(/'/g, "\\'")}', this)">🔗 Copiar link</button>
+        <button onclick="compartirImagen('${t.equipo.replace(/'/g, "\\'")}', this)">📷 Descargar imagen</button>
+      </div>
+    </div>
+  `;
+}
+
+function buscarEquipoPrimeraC(nombre){
+  const resultDiv = document.getElementById('search-result-primerac');
+  if (!resultDiv) return;
+  if (!nombre || !nombre.trim()){
+    resultDiv.innerHTML = "";
+    return;
+  }
+  const index = TEAM_INDEX_PRIMERAC;
+  const exacto = index[nombre];
+  if (exacto){
+    resultDiv.innerHTML = renderTeamCardPrimeraC(exacto);
+    return;
+  }
+  const q = nombre.trim().toLowerCase();
+  const coincidencia = Object.values(index).find(t => t.equipo.toLowerCase().includes(q));
+  if (coincidencia){
+    resultDiv.innerHTML = renderTeamCardPrimeraC(coincidencia);
+  } else {
+    resultDiv.innerHTML = `<div class="no-result">No se encontró ningún equipo llamado "${nombre}"</div>`;
+  }
+}
+
+const teamSearchPrimeraC = document.getElementById('team-search-primerac');
+if (teamSearchPrimeraC) teamSearchPrimeraC.addEventListener('input', (e) => buscarEquipoPrimeraC(e.target.value));
+
+/* ---------- SIMULAR / ACTUALIZAR (PRIMERA C) ---------- */
+function leerNSimsPrimeraC(){
+  const input = document.getElementById('sim-count-primerac');
+  let n = parseInt(input.value, 10);
+  if (!Number.isFinite(n)) n = 1000;
+  n = Math.max(50, Math.min(5000, n));
+  input.value = n;
+  return n;
+}
+
+async function correrSimulacionPrimeraC(){
+  const btn = document.getElementById('btn-simular-primerac');
+  const status = document.getElementById('sim-status-primerac');
+  const input = document.getElementById('sim-count-primerac');
+  const nSims = leerNSimsPrimeraC();
+
+  if (!beginApiAction(status)) return;
+
+  btn.disabled = true;
+  input.disabled = true;
+  btn.textContent = "Simulando…";
+  status.classList.remove('error', 'ok');
+  status.textContent = `Corriendo ${nSims} simulaciones — puede tardar 1-2 minutos, no cierres esta pestaña.`;
+
+  try {
+    const cuerpo = await ejecutarSimulacion("simular-primerac", { n_sims: Number(nSims) }, "/api/simular-primerac", status);
+    DATA_PRIMERAC = cuerpo;
+    iniciarPrimeraC();
+    status.classList.add('ok');
+    status.textContent = "✓ Simulación actualizada (" + (DATA_PRIMERAC.generado || "") + ")";
+  } catch (e) {
+    setApiErrorStatus(status, "No se pudo correr la simulación", e);
+  } finally {
+    btn.disabled = false;
+    input.disabled = false;
+    btn.textContent = "▶ Correr nueva simulación";
+    endApiAction();
+  }
+}
+document.getElementById('btn-simular-primerac').addEventListener('click', correrSimulacionPrimeraC);
+
+async function correrActualizacionPrimeraC(){
+  const btn = document.getElementById('btn-actualizar-primerac');
+  const status = document.getElementById('sim-status-primerac');
+  const lastUpdate = document.getElementById('last-update-primerac');
+  const input = document.getElementById('sim-count-primerac');
+  const nSims = leerNSimsPrimeraC();
+
+  if (!beginApiAction(status)) return;
+
+  btn.disabled = true;
+  input.disabled = true;
+  btn.textContent = "Buscando resultados…";
+  status.classList.remove('error', 'ok');
+  status.textContent = "Consultando Promiedos y re-simulando si hay partidos nuevos — puede tardar 1-2 minutos.";
+
+  try {
+    const respuesta = await apiFetch(apiUrl("/api/actualizar-primerac"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ n_sims: Number(nSims) })
+    });
+    const cuerpo = await respuesta.json().catch(() => ({}));
+    if (!respuesta.ok) throw apiResponseError(respuesta, cuerpo);
+
+    if (cuerpo.actualizado) {
+      DATA_PRIMERAC = cuerpo.datos;
+      iniciarPrimeraC();
+      status.classList.add('ok');
+      status.textContent = `✓ Se cargaron ${cuerpo.cargados.length} partido(s) nuevo(s) y se re-simuló.`;
+    } else {
+      status.classList.add('ok');
+      status.textContent = "✓ Consultado — no había partidos nuevos jugados todavía.";
+    }
+
+    if (cuerpo.sin_matchear && cuerpo.sin_matchear.length){
+      status.textContent += ` (${cuerpo.sin_matchear.length} partido(s) de Promiedos no se pudieron identificar — revisar mapeo de nombres)`;
+    }
+
+    lastUpdate.textContent = "Última consulta a Promiedos: " + new Date().toLocaleString('es-AR');
+  } catch (e) {
+    setApiErrorStatus(status, "No se pudo actualizar", e);
+  } finally {
+    btn.disabled = false;
+    input.disabled = false;
+    btn.textContent = "⟳ Actualizar desde Promiedos";
+    endApiAction();
+  }
+}
+document.getElementById('btn-actualizar-primerac').addEventListener('click', correrActualizacionPrimeraC);
+
+/* ---------- SIMULAR HASTA EL ASCENSO (PRIMERA C) ---------- */
+function poblarSelectEquiposPrimeraC(index){
+  const sel = document.getElementById('campeon-equipo-primerac');
+  if (!sel) return;
+  const valorPrevio = sel.value;
+  const nombres = Object.keys(index).sort();
+  sel.innerHTML = '<option value="">Elegí un equipo…</option>' +
+    nombres.map(n => `<option value="${n}">${n}</option>`).join('');
+  if (valorPrevio && index[valorPrevio]) sel.value = valorPrevio;
+}
+
+async function simularHastaCampeonPrimeraC(){
+  const btn = document.getElementById('btn-campeon-primerac');
+  const sel = document.getElementById('campeon-equipo-primerac');
+  const status = document.getElementById('campeon-status-primerac');
+  const resultado = document.getElementById('campeon-resultado-primerac');
+  const equipo = sel.value;
+
+  status.classList.remove('error', 'ok');
+
+  if (!equipo){
+    status.classList.add('error');
+    status.textContent = "Elegí un equipo primero.";
+    return;
+  }
+
+  if (!beginApiAction(status)) return;
+
+  btn.disabled = true;
+  sel.disabled = true;
+  btn.textContent = "Simulando…";
+  status.textContent = `Corriendo temporadas hasta que ${equipo} ascienda — puede tardar unos segundos.`;
+  resultado.innerHTML = "";
+
+  try {
+    const cuerpo = await ejecutarSimulacion("simular-campeon-primerac", { equipo }, "/api/simular-campeon-primerac", status);
+
+    if (!cuerpo.logrado) {
+      status.classList.add('error');
+      status.textContent = `No se logró el ascenso de ${equipo} en ${cuerpo.max_intentos} intentos simulados. Probá de nuevo — el azar puede variar.`;
+      return;
+    }
+
+    renderCampeonResultadoPrimeraC(cuerpo);
+    status.classList.add('ok');
+    status.textContent = `✓ Encontrado en el intento N° ${cuerpo.intentos}`;
+  } catch (e) {
+    setApiErrorStatus(status, "No se pudo simular", e);
+  } finally {
+    btn.disabled = false;
+    sel.disabled = false;
+    btn.textContent = "🏆 Simular hasta el ascenso";
+    endApiAction();
+  }
+}
+document.getElementById('btn-campeon-primerac').addEventListener('click', simularHastaCampeonPrimeraC);
+
+function renderCampeonResultadoPrimeraC(r){
+  const cont = document.getElementById('campeon-resultado-primerac');
+  const via = r.via === 'ascenso_directo' ? 'ascenso directo (ganó la final)' : 'el Torneo Reducido';
+
+  function filasZonaHTML(filas){
+    let html = "";
+    filas.forEach((f, i) => {
+      const clases = [];
+      if (i === 0) clases.push('punta');
+      else if (i >= 1 && i <= 6) clases.push('reducido');
+      if (i === filas.length - 1) clases.push('descenso');
+      const esObjetivo = f.equipo === r.equipo;
+      html += `<tr class="${clases.join(' ')}"${esObjetivo ? ' style="box-shadow: inset 3px 0 0 var(--amber);"' : ''}>
+        <td>${i + 1}</td><td>${escudoHTML(f.equipo)}${f.equipo}${esObjetivo ? ' 🏆' : ''}</td><td>${f.puntos}</td><td>${f.gf}</td><td>${f.gc}</td><td>${f.dg > 0 ? '+' + f.dg : f.dg}</td>
+      </tr>`;
+    });
+    return html;
+  }
+
+  const tablasZonasHTML = ['A', 'B'].map(zona => `
+    <div style="margin-top:14px;">
+      <div class="label" style="font-family:'JetBrains Mono'; font-size:11px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:8px;">Zona ${zona}</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>GF</th><th>GC</th><th>DG</th></tr></thead>
+          <tbody>${filasZonaHTML(r.tablas[zona])}</tbody>
+        </table>
+      </div>
+    </div>
+  `).join("");
+
+  const fa = r.final_ascenso;
+  const faScoreHTML = `
+    <span class="team ${fa.ganador === fa.equipo_a ? "win" : ""}">${escudoHTML(fa.equipo_a)}${fa.equipo_a}</span>
+    <span class="gscore">${fa.detalle_marcador[0]} - ${fa.detalle_marcador[1]}</span>
+    <span class="team ${fa.ganador === fa.equipo_b ? "win" : ""}">${escudoHTML(fa.equipo_b)}${fa.equipo_b}</span>
+  `;
+  const faFooter = `Asciende directo: <b>${fa.ganador}</b> (${fa.texto}) · ${fa.perdedor} pasa a la segunda fase del Reducido`;
+
+  const red = r.reducido;
+  let bracketHTML = "";
+  bracketHTML += `<div class="round">
+    <div class="round-title">Primera fase</div>
+    <div class="round-body">${red.primera_fase.map(m => seriesHTML(m)).join("")}</div>
+  </div>`;
+  bracketHTML += `<div class="round">
+    <div class="round-title">Segunda fase</div>
+    <div class="round-body">
+      ${red.segunda_fase.map(m => seriesHTML(m)).join("")}
+      <div class="match note">+ ${red.perdedor_final_ascenso} entra directo a semifinales (tabla general)</div>
+    </div>
+  </div>`;
+  bracketHTML += `<div class="round">
+    <div class="round-title">Semifinales</div>
+    <div class="round-body">${red.semifinales.map(m => seriesHTML(m)).join("")}</div>
+  </div>`;
+  bracketHTML += `<div class="round final-col">
+    <div class="round-title">Final (ida y vuelta)</div>
+    <div class="round-body">${seriesHTML(red.final)}</div>
+  </div>`;
+
+  cont.innerHTML = `
+    <div class="campeon-summary">🏆 <b>${r.equipo}</b> asciende en esta temporada simulada — vía <b>${via}</b>
+      (intento N° ${r.intentos} de una búsqueda al azar entre distintas temporadas posibles)</div>
+    ${tablasZonasHTML}
+    <div class="ascenso-card" style="margin-top:18px;">
+      <div class="label">Final 1° ascenso (ida y vuelta)</div>
+      <div class="ascenso-score">${faScoreHTML}</div>
+      <div class="ascenso-footer">${faFooter}</div>
+    </div>
+    <div class="label" style="font-family:'JetBrains Mono'; font-size:11px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin: 24px 0 4px;">Torneo Reducido — 2° ascenso</div>
+    <div class="bracket-scroll"><div class="bracket">${bracketHTML}</div></div>
+    <div class="campeon-anuncio-wrap">${campeonAnuncioHTML(red.final.campeon, '▲')}</div>
+  `;
+}
+
+cargarDatosPrimeraC();
 
 /* =====================================================================
    LIGA PROFESIONAL (LPF)
@@ -5313,6 +6313,12 @@ const HERO_TEXTOS = {
     titulo: "TORNEO FEDERAL A",
     sub: "Primera Fase (4 zonas) + Segunda Fase (2 zonas) simuladas con el mismo modelo Poisson, seguidas del camino al 1° ascenso y las 6 etapas de la Reválida, todo a eliminación directa ida y vuelta.",
     ascensosLbl: "Ascensos por edición",
+  },
+  primerac: {
+    eyebrow: () => `SIMULACIÓN MONTE CARLO — <span id="hero-n">${(DATA_PRIMERAC && DATA_PRIMERAC.n_simulaciones) || 0}</span> CORRIDAS`,
+    titulo: "PRIMERA C",
+    sub: "Fase de zonas simulada con el mismo modelo Poisson, seguida de la Final por el 1er ascenso (ida y vuelta) y el Torneo Reducido por el 2do ascenso. Sin descenso directo: el último de cada zona juega la desafiliación.",
+    ascensosLbl: "Ascensos por edición",
   }
 };
 
@@ -5344,6 +6350,12 @@ function actualizarHero(liga){
     document.getElementById('meta-zonas').textContent = 4;
     document.getElementById('meta-ascensos').textContent = 2;
     document.getElementById('meta-descensos').textContent = (DATA_FEDERAL && DATA_FEDERAL.revalida && DATA_FEDERAL.revalida.descensos && DATA_FEDERAL.revalida.descensos.length) || 4;
+  } else if (liga === 'primerac'){
+    document.getElementById('meta-equipos').textContent = DATA_PRIMERAC
+      ? DATA_PRIMERAC.tablas.A.length + DATA_PRIMERAC.tablas.B.length : 28;
+    document.getElementById('meta-zonas').textContent = 2;
+    document.getElementById('meta-ascensos').textContent = 2;
+    document.getElementById('meta-descensos').textContent = 0;
   } else if (DATA) {
     document.getElementById('meta-equipos').textContent = DATA.tablas.A.length + DATA.tablas.B.length;
     document.getElementById('meta-ascensos').textContent = 2;
@@ -5358,16 +6370,19 @@ function setLiga(liga){
   document.getElementById('vista-copa').style.display = liga === 'copa' ? '' : 'none';
   document.getElementById('vista-bmetro').style.display = liga === 'bmetro' ? '' : 'none';
   document.getElementById('vista-federal').style.display = liga === 'federal' ? '' : 'none';
+  document.getElementById('vista-primerac').style.display = liga === 'primerac' ? '' : 'none';
   document.getElementById('sim-control-nacional').style.display = liga === 'nacional' ? '' : 'none';
   document.getElementById('sim-control-lpf').style.display = liga === 'lpf' ? '' : 'none';
   document.getElementById('sim-control-copa').style.display = liga === 'copa' ? '' : 'none';
   document.getElementById('sim-control-bmetro').style.display = liga === 'bmetro' ? '' : 'none';
   document.getElementById('sim-control-federal').style.display = liga === 'federal' ? '' : 'none';
+  document.getElementById('sim-control-primerac').style.display = liga === 'primerac' ? '' : 'none';
   document.body.classList.toggle('liga-nacional', liga === 'nacional');
   document.body.classList.toggle('liga-lpf', liga === 'lpf');
   document.body.classList.toggle('liga-copa', liga === 'copa');
   document.body.classList.toggle('liga-bmetro', liga === 'bmetro');
   document.body.classList.toggle('liga-federal', liga === 'federal');
+  document.body.classList.toggle('liga-primerac', liga === 'primerac');
   actualizarHero(liga);
   // El cuadro recién visible puede haber quedado con medidas en 0 (display:none
   // no dispara el MutationObserver de los brackets), así que se refresca a mano.
@@ -5417,6 +6432,7 @@ const SEARCH_PLACEHOLDERS = [
   ['team-search-lpf', 'Buscar equipo…', 'Buscar equipo… (ej: River, Belgrano, Lanús)'],
   ['team-search-copa', 'Buscar equipo…', 'Buscar equipo… (ej: River, Instituto, Midland)'],
   ['team-search-bmetro', 'Buscar equipo…', 'Buscar equipo… (ej: Almirante Brown, Liniers, UAI Urquiza)'],
+  ['team-search-primerac', 'Buscar equipo…', 'Buscar equipo… (ej: Cañuelas, Fénix, Sacachispas)'],
 ];
 
 function aplicarPlaceholdersResponsive(){

@@ -1,0 +1,29 @@
+zona,posicion,equipo,partidos_jugados,ganados,empatados,perdidos,gf,gc,dg,puntos
+A,1,Sacachispas,18,9,4,5,22,14,8,31
+A,2,Centro Español,17,8,5,4,26,14,12,29
+A,3,Berazategui,18,7,8,3,22,14,8,29
+A,4,Estrella del Sur,18,7,7,4,21,16,5,28
+A,5,Victoriano Arenas,18,6,8,4,16,11,5,26
+A,6,Puerto Nuevo,18,6,8,4,17,18,-1,26
+A,7,CA Lugano,18,6,7,5,21,17,4,25
+A,8,Leandro N. Alem,18,6,5,7,22,32,-10,23
+A,9,Mercedes,17,5,7,5,15,10,5,22
+A,10,Juventud Unida SM,18,5,6,7,18,19,-1,21
+A,11,Defensores Cambaceres,18,5,6,7,15,19,-4,21
+A,12,Argentino Rosario,18,2,10,6,18,23,-5,16
+A,13,Deportivo Paraguayo,18,3,7,8,10,24,-14,16
+A,14,Justo José Urquiza,18,2,9,7,6,18,-12,15
+B,1,Cañuelas,17,7,8,2,21,12,9,29
+B,2,Club Luján,17,8,5,4,20,13,7,29
+B,3,Leones de Rosario FC,18,7,7,4,18,16,2,28
+B,4,General Lamadrid,17,7,5,5,17,16,1,26
+B,5,Sportivo Barracas,17,7,4,6,17,13,4,25
+B,6,Yupanqui,17,6,6,5,20,17,3,24
+B,7,Deportivo Español,17,5,9,3,15,12,3,24
+B,8,El Porvenir,17,4,11,2,14,12,2,23
+B,9,Claypole,17,5,5,7,13,20,-7,20
+B,10,Central Córdoba,17,4,7,6,12,14,-2,19
+B,11,CA Atlas,17,4,7,6,13,16,-3,19
+B,12,Central Ballester,18,5,4,9,15,21,-6,19
+B,13,Muñiz,17,2,8,7,12,16,-4,14
+B,14,CA Fenix,17,3,5,9,9,18,-9,14

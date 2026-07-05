@@ -1,0 +1,2391 @@
+{
+    "n_simulaciones": 1000,
+    "generado": "2026-07-05 22:09",
+    "tablas": {
+        "A": [
+            {
+                "equipo": "Estrella del Sur",
+                "puntos": 58,
+                "gf": 56,
+                "gc": 33,
+                "dg": 23
+            },
+            {
+                "equipo": "Sacachispas",
+                "puntos": 54,
+                "gf": 41,
+                "gc": 27,
+                "dg": 14
+            },
+            {
+                "equipo": "Berazategui",
+                "puntos": 49,
+                "gf": 42,
+                "gc": 29,
+                "dg": 13
+            },
+            {
+                "equipo": "CA Lugano",
+                "puntos": 49,
+                "gf": 38,
+                "gc": 27,
+                "dg": 11
+            },
+            {
+                "equipo": "Puerto Nuevo",
+                "puntos": 48,
+                "gf": 37,
+                "gc": 34,
+                "dg": 3
+            },
+            {
+                "equipo": "Mercedes",
+                "puntos": 46,
+                "gf": 32,
+                "gc": 21,
+                "dg": 11
+            },
+            {
+                "equipo": "Centro Español",
+                "puntos": 44,
+                "gf": 37,
+                "gc": 30,
+                "dg": 7
+            },
+            {
+                "equipo": "Victoriano Arenas",
+                "puntos": 44,
+                "gf": 30,
+                "gc": 29,
+                "dg": 1
+            },
+            {
+                "equipo": "Leandro N. Alem",
+                "puntos": 41,
+                "gf": 40,
+                "gc": 48,
+                "dg": -8
+            },
+            {
+                "equipo": "Defensores Cambaceres",
+                "puntos": 35,
+                "gf": 28,
+                "gc": 41,
+                "dg": -13
+            },
+            {
+                "equipo": "Deportivo Paraguayo",
+                "puntos": 33,
+                "gf": 23,
+                "gc": 39,
+                "dg": -16
+            },
+            {
+                "equipo": "Juventud Unida SM",
+                "puntos": 32,
+                "gf": 29,
+                "gc": 33,
+                "dg": -4
+            },
+            {
+                "equipo": "Justo José Urquiza",
+                "puntos": 31,
+                "gf": 20,
+                "gc": 33,
+                "dg": -13
+            },
+            {
+                "equipo": "Argentino Rosario",
+                "puntos": 30,
+                "gf": 38,
+                "gc": 52,
+                "dg": -14
+            }
+        ],
+        "B": [
+            {
+                "equipo": "Deportivo Español",
+                "puntos": 54,
+                "gf": 39,
+                "gc": 27,
+                "dg": 12
+            },
+            {
+                "equipo": "General Lamadrid",
+                "puntos": 51,
+                "gf": 40,
+                "gc": 33,
+                "dg": 7
+            },
+            {
+                "equipo": "El Porvenir",
+                "puntos": 50,
+                "gf": 38,
+                "gc": 27,
+                "dg": 11
+            },
+            {
+                "equipo": "Cañuelas",
+                "puntos": 50,
+                "gf": 41,
+                "gc": 32,
+                "dg": 9
+            },
+            {
+                "equipo": "Yupanqui",
+                "puntos": 46,
+                "gf": 41,
+                "gc": 37,
+                "dg": 4
+            },
+            {
+                "equipo": "Club Luján",
+                "puntos": 45,
+                "gf": 41,
+                "gc": 36,
+                "dg": 5
+            },
+            {
+                "equipo": "Sportivo Barracas",
+                "puntos": 43,
+                "gf": 38,
+                "gc": 39,
+                "dg": -1
+            },
+            {
+                "equipo": "Leones de Rosario FC",
+                "puntos": 41,
+                "gf": 32,
+                "gc": 37,
+                "dg": -5
+            },
+            {
+                "equipo": "Claypole",
+                "puntos": 41,
+                "gf": 29,
+                "gc": 35,
+                "dg": -6
+            },
+            {
+                "equipo": "Central Ballester",
+                "puntos": 38,
+                "gf": 32,
+                "gc": 38,
+                "dg": -6
+            },
+            {
+                "equipo": "CA Atlas",
+                "puntos": 36,
+                "gf": 29,
+                "gc": 37,
+                "dg": -8
+            },
+            {
+                "equipo": "Muñiz",
+                "puntos": 33,
+                "gf": 33,
+                "gc": 34,
+                "dg": -1
+            },
+            {
+                "equipo": "CA Fenix",
+                "puntos": 32,
+                "gf": 21,
+                "gc": 35,
+                "dg": -14
+            },
+            {
+                "equipo": "Central Córdoba",
+                "puntos": 28,
+                "gf": 17,
+                "gc": 39,
+                "dg": -22
+            }
+        ]
+    },
+    "tabla_actual": {
+        "A": [
+            {
+                "zona": "A",
+                "posicion": 1,
+                "equipo": "Sacachispas",
+                "partidos_jugados": 18,
+                "ganados": 9,
+                "empatados": 4,
+                "perdidos": 5,
+                "gf": 22,
+                "gc": 14,
+                "dg": 8,
+                "puntos": 31
+            },
+            {
+                "zona": "A",
+                "posicion": 2,
+                "equipo": "Centro Español",
+                "partidos_jugados": 17,
+                "ganados": 8,
+                "empatados": 5,
+                "perdidos": 4,
+                "gf": 26,
+                "gc": 14,
+                "dg": 12,
+                "puntos": 29
+            },
+            {
+                "zona": "A",
+                "posicion": 3,
+                "equipo": "Berazategui",
+                "partidos_jugados": 18,
+                "ganados": 7,
+                "empatados": 8,
+                "perdidos": 3,
+                "gf": 22,
+                "gc": 14,
+                "dg": 8,
+                "puntos": 29
+            },
+            {
+                "zona": "A",
+                "posicion": 4,
+                "equipo": "Estrella del Sur",
+                "partidos_jugados": 18,
+                "ganados": 7,
+                "empatados": 7,
+                "perdidos": 4,
+                "gf": 21,
+                "gc": 16,
+                "dg": 5,
+                "puntos": 28
+            },
+            {
+                "zona": "A",
+                "posicion": 5,
+                "equipo": "Victoriano Arenas",
+                "partidos_jugados": 18,
+                "ganados": 6,
+                "empatados": 8,
+                "perdidos": 4,
+                "gf": 16,
+                "gc": 11,
+                "dg": 5,
+                "puntos": 26
+            },
+            {
+                "zona": "A",
+                "posicion": 6,
+                "equipo": "Puerto Nuevo",
+                "partidos_jugados": 18,
+                "ganados": 6,
+                "empatados": 8,
+                "perdidos": 4,
+                "gf": 17,
+                "gc": 18,
+                "dg": -1,
+                "puntos": 26
+            },
+            {
+                "zona": "A",
+                "posicion": 7,
+                "equipo": "CA Lugano",
+                "partidos_jugados": 18,
+                "ganados": 6,
+                "empatados": 7,
+                "perdidos": 5,
+                "gf": 21,
+                "gc": 17,
+                "dg": 4,
+                "puntos": 25
+            },
+            {
+                "zona": "A",
+                "posicion": 8,
+                "equipo": "Leandro N. Alem",
+                "partidos_jugados": 18,
+                "ganados": 6,
+                "empatados": 5,
+                "perdidos": 7,
+                "gf": 22,
+                "gc": 32,
+                "dg": -10,
+                "puntos": 23
+            },
+            {
+                "zona": "A",
+                "posicion": 9,
+                "equipo": "Mercedes",
+                "partidos_jugados": 17,
+                "ganados": 5,
+                "empatados": 7,
+                "perdidos": 5,
+                "gf": 15,
+                "gc": 10,
+                "dg": 5,
+                "puntos": 22
+            },
+            {
+                "zona": "A",
+                "posicion": 10,
+                "equipo": "Juventud Unida SM",
+                "partidos_jugados": 18,
+                "ganados": 5,
+                "empatados": 6,
+                "perdidos": 7,
+                "gf": 18,
+                "gc": 19,
+                "dg": -1,
+                "puntos": 21
+            },
+            {
+                "zona": "A",
+                "posicion": 11,
+                "equipo": "Defensores Cambaceres",
+                "partidos_jugados": 18,
+                "ganados": 5,
+                "empatados": 6,
+                "perdidos": 7,
+                "gf": 15,
+                "gc": 19,
+                "dg": -4,
+                "puntos": 21
+            },
+            {
+                "zona": "A",
+                "posicion": 12,
+                "equipo": "Argentino Rosario",
+                "partidos_jugados": 18,
+                "ganados": 2,
+                "empatados": 10,
+                "perdidos": 6,
+                "gf": 18,
+                "gc": 23,
+                "dg": -5,
+                "puntos": 16
+            },
+            {
+                "zona": "A",
+                "posicion": 13,
+                "equipo": "Deportivo Paraguayo",
+                "partidos_jugados": 18,
+                "ganados": 3,
+                "empatados": 7,
+                "perdidos": 8,
+                "gf": 10,
+                "gc": 24,
+                "dg": -14,
+                "puntos": 16
+            },
+            {
+                "zona": "A",
+                "posicion": 14,
+                "equipo": "Justo José Urquiza",
+                "partidos_jugados": 18,
+                "ganados": 2,
+                "empatados": 9,
+                "perdidos": 7,
+                "gf": 6,
+                "gc": 18,
+                "dg": -12,
+                "puntos": 15
+            }
+        ],
+        "B": [
+            {
+                "zona": "B",
+                "posicion": 1,
+                "equipo": "Cañuelas",
+                "partidos_jugados": 17,
+                "ganados": 7,
+                "empatados": 8,
+                "perdidos": 2,
+                "gf": 21,
+                "gc": 12,
+                "dg": 9,
+                "puntos": 29
+            },
+            {
+                "zona": "B",
+                "posicion": 2,
+                "equipo": "Club Luján",
+                "partidos_jugados": 17,
+                "ganados": 8,
+                "empatados": 5,
+                "perdidos": 4,
+                "gf": 20,
+                "gc": 13,
+                "dg": 7,
+                "puntos": 29
+            },
+            {
+                "zona": "B",
+                "posicion": 3,
+                "equipo": "Leones de Rosario FC",
+                "partidos_jugados": 18,
+                "ganados": 7,
+                "empatados": 7,
+                "perdidos": 4,
+                "gf": 18,
+                "gc": 16,
+                "dg": 2,
+                "puntos": 28
+            },
+            {
+                "zona": "B",
+                "posicion": 4,
+                "equipo": "General Lamadrid",
+                "partidos_jugados": 17,
+                "ganados": 7,
+                "empatados": 5,
+                "perdidos": 5,
+                "gf": 17,
+                "gc": 16,
+                "dg": 1,
+                "puntos": 26
+            },
+            {
+                "zona": "B",
+                "posicion": 5,
+                "equipo": "Sportivo Barracas",
+                "partidos_jugados": 17,
+                "ganados": 7,
+                "empatados": 4,
+                "perdidos": 6,
+                "gf": 17,
+                "gc": 13,
+                "dg": 4,
+                "puntos": 25
+            },
+            {
+                "zona": "B",
+                "posicion": 6,
+                "equipo": "Yupanqui",
+                "partidos_jugados": 17,
+                "ganados": 6,
+                "empatados": 6,
+                "perdidos": 5,
+                "gf": 20,
+                "gc": 17,
+                "dg": 3,
+                "puntos": 24
+            },
+            {
+                "zona": "B",
+                "posicion": 7,
+                "equipo": "Deportivo Español",
+                "partidos_jugados": 17,
+                "ganados": 5,
+                "empatados": 9,
+                "perdidos": 3,
+                "gf": 15,
+                "gc": 12,
+                "dg": 3,
+                "puntos": 24
+            },
+            {
+                "zona": "B",
+                "posicion": 8,
+                "equipo": "El Porvenir",
+                "partidos_jugados": 17,
+                "ganados": 4,
+                "empatados": 11,
+                "perdidos": 2,
+                "gf": 14,
+                "gc": 12,
+                "dg": 2,
+                "puntos": 23
+            },
+            {
+                "zona": "B",
+                "posicion": 9,
+                "equipo": "Claypole",
+                "partidos_jugados": 17,
+                "ganados": 5,
+                "empatados": 5,
+                "perdidos": 7,
+                "gf": 13,
+                "gc": 20,
+                "dg": -7,
+                "puntos": 20
+            },
+            {
+                "zona": "B",
+                "posicion": 10,
+                "equipo": "Central Córdoba",
+                "partidos_jugados": 17,
+                "ganados": 4,
+                "empatados": 7,
+                "perdidos": 6,
+                "gf": 12,
+                "gc": 14,
+                "dg": -2,
+                "puntos": 19
+            },
+            {
+                "zona": "B",
+                "posicion": 11,
+                "equipo": "CA Atlas",
+                "partidos_jugados": 17,
+                "ganados": 4,
+                "empatados": 7,
+                "perdidos": 6,
+                "gf": 13,
+                "gc": 16,
+                "dg": -3,
+                "puntos": 19
+            },
+            {
+                "zona": "B",
+                "posicion": 12,
+                "equipo": "Central Ballester",
+                "partidos_jugados": 18,
+                "ganados": 5,
+                "empatados": 4,
+                "perdidos": 9,
+                "gf": 15,
+                "gc": 21,
+                "dg": -6,
+                "puntos": 19
+            },
+            {
+                "zona": "B",
+                "posicion": 13,
+                "equipo": "Muñiz",
+                "partidos_jugados": 17,
+                "ganados": 2,
+                "empatados": 8,
+                "perdidos": 7,
+                "gf": 12,
+                "gc": 16,
+                "dg": -4,
+                "puntos": 14
+            },
+            {
+                "zona": "B",
+                "posicion": 14,
+                "equipo": "CA Fenix",
+                "partidos_jugados": 17,
+                "ganados": 3,
+                "empatados": 5,
+                "perdidos": 9,
+                "gf": 9,
+                "gc": 18,
+                "dg": -9,
+                "puntos": 14
+            }
+        ]
+    },
+    "final_ascenso": {
+        "equipo_a": "Estrella del Sur",
+        "equipo_b": "Deportivo Español",
+        "ganador": "Deportivo Español",
+        "perdedor": "Estrella del Sur",
+        "detalle_marcador": [
+            2,
+            2
+        ],
+        "texto": "Ida: 2-0 | Vuelta: 2-0 (Penales)"
+    },
+    "reducido": {
+        "perdedor_final_ascenso": "Estrella del Sur",
+        "primera_fase": [
+            {
+                "equipo_x": "Sportivo Barracas",
+                "equipo_y": "Sacachispas",
+                "goles_x": 1,
+                "goles_y": 2,
+                "detalle": "Ida: 1-0 | Vuelta: 2-0",
+                "campeon": "Sacachispas"
+            },
+            {
+                "equipo_x": "Centro Español",
+                "equipo_y": "General Lamadrid",
+                "goles_x": 1,
+                "goles_y": 2,
+                "detalle": "Ida: 0-0 | Vuelta: 2-1",
+                "campeon": "General Lamadrid"
+            },
+            {
+                "equipo_x": "Club Luján",
+                "equipo_y": "Berazategui",
+                "goles_x": 0,
+                "goles_y": 4,
+                "detalle": "Ida: 0-1 | Vuelta: 3-0",
+                "campeon": "Berazategui"
+            },
+            {
+                "equipo_x": "Mercedes",
+                "equipo_y": "El Porvenir",
+                "goles_x": 3,
+                "goles_y": 1,
+                "detalle": "Ida: 1-0 | Vuelta: 1-2",
+                "campeon": "Mercedes"
+            },
+            {
+                "equipo_x": "Yupanqui",
+                "equipo_y": "CA Lugano",
+                "goles_x": 2,
+                "goles_y": 5,
+                "detalle": "Ida: 1-3 | Vuelta: 2-1",
+                "campeon": "CA Lugano"
+            },
+            {
+                "equipo_x": "Puerto Nuevo",
+                "equipo_y": "Cañuelas",
+                "goles_x": 1,
+                "goles_y": 3,
+                "detalle": "Ida: 0-2 | Vuelta: 1-1",
+                "campeon": "Cañuelas"
+            }
+        ],
+        "segunda_fase": [
+            {
+                "equipo_x": "Cañuelas",
+                "equipo_y": "Sacachispas",
+                "goles_x": 3,
+                "goles_y": 3,
+                "detalle": "Ida: 2-1 | Vuelta: 2-1 (Penales)",
+                "campeon": "Cañuelas"
+            },
+            {
+                "equipo_x": "CA Lugano",
+                "equipo_y": "General Lamadrid",
+                "goles_x": 2,
+                "goles_y": 2,
+                "detalle": "Ida: 1-1 | Vuelta: 1-1 (Penales)",
+                "campeon": "CA Lugano"
+            },
+            {
+                "equipo_x": "Mercedes",
+                "equipo_y": "Berazategui",
+                "goles_x": 1,
+                "goles_y": 5,
+                "detalle": "Ida: 1-1 | Vuelta: 4-0",
+                "campeon": "Berazategui"
+            }
+        ],
+        "semifinales": [
+            {
+                "equipo_x": "CA Lugano",
+                "equipo_y": "Estrella del Sur",
+                "goles_x": 2,
+                "goles_y": 2,
+                "detalle": "Ida: 1-1 | Vuelta: 1-1 (Penales)",
+                "campeon": "Estrella del Sur"
+            },
+            {
+                "equipo_x": "Cañuelas",
+                "equipo_y": "Berazategui",
+                "goles_x": 3,
+                "goles_y": 1,
+                "detalle": "Ida: 1-0 | Vuelta: 1-2",
+                "campeon": "Cañuelas"
+            }
+        ],
+        "final": {
+            "equipo_x": "Cañuelas",
+            "equipo_y": "Estrella del Sur",
+            "goles_x": 1,
+            "goles_y": 1,
+            "detalle": "Ida: 1-1 | Vuelta: 0-0 (Penales)",
+            "campeon": "Cañuelas"
+        }
+    },
+    "monte_carlo": {
+        "A": [
+            {
+                "equipo": "Centro Español",
+                "%puntero_zona": 38.7,
+                "%ascenso_directo": 21.9,
+                "%ascenso_reducido": 12.5,
+                "ascenso_total": 34.4,
+                "riesgo_ultimo": 0.0
+            },
+            {
+                "equipo": "Sacachispas",
+                "%puntero_zona": 22.0,
+                "%ascenso_directo": 11.9,
+                "%ascenso_reducido": 8.9,
+                "ascenso_total": 20.8,
+                "riesgo_ultimo": 0.0
+            },
+            {
+                "equipo": "Berazategui",
+                "%puntero_zona": 17.4,
+                "%ascenso_directo": 7.8,
+                "%ascenso_reducido": 8.9,
+                "ascenso_total": 16.7,
+                "riesgo_ultimo": 0.0
+            },
+            {
+                "equipo": "Estrella del Sur",
+                "%puntero_zona": 9.2,
+                "%ascenso_directo": 4.0,
+                "%ascenso_reducido": 6.8,
+                "ascenso_total": 10.8,
+                "riesgo_ultimo": 0.0
+            },
+            {
+                "equipo": "Victoriano Arenas",
+                "%puntero_zona": 2.7,
+                "%ascenso_directo": 1.2,
+                "%ascenso_reducido": 5.0,
+                "ascenso_total": 6.2,
+                "riesgo_ultimo": 0.0
+            },
+            {
+                "equipo": "Puerto Nuevo",
+                "%puntero_zona": 4.0,
+                "%ascenso_directo": 2.1,
+                "%ascenso_reducido": 3.9,
+                "ascenso_total": 6.0,
+                "riesgo_ultimo": 0.0
+            },
+            {
+                "equipo": "Mercedes",
+                "%puntero_zona": 3.0,
+                "%ascenso_directo": 1.6,
+                "%ascenso_reducido": 3.6,
+                "ascenso_total": 5.2,
+                "riesgo_ultimo": 0.1
+            },
+            {
+                "equipo": "CA Lugano",
+                "%puntero_zona": 2.7,
+                "%ascenso_directo": 1.4,
+                "%ascenso_reducido": 3.4,
+                "ascenso_total": 4.8,
+                "riesgo_ultimo": 0.1
+            },
+            {
+                "equipo": "Juventud Unida SM",
+                "%puntero_zona": 0.1,
+                "%ascenso_directo": 0.0,
+                "%ascenso_reducido": 1.1,
+                "ascenso_total": 1.1,
+                "riesgo_ultimo": 1.3
+            },
+            {
+                "equipo": "Defensores Cambaceres",
+                "%puntero_zona": 0.2,
+                "%ascenso_directo": 0.0,
+                "%ascenso_reducido": 0.6,
+                "ascenso_total": 0.6,
+                "riesgo_ultimo": 0.9
+            },
+            {
+                "equipo": "Leandro N. Alem",
+                "%puntero_zona": 0.0,
+                "%ascenso_directo": 0.0,
+                "%ascenso_reducido": 0.2,
+                "ascenso_total": 0.2,
+                "riesgo_ultimo": 1.8
+            },
+            {
+                "equipo": "Argentino Rosario",
+                "%puntero_zona": 0.0,
+                "%ascenso_directo": 0.0,
+                "%ascenso_reducido": 0.0,
+                "ascenso_total": 0.0,
+                "riesgo_ultimo": 26.6
+            },
+            {
+                "equipo": "Deportivo Paraguayo",
+                "%puntero_zona": 0.0,
+                "%ascenso_directo": 0.0,
+                "%ascenso_reducido": 0.0,
+                "ascenso_total": 0.0,
+                "riesgo_ultimo": 31.5
+            },
+            {
+                "equipo": "Justo José Urquiza",
+                "%puntero_zona": 0.0,
+                "%ascenso_directo": 0.0,
+                "%ascenso_reducido": 0.0,
+                "ascenso_total": 0.0,
+                "riesgo_ultimo": 37.7
+            }
+        ],
+        "B": [
+            {
+                "equipo": "Cañuelas",
+                "%puntero_zona": 41.1,
+                "%ascenso_directo": 21.1,
+                "%ascenso_reducido": 10.4,
+                "ascenso_total": 31.5,
+                "riesgo_ultimo": 0.0
+            },
+            {
+                "equipo": "Club Luján",
+                "%puntero_zona": 33.5,
+                "%ascenso_directo": 15.9,
+                "%ascenso_reducido": 9.3,
+                "ascenso_total": 25.2,
+                "riesgo_ultimo": 0.0
+            },
+            {
+                "equipo": "Sportivo Barracas",
+                "%puntero_zona": 5.6,
+                "%ascenso_directo": 2.5,
+                "%ascenso_reducido": 4.7,
+                "ascenso_total": 7.2,
+                "riesgo_ultimo": 0.1
+            },
+            {
+                "equipo": "Leones de Rosario FC",
+                "%puntero_zona": 5.7,
+                "%ascenso_directo": 2.4,
+                "%ascenso_reducido": 4.4,
+                "ascenso_total": 6.8,
+                "riesgo_ultimo": 0.1
+            },
+            {
+                "equipo": "Deportivo Español",
+                "%puntero_zona": 3.7,
+                "%ascenso_directo": 1.3,
+                "%ascenso_reducido": 4.4,
+                "ascenso_total": 5.7,
+                "riesgo_ultimo": 0.2
+            },
+            {
+                "equipo": "Yupanqui",
+                "%puntero_zona": 4.6,
+                "%ascenso_directo": 2.4,
+                "%ascenso_reducido": 3.3,
+                "ascenso_total": 5.7,
+                "riesgo_ultimo": 0.3
+            },
+            {
+                "equipo": "General Lamadrid",
+                "%puntero_zona": 2.8,
+                "%ascenso_directo": 1.2,
+                "%ascenso_reducido": 3.9,
+                "ascenso_total": 5.1,
+                "riesgo_ultimo": 0.0
+            },
+            {
+                "equipo": "El Porvenir",
+                "%puntero_zona": 2.3,
+                "%ascenso_directo": 1.0,
+                "%ascenso_reducido": 3.3,
+                "ascenso_total": 4.3,
+                "riesgo_ultimo": 0.7
+            },
+            {
+                "equipo": "Central Córdoba",
+                "%puntero_zona": 0.3,
+                "%ascenso_directo": 0.2,
+                "%ascenso_reducido": 0.8,
+                "ascenso_total": 1.0,
+                "riesgo_ultimo": 4.0
+            },
+            {
+                "equipo": "CA Atlas",
+                "%puntero_zona": 0.2,
+                "%ascenso_directo": 0.1,
+                "%ascenso_reducido": 0.5,
+                "ascenso_total": 0.6,
+                "riesgo_ultimo": 4.5
+            },
+            {
+                "equipo": "Claypole",
+                "%puntero_zona": 0.2,
+                "%ascenso_directo": 0.0,
+                "%ascenso_reducido": 0.1,
+                "ascenso_total": 0.1,
+                "riesgo_ultimo": 7.5
+            },
+            {
+                "equipo": "Central Ballester",
+                "%puntero_zona": 0.0,
+                "%ascenso_directo": 0.0,
+                "%ascenso_reducido": 0.0,
+                "ascenso_total": 0.0,
+                "riesgo_ultimo": 11.0
+            },
+            {
+                "equipo": "Muñiz",
+                "%puntero_zona": 0.0,
+                "%ascenso_directo": 0.0,
+                "%ascenso_reducido": 0.0,
+                "ascenso_total": 0.0,
+                "riesgo_ultimo": 18.9
+            },
+            {
+                "equipo": "CA Fenix",
+                "%puntero_zona": 0.0,
+                "%ascenso_directo": 0.0,
+                "%ascenso_reducido": 0.0,
+                "ascenso_total": 0.0,
+                "riesgo_ultimo": 52.7
+            }
+        ]
+    },
+    "tabla_esperada": {
+        "A": [
+            {
+                "equipo": "Centro Español",
+                "puntos_prom": 52.9,
+                "posicion_prom": 2.6
+            },
+            {
+                "equipo": "Sacachispas",
+                "puntos_prom": 51.6,
+                "posicion_prom": 3.2
+            },
+            {
+                "equipo": "Berazategui",
+                "puntos_prom": 50.2,
+                "posicion_prom": 3.7
+            },
+            {
+                "equipo": "Estrella del Sur",
+                "puntos_prom": 48.1,
+                "posicion_prom": 4.8
+            },
+            {
+                "equipo": "CA Lugano",
+                "puntos_prom": 45.8,
+                "posicion_prom": 5.9
+            },
+            {
+                "equipo": "Victoriano Arenas",
+                "puntos_prom": 45.5,
+                "posicion_prom": 6.1
+            },
+            {
+                "equipo": "Puerto Nuevo",
+                "puntos_prom": 45.4,
+                "posicion_prom": 6.3
+            },
+            {
+                "equipo": "Mercedes",
+                "puntos_prom": 44.1,
+                "posicion_prom": 6.8
+            },
+            {
+                "equipo": "Juventud Unida SM",
+                "puntos_prom": 39.7,
+                "posicion_prom": 9.2
+            },
+            {
+                "equipo": "Defensores Cambaceres",
+                "puntos_prom": 39.7,
+                "posicion_prom": 9.3
+            },
+            {
+                "equipo": "Leandro N. Alem",
+                "puntos_prom": 39.4,
+                "posicion_prom": 9.5
+            },
+            {
+                "equipo": "Argentino Rosario",
+                "puntos_prom": 31.8,
+                "posicion_prom": 12.4
+            },
+            {
+                "equipo": "Deportivo Paraguayo",
+                "puntos_prom": 31.8,
+                "posicion_prom": 12.5
+            },
+            {
+                "equipo": "Justo José Urquiza",
+                "puntos_prom": 31.2,
+                "posicion_prom": 12.7
+            }
+        ],
+        "B": [
+            {
+                "equipo": "Cañuelas",
+                "puntos_prom": 51.9,
+                "posicion_prom": 2.5
+            },
+            {
+                "equipo": "Club Luján",
+                "puntos_prom": 51.5,
+                "posicion_prom": 2.8
+            },
+            {
+                "equipo": "Leones de Rosario FC",
+                "puntos_prom": 46.3,
+                "posicion_prom": 5.4
+            },
+            {
+                "equipo": "Sportivo Barracas",
+                "puntos_prom": 45.8,
+                "posicion_prom": 5.5
+            },
+            {
+                "equipo": "Yupanqui",
+                "puntos_prom": 45.2,
+                "posicion_prom": 5.8
+            },
+            {
+                "equipo": "General Lamadrid",
+                "puntos_prom": 45.2,
+                "posicion_prom": 6.1
+            },
+            {
+                "equipo": "Deportivo Español",
+                "puntos_prom": 44.8,
+                "posicion_prom": 6.1
+            },
+            {
+                "equipo": "El Porvenir",
+                "puntos_prom": 43.5,
+                "posicion_prom": 6.8
+            },
+            {
+                "equipo": "Central Córdoba",
+                "puntos_prom": 39.0,
+                "posicion_prom": 9.4
+            },
+            {
+                "equipo": "CA Atlas",
+                "puntos_prom": 39.1,
+                "posicion_prom": 9.4
+            },
+            {
+                "equipo": "Claypole",
+                "puntos_prom": 38.6,
+                "posicion_prom": 10.0
+            },
+            {
+                "equipo": "Central Ballester",
+                "puntos_prom": 37.0,
+                "posicion_prom": 10.6
+            },
+            {
+                "equipo": "Muñiz",
+                "puntos_prom": 34.5,
+                "posicion_prom": 11.6
+            },
+            {
+                "equipo": "CA Fenix",
+                "puntos_prom": 31.4,
+                "posicion_prom": 12.9
+            }
+        ]
+    },
+    "goleadores": [],
+    "rachas": {
+        "A": {
+            "Sacachispas": [
+                {
+                    "gf": 1,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Berazategui",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Estrella del Sur",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 1,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Argentino Rosario",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 1,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "CA Lugano",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 1,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "Juventud Unida SM",
+                    "condicion": "local"
+                }
+            ],
+            "Centro Español": [
+                {
+                    "gf": 2,
+                    "gc": 3,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 13,
+                    "rival": "Juventud Unida SM",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 1,
+                    "gc": 1,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Defensores Cambaceres",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 3,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Leandro N. Alem",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 2,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Puerto Nuevo",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 2,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Deportivo Paraguayo",
+                    "condicion": "visitante"
+                }
+            ],
+            "Berazategui": [
+                {
+                    "gf": 0,
+                    "gc": 1,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Sacachispas",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 2,
+                    "gc": 1,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Juventud Unida SM",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 1,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Defensores Cambaceres",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 1,
+                    "gc": 1,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Leandro N. Alem",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 0,
+                    "gc": 2,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "Puerto Nuevo",
+                    "condicion": "local"
+                }
+            ],
+            "Estrella del Sur": [
+                {
+                    "gf": 1,
+                    "gc": 1,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Argentino Rosario",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Sacachispas",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 2,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Juventud Unida SM",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 3,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Defensores Cambaceres",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 3,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "Leandro N. Alem",
+                    "condicion": "local"
+                }
+            ],
+            "Victoriano Arenas": [
+                {
+                    "gf": 1,
+                    "gc": 1,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Juventud Unida SM",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 1,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Defensores Cambaceres",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Leandro N. Alem",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 1,
+                    "gc": 2,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Puerto Nuevo",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "Deportivo Paraguayo",
+                    "condicion": "local"
+                }
+            ],
+            "Puerto Nuevo": [
+                {
+                    "gf": 1,
+                    "gc": 1,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Mercedes",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 1,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Justo José Urquiza",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 0,
+                    "gc": 2,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Centro Español",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 2,
+                    "gc": 1,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Victoriano Arenas",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 2,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "Berazategui",
+                    "condicion": "visitante"
+                }
+            ],
+            "CA Lugano": [
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Deportivo Paraguayo",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 1,
+                    "gc": 2,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Argentino Rosario",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 1,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Mercedes",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 1,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Sacachispas",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "Justo José Urquiza",
+                    "condicion": "local"
+                }
+            ],
+            "Leandro N. Alem": [
+                {
+                    "gf": 2,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Justo José Urquiza",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 3,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Centro Español",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Victoriano Arenas",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 1,
+                    "gc": 1,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Berazategui",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 3,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "Estrella del Sur",
+                    "condicion": "visitante"
+                }
+            ],
+            "Mercedes": [
+                {
+                    "gf": 2,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 13,
+                    "rival": "Leandro N. Alem",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 1,
+                    "gc": 1,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Puerto Nuevo",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Deportivo Paraguayo",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 1,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "CA Lugano",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 5,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Justo José Urquiza",
+                    "condicion": "local"
+                }
+            ],
+            "Juventud Unida SM": [
+                {
+                    "gf": 1,
+                    "gc": 1,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Victoriano Arenas",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 1,
+                    "gc": 2,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Berazategui",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 2,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Estrella del Sur",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 3,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Argentino Rosario",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 1,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "Sacachispas",
+                    "condicion": "visitante"
+                }
+            ],
+            "Defensores Cambaceres": [
+                {
+                    "gf": 1,
+                    "gc": 1,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Centro Español",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 1,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Victoriano Arenas",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 0,
+                    "gc": 1,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Berazategui",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 3,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Estrella del Sur",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 1,
+                    "gc": 1,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "Argentino Rosario",
+                    "condicion": "visitante"
+                }
+            ],
+            "Argentino Rosario": [
+                {
+                    "gf": 1,
+                    "gc": 1,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Estrella del Sur",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 2,
+                    "gc": 1,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "CA Lugano",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 1,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Sacachispas",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 0,
+                    "gc": 3,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Juventud Unida SM",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 1,
+                    "gc": 1,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "Defensores Cambaceres",
+                    "condicion": "local"
+                }
+            ],
+            "Deportivo Paraguayo": [
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "CA Lugano",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Mercedes",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Justo José Urquiza",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 2,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Centro Español",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "Victoriano Arenas",
+                    "condicion": "visitante"
+                }
+            ],
+            "Justo José Urquiza": [
+                {
+                    "gf": 0,
+                    "gc": 2,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Leandro N. Alem",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 0,
+                    "gc": 1,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Puerto Nuevo",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Deportivo Paraguayo",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 0,
+                    "gc": 5,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Mercedes",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "CA Lugano",
+                    "condicion": "visitante"
+                }
+            ]
+        },
+        "B": {
+            "Cañuelas": [
+                {
+                    "gf": 3,
+                    "gc": 1,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 13,
+                    "rival": "Sportivo Barracas",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 2,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "CA Fenix",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "El Porvenir",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 1,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Central Ballester",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 2,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Claypole",
+                    "condicion": "visitante"
+                }
+            ],
+            "Club Luján": [
+                {
+                    "gf": 3,
+                    "gc": 2,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 13,
+                    "rival": "CA Atlas",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 2,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Leones de Rosario FC",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 1,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "General Lamadrid",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 2,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Yupanqui",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 2,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Sportivo Barracas",
+                    "condicion": "visitante"
+                }
+            ],
+            "Leones de Rosario FC": [
+                {
+                    "gf": 0,
+                    "gc": 2,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Club Luján",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 2,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Sportivo Barracas",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 1,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "CA Fenix",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "El Porvenir",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 0,
+                    "gc": 1,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "Central Ballester",
+                    "condicion": "local"
+                }
+            ],
+            "General Lamadrid": [
+                {
+                    "gf": 1,
+                    "gc": 2,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 13,
+                    "rival": "Leones de Rosario FC",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 4,
+                    "gc": 2,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Yupanqui",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 1,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Club Luján",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 2,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Sportivo Barracas",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 1,
+                    "gc": 3,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "CA Fenix",
+                    "condicion": "visitante"
+                }
+            ],
+            "Sportivo Barracas": [
+                {
+                    "gf": 1,
+                    "gc": 3,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 13,
+                    "rival": "Cañuelas",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 1,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "CA Atlas",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 2,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Leones de Rosario FC",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 2,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "General Lamadrid",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 2,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Club Luján",
+                    "condicion": "local"
+                }
+            ],
+            "Yupanqui": [
+                {
+                    "gf": 4,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 13,
+                    "rival": "Claypole",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 2,
+                    "gc": 4,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "General Lamadrid",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 2,
+                    "gc": 1,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Central Córdoba",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 2,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Club Luján",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 1,
+                    "gc": 2,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Deportivo Español",
+                    "condicion": "local"
+                }
+            ],
+            "Deportivo Español": [
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 13,
+                    "rival": "El Porvenir",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Central Ballester",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 1,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Claypole",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 1,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Central Córdoba",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 2,
+                    "gc": 1,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Yupanqui",
+                    "condicion": "visitante"
+                }
+            ],
+            "El Porvenir": [
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 13,
+                    "rival": "Deportivo Español",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 2,
+                    "gc": 1,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Muñiz",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Cañuelas",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 0,
+                    "gc": 1,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "CA Atlas",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Leones de Rosario FC",
+                    "condicion": "local"
+                }
+            ],
+            "Claypole": [
+                {
+                    "gf": 0,
+                    "gc": 4,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 13,
+                    "rival": "Yupanqui",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 2,
+                    "gc": 2,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Central Córdoba",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 1,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Deportivo Español",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 2,
+                    "gc": 1,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Muñiz",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 2,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Cañuelas",
+                    "condicion": "local"
+                }
+            ],
+            "Central Córdoba": [
+                {
+                    "gf": 3,
+                    "gc": 2,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 13,
+                    "rival": "Central Ballester",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 2,
+                    "gc": 2,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Claypole",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 1,
+                    "gc": 2,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Yupanqui",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 0,
+                    "gc": 1,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Deportivo Español",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Muñiz",
+                    "condicion": "local"
+                }
+            ],
+            "CA Atlas": [
+                {
+                    "gf": 2,
+                    "gc": 3,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 13,
+                    "rival": "Club Luján",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 1,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Sportivo Barracas",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 1,
+                    "gc": 1,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "CA Fenix",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 1,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "El Porvenir",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 2,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Central Ballester",
+                    "condicion": "visitante"
+                }
+            ],
+            "Central Ballester": [
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Deportivo Español",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 4,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Muñiz",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 0,
+                    "gc": 1,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Cañuelas",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 0,
+                    "gc": 2,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "CA Atlas",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 1,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 18,
+                    "rival": "Leones de Rosario FC",
+                    "condicion": "visitante"
+                }
+            ],
+            "Muñiz": [
+                {
+                    "gf": 1,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 13,
+                    "rival": "CA Fenix",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 1,
+                    "gc": 2,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "El Porvenir",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 4,
+                    "gc": 0,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "Central Ballester",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 1,
+                    "gc": 2,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Claypole",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 0,
+                    "gc": 0,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "Central Córdoba",
+                    "condicion": "visitante"
+                }
+            ],
+            "CA Fenix": [
+                {
+                    "gf": 0,
+                    "gc": 1,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 13,
+                    "rival": "Muñiz",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 0,
+                    "gc": 2,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 14,
+                    "rival": "Cañuelas",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 1,
+                    "gc": 1,
+                    "puntos": 1,
+                    "fecha": null,
+                    "jornada": 15,
+                    "rival": "CA Atlas",
+                    "condicion": "visitante"
+                },
+                {
+                    "gf": 0,
+                    "gc": 1,
+                    "puntos": 0,
+                    "fecha": null,
+                    "jornada": 16,
+                    "rival": "Leones de Rosario FC",
+                    "condicion": "local"
+                },
+                {
+                    "gf": 3,
+                    "gc": 1,
+                    "puntos": 3,
+                    "fecha": null,
+                    "jornada": 17,
+                    "rival": "General Lamadrid",
+                    "condicion": "local"
+                }
+            ]
+        }
+    }
+}

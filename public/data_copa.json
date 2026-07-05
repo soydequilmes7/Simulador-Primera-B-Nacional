@@ -1,6 +1,6 @@
 {
   "liga": "Copa Argentina",
-  "generado": "03/07/2026 16:53",
+  "generado": "05/07/2026 22:10",
   "n_simulaciones": 1000,
   "rondas": {
     "32avos": [
@@ -298,7 +298,7 @@
         "local": "San Lorenzo",
         "visitante": "Deportivo Riestra",
         "golesLocal": 0,
-        "golesVisitante": 1,
+        "golesVisitante": 2,
         "avanza": "Deportivo Riestra",
         "jugado": false,
         "penales": null
@@ -333,11 +333,11 @@
       {
         "local": "Racing Club",
         "visitante": "Defensa y Justicia",
-        "golesLocal": 1,
+        "golesLocal": 2,
         "golesVisitante": 1,
         "avanza": "Racing Club",
         "jugado": false,
-        "penales": true
+        "penales": null
       },
       {
         "local": "Gimnasia de Jujuy",
@@ -360,8 +360,8 @@
       {
         "local": "Sarmiento Junín",
         "visitante": "Boca Juniors",
-        "golesLocal": 1,
-        "golesVisitante": 0,
+        "golesLocal": 2,
+        "golesVisitante": 1,
         "avanza": "Sarmiento Junín",
         "jugado": false,
         "penales": null
@@ -369,20 +369,20 @@
       {
         "local": "River Plate",
         "visitante": "Aldosivi",
-        "golesLocal": 0,
-        "golesVisitante": 1,
-        "avanza": "Aldosivi",
+        "golesLocal": 1,
+        "golesVisitante": 0,
+        "avanza": "River Plate",
         "jugado": false,
         "penales": null
       },
       {
         "local": "Independiente Rivadavia",
         "visitante": "Tigre",
-        "golesLocal": 1,
+        "golesLocal": 4,
         "golesVisitante": 1,
-        "avanza": "Tigre",
+        "avanza": "Independiente Rivadavia",
         "jugado": false,
-        "penales": true
+        "penales": null
       },
       {
         "local": "Talleres de Córdoba",
@@ -443,9 +443,9 @@
       {
         "local": "Deportivo Riestra",
         "visitante": "Gimnasia La Plata",
-        "golesLocal": 0,
+        "golesLocal": 2,
         "golesVisitante": 1,
-        "avanza": "Gimnasia La Plata",
+        "avanza": "Deportivo Riestra",
         "jugado": false,
         "penales": null
       },
@@ -453,8 +453,8 @@
         "local": "Banfield",
         "visitante": "Midland",
         "golesLocal": 1,
-        "golesVisitante": 3,
-        "avanza": "Midland",
+        "golesVisitante": 0,
+        "avanza": "Banfield",
         "jugado": false,
         "penales": null
       },
@@ -462,7 +462,7 @@
         "local": "Racing Club",
         "visitante": "Belgrano",
         "golesLocal": 2,
-        "golesVisitante": 1,
+        "golesVisitante": 0,
         "avanza": "Racing Club",
         "jugado": false,
         "penales": null
@@ -470,38 +470,38 @@
       {
         "local": "Vélez Sarsfield",
         "visitante": "Sarmiento Junín",
-        "golesLocal": 1,
-        "golesVisitante": 2,
-        "avanza": "Sarmiento Junín",
+        "golesLocal": 5,
+        "golesVisitante": 0,
+        "avanza": "Vélez Sarsfield",
         "jugado": false,
         "penales": null
       },
       {
-        "local": "Aldosivi",
-        "visitante": "Tigre",
-        "golesLocal": 1,
+        "local": "River Plate",
+        "visitante": "Independiente Rivadavia",
+        "golesLocal": 2,
         "golesVisitante": 3,
-        "avanza": "Tigre",
+        "avanza": "Independiente Rivadavia",
         "jugado": false,
         "penales": null
       },
       {
         "local": "Atlético Tucumán",
         "visitante": "Independiente",
-        "golesLocal": 0,
-        "golesVisitante": 3,
-        "avanza": "Independiente",
+        "golesLocal": 2,
+        "golesVisitante": 0,
+        "avanza": "Atlético Tucumán",
         "jugado": false,
         "penales": null
       },
       {
         "local": "Platense",
         "visitante": "Instituto",
-        "golesLocal": 2,
+        "golesLocal": 1,
         "golesVisitante": 2,
         "avanza": "Instituto",
         "jugado": false,
-        "penales": true
+        "penales": null
       },
       {
         "local": "Estudiantes de La Plata",
@@ -515,264 +515,264 @@
     ],
     "cuartos": [
       {
-        "local": "Gimnasia La Plata",
-        "visitante": "Midland",
+        "local": "Deportivo Riestra",
+        "visitante": "Banfield",
         "golesLocal": 1,
         "golesVisitante": 2,
-        "avanza": "Midland",
+        "avanza": "Banfield",
         "jugado": false,
         "penales": null
       },
       {
         "local": "Racing Club",
-        "visitante": "Sarmiento Junín",
-        "golesLocal": 2,
+        "visitante": "Vélez Sarsfield",
+        "golesLocal": 4,
         "golesVisitante": 3,
-        "avanza": "Sarmiento Junín",
+        "avanza": "Racing Club",
         "jugado": false,
         "penales": null
       },
       {
-        "local": "Tigre",
-        "visitante": "Independiente",
-        "golesLocal": 2,
-        "golesVisitante": 1,
-        "avanza": "Tigre",
+        "local": "Independiente Rivadavia",
+        "visitante": "Atlético Tucumán",
+        "golesLocal": 0,
+        "golesVisitante": 2,
+        "avanza": "Atlético Tucumán",
         "jugado": false,
         "penales": null
       },
       {
         "local": "Instituto",
         "visitante": "Estudiantes de La Plata",
-        "golesLocal": 0,
-        "golesVisitante": 1,
-        "avanza": "Estudiantes de La Plata",
-        "jugado": false,
-        "penales": null
-      }
-    ],
-    "semis": [
-      {
-        "local": "Midland",
-        "visitante": "Sarmiento Junín",
         "golesLocal": 1,
-        "golesVisitante": 2,
-        "avanza": "Sarmiento Junín",
-        "jugado": false,
-        "penales": null
-      },
-      {
-        "local": "Tigre",
-        "visitante": "Estudiantes de La Plata",
-        "golesLocal": 0,
-        "golesVisitante": 0,
-        "avanza": "Estudiantes de La Plata",
+        "golesVisitante": 1,
+        "avanza": "Instituto",
         "jugado": false,
         "penales": true
       }
     ],
+    "semis": [
+      {
+        "local": "Banfield",
+        "visitante": "Racing Club",
+        "golesLocal": 1,
+        "golesVisitante": 2,
+        "avanza": "Racing Club",
+        "jugado": false,
+        "penales": null
+      },
+      {
+        "local": "Atlético Tucumán",
+        "visitante": "Instituto",
+        "golesLocal": 2,
+        "golesVisitante": 0,
+        "avanza": "Atlético Tucumán",
+        "jugado": false,
+        "penales": null
+      }
+    ],
     "final": [
       {
-        "local": "Sarmiento Junín",
-        "visitante": "Estudiantes de La Plata",
-        "golesLocal": 2,
+        "local": "Racing Club",
+        "visitante": "Atlético Tucumán",
+        "golesLocal": 3,
         "golesVisitante": 1,
-        "avanza": "Sarmiento Junín",
+        "avanza": "Racing Club",
         "jugado": false,
         "penales": null
       }
     ]
   },
-  "campeon": "Sarmiento Junín",
+  "campeon": "Racing Club",
   "monte_carlo": [
     {
       "equipo": "Estudiantes de La Plata",
       "%16avos": 100.0,
       "%octavos": 100.0,
-      "%cuartos": 65.1,
-      "%semis": 44.3,
-      "%final": 26.7,
-      "%campeon": 16.2
+      "%cuartos": 63.9,
+      "%semis": 41.9,
+      "%final": 24.0,
+      "%campeon": 15.7
+    },
+    {
+      "equipo": "Independiente Rivadavia",
+      "%16avos": 100.0,
+      "%octavos": 58.8,
+      "%cuartos": 35.6,
+      "%semis": 24.0,
+      "%final": 15.1,
+      "%campeon": 8.6
     },
     {
       "equipo": "Boca Juniors",
       "%16avos": 100.0,
-      "%octavos": 74.7,
-      "%cuartos": 43.7,
-      "%semis": 27.9,
-      "%final": 18.5,
-      "%campeon": 11.0
+      "%octavos": 74.3,
+      "%cuartos": 42.3,
+      "%semis": 25.4,
+      "%final": 15.7,
+      "%campeon": 8.5
     },
     {
       "equipo": "Vélez Sarsfield",
       "%16avos": 100.0,
       "%octavos": 100.0,
-      "%cuartos": 47.7,
-      "%semis": 25.3,
-      "%final": 15.4,
-      "%campeon": 8.2
+      "%cuartos": 47.0,
+      "%semis": 25.4,
+      "%final": 14.2,
+      "%campeon": 8.0
+    },
+    {
+      "equipo": "River Plate",
+      "%16avos": 100.0,
+      "%octavos": 75.4,
+      "%cuartos": 37.1,
+      "%semis": 22.6,
+      "%final": 12.6,
+      "%campeon": 7.3
     },
     {
       "equipo": "Midland",
       "%16avos": 100.0,
       "%octavos": 100.0,
-      "%cuartos": 55.7,
-      "%semis": 31.1,
-      "%final": 14.3,
-      "%campeon": 7.7
-    },
-    {
-      "equipo": "River Plate",
-      "%16avos": 100.0,
-      "%octavos": 76.0,
-      "%cuartos": 39.0,
-      "%semis": 24.5,
-      "%final": 13.1,
-      "%campeon": 7.6
-    },
-    {
-      "equipo": "Belgrano",
-      "%16avos": 100.0,
-      "%octavos": 100.0,
-      "%cuartos": 54.2,
-      "%semis": 26.1,
-      "%final": 14.1,
-      "%campeon": 7.4
-    },
-    {
-      "equipo": "Independiente Rivadavia",
-      "%16avos": 100.0,
-      "%octavos": 60.5,
-      "%cuartos": 34.5,
-      "%semis": 22.3,
-      "%final": 13.5,
-      "%campeon": 6.9
+      "%cuartos": 55.9,
+      "%semis": 32.3,
+      "%final": 14.8,
+      "%campeon": 7.1
     },
     {
       "equipo": "Independiente",
       "%16avos": 100.0,
       "%octavos": 100.0,
-      "%cuartos": 60.6,
-      "%semis": 26.8,
-      "%final": 12.2,
-      "%campeon": 6.3
+      "%cuartos": 60.7,
+      "%semis": 27.8,
+      "%final": 13.0,
+      "%campeon": 6.4
     },
     {
-      "equipo": "Gimnasia La Plata",
+      "equipo": "Belgrano",
       "%16avos": 100.0,
       "%octavos": 100.0,
-      "%cuartos": 52.3,
-      "%semis": 24.2,
-      "%final": 10.4,
-      "%campeon": 4.8
+      "%cuartos": 55.8,
+      "%semis": 26.3,
+      "%final": 15.2,
+      "%campeon": 5.4
     },
     {
       "equipo": "Instituto",
       "%16avos": 100.0,
       "%octavos": 100.0,
       "%cuartos": 57.0,
-      "%semis": 23.1,
-      "%final": 10.2,
-      "%campeon": 3.7
+      "%semis": 22.9,
+      "%final": 9.4,
+      "%campeon": 4.9
     },
     {
-      "equipo": "Banfield",
+      "equipo": "Gimnasia La Plata",
       "%16avos": 100.0,
       "%octavos": 100.0,
-      "%cuartos": 44.3,
-      "%semis": 22.6,
-      "%final": 9.2,
-      "%campeon": 3.3
+      "%cuartos": 55.1,
+      "%semis": 25.8,
+      "%final": 10.5,
+      "%campeon": 4.5
     },
     {
       "equipo": "Barracas Central",
       "%16avos": 100.0,
       "%octavos": 100.0,
-      "%cuartos": 34.9,
-      "%semis": 17.2,
-      "%final": 7.7,
-      "%campeon": 3.3
+      "%cuartos": 36.1,
+      "%semis": 18.5,
+      "%final": 9.2,
+      "%campeon": 4.0
+    },
+    {
+      "equipo": "Tigre",
+      "%16avos": 100.0,
+      "%octavos": 41.2,
+      "%cuartos": 20.9,
+      "%semis": 10.8,
+      "%final": 5.2,
+      "%campeon": 3.9
+    },
+    {
+      "equipo": "Banfield",
+      "%16avos": 100.0,
+      "%octavos": 100.0,
+      "%cuartos": 44.1,
+      "%semis": 20.5,
+      "%final": 8.4,
+      "%campeon": 3.5
     },
     {
       "equipo": "San Lorenzo",
       "%16avos": 100.0,
-      "%octavos": 59.1,
-      "%cuartos": 32.0,
-      "%semis": 17.0,
-      "%final": 7.6,
-      "%campeon": 3.2
+      "%octavos": 58.2,
+      "%cuartos": 29.0,
+      "%semis": 14.1,
+      "%final": 6.3,
+      "%campeon": 2.8
+    },
+    {
+      "equipo": "Racing Club",
+      "%16avos": 100.0,
+      "%octavos": 56.4,
+      "%cuartos": 26.9,
+      "%semis": 10.9,
+      "%final": 6.2,
+      "%campeon": 2.5
     },
     {
       "equipo": "Platense",
       "%16avos": 100.0,
       "%octavos": 100.0,
       "%cuartos": 43.0,
-      "%semis": 15.4,
-      "%final": 6.4,
-      "%campeon": 2.6
-    },
-    {
-      "equipo": "Racing Club",
-      "%16avos": 100.0,
-      "%octavos": 52.2,
-      "%cuartos": 25.9,
-      "%semis": 10.3,
-      "%final": 4.9,
-      "%campeon": 2.5
-    },
-    {
-      "equipo": "Tigre",
-      "%16avos": 100.0,
-      "%octavos": 39.5,
-      "%cuartos": 19.8,
-      "%semis": 10.3,
-      "%final": 4.4,
-      "%campeon": 1.9
+      "%semis": 16.7,
+      "%final": 6.2,
+      "%campeon": 2.1
     },
     {
       "equipo": "Atlético Tucumán",
       "%16avos": 100.0,
       "%octavos": 100.0,
-      "%cuartos": 39.4,
-      "%semis": 14.0,
-      "%final": 5.3,
-      "%campeon": 1.3
+      "%cuartos": 39.3,
+      "%semis": 12.4,
+      "%final": 4.5,
+      "%campeon": 1.6
     },
     {
       "equipo": "Defensa y Justicia",
       "%16avos": 100.0,
-      "%octavos": 47.8,
-      "%cuartos": 19.9,
-      "%semis": 7.0,
-      "%final": 3.0,
-      "%campeon": 1.0
-    },
-    {
-      "equipo": "Sarmiento Junín",
-      "%16avos": 100.0,
-      "%octavos": 25.3,
-      "%cuartos": 8.6,
-      "%semis": 3.4,
-      "%final": 1.4,
-      "%campeon": 0.6
+      "%octavos": 43.6,
+      "%cuartos": 17.3,
+      "%semis": 7.9,
+      "%final": 3.7,
+      "%campeon": 1.6
     },
     {
       "equipo": "Deportivo Riestra",
       "%16avos": 100.0,
-      "%octavos": 40.9,
-      "%cuartos": 15.7,
-      "%semis": 5.1,
-      "%final": 1.2,
-      "%campeon": 0.3
+      "%octavos": 41.8,
+      "%cuartos": 15.9,
+      "%semis": 7.3,
+      "%final": 2.8,
+      "%campeon": 0.9
+    },
+    {
+      "equipo": "Sarmiento Junín",
+      "%16avos": 100.0,
+      "%octavos": 25.7,
+      "%cuartos": 10.7,
+      "%semis": 4.1,
+      "%final": 2.2,
+      "%campeon": 0.7
     },
     {
       "equipo": "Aldosivi",
       "%16avos": 100.0,
-      "%octavos": 24.0,
-      "%cuartos": 6.7,
-      "%semis": 2.1,
-      "%final": 0.5,
-      "%campeon": 0.2
+      "%octavos": 24.6,
+      "%cuartos": 6.4,
+      "%semis": 2.4,
+      "%final": 0.8,
+      "%campeon": 0.0
     }
   ],
   "equipos_vivos": [

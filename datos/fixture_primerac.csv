@@ -1,0 +1,204 @@
+fecha,jornada,equipo_local,equipo_visitante
+,18,Cañuelas,Central Córdoba
+,18,CA Atlas,Claypole
+,18,General Lamadrid,El Porvenir
+,18,Club Luján,CA Fenix
+,18,Muñiz,Deportivo Español
+,18,Sportivo Barracas,Yupanqui
+,18,Centro Español,Mercedes
+,19,Deportivo Español,Cañuelas
+,19,El Porvenir,Club Luján
+,19,Central Córdoba,CA Atlas
+,19,Yupanqui,Muñiz
+,19,Defensores Cambaceres,Sacachispas
+,19,Central Ballester,General Lamadrid
+,19,Justo José Urquiza,Centro Español
+,19,Deportivo Paraguayo,Berazategui
+,19,Juventud Unida SM,CA Lugano
+,19,Claypole,Leones de Rosario FC
+,19,Puerto Nuevo,Estrella del Sur
+,19,Leandro N. Alem,Argentino Rosario
+,19,Mercedes,Victoriano Arenas
+,19,CA Fenix,Sportivo Barracas
+,20,Estrella del Sur,Club Luján
+,20,Cañuelas,Leandro N. Alem
+,20,Justo José Urquiza,Muñiz
+,20,CA Fenix,Puerto Nuevo
+,20,CA Lugano,Sportivo Barracas
+,20,Claypole,Juventud Unida SM
+,20,Berazategui,Central Córdoba
+,20,CA Atlas,Sacachispas
+,20,Defensores Cambaceres,General Lamadrid
+,20,Deportivo Paraguayo,Central Ballester
+,20,Deportivo Español,Victoriano Arenas
+,20,Mercedes,El Porvenir
+,20,Yupanqui,Argentino Rosario
+,20,Leones de Rosario FC,Centro Español
+,21,Cañuelas,Muñiz
+,21,CA Atlas,Deportivo Español
+,21,General Lamadrid,Claypole
+,21,Club Luján,Central Ballester
+,21,Sportivo Barracas,El Porvenir
+,21,CA Fenix,Yupanqui
+,21,Juventud Unida SM,Defensores Cambaceres
+,21,Argentino Rosario,Puerto Nuevo
+,21,Sacachispas,Leandro N. Alem
+,21,Estrella del Sur,Deportivo Paraguayo
+,21,Berazategui,Mercedes
+,21,Victoriano Arenas,Justo José Urquiza
+,21,CA Lugano,Centro Español
+,21,Leones de Rosario FC,Central Córdoba
+,22,El Porvenir,CA Fenix
+,22,Central Ballester,Sportivo Barracas
+,22,Claypole,Club Luján
+,22,Central Córdoba,General Lamadrid
+,22,Muñiz,CA Atlas
+,22,Yupanqui,Cañuelas
+,22,Centro Español,Victoriano Arenas
+,22,Justo José Urquiza,Berazategui
+,22,Mercedes,Estrella del Sur
+,22,Deportivo Paraguayo,Argentino Rosario
+,22,Puerto Nuevo,Sacachispas
+,22,Leandro N. Alem,Juventud Unida SM
+,22,Defensores Cambaceres,CA Lugano
+,22,Deportivo Español,Leones de Rosario FC
+,23,CA Atlas,Cañuelas
+,23,Club Luján,Central Córdoba
+,23,General Lamadrid,Deportivo Español
+,23,Sportivo Barracas,Claypole
+,23,CA Fenix,Central Ballester
+,23,El Porvenir,Yupanqui
+,23,Defensores Cambaceres,Leandro N. Alem
+,23,Juventud Unida SM,Puerto Nuevo
+,23,Sacachispas,Deportivo Paraguayo
+,23,Argentino Rosario,Mercedes
+,23,Estrella del Sur,Justo José Urquiza
+,23,Berazategui,Centro Español
+,23,CA Lugano,Victoriano Arenas
+,23,Leones de Rosario FC,Muñiz
+,24,Berazategui,CA Fenix
+,24,Cañuelas,Estrella del Sur
+,24,Central Ballester,Leandro N. Alem
+,24,CA Lugano,Club Luján
+,24,Deportivo Español,Sacachispas
+,24,CA Atlas,Argentino Rosario
+,24,Justo José Urquiza,El Porvenir
+,24,Deportivo Paraguayo,Sportivo Barracas
+,24,Muñiz,Juventud Unida SM
+,24,Puerto Nuevo,Yupanqui
+,24,Claypole,Mercedes
+,24,Centro Español,Central Córdoba
+,24,Victoriano Arenas,General Lamadrid
+,24,Leones de Rosario FC,Defensores Cambaceres
+,25,El Porvenir,Central Ballester
+,25,Claypole,CA Fenix
+,25,Central Córdoba,Sportivo Barracas
+,25,Deportivo Español,Club Luján
+,25,Muñiz,General Lamadrid
+,25,Yupanqui,CA Atlas
+,25,Victoriano Arenas,Berazategui
+,25,Centro Español,Estrella del Sur
+,25,Justo José Urquiza,Argentino Rosario
+,25,Mercedes,Sacachispas
+,25,Deportivo Paraguayo,Juventud Unida SM
+,25,Puerto Nuevo,Defensores Cambaceres
+,25,Leandro N. Alem,CA Lugano
+,25,Cañuelas,Leones de Rosario FC
+,26,El Porvenir,Claypole
+,26,Central Ballester,Yupanqui
+,26,Leandro N. Alem,Puerto Nuevo
+,26,Defensores Cambaceres,Deportivo Paraguayo
+,26,Juventud Unida SM,Mercedes
+,26,Sacachispas,Justo José Urquiza
+,26,Argentino Rosario,Centro Español
+,26,Estrella del Sur,Victoriano Arenas
+,26,CA Lugano,Berazategui
+,26,General Lamadrid,Cañuelas
+,26,Club Luján,Muñiz
+,26,Sportivo Barracas,Deportivo Español
+,26,CA Fenix,Central Córdoba
+,26,Leones de Rosario FC,CA Atlas
+,27,Berazategui,Estrella del Sur
+,27,Victoriano Arenas,Argentino Rosario
+,27,Centro Español,Sacachispas
+,27,Justo José Urquiza,Juventud Unida SM
+,27,Mercedes,Defensores Cambaceres
+,27,Deportivo Paraguayo,Leandro N. Alem
+,27,Puerto Nuevo,CA Lugano
+,27,Claypole,Central Ballester
+,27,Central Córdoba,El Porvenir
+,27,Deportivo Español,CA Fenix
+,27,Muñiz,Sportivo Barracas
+,27,Cañuelas,Club Luján
+,27,CA Atlas,General Lamadrid
+,27,Yupanqui,Leones de Rosario FC
+,28,Claypole,Sacachispas
+,28,Mercedes,Deportivo Español
+,28,Club Luján,Deportivo Paraguayo
+,28,Estrella del Sur,Yupanqui
+,28,CA Fenix,Centro Español
+,28,Justo José Urquiza,General Lamadrid
+,28,Muñiz,Leandro N. Alem
+,28,Juventud Unida SM,El Porvenir
+,28,Central Ballester,Puerto Nuevo
+,28,Defensores Cambaceres,Sportivo Barracas
+,28,Cañuelas,Victoriano Arenas
+,28,Berazategui,CA Atlas
+,28,Central Córdoba,Argentino Rosario
+,28,CA Lugano,Leones de Rosario FC
+,29,Puerto Nuevo,Deportivo Paraguayo
+,29,Leandro N. Alem,Mercedes
+,29,Defensores Cambaceres,Justo José Urquiza
+,29,Juventud Unida SM,Centro Español
+,29,Sacachispas,Victoriano Arenas
+,29,Argentino Rosario,Berazategui
+,29,CA Lugano,Estrella del Sur
+,29,Club Luján,CA Atlas
+,29,Sportivo Barracas,Cañuelas
+,29,CA Fenix,Muñiz
+,29,El Porvenir,Deportivo Español
+,29,Central Ballester,Central Córdoba
+,29,Claypole,Yupanqui
+,29,General Lamadrid,Leones de Rosario FC
+,30,Estrella del Sur,Argentino Rosario
+,30,Berazategui,Sacachispas
+,30,Victoriano Arenas,Juventud Unida SM
+,30,Centro Español,Defensores Cambaceres
+,30,Justo José Urquiza,Leandro N. Alem
+,30,Mercedes,Puerto Nuevo
+,30,Central Córdoba,Claypole
+,30,Deportivo Paraguayo,CA Lugano
+,30,Deportivo Español,Central Ballester
+,30,Muñiz,El Porvenir
+,30,Cañuelas,CA Fenix
+,30,CA Atlas,Sportivo Barracas
+,30,Yupanqui,General Lamadrid
+,30,Leones de Rosario FC,Club Luján
+,31,Deportivo Paraguayo,Mercedes
+,31,Puerto Nuevo,Justo José Urquiza
+,31,Leandro N. Alem,Centro Español
+,31,Defensores Cambaceres,Victoriano Arenas
+,31,Juventud Unida SM,Berazategui
+,31,Sacachispas,Estrella del Sur
+,31,CA Lugano,Argentino Rosario
+,31,Club Luján,General Lamadrid
+,31,CA Fenix,CA Atlas
+,31,El Porvenir,Cañuelas
+,31,Claypole,Deportivo Español
+,31,Central Ballester,Muñiz
+,31,Central Córdoba,Yupanqui
+,31,Sportivo Barracas,Leones de Rosario FC
+,32,Argentino Rosario,Sacachispas
+,32,Estrella del Sur,Juventud Unida SM
+,32,Berazategui,Defensores Cambaceres
+,32,Victoriano Arenas,Leandro N. Alem
+,32,Centro Español,Puerto Nuevo
+,32,Justo José Urquiza,Deportivo Paraguayo
+,32,Mercedes,CA Lugano
+,32,Deportivo Español,Central Córdoba
+,32,Muñiz,Claypole
+,32,Cañuelas,Central Ballester
+,32,CA Atlas,El Porvenir
+,32,General Lamadrid,Sportivo Barracas
+,32,Yupanqui,Club Luján
+,32,Leones de Rosario FC,CA Fenix

@@ -1,14 +1,15 @@
 // sim-worker.js
 //
-// Web Worker que corre las simulaciones (Primera Nacional, LPF, Copa y
-// B Metro) adentro del navegador con Pyodide, para no pegarle al backend
-// cada vez que el usuario aprieta "Correr nueva simulación". Usa
-// exactamente el mismo código Python que el backend (main.py,
-// main_lpf.py, main_bmetro.py, modelos/, pysim_dispatch.py): lo pide vía
+// Web Worker que corre las simulaciones (Primera Nacional, LPF, Copa,
+// B Metro, Federal A y Primera C) adentro del navegador con Pyodide,
+// para no pegarle al backend cada vez que el usuario aprieta "Correr
+// nueva simulación". Usa exactamente el mismo código Python que el
+// backend (main.py, main_lpf.py, main_bmetro.py, main_federal.py,
+// main_primerac.py, modelos/, pysim_dispatch.py): lo pide vía
 // /api/pysim-source y lo escribe en el filesystem virtual de Pyodide,
 // junto con los CSV actuales (/api/datos-nacional, /api/datos-lpf,
-// /api/datos-copa y /api/datos-bmetro). No reimplementa ninguna lógica
-// de simulación en JS.
+// /api/datos-copa, /api/datos-bmetro, /api/datos-federal y
+// /api/datos-primerac). No reimplementa ninguna lógica de simulación en JS.
 //
 // Protocolo de mensajes (postMessage):
 //   main -> worker: { type: "init", apiBase: string }
@@ -73,13 +74,14 @@ async function inicializar() {
 }
 
 async function cargarCodigoYDatos() {
-  const [fuente, datosNacional, datosLpf, datosCopa, datosBmetro, datosFederal] = await Promise.all([
+  const [fuente, datosNacional, datosLpf, datosCopa, datosBmetro, datosFederal, datosPrimeraC] = await Promise.all([
     fetchJson(`${apiBase}/api/pysim-source`),
     fetchJson(`${apiBase}/api/datos-nacional`),
     fetchJson(`${apiBase}/api/datos-lpf`),
     fetchJson(`${apiBase}/api/datos-copa`),
     fetchJson(`${apiBase}/api/datos-bmetro`),
     fetchJson(`${apiBase}/api/datos-federal`),
+    fetchJson(`${apiBase}/api/datos-primerac`),
   ]);
 
   escribirArchivos(fuente.files, "");
@@ -88,6 +90,7 @@ async function cargarCodigoYDatos() {
   escribirArchivos(datosCopa.files, "datos");
   escribirArchivos(datosBmetro.files, "datos");
   escribirArchivos(datosFederal.files, "datos");
+  escribirArchivos(datosPrimeraC.files, "datos");
 
   pyodide.runPython(
     "import sys\n" +
@@ -143,11 +146,15 @@ async function ejecutar(tarea, payload) {
     case "simular-federal":
       kwargs = { n_sims: clamp(payload.n_sims, 50, 5000, 500) };
       break;
+    case "simular-primerac":
+      kwargs = { n_sims: clamp(payload.n_sims, 50, 5000, 500) };
+      break;
     case "simular-campeon":
     case "simular-campeon-lpf":
     case "simular-campeon-copa":
     case "simular-campeon-bmetro":
-    case "simular-campeon-federal": {
+    case "simular-campeon-federal":
+    case "simular-campeon-primerac": {
       const equipo = String(payload.equipo || "").trim();
       if (!equipo) throw Object.assign(new Error("Falta indicar el equipo"), { status: 400 });
       kwargs = { equipo, max_intentos: clamp(payload.max_intentos, 100, 20000, 5000) };
