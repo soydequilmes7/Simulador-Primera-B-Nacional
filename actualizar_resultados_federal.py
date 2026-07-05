@@ -33,6 +33,63 @@ CAMPOS_RESULTADOS = ["fecha", "jornada", "equipo_local", "equipo_visitante",
                       "goles_local", "goles_visitante"]
 
 
+def _normalizar_jornada(valor) -> str:
+    if valor is None or valor == "":
+        return ""
+    try:
+        return str(int(valor))
+    except (TypeError, ValueError):
+        return str(valor).strip()
+
+
+def _clave_partido(fila: dict) -> tuple[str, str, str]:
+    return (
+        _normalizar_jornada(fila.get("jornada")),
+        fila["equipo_local"],
+        fila["equipo_visitante"],
+    )
+
+
+def _clasificar_partidos_jugados(
+    partidos_jugados: list[dict],
+    fixture: list[dict],
+    resultados: list[dict],
+) -> tuple[list[dict], list[dict], list[dict], list[dict]]:
+    indice_fixture = {}
+    for i, fila in enumerate(fixture):
+        indice_fixture[_clave_partido(fila)] = i
+
+    resultados_ya_cargados = {_clave_partido(fila) for fila in resultados}
+    resultados_actualizados = list(resultados)
+    sin_matchear = []
+    cargados = []
+    indices_a_borrar = []
+
+    for p in partidos_jugados:
+        clave = _clave_partido(p)
+        if clave in resultados_ya_cargados:
+            continue
+        if clave in indice_fixture:
+            idx = indice_fixture[clave]
+            fila_fixture = fixture[idx]
+            resultados_actualizados.append({
+                "fecha": fila_fixture.get("fecha", ""),
+                "jornada": fila_fixture.get("jornada", ""),
+                "equipo_local": p["equipo_local"],
+                "equipo_visitante": p["equipo_visitante"],
+                "goles_local": p["goles_local"],
+                "goles_visitante": p["goles_visitante"],
+            })
+            indices_a_borrar.append(idx)
+            cargados.append(p)
+            resultados_ya_cargados.add(clave)
+        else:
+            sin_matchear.append(p)
+
+    fixture_restante = [f for i, f in enumerate(fixture) if i not in indices_a_borrar]
+    return fixture_restante, resultados_actualizados, cargados, sin_matchear
+
+
 def actualizar(n_sims: int = 500, correr_simulacion_fn=None, imprimir: bool = True) -> dict:
     ahora = datetime.now().isoformat(timespec="seconds")
 
@@ -48,32 +105,9 @@ def actualizar(n_sims: int = 500, correr_simulacion_fn=None, imprimir: bool = Tr
     if imprimir:
         print(f"  {len(partidos_jugados)} partidos jugados vistos en Promiedos (con zona resuelta)")
 
-    indice_fixture = {}
-    for i, fila in enumerate(fixture):
-        clave = (fila["equipo_local"], fila["equipo_visitante"])
-        indice_fixture[clave] = i
-
-    sin_matchear = []
-    cargados = []
-    indices_a_borrar = []
-
-    for p in partidos_jugados:
-        clave = (p["equipo_local"], p["equipo_visitante"])
-        if clave in indice_fixture:
-            idx = indice_fixture[clave]
-            fila_fixture = fixture[idx]
-            resultados.append({
-                "fecha": fila_fixture.get("fecha", ""),
-                "jornada": fila_fixture.get("jornada", ""),
-                "equipo_local": p["equipo_local"],
-                "equipo_visitante": p["equipo_visitante"],
-                "goles_local": p["goles_local"],
-                "goles_visitante": p["goles_visitante"],
-            })
-            indices_a_borrar.append(idx)
-            cargados.append(p)
-        else:
-            sin_matchear.append(p)
+    fixture_restante, resultados, cargados, sin_matchear = _clasificar_partidos_jugados(
+        partidos_jugados, fixture, resultados,
+    )
 
     if not cargados:
         if imprimir:
@@ -85,8 +119,6 @@ def actualizar(n_sims: int = 500, correr_simulacion_fn=None, imprimir: bool = Tr
             "sin_matchear": sin_matchear,
             "mensaje": "No había partidos nuevos jugados que coincidan con el fixture pendiente.",
         }
-
-    fixture_restante = [f for i, f in enumerate(fixture) if i not in indices_a_borrar]
 
     with transaction() as repo:
         repo.replace_matches("federal_a", fixture_restante, resultados)

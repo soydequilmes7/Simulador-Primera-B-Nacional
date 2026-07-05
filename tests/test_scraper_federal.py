@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import unittest
 
+from actualizar_resultados_federal import _clasificar_partidos_jugados
 from calcular_tabla_federal import _aplicar_partido, _reordenar_posiciones
 from mapeo_equipos_federal import normalizar, resolver_equipo
 
@@ -44,6 +45,7 @@ class ResolverEquipoTests(unittest.TestCase):
     def test_alias_confirmado_resuelve_al_nombre_local(self) -> None:
         self.assertEqual(resolver_equipo("Sp. Belgrano"), "Sportivo Belgrano")
         self.assertEqual(resolver_equipo("Boca Unidos"), "Boca Unidos de Corrientes")
+        self.assertEqual(resolver_equipo("Defensores (VR)"), "Defensores Belgrano (VR)")
         self.assertEqual(resolver_equipo("Sarmiento (R)"), "Sarmiento de Resistencia")
         self.assertEqual(resolver_equipo("Sarmiento (LB)"), "Sarmiento De La Banda")
 
@@ -117,6 +119,55 @@ class ReordenarPosicionesTests(unittest.TestCase):
         ]
         resultado = _reordenar_posiciones(filas)
         self.assertEqual(resultado[0]["equipo"], "Mejor_GF")
+
+
+class ActualizarFederalTests(unittest.TestCase):
+
+    def test_ignora_partidos_ya_cargados_antes_de_sin_matchear(self) -> None:
+        partidos_promiedos = [
+            {
+                "jornada": 15,
+                "equipo_local": "El Linqueño",
+                "equipo_visitante": "Sportivo Belgrano",
+                "goles_local": 1,
+                "goles_visitante": 1,
+            },
+            {
+                "jornada": 16,
+                "equipo_local": "Sportivo Belgrano",
+                "equipo_visitante": "Independiente Chivilcoy",
+                "goles_local": 2,
+                "goles_visitante": 0,
+            },
+        ]
+        fixture = [
+            {
+                "fecha": "",
+                "jornada": "16",
+                "equipo_local": "Sportivo Belgrano",
+                "equipo_visitante": "Independiente Chivilcoy",
+            },
+        ]
+        resultados = [
+            {
+                "fecha": "",
+                "jornada": "15",
+                "equipo_local": "El Linqueño",
+                "equipo_visitante": "Sportivo Belgrano",
+                "goles_local": 1,
+                "goles_visitante": 1,
+            },
+        ]
+
+        fixture_restante, resultados_actualizados, cargados, sin_matchear = _clasificar_partidos_jugados(
+            partidos_promiedos, fixture, resultados,
+        )
+
+        self.assertEqual(sin_matchear, [])
+        self.assertEqual(len(cargados), 1)
+        self.assertEqual(cargados[0]["jornada"], 16)
+        self.assertEqual(fixture_restante, [])
+        self.assertEqual(len(resultados_actualizados), 2)
 
 
 if __name__ == "__main__":

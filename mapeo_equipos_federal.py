@@ -79,7 +79,8 @@ OVERRIDES = {
         "gimnasia (chivilcoy)", "gimnasia y esgrima (chivilcoy)", "cscyd chivilcoy",
     ],
     "Defensores Belgrano (VR)": [
-        "defensores belgrano (vr)", "def. belgrano (vr)", "defensores de belgrano (vr)",
+        "defensores (vr)", "defensores belgrano (vr)", "def. belgrano (vr)",
+        "defensores de belgrano (vr)",
     ],
     "Sportivo Las Parejas": ["sp. las parejas", "sp las parejas", "sportivo lp"],  # confirmado
     "Independiente Chivilcoy": ["independiente (chivilcoy)", "independiente (chi)"],  # confirmado (chi)
