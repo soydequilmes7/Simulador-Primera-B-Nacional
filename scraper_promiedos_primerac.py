@@ -70,7 +70,6 @@ if rutas is not None:
     DATOS_DIR = str(rutas.datos_dir())
 else:
     DATOS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "datos")
-os.makedirs(DATOS_DIR, exist_ok=True)
 
 BASE_URL = "https://api.promiedos.com.ar"
 LEAGUE_ID = "ffjb"  # Primera C
@@ -228,6 +227,8 @@ def obtener_partidos_primerac(verbose=True):
 def escribir_csvs(partidos, fixture_path=FIXTURE_CSV, resultados_path=RESULTADOS_CSV):
     jugados = [p for p in partidos if p["jugado"]]
     pendientes = [p for p in partidos if not p["jugado"]]
+    os.makedirs(os.path.dirname(fixture_path), exist_ok=True)
+    os.makedirs(os.path.dirname(resultados_path), exist_ok=True)
 
     with open(fixture_path, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
