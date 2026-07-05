@@ -1,6 +1,7 @@
 import json
 import datetime
 
+import data_access
 import rutas
 from modelos.estadisticas_bmetro import EstadisticasBMetro
 
@@ -80,14 +81,12 @@ def correr_simulacion_bmetro(n_sims=1000, imprimir=True, guardar_json=True):
     }
 
     if guardar_json:
-        ruta = rutas.public_dir() / "data_bmetro.json"
         try:
-            with open(ruta, "w", encoding="utf-8") as f:
-                json.dump(datos_web, f, ensure_ascii=False, indent=2)
+            data_access.save_simulation_output("bmetro", "bmetro", datos_web, n_sims)
             if imprimir:
-                print(f"\ndata_bmetro.json guardado en: {ruta}")
+                print("\ndata_bmetro.json guardado en Supabase")
         except Exception as ex:
-            print(f"Error al guardar data_bmetro.json: {ex}")
+            print(f"Error al guardar data_bmetro.json en Supabase: {ex}")
 
     return datos_web
 

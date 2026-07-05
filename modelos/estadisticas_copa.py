@@ -19,6 +19,7 @@ todos eliminados, así que solo pesa como respaldo.
 """
 import csv
 
+import data_access
 import rutas
 from modelos.estadisticas import Estadisticas
 from modelos.equipo import Equipo
@@ -56,10 +57,8 @@ class EstadisticasCopa(Estadisticas):
     # Carga
     # ------------------------------------------------------------------
     def cargar_datos_copa(self):
-        """Lee datos/copa_argentina.csv (cruces reales, jugados y pendientes)."""
-        ruta = rutas.datos_dir() / "copa_argentina.csv"
-        with open(ruta, encoding="utf-8") as f:
-            self.cuadro = list(csv.DictReader(f))
+        """Lee los cruces reales, jugados y pendientes de Copa Argentina."""
+        self.cuadro = data_access.cup_records()
         print(f"Copa Argentina: {len(self.cuadro)} cruces cargados "
               f"({sum(1 for c in self.cuadro if c['ganador'])} resueltos)")
 

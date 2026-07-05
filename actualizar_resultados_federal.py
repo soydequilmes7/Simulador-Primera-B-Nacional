@@ -21,59 +21,24 @@ Uso programático:
 """
 from __future__ import annotations
 
-import csv
-import json
-import os
 from datetime import datetime
 
-try:
-    import rutas
-    _DATOS_DIR = rutas.datos_dir()
-except ImportError:
-    _DATOS_DIR = None
+from db.repository import transaction
 
 from scraper_promiedos_federal import obtener_partidos_jugados_federal
-from calcular_tabla_federal import actualizar_tabla_con_partidos
+from calcular_tabla_federal import _aplicar_partido, _reordenar_posiciones
 
 CAMPOS_FIXTURE = ["fecha", "jornada", "equipo_local", "equipo_visitante"]
 CAMPOS_RESULTADOS = ["fecha", "jornada", "equipo_local", "equipo_visitante",
                       "goles_local", "goles_visitante"]
 
-NOMBRE_FIXTURE = "fixture_federal_a.csv"
-NOMBRE_RESULTADOS = "resultados_federal_a.csv"
-NOMBRE_TABLA = "tabla_federal_a.csv"
-NOMBRE_LOG = "log_actualizaciones_federal.json"
-
-
-def _ruta(nombre_archivo: str) -> str:
-    if _DATOS_DIR is not None:
-        return str(_DATOS_DIR / nombre_archivo)
-    return nombre_archivo
-
-
-def _leer_csv(path: str, campos_esperados: list[str]) -> list[dict]:
-    if not os.path.exists(path):
-        return []
-    with open(path, newline="", encoding="utf-8") as f:
-        return list(csv.DictReader(f))
-
-
-def _escribir_csv(path: str, filas: list[dict], campos: list[str]) -> None:
-    with open(path, "w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=campos)
-        writer.writeheader()
-        writer.writerows(filas)
-
 
 def actualizar(n_sims: int = 500, correr_simulacion_fn=None, imprimir: bool = True) -> dict:
     ahora = datetime.now().isoformat(timespec="seconds")
 
-    fixture_csv = _ruta(NOMBRE_FIXTURE)
-    resultados_csv = _ruta(NOMBRE_RESULTADOS)
-    tabla_csv = _ruta(NOMBRE_TABLA)
-
-    fixture = _leer_csv(fixture_csv, CAMPOS_FIXTURE)
-    resultados = _leer_csv(resultados_csv, CAMPOS_RESULTADOS)
+    with transaction() as repo:
+        fixture = repo.match_records("federal_a", "pending")
+        resultados = repo.match_records("federal_a", "played")
 
     if imprimir:
         print(f"[{ahora}] Scrapeando Promiedos (Federal A)...")
@@ -123,22 +88,23 @@ def actualizar(n_sims: int = 500, correr_simulacion_fn=None, imprimir: bool = Tr
 
     fixture_restante = [f for i, f in enumerate(fixture) if i not in indices_a_borrar]
 
-    _escribir_csv(fixture_csv, fixture_restante, CAMPOS_FIXTURE)
-    _escribir_csv(resultados_csv, resultados, CAMPOS_RESULTADOS)
-    actualizar_tabla_con_partidos(cargados, tabla_path=tabla_csv, imprimir=imprimir)
+    with transaction() as repo:
+        repo.replace_matches("federal_a", fixture_restante, resultados)
+        filas = repo.standing_records("federal_a")
+        indice = {f["equipo"]: f for f in filas}
+        for p in cargados:
+            _aplicar_partido(
+                indice, p["equipo_local"], p["equipo_visitante"],
+                int(p["goles_local"]), int(p["goles_visitante"]),
+            )
+        repo.upsert_standings("federal_a", _reordenar_posiciones(filas))
 
     datos = None
     simulacion_corrida = False
     if correr_simulacion_fn is not None:
         if imprimir:
             print(f"  Cargados {len(cargados)} partidos nuevos. Re-simulando...")
-        guardar_json = True
-        try:
-            import rutas as _rutas
-            guardar_json = not _rutas.en_vercel()
-        except (ImportError, AttributeError):
-            pass
-        datos = correr_simulacion_fn(n_sims=n_sims, imprimir=imprimir, guardar_json=guardar_json)
+        datos = correr_simulacion_fn(n_sims=n_sims, imprimir=imprimir, guardar_json=True)
         simulacion_corrida = True
     elif imprimir:
         print(f"  Cargados {len(cargados)} partidos nuevos. "
@@ -155,24 +121,8 @@ def actualizar(n_sims: int = 500, correr_simulacion_fn=None, imprimir: bool = Tr
 
 
 def _guardar_log(timestamp: str, cargados: list[dict], sin_matchear: list[dict], simulacion_corrida: bool) -> None:
-    log_path = _ruta(NOMBRE_LOG)
-    historial = []
-    if os.path.exists(log_path):
-        try:
-            with open(log_path, encoding="utf-8") as f:
-                historial = json.load(f)
-        except (json.JSONDecodeError, OSError):
-            historial = []
-
-    historial.append({
-        "timestamp": timestamp,
-        "partidos_cargados": cargados,
-        "sin_matchear": sin_matchear,
-        "simulacion_corrida": simulacion_corrida,
-    })
-
-    with open(log_path, "w", encoding="utf-8") as f:
-        json.dump(historial, f, ensure_ascii=False, indent=2)
+    with transaction() as repo:
+        repo.log_update("federal_a", cargados, sin_matchear, simulacion_corrida, timestamp=timestamp)
 
 
 if __name__ == "__main__":

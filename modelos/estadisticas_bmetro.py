@@ -38,6 +38,7 @@ de la tabla (ver DESCENSOS_N).
 import numpy as np
 import pandas as pd
 
+import data_access
 import rutas
 from modelos.estadisticas import Estadisticas
 
@@ -60,12 +61,9 @@ class EstadisticasBMetro(Estadisticas):
     # idéntico).
     # ------------------------------------------------------------------
     def cargar_datos_bmetro(self):
-        print("Leyendo archivos de B Metropolitana...")
-        datos_dir = rutas.datos_dir()
+        print("Leyendo datos de B Metropolitana...")
 
-        self.resultados = pd.read_csv(datos_dir / "resultados_bmetro.csv")
-        self.fixture = pd.read_csv(datos_dir / "fixture_bmetro.csv")
-        self.tabla = pd.read_csv(datos_dir / "tabla_bmetro.csv")
+        self.resultados, self.fixture, self.tabla = data_access.league_data("bmetro")
 
         print(f"Resultados: {len(self.resultados)}")
         print(f"Fixture: {len(self.fixture)}")

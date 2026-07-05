@@ -22,6 +22,7 @@ descensos y ascensos).
 import pandas as pd
 import numpy as np
 
+import data_access
 import rutas
 from modelos.estadisticas import Estadisticas
 
@@ -71,21 +72,17 @@ class EstadisticasLPF(Estadisticas):
     # Carga de datos
     # ------------------------------------------------------------------
     def cargar_datos_lpf(self):
-        print("Leyendo archivos de LPF...")
-        datos_dir = rutas.datos_dir()
+        print("Leyendo datos de LPF...")
 
-        self.apertura = pd.read_csv(datos_dir / "tablalpf.csv")
+        self.resultados, self.fixture, self.apertura = data_access.league_data("lpf")
         self.apertura["equipo"] = self.apertura["equipo"].apply(normalizar)
-
-        self.fixture = pd.read_csv(datos_dir / "fixture_lpf.csv")
-        self.resultados = pd.read_csv(datos_dir / "resultados_lpf.csv")
 
         # Tabla de promedios (Art. 26 / Estatuto AFA art. 93): puntos y
         # partidos jugados ACUMULADOS ANTES del Apertura 2026 (últimas ~3
         # temporadas). Los recién ascendidos arrancan en 0/0 porque solo
         # computan desde su ascenso. Se les suma la 2026 en
         # calcular_tabla_promedios().
-        self.promedios_historicos = pd.read_csv(datos_dir / "promedios_lpf.csv")
+        self.promedios_historicos = data_access.lpf_average_history_df()
         self.promedios_historicos["equipo"] = self.promedios_historicos["equipo"].apply(normalizar)
 
         # self.tabla es lo que usa crear_equipos() (heredado de Estadisticas)

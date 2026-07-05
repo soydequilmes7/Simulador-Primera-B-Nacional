@@ -29,6 +29,7 @@ import urllib.request
 from datetime import datetime
 
 import rutas
+from db.repository import transaction
 from modelos.estadisticas_copa import RONDAS, LLAVES_POR_RONDA
 
 BASE_URL = "https://api.promiedos.com.ar"
@@ -111,9 +112,8 @@ def actualizar(n_sims=1000, correr_simulacion_fn=None, imprimir=True):
     """Merge de resultados reales sobre copa_argentina.csv. Devuelve dict
     {actualizado, cargados, sin_ganador, datos} (mismo contrato que los
     actualizadores de Nacional y LPF)."""
-    ruta_csv = rutas.datos_dir() / "copa_argentina.csv"
-    with open(ruta_csv, encoding="utf-8") as f:
-        cuadro = list(csv.DictReader(f))
+    with transaction() as repo:
+        cuadro = repo.cup_records()
 
     if imprimir:
         print("Consultando Promiedos (Copa Argentina)...")
@@ -167,10 +167,8 @@ def actualizar(n_sims=1000, correr_simulacion_fn=None, imprimir=True):
 
     orden = {r: i for i, r in enumerate(RONDAS)}
     filas_ordenadas = sorted(filas.values(), key=lambda f: (orden[f["ronda"]], int(f["llave"])))
-    with open(ruta_csv, "w", encoding="utf-8", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=CAMPOS)
-        writer.writeheader()
-        writer.writerows(filas_ordenadas)
+    with transaction() as repo:
+        repo.replace_cup_matches(filas_ordenadas)
 
     if imprimir:
         print(f"  Cargados {len(cargados)} resultado(s) nuevo(s) de Copa.")
@@ -179,26 +177,15 @@ def actualizar(n_sims=1000, correr_simulacion_fn=None, imprimir=True):
 
     datos = None
     if correr_simulacion_fn is not None:
-        guardar_json = True
-        try:
-            guardar_json = not rutas.en_vercel()
-        except AttributeError:
-            pass
-        datos = correr_simulacion_fn(n_sims=n_sims, imprimir=imprimir, guardar_json=guardar_json)
+        datos = correr_simulacion_fn(n_sims=n_sims, imprimir=imprimir, guardar_json=True)
 
     _guardar_log(cargados, sin_ganador)
     return {"actualizado": True, "cargados": cargados, "sin_ganador": sin_ganador, "datos": datos}
 
 
 def _guardar_log(cargados, sin_ganador):
-    ruta = rutas.datos_dir() / "log_actualizaciones_copa.json"
-    try:
-        historial = json.loads(ruta.read_text(encoding="utf-8")) if ruta.exists() else []
-    except (json.JSONDecodeError, OSError):
-        historial = []
-    historial.append({"timestamp": datetime.now().isoformat(timespec="seconds"),
-                      "cargados": cargados, "sin_ganador": sin_ganador})
-    ruta.write_text(json.dumps(historial[-50:], ensure_ascii=False, indent=2), encoding="utf-8")
+    with transaction() as repo:
+        repo.log_update("copa", cargados, sin_ganador, bool(cargados))
 
 
 if __name__ == "__main__":

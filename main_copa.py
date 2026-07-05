@@ -4,12 +4,13 @@ main_copa.py
 
 Orquestador de la Copa Argentina: corre una simulación del cuadro
 (respetando resultados reales), el Monte Carlo de % por ronda, y arma el
-JSON que consume la pestaña "Copa Argentina" de la web
-(public/data_copa.json). Mismo patrón que main.py y main_lpf.py.
+JSON que consume la pestaña "Copa Argentina" de la web. Mismo patrón que
+main.py y main_lpf.py.
 """
 import json
 from datetime import datetime
 
+import data_access
 import rutas
 from modelos.estadisticas_copa import EstadisticasCopa, RONDAS
 
@@ -36,11 +37,8 @@ def armar_datos_web_copa(e, rondas_detalle, campeon, mc, n_sims):
 
 
 def guardar_json_copa(datos_web, ruta=None):
-    ruta = ruta or RUTA_JSON_COPA
-    ruta.parent.mkdir(parents=True, exist_ok=True)
-    with open(ruta, "w", encoding="utf-8") as f:
-        json.dump(datos_web, f, ensure_ascii=False, indent=2)
-    return ruta
+    data_access.save_simulation_output("copa", "copa", datos_web, datos_web.get("n_simulaciones"))
+    return "simulation_outputs:copa"
 
 
 def correr_simulacion_copa(imprimir=True, guardar_json=True, n_sims=1000):

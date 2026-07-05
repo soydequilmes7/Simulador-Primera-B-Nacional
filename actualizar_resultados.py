@@ -24,34 +24,17 @@ Se puede llamar también programáticamente:
     from actualizar_resultados import actualizar
     resultado = actualizar()
 """
-import csv
-import json
-import os
 from datetime import datetime
 
-import rutas
+from db.repository import transaction
 from mapeo_equipos import resolver_equipo
 from scraper_promiedos import obtener_partidos_jugados
-from calcular_tabla import actualizar_tabla_con_partidos
+from calcular_tabla import aplicar_partidos
 
 CAMPOS_FIXTURE = ["fecha", "jornada", "equipo_local", "equipo_visitante"]
 CAMPOS_RESULTADOS = ["fecha", "jornada", "equipo_local", "equipo_visitante",
                       "goles_local", "goles_visitante"]
 CAMPOS_GOLEADORES = ["jugador", "equipo", "goles"]
-
-
-def _leer_csv(path, campos_esperados):
-    if not os.path.exists(path):
-        return []
-    with open(path, newline="", encoding="utf-8") as f:
-        return list(csv.DictReader(f))
-
-
-def _escribir_csv(path, filas, campos):
-    with open(path, "w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=campos)
-        writer.writeheader()
-        writer.writerows(filas)
 
 
 def _traducir_partidos(partidos_promiedos):
@@ -87,29 +70,8 @@ def _actualizar_goleadores(cargados, imprimir=True):
     partidos que efectivamente se cargaron (evita duplicar si se corre
     varias veces sin partidos nuevos).
     """
-    goleadores_csv = rutas.datos_dir() / "goleadores.csv"
-    goleadores = _leer_csv(goleadores_csv, CAMPOS_GOLEADORES)
-    indice = {(g["jugador"], g["equipo"]): i for i, g in enumerate(goleadores)}
-
-    def _sumar(jugador, equipo, goles):
-        clave = (jugador, equipo)
-        if clave in indice:
-            fila = goleadores[indice[clave]]
-            fila["goles"] = int(fila["goles"]) + goles
-        else:
-            goleadores.append({"jugador": jugador, "equipo": equipo, "goles": goles})
-            indice[clave] = len(goleadores) - 1
-
-    goles_sumados = 0
-    for p in cargados:
-        for jugador, goles in p.get("goleadores_local", {}).items():
-            _sumar(jugador, p["equipo_local"], goles)
-            goles_sumados += goles
-        for jugador, goles in p.get("goleadores_visitante", {}).items():
-            _sumar(jugador, p["equipo_visitante"], goles)
-            goles_sumados += goles
-
-    _escribir_csv(goleadores_csv, goleadores, CAMPOS_GOLEADORES)
+    with transaction() as repo:
+        goles_sumados = repo.add_scorer_goals(cargados, "nacional")
     if imprimir:
         print(f"  {goles_sumados} goles de jugador sumados a goleadores.csv.")
 
@@ -121,12 +83,9 @@ def actualizar(n_sims=1000, imprimir=True):
     """
     ahora = datetime.now().isoformat(timespec="seconds")
 
-    datos_dir = rutas.datos_dir()
-    fixture_csv = datos_dir / "fixture.csv"
-    resultados_csv = datos_dir / "resultados.csv"
-
-    fixture = _leer_csv(fixture_csv, CAMPOS_FIXTURE)
-    resultados = _leer_csv(resultados_csv, CAMPOS_RESULTADOS)
+    with transaction() as repo:
+        fixture = repo.match_records("nacional", "pending")
+        resultados = repo.match_records("nacional", "played")
 
     if imprimir:
         print(f"[{ahora}] Scrapeando Promiedos...")
@@ -183,21 +142,22 @@ def actualizar(n_sims=1000, imprimir=True):
     # Sacamos del fixture los que ya se jugaron
     fixture_restante = [f for i, f in enumerate(fixture) if i not in indices_a_borrar]
 
-    _escribir_csv(fixture_csv, fixture_restante, CAMPOS_FIXTURE)
-    _escribir_csv(resultados_csv, resultados, CAMPOS_RESULTADOS)
-    _actualizar_goleadores(cargados, imprimir=imprimir)
-    actualizar_tabla_con_partidos(cargados, imprimir=imprimir)
+    with transaction() as repo:
+        repo.replace_matches("nacional", fixture_restante, resultados)
+        goles_sumados = repo.add_scorer_goals(cargados, "nacional")
+        tabla_nueva = aplicar_partidos(repo.standing_records("nacional"), cargados)
+        repo.upsert_standings("nacional", tabla_nueva)
+        if imprimir:
+            print(f"  {goles_sumados} goles de jugador sumados a goleadores.csv.")
+            print(f"  tabla.csv actualizada con {len(cargados)} partido(s) nuevo(s).")
 
     if imprimir:
         print(f"  Cargados {len(cargados)} partidos nuevos. Re-simulando...")
 
     # Importa aquí para evitar import circular si este módulo se usa antes
-    # de que main.py esté disponible en el path
+    # de que main.py esté disponible en el path.
     from main import correr_simulacion
-    # En Vercel no tiene sentido escribir public/data.json (filesystem
-    # de solo lectura). Local y Render sí lo guardan en la carpeta public
-    # activa resuelta por rutas.py.
-    datos = correr_simulacion(n_sims=n_sims, imprimir=imprimir, guardar_json=not rutas.en_vercel())
+    datos = correr_simulacion(n_sims=n_sims, imprimir=imprimir, guardar_json=True)
 
     _guardar_log(ahora, cargados, sin_matchear, simulacion_corrida=True)
 
@@ -210,24 +170,8 @@ def actualizar(n_sims=1000, imprimir=True):
 
 
 def _guardar_log(timestamp, cargados, sin_matchear, simulacion_corrida):
-    log_path = rutas.log_path()
-    historial = []
-    if os.path.exists(log_path):
-        try:
-            with open(log_path, encoding="utf-8") as f:
-                historial = json.load(f)
-        except (json.JSONDecodeError, OSError):
-            historial = []
-
-    historial.append({
-        "timestamp": timestamp,
-        "partidos_cargados": cargados,
-        "sin_matchear": sin_matchear,
-        "simulacion_corrida": simulacion_corrida,
-    })
-
-    with open(log_path, "w", encoding="utf-8") as f:
-        json.dump(historial, f, ensure_ascii=False, indent=2)
+    with transaction() as repo:
+        repo.log_update("nacional", cargados, sin_matchear, simulacion_corrida, timestamp=timestamp)
 
 
 if __name__ == "__main__":

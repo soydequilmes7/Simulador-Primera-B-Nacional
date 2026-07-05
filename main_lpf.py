@@ -1,6 +1,7 @@
 import json
 from datetime import datetime
 
+import data_access
 import rutas
 from modelos.estadisticas_lpf import EstadisticasLPF
 
@@ -146,11 +147,8 @@ def armar_datos_web_lpf(e, tablas_clausura, campeon_clausura, detalle_playoffs,
 
 
 def guardar_json_lpf(datos_web, ruta=None):
-    ruta = ruta or RUTA_JSON_LPF
-    ruta.parent.mkdir(parents=True, exist_ok=True)
-    with open(ruta, "w", encoding="utf-8") as f:
-        json.dump(datos_web, f, ensure_ascii=False, indent=2)
-    return ruta
+    data_access.save_simulation_output("lpf", "lpf", datos_web, datos_web.get("n_simulaciones"))
+    return "simulation_outputs:lpf"
 
 
 def correr_simulacion_lpf(imprimir=True, guardar_json=True, n_sims=300):
