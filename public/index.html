@@ -2116,16 +2116,16 @@
   /* ---- Tarjetas de estadísticas del hero: chip plano, hueso claro, con
      filete dorado fino en vez de las tarjetas translúcidas sobre fondo
      oscuro que usan el resto de las ligas ---- */
-  body.liga-primerac .hero .meta{ gap:14px; margin-top:30px; }
+  body.liga-primerac .hero .meta{ gap:16px; margin-top:34px; }
   body.liga-primerac .hero .meta div{
     background:#FFFFFF; border:1px solid #EBE4D0; border-radius:12px;
-    padding:12px 20px; min-width:112px;
+    padding:14px 22px; min-width:118px;
     box-shadow: 0 4px 14px rgba(120,100,55,0.08);
   }
   body.liga-primerac .hero .meta div:hover{
     border-color: var(--amber); transform: var(--hover-lift);
   }
-  body.liga-primerac .hero .meta .num{ color:#8A6E2E; }
+  body.liga-primerac .hero .meta .num{ color:#8A6E2E; font-size:23px; }
   body.liga-primerac .hero .meta .lbl{ color:#8C826D; }
 
   /* ---- Input de simulaciones: línea fina + foco dorado, sin el fondo
@@ -6397,7 +6397,7 @@ function actualizarHero(liga){
       ? DATA_PRIMERAC.tablas.A.length + DATA_PRIMERAC.tablas.B.length : 28;
     document.getElementById('meta-zonas').textContent = 2;
     document.getElementById('meta-ascensos').textContent = 2;
-    document.getElementById('meta-descensos').textContent = 0;
+    document.getElementById('meta-descensos').textContent = 2;
   } else if (DATA) {
     document.getElementById('meta-equipos').textContent = DATA.tablas.A.length + DATA.tablas.B.length;
     document.getElementById('meta-ascensos').textContent = 2;
