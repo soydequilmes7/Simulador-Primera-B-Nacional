@@ -162,7 +162,14 @@ def actualizar(n_sims=1000, correr_simulacion_fn=None, imprimir=True):
     if not cargados:
         if imprimir:
             print("  No hay resultados nuevos de Copa.")
+        # Sin cruces nuevos igual devolvemos `datos` con el estado actual de
+        # Supabase, para que el frontend refresque en vez de quedarse con el
+        # snapshot estático viejo.
+        datos = None
+        if correr_simulacion_fn is not None:
+            datos = correr_simulacion_fn(n_sims=n_sims, imprimir=False, guardar_json=False)
         return {"actualizado": False, "cargados": [], "sin_ganador": sin_ganador,
+                "datos": datos,
                 "mensaje": "No había cruces nuevos terminados."}
 
     orden = {r: i for i, r in enumerate(RONDAS)}
