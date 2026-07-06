@@ -2,29 +2,25 @@
 """
 scraper_promiedos_federal.py
 
-Trae los PARTIDOS JUGADOS del Torneo Federal A desde la API pública de
-Promiedos (api.promiedos.com.ar). Calcado de scraper_promiedos.py (la
-Primera Nacional), con las diferencias que ya documentó
-scraper_tabla_promiedos_federal.py para esta misma liga:
+Trae el fixture completo del Torneo Federal A desde la API pública de
+Promiedos (api.promiedos.com.ar): partidos jugados y pendientes. Mantiene
+el contrato viejo de obtener_partidos_jugados_federal(), pero también puede
+regenerar fixture_federal_a.csv y resultados_federal_a.csv.
 
   - LEAGUE_ID = "fahi" (Federal A).
   - Hace falta el header X-Ver -- sin él, la API devuelve "{}" vacío con
     status 200 (no tira error, así que si no se manda este header parece
     que "no hay partidos" en vez de fallar de forma obvia).
-  - A diferencia de la Nacional (LEAGUE_ID "ebj"), donde
-    /league/tables_and_fixtures/{id} está bloqueado y hay que generar
-    las keys de fecha a mano probando un rango numérico,
-    scraper_tabla_promiedos_federal.py ya confirmó que ese endpoint SÍ
-    responde para "fahi" (lo usa para bajar las 4 tablas de posiciones).
-    Por eso acá el camino "prolijo" (leer games.filters de
-    tables_and_fixtures) es el que más chances tiene de andar directo;
-    el fallback por rango numérico queda como red de seguridad, con un
-    prefijo de key placeholder -- si hace falta usarlo de verdad, correr
-    con --debug, mirar debug_promiedos_federal_dump.json y completar
-    PREFIJO_FECHA_FALLBACK con la key real de una fecha conocida (mismo
-    procedimiento que ya usa scraper_promiedos.py para la Nacional).
+  - El camino principal lee games.filters desde tables_and_fixtures.
+  - Si ese endpoint falla o viene vacío, se prueban las keys por rango.
+    La temporada 2026 usa "5078_42_1_N" para la Fecha 1..17 y
+    "5078_42_2_18" para la Fecha 18, así que el fallback acepta varios
+    prefijos y prueba todos los candidatos para cada número de fecha.
 
 Uso:
+    python scraper_promiedos_federal.py
+    # escribe datos/fixture_federal_a.csv y datos/resultados_federal_a.csv
+
     from scraper_promiedos_federal import obtener_partidos_jugados_federal
     partidos = obtener_partidos_jugados_federal()
     # [{"jornada": 17, "equipo_local": "Olimpo", "equipo_visitante": "Villa Mitre",
@@ -54,6 +50,7 @@ import csv
 import json
 import os
 import re
+import ssl
 import sys
 import time
 import urllib.error
@@ -83,20 +80,39 @@ TIMEOUT = 20
 # Nacional). Solo se usa si el camino prolijo (tables_and_fixtures) no
 # devuelve games.filters. Completar con la key real de una fecha
 # conocida después de correr --debug.
-PREFIJO_FECHA_FALLBACK = None
+PREFIJOS_FECHA_FALLBACK = ("5078_42_1_", "5078_42_2_")
 MAX_FECHAS = 40
 FALLOS_SEGUIDOS_PARA_FRENAR = 3
 PAUSA_ENTRE_PEDIDOS = 0.3
 
 DATOS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "datos")
 TABLA_CSV = os.path.join(DATOS_DIR, "tabla_federal_a.csv")
+FIXTURE_CSV = os.path.join(DATOS_DIR, "fixture_federal_a.csv")
+RESULTADOS_CSV = os.path.join(DATOS_DIR, "resultados_federal_a.csv")
+
+ESTADOS_JUGADO_ENUM = {3}
 
 
 def _get_json(path: str) -> dict:
     url = f"{BASE_URL}{path}"
     req = urllib.request.Request(url, headers=HEADERS)
-    with urllib.request.urlopen(req, timeout=TIMEOUT) as resp:
+    try:
+        resp = urllib.request.urlopen(req, timeout=TIMEOUT)
+    except urllib.error.URLError as e:
+        if not isinstance(e.reason, ssl.SSLCertVerificationError):
+            raise
+        resp = urllib.request.urlopen(req, timeout=TIMEOUT, context=_ssl_context_fallback())
+
+    with resp:
         return json.loads(resp.read().decode("utf-8"))
+
+
+def _ssl_context_fallback():
+    try:
+        import certifi
+    except ImportError:
+        return ssl._create_unverified_context()
+    return ssl.create_default_context(cafile=certifi.where())
 
 
 def _cargar_zona_por_equipo() -> dict[str, str]:
@@ -132,29 +148,37 @@ def _fechas_desde_tables_and_fixtures() -> list[dict]:
     return fechas
 
 
-def _fechas_por_rango(prefijo: str, max_fechas: int = MAX_FECHAS) -> list[dict]:
-    """Fallback: genera las keys "{prefijo}{n}" y las prueba una por una
-    contra /league/games/{LEAGUE_ID}/{key}. Mismo mecanismo que usa
-    scraper_promiedos.py para la Nacional -- pero acá `prefijo` todavía
-    no está confirmado en vivo (ver PREFIJO_FECHA_FALLBACK)."""
+def _fechas_por_rango(
+    prefijos: tuple[str, ...] = PREFIJOS_FECHA_FALLBACK,
+    max_fechas: int = MAX_FECHAS,
+) -> list[dict]:
+    """Fallback: para cada número de fecha prueba varios prefijos posibles.
+    Esto cubre el caso real de Federal A 2026, donde la Fecha 18 cambió de
+    "5078_42_1_18" a "5078_42_2_18"."""
     fechas = []
     fallos_seguidos = 0
     for n in range(1, max_fechas + 1):
-        key = f"{prefijo}{n}"
-        try:
-            data = _get_json(f"/league/games/{LEAGUE_ID}/{key}")
-        except urllib.error.HTTPError as e:
-            print(f"  [aviso] fecha {n} ({key}): HTTP {e.code}")
-            fallos_seguidos += 1
-        except Exception as e:
-            print(f"  [aviso] fecha {n} ({key}): {e}")
+        fecha_encontrada = None
+        for prefijo in prefijos:
+            key = f"{prefijo}{n}"
+            try:
+                data = _get_json(f"/league/games/{LEAGUE_ID}/{key}")
+            except urllib.error.HTTPError as e:
+                if e.code != 404:
+                    print(f"  [aviso] fecha {n} ({key}): HTTP {e.code}")
+                continue
+            except Exception as e:
+                print(f"  [aviso] fecha {n} ({key}): {e}")
+                continue
+            if (data or {}).get("games"):
+                fecha_encontrada = {"nombre": f"Fecha {n}", "key": key}
+                break
+
+        if fecha_encontrada is None:
             fallos_seguidos += 1
         else:
-            if not (data or {}).get("games"):
-                fallos_seguidos += 1
-            else:
-                fallos_seguidos = 0
-                fechas.append({"nombre": f"Fecha {n}", "key": key})
+            fallos_seguidos = 0
+            fechas.append(fecha_encontrada)
 
         if fallos_seguidos >= FALLOS_SEGUIDOS_PARA_FRENAR:
             break
@@ -168,14 +192,13 @@ def obtener_fechas_disponibles() -> list[dict]:
     if fechas:
         return fechas
 
-    if not PREFIJO_FECHA_FALLBACK:
-        print("  [aviso] tables_and_fixtures vino vacío y no hay PREFIJO_FECHA_FALLBACK "
-              "configurado todavía -- correr con --debug, mirar el dump y completarlo "
-              "en scraper_promiedos_federal.py.")
+    if not PREFIJOS_FECHA_FALLBACK:
+        print("  [aviso] tables_and_fixtures vino vacío y no hay PREFIJOS_FECHA_FALLBACK "
+              "configurado todavía.")
         return []
 
     print("  [aviso] tables_and_fixtures vino vacío; genero las claves de fecha a mano.")
-    return _fechas_por_rango(PREFIJO_FECHA_FALLBACK)
+    return _fechas_por_rango()
 
 
 def _extraer_jornada(stage_round_name: str | None) -> int | None:
@@ -193,48 +216,80 @@ def _goles_por_jugador(equipo_json: dict) -> dict[str, int]:
     return conteo
 
 
+def _resolver_nombre_equipo(equipo_json: dict) -> str:
+    nombre_corto = equipo_json.get("short_name") or ""
+    nombre_largo = equipo_json.get("name") or ""
+    return (
+        resolver_equipo(nombre_corto)
+        or resolver_equipo(nombre_largo)
+        or nombre_corto
+        or nombre_largo
+    )
+
+
+def _parsear_partido(g: dict, zona_por_equipo: dict[str, str]) -> dict | None:
+    equipos = g.get("teams", [])
+    if len(equipos) != 2:
+        return None
+
+    local = _resolver_nombre_equipo(equipos[0])
+    visitante = _resolver_nombre_equipo(equipos[1])
+    scores = g.get("scores") or []
+    tiene_goles = len(scores) == 2 and scores[0] is not None and scores[1] is not None
+    estado = g.get("status", {})
+    jugado = estado.get("enum") in ESTADOS_JUGADO_ENUM and tiene_goles
+
+    partido = {
+        "jornada": _extraer_jornada(g.get("stage_round_name")),
+        "equipo_local": local,
+        "equipo_visitante": visitante,
+        "jugado": jugado,
+        "estado": estado.get("name", ""),
+        "fecha_hora": g.get("start_time", ""),
+        # Informativo: de qué zona es el partido, resuelta por plantel
+        # contra tabla_federal_a.csv.
+        "zona": zona_por_equipo.get(local) or zona_por_equipo.get(visitante),
+        "goleadores_local": _goles_por_jugador(equipos[0]),
+        "goleadores_visitante": _goles_por_jugador(equipos[1]),
+    }
+    if jugado:
+        partido["goles_local"] = int(scores[0])
+        partido["goles_visitante"] = int(scores[1])
+    return partido
+
+
 def _partidos_de_fecha(key: str, zona_por_equipo: dict[str, str]) -> list[dict]:
-    """Devuelve solo los partidos ya FINALIZADOS de una fecha puntual."""
     data = _get_json(f"/league/games/{LEAGUE_ID}/{key}")
     partidos = []
     for g in data.get("games", []):
-        if g.get("status", {}).get("name") != "Finalizado":
-            continue
-        equipos = g.get("teams", [])
-        scores = g.get("scores", [])
-        if len(equipos) != 2 or len(scores) != 2:
-            continue
-
-        local_promiedos = equipos[0].get("short_name") or equipos[0].get("name")
-        visitante_promiedos = equipos[1].get("short_name") or equipos[1].get("name")
-
-        # Traduce al nombre oficial (tabla/fixture) cuando se puede resolver;
-        # si no, deja el nombre de Promiedos tal cual para que quede visible
-        # en "sin_matchear" en vez de perderse.
-        local = resolver_equipo(local_promiedos) or local_promiedos
-        visitante = resolver_equipo(visitante_promiedos) or visitante_promiedos
-
-        partidos.append({
-            "jornada": _extraer_jornada(g.get("stage_round_name")),
-            "equipo_local": local,
-            "equipo_visitante": visitante,
-            "goles_local": int(scores[0]),
-            "goles_visitante": int(scores[1]),
-            # Informativo: de qué zona es el partido, resuelta por
-            # plantel contra tabla_federal_a.csv (puede venir None si
-            # todavía no hay CSV o el nombre no matcheó ninguna zona).
-            "zona": zona_por_equipo.get(local) or zona_por_equipo.get(visitante),
-            "goleadores_local": _goles_por_jugador(equipos[0]),
-            "goleadores_visitante": _goles_por_jugador(equipos[1]),
-        })
+        partido = _parsear_partido(g, zona_por_equipo)
+        if partido:
+            partidos.append(partido)
     return partidos
 
 
-def obtener_partidos_jugados_federal(fechas: list[str] | None = None) -> list[dict]:
-    """Trae todos los partidos jugados del Federal A (todas las fechas
-    disponibles, o solo las que se pasen en `fechas` como lista de
-    "key"). Nombres de equipo tal como los da Promiedos -- ver
-    docstring del módulo sobre mapeo_equipos_federal.py."""
+def _clave_partido(partido: dict) -> tuple[str, str, str]:
+    return (
+        str(partido.get("jornada") or ""),
+        partido["equipo_local"],
+        partido["equipo_visitante"],
+    )
+
+
+def _deduplicar_partidos(partidos: list[dict]) -> list[dict]:
+    por_clave = {}
+    for partido in partidos:
+        clave = _clave_partido(partido)
+        anterior = por_clave.get(clave)
+        if anterior is None or (partido.get("jugado") and not anterior.get("jugado")):
+            por_clave[clave] = partido
+    return list(por_clave.values())
+
+
+def obtener_partidos_federal(fechas: list[str] | None = None) -> list[dict]:
+    """Trae todos los partidos publicados del Federal A: jugados y
+    pendientes. Los nombres salen normalizados al formato local cuando hay
+    alias confiable."""
     zona_por_equipo = _cargar_zona_por_equipo()
 
     if fechas is None:
@@ -247,7 +302,44 @@ def obtener_partidos_jugados_federal(fechas: list[str] | None = None) -> list[di
         except Exception as e:
             print(f"  [aviso] no se pudo leer la fecha {key}: {e}")
         time.sleep(PAUSA_ENTRE_PEDIDOS)
+    partidos = _deduplicar_partidos(partidos)
+    partidos.sort(key=lambda p: (p.get("jornada") or 999, p.get("fecha_hora") or ""))
     return partidos
+
+
+def obtener_partidos_jugados_federal(fechas: list[str] | None = None) -> list[dict]:
+    """Trae todos los partidos jugados del Federal A (todas las fechas
+    disponibles, o solo las que se pasen en `fechas` como lista de
+    "key"). Nombres de equipo tal como los da Promiedos -- ver
+    docstring del módulo sobre mapeo_equipos_federal.py."""
+    return [p for p in obtener_partidos_federal(fechas) if p.get("jugado")]
+
+
+def escribir_csvs(
+    partidos: list[dict],
+    fixture_path: str = FIXTURE_CSV,
+    resultados_path: str = RESULTADOS_CSV,
+) -> tuple[int, int]:
+    jugados = [p for p in partidos if p.get("jugado")]
+    pendientes = [p for p in partidos if not p.get("jugado")]
+    os.makedirs(os.path.dirname(fixture_path), exist_ok=True)
+    os.makedirs(os.path.dirname(resultados_path), exist_ok=True)
+
+    with open(fixture_path, "w", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f, lineterminator="\n")
+        writer.writerow(["fecha", "jornada", "equipo_local", "equipo_visitante"])
+        for p in pendientes:
+            writer.writerow(["", p["jornada"], p["equipo_local"], p["equipo_visitante"]])
+
+    with open(resultados_path, "w", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f, lineterminator="\n")
+        writer.writerow(["fecha", "jornada", "equipo_local", "equipo_visitante",
+                         "goles_local", "goles_visitante"])
+        for p in jugados:
+            writer.writerow(["", p["jornada"], p["equipo_local"], p["equipo_visitante"],
+                             p["goles_local"], p["goles_visitante"]])
+
+    return len(jugados), len(pendientes)
 
 
 def _modo_debug():
@@ -271,25 +363,38 @@ def _modo_debug():
         return
 
     print("Bajando partidos de todas las fechas (puede tardar unos segundos)...")
-    partidos = obtener_partidos_jugados_federal([f["key"] for f in fechas])
+    partidos = obtener_partidos_federal([f["key"] for f in fechas])
 
     with open("debug_promiedos_federal_dump.json", "w", encoding="utf-8") as f:
-        json.dump({"fechas": fechas, "partidos_jugados": partidos}, f, ensure_ascii=False, indent=2)
+        json.dump({"fechas": fechas, "partidos": partidos}, f, ensure_ascii=False, indent=2)
 
-    print(f"\n{len(partidos)} partidos FINALIZADOS encontrados en total.")
+    jugados = [p for p in partidos if p.get("jugado")]
+    pendientes = [p for p in partidos if not p.get("jugado")]
+    print(f"\n{len(partidos)} partidos encontrados en total.")
+    print(f"  Jugados: {len(jugados)}")
+    print(f"  Pendientes: {len(pendientes)}")
     print("Guardado en debug_promiedos_federal_dump.json")
     print("\nÚltimos 10:")
     for p in partidos[-10:]:
+        if p.get("jugado"):
+            marcador = f"{p['goles_local']} - {p['goles_visitante']}"
+        else:
+            marcador = p.get("estado") or "Pendiente"
         print(f"  Fecha {p['jornada']} (zona {p['zona']}): "
-              f"{p['equipo_local']} {p['goles_local']} - {p['goles_visitante']} {p['equipo_visitante']}")
+              f"{p['equipo_local']} {marcador} {p['equipo_visitante']}")
 
 
 if __name__ == "__main__":
     if "--debug" in sys.argv:
         _modo_debug()
     else:
-        partidos = obtener_partidos_jugados_federal()
-        print(f"{len(partidos)} partidos jugados encontrados:")
-        for p in partidos:
-            print(f"  Fecha {p['jornada']} (zona {p['zona']}): "
-                  f"{p['equipo_local']} {p['goles_local']} - {p['goles_visitante']} {p['equipo_visitante']}")
+        partidos = obtener_partidos_federal()
+        if not partidos:
+            print("No se encontró ningún partido de Federal A.")
+            sys.exit(1)
+        n_jugados, n_pendientes = escribir_csvs(partidos)
+        jornadas = sorted({p["jornada"] for p in partidos if p.get("jornada") is not None})
+        print(f"\nListo. {len(partidos)} partidos encontrados "
+              f"(jornadas {jornadas[0]} a {jornadas[-1]}).")
+        print(f"  - Jugados    -> {n_jugados} escritos en {RESULTADOS_CSV}")
+        print(f"  - Pendientes -> {n_pendientes} escritos en {FIXTURE_CSV}")

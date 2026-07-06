@@ -11,10 +11,12 @@ después de reescribir el scraper con mapeo_equipos_federal.py.
 from __future__ import annotations
 
 import unittest
+from unittest.mock import patch
 
-from actualizar_resultados_federal import _clasificar_partidos_jugados
+from actualizar_resultados_federal import _clasificar_partidos_jugados, _preparar_sync_promiedos
 from calcular_tabla_federal import _aplicar_partido, _reordenar_posiciones
 from mapeo_equipos_federal import normalizar, resolver_equipo
+from scraper_promiedos_federal import _deduplicar_partidos, _fechas_por_rango, _parsear_partido
 
 
 class NormalizarTests(unittest.TestCase):
@@ -63,6 +65,65 @@ class ResolverEquipoTests(unittest.TestCase):
 
     def test_nombre_vacio_devuelve_none(self) -> None:
         self.assertIsNone(resolver_equipo(""))
+
+
+class ScraperFederalTests(unittest.TestCase):
+
+    def test_fallback_de_fechas_prueba_todos_los_prefijos_por_numero(self) -> None:
+        def fake_get_json(path: str) -> dict:
+            if path.endswith("/A_1") or path.endswith("/B_2"):
+                return {"games": [{"id": "ok"}]}
+            return {"games": []}
+
+        with patch("scraper_promiedos_federal._get_json", side_effect=fake_get_json), \
+             patch("scraper_promiedos_federal.time.sleep"):
+            fechas = _fechas_por_rango(("A_", "B_"), max_fechas=4)
+
+        self.assertEqual(
+            fechas,
+            [
+                {"nombre": "Fecha 1", "key": "A_1"},
+                {"nombre": "Fecha 2", "key": "B_2"},
+            ],
+        )
+
+    def test_parsear_partido_finalizado_con_scores(self) -> None:
+        partido = _parsear_partido(
+            {
+                "stage_round_name": "Fecha 16",
+                "teams": [
+                    {"short_name": "Sp. Belgrano", "name": "Sportivo Belgrano"},
+                    {"short_name": "Independiente (Chi)", "name": "Independiente Chivilcoy"},
+                ],
+                "scores": [2.0, 1.0],
+                "status": {"enum": 3, "name": "Finalizado"},
+            },
+            {"Sportivo Belgrano": "1", "Independiente Chivilcoy": "1"},
+        )
+
+        self.assertTrue(partido["jugado"])
+        self.assertEqual(partido["equipo_local"], "Sportivo Belgrano")
+        self.assertEqual(partido["equipo_visitante"], "Independiente Chivilcoy")
+        self.assertEqual(partido["goles_local"], 2)
+        self.assertEqual(partido["goles_visitante"], 1)
+
+    def test_deduplicar_partidos_prefiere_version_jugada(self) -> None:
+        pendiente = {
+            "jornada": 16,
+            "equipo_local": "Local",
+            "equipo_visitante": "Visitante",
+            "jugado": False,
+        }
+        jugado = {
+            "jornada": 16,
+            "equipo_local": "Local",
+            "equipo_visitante": "Visitante",
+            "jugado": True,
+            "goles_local": 1,
+            "goles_visitante": 0,
+        }
+
+        self.assertEqual(_deduplicar_partidos([pendiente, jugado]), [jugado])
 
 
 class AplicarPartidoTests(unittest.TestCase):
@@ -168,6 +229,43 @@ class ActualizarFederalTests(unittest.TestCase):
         self.assertEqual(cargados[0]["jornada"], 16)
         self.assertEqual(fixture_restante, [])
         self.assertEqual(len(resultados_actualizados), 2)
+
+    def test_sync_promiedos_repara_fixture_incompleto_sin_sin_matchear(self) -> None:
+        partidos_promiedos = [
+            {
+                "jornada": 1,
+                "equipo_local": "Local",
+                "equipo_visitante": "Visitante",
+                "jugado": True,
+                "goles_local": 2,
+                "goles_visitante": 0,
+            },
+            {
+                "jornada": 2,
+                "equipo_local": "Visitante",
+                "equipo_visitante": "Local",
+                "jugado": False,
+            },
+        ]
+        standings = [
+            {"equipo": "Local"},
+            {"equipo": "Visitante"},
+        ]
+
+        sync = _preparar_sync_promiedos(
+            partidos_promiedos,
+            fixture_actual=[],
+            resultados_actuales=[],
+            standings_actuales=standings,
+            standings_promiedos=None,
+        )
+
+        self.assertTrue(sync["fixture_reparado"])
+        self.assertTrue(sync["resultados_reparados"])
+        self.assertEqual(sync["sin_matchear"], [])
+        self.assertEqual(len(sync["cargados"]), 1)
+        self.assertEqual(sync["fixture"][0]["jornada"], 2)
+        self.assertEqual(sync["resultados"][0]["goles_local"], 2)
 
 
 if __name__ == "__main__":

@@ -28,6 +28,7 @@ from __future__ import annotations
 import csv
 import json
 import os
+import ssl
 import urllib.error
 import urllib.request
 
@@ -51,8 +52,23 @@ TABLA_CSV = os.path.join(DATOS_DIR, "tabla_federal_a.csv")
 
 def _get_json(path: str) -> dict:
     req = urllib.request.Request(f"{BASE_URL}{path}", headers=HEADERS)
-    with urllib.request.urlopen(req, timeout=TIMEOUT) as resp:
+    try:
+        resp = urllib.request.urlopen(req, timeout=TIMEOUT)
+    except urllib.error.URLError as e:
+        if not isinstance(e.reason, ssl.SSLCertVerificationError):
+            raise
+        resp = urllib.request.urlopen(req, timeout=TIMEOUT, context=_ssl_context_fallback())
+
+    with resp:
         return json.loads(resp.read().decode("utf-8"))
+
+
+def _ssl_context_fallback():
+    try:
+        import certifi
+    except ImportError:
+        return ssl._create_unverified_context()
+    return ssl.create_default_context(cafile=certifi.where())
 
 
 def _cargar_zona_por_equipo() -> dict[str, str]:
@@ -133,7 +149,7 @@ def obtener_tablas_federal() -> dict[str, list[dict]]:
 def escribir_csv(tablas_por_zona: dict[str, list[dict]], path: str = TABLA_CSV) -> int:
     total = 0
     with open(path, "w", newline="", encoding="utf-8") as fh:
-        writer = csv.writer(fh)
+        writer = csv.writer(fh, lineterminator="\n")
         writer.writerow(["zona", "posicion", "equipo", "partidos_jugados", "ganados",
                           "empatados", "perdidos", "gf", "gc", "dg", "puntos"])
         for zona in sorted(tablas_por_zona):
