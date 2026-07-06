@@ -1,60 +1,273 @@
 fecha,jornada,equipo_local,equipo_visitante,goles_local,goles_visitante
-,4,Douglas Haig,El Linqueño,1,0
-,5,Sportivo Belgrano,Douglas Haig,0,1
-,6,Douglas Haig,Independiente Chivilcoy,1,0
-,6,Sportivo Belgrano,El Linqueño,1,1
-,7,Independiente Chivilcoy,Sportivo Belgrano,0,3
-,8,Independiente Chivilcoy,El Linqueño,1,0
-,13,El Linqueño,Douglas Haig,2,0
-,14,Douglas Haig,Sportivo Belgrano,0,0
-,15,El Linqueño,Sportivo Belgrano,1,1
-,15,Independiente Chivilcoy,Douglas Haig,0,4
+,1,Sportivo Belgrano,9 De Julio Rafaela,3,0
 ,1,Sarmiento de Resistencia,Juventud Antoniana,1,3
-,3,Tucumán Central,San Martín de Formosa,2,0
-,5,Sarmiento de Resistencia,San Martín de Formosa,1,1
-,6,Tucumán Central,Sarmiento de Resistencia,1,1
-,7,Juventud Antoniana,San Martín de Formosa,0,3
-,8,Tucumán Central,Juventud Antoniana,1,0
-,10,Juventud Antoniana,Sarmiento de Resistencia,2,0
-,12,San Martín de Formosa,Tucumán Central,3,2
-,14,San Martín de Formosa,Sarmiento de Resistencia,3,0
-,15,Sarmiento de Resistencia,Tucumán Central,1,0
-,3,Huracán Las Heras,Cipolletti,1,1
-,5,Deportivo Rincón,Cipolletti,1,2
-,8,Huracán Las Heras,Deportivo Rincón,1,1
-,12,Cipolletti,Huracán Las Heras,3,0
-,14,Cipolletti,Deportivo Rincón,2,1
+,1,Atenas Río Cuarto,Cipolletti,3,1
+,1,San Martín de Mendoza,Juventud Unida San Luis,0,0
+,1,Costa Brava (Gral Pico),Fundación Amigos por el Deporte,3,0
 ,1,Sol de Mayo,Germinal,1,1
+,1,El Linqueño,Sportivo Las Parejas,1,0
+,1,Independiente Chivilcoy,Atlético Escobar,2,1
+,1,Defensores Belgrano (VR),Gimnasia de Concepción,2,1
+,1,Kimberley Mar Del Plata,Villa Mitre,1,0
+,1,Guillermo Brown,Santamarina Tandil,2,2
 ,1,Olimpo,Alvarado,2,0
+,1,Tucumán Central,Bartolomé Mitre (Posadas),1,0
+,1,San Martín de Formosa,Defensores Pto. Vilelas,2,1
+,1,Huracán Las Heras,Argentino Monte Maíz,0,0
+,1,Boca Unidos de Corrientes,Sarmiento De La Banda,3,1
+,1,Douglas Haig,CSCyD Gimnasia y Esgrima (Chivilcoy),2,1
+,2,Juventud Antoniana,Sol De América,2,1
+,2,Fundación Amigos por el Deporte,Deportivo Rincón,2,2
+,2,Defensores Pto. Vilelas,Tucumán Central,1,0
+,2,Juventud Unida San Luis,Huracán Las Heras,2,0
+,2,Santamarina Tandil,Sol de Mayo,0,2
+,2,9 De Julio Rafaela,Independiente Chivilcoy,3,2
+,2,Germinal,Kimberley Mar Del Plata,0,0
+,2,CSCyD Gimnasia y Esgrima (Chivilcoy),Sportivo Belgrano,0,0
 ,2,Alvarado,Guillermo Brown,2,0
+,2,Cipolletti,San Martín de Mendoza,3,0
+,2,Defensores Belgrano (VR),El Linqueño,3,1
 ,2,Villa Mitre,Círculo Deportivo,2,0
+,2,Argentino Monte Maíz,Costa Brava (Gral Pico),0,0
+,2,Gimnasia de Concepción,Douglas Haig,1,3
+,2,Bartolomé Mitre (Posadas),Boca Unidos de Corrientes,1,0
+,2,Sarmiento De La Banda,Sarmiento de Resistencia,1,1
+,2,Atlético Escobar,Sportivo Las Parejas,1,1
 ,3,Sol de Mayo,Alvarado,0,0
 ,3,Círculo Deportivo,Germinal,2,1
+,3,Boca Unidos de Corrientes,Defensores Pto. Vilelas,2,4
+,3,Costa Brava (Gral Pico),Juventud Unida San Luis,1,1
+,3,Kimberley Mar Del Plata,Santamarina Tandil,0,0
 ,3,Guillermo Brown,Olimpo,0,2
+,3,El Linqueño,Atlético Escobar,2,1
+,3,Sportivo Las Parejas,9 De Julio Rafaela,1,1
+,3,Independiente Chivilcoy,CSCyD Gimnasia y Esgrima (Chivilcoy),3,0
+,3,Tucumán Central,San Martín de Formosa,2,0
+,3,Deportivo Rincón,Argentino Monte Maíz,2,0
+,3,Huracán Las Heras,Cipolletti,1,1
+,3,Sol De América,Sarmiento De La Banda,1,0
+,3,San Martín de Mendoza,Atenas Río Cuarto,1,0
+,3,Douglas Haig,Defensores Belgrano (VR),3,2
+,3,Sarmiento de Resistencia,Bartolomé Mitre (Posadas),0,0
+,3,Sportivo Belgrano,Gimnasia de Concepción,0,0
+,4,Alvarado,Kimberley Mar Del Plata,0,0
+,4,Bartolomé Mitre (Posadas),Sol De América,0,0
+,4,Santamarina Tandil,Círculo Deportivo,4,0
+,4,Gimnasia de Concepción,Independiente Chivilcoy,0,1
 ,4,Germinal,Villa Mitre,1,0
 ,4,Olimpo,Sol de Mayo,1,0
+,4,Juventud Unida San Luis,Deportivo Rincón,0,0
+,4,Cipolletti,Costa Brava (Gral Pico),1,1
+,4,Defensores Belgrano (VR),Sportivo Belgrano,1,1
+,4,CSCyD Gimnasia y Esgrima (Chivilcoy),Sportivo Las Parejas,1,0
+,4,Argentino Monte Maíz,Fundación Amigos por el Deporte,0,0
+,4,Douglas Haig,El Linqueño,1,0
+,4,Atenas Río Cuarto,Huracán Las Heras,0,0
+,4,9 De Julio Rafaela,Atlético Escobar,4,1
+,4,San Martín de Formosa,Boca Unidos de Corrientes,1,1
+,4,Sarmiento De La Banda,Juventud Antoniana,0,0
+,4,Defensores Pto. Vilelas,Sarmiento de Resistencia,2,2
+,5,Atlético Escobar,CSCyD Gimnasia y Esgrima (Chivilcoy),0,2
+,5,Sportivo Belgrano,Douglas Haig,0,1
+,5,Juventud Antoniana,Bartolomé Mitre (Posadas),1,2
 ,5,Círculo Deportivo,Alvarado,0,1
+,5,Independiente Chivilcoy,Defensores Belgrano (VR),1,1
+,5,Kimberley Mar Del Plata,Olimpo,0,1
+,5,Sarmiento de Resistencia,San Martín de Formosa,1,1
+,5,Deportivo Rincón,Cipolletti,1,2
+,5,Sol De América,Defensores Pto. Vilelas,2,1
 ,5,Sol de Mayo,Guillermo Brown,1,0
+,5,Boca Unidos de Corrientes,Tucumán Central,3,1
+,5,Fundación Amigos por el Deporte,Juventud Unida San Luis,1,3
+,5,Sportivo Las Parejas,Gimnasia de Concepción,2,1
+,5,El Linqueño,9 De Julio Rafaela,0,3
+,5,Huracán Las Heras,San Martín de Mendoza,1,0
+,5,Villa Mitre,Santamarina Tandil,0,0
+,5,Costa Brava (Gral Pico),Atenas Río Cuarto,0,1
+,6,Tucumán Central,Sarmiento de Resistencia,1,1
+,6,Defensores Pto. Vilelas,Juventud Antoniana,0,1
+,6,Santamarina Tandil,Germinal,0,0
 ,6,Alvarado,Villa Mitre,1,1
+,6,Cipolletti,Fundación Amigos por el Deporte,2,1
+,6,Juventud Unida San Luis,Argentino Monte Maíz,1,2
+,6,Gimnasia de Concepción,Atlético Escobar,1,2
+,6,Guillermo Brown,Kimberley Mar Del Plata,3,4
+,6,Douglas Haig,Independiente Chivilcoy,1,0
+,6,Defensores Belgrano (VR),Sportivo Las Parejas,2,0
+,6,CSCyD Gimnasia y Esgrima (Chivilcoy),9 De Julio Rafaela,1,0
+,6,Sportivo Belgrano,El Linqueño,1,1
+,6,San Martín de Mendoza,Costa Brava (Gral Pico),0,0
+,6,San Martín de Formosa,Sol De América,1,0
+,6,Bartolomé Mitre (Posadas),Sarmiento De La Banda,0,0
+,6,Atenas Río Cuarto,Deportivo Rincón,3,1
 ,6,Olimpo,Círculo Deportivo,1,0
 ,7,Círculo Deportivo,Guillermo Brown,1,1
+,7,Costa Brava (Gral Pico),Huracán Las Heras,1,2
+,7,Independiente Chivilcoy,Sportivo Belgrano,0,3
+,7,Kimberley Mar Del Plata,Sol de Mayo,0,0
+,7,Fundación Amigos por el Deporte,Atenas Río Cuarto,4,0
+,7,Deportivo Rincón,San Martín de Mendoza,1,0
+,7,Atlético Escobar,Defensores Belgrano (VR),3,2
 ,7,Germinal,Alvarado,1,0
 ,7,Villa Mitre,Olimpo,0,0
+,7,Argentino Monte Maíz,Cipolletti,2,0
+,7,9 De Julio Rafaela,Gimnasia de Concepción,4,1
+,7,El Linqueño,CSCyD Gimnasia y Esgrima (Chivilcoy),1,1
+,7,Sportivo Las Parejas,Douglas Haig,0,0
+,7,Sarmiento de Resistencia,Boca Unidos de Corrientes,1,1
+,7,Sol De América,Tucumán Central,3,0
+,7,Sarmiento De La Banda,Defensores Pto. Vilelas,1,2
+,7,Juventud Antoniana,San Martín de Formosa,0,3
+,8,Independiente Chivilcoy,El Linqueño,1,0
+,8,Defensores Pto. Vilelas,Bartolomé Mitre (Posadas),1,3
 ,8,Sol de Mayo,Círculo Deportivo,0,0
 ,8,Guillermo Brown,Villa Mitre,1,0
+,8,Alvarado,Santamarina Tandil,3,0
+,8,Cipolletti,Juventud Unida San Luis,0,1
+,8,Atenas Río Cuarto,Argentino Monte Maíz,1,0
+,8,Gimnasia de Concepción,CSCyD Gimnasia y Esgrima (Chivilcoy),1,0
 ,8,Olimpo,Germinal,1,0
+,8,Huracán Las Heras,Deportivo Rincón,1,1
+,8,San Martín de Mendoza,Fundación Amigos por el Deporte,1,1
+,8,Sportivo Belgrano,Sportivo Las Parejas,2,0
+,8,Douglas Haig,Atlético Escobar,4,1
+,8,Defensores Belgrano (VR),9 De Julio Rafaela,0,0
+,8,Boca Unidos de Corrientes,Sol De América,0,1
+,8,Tucumán Central,Juventud Antoniana,1,0
+,8,San Martín de Formosa,Sarmiento De La Banda,4,2
+,9,CSCyD Gimnasia y Esgrima (Chivilcoy),Defensores Belgrano (VR),3,0
+,9,Fundación Amigos por el Deporte,Huracán Las Heras,1,0
+,9,Deportivo Rincón,Costa Brava (Gral Pico),1,0
+,9,El Linqueño,Gimnasia de Concepción,0,0
 ,9,Germinal,Guillermo Brown,1,1
 ,9,Villa Mitre,Sol de Mayo,2,1
+,9,Círculo Deportivo,Kimberley Mar Del Plata,0,1
+,9,Juventud Unida San Luis,Atenas Río Cuarto,0,1
+,9,Argentino Monte Maíz,San Martín de Mendoza,4,1
+,9,9 De Julio Rafaela,Douglas Haig,2,0
+,9,Atlético Escobar,Sportivo Belgrano,1,3
+,9,Juventud Antoniana,Boca Unidos de Corrientes,0,0
+,9,Sportivo Las Parejas,Independiente Chivilcoy,1,0
+,9,Bartolomé Mitre (Posadas),San Martín de Formosa,2,0
+,9,Sol De América,Sarmiento de Resistencia,3,0
+,9,Sarmiento De La Banda,Tucumán Central,1,0
+,9,Santamarina Tandil,Olimpo,0,0
+,10,Juventud Antoniana,Sarmiento de Resistencia,2,0
+,10,Argentino Monte Maíz,Huracán Las Heras,1,0
+,10,Juventud Unida San Luis,San Martín de Mendoza,1,1
+,10,CSCyD Gimnasia y Esgrima (Chivilcoy),Douglas Haig,2,0
+,10,9 De Julio Rafaela,Sportivo Belgrano,0,2
+,10,Gimnasia de Concepción,Defensores Belgrano (VR),1,0
+,10,Santamarina Tandil,Guillermo Brown,0,2
+,10,Fundación Amigos por el Deporte,Costa Brava (Gral Pico),2,0
 ,10,Alvarado,Olimpo,2,0
+,10,Sportivo Las Parejas,El Linqueño,1,0
 ,10,Germinal,Sol de Mayo,1,0
+,10,Cipolletti,Atenas Río Cuarto,1,0
+,10,Atlético Escobar,Independiente Chivilcoy,0,0
+,10,Villa Mitre,Kimberley Mar Del Plata,0,0
+,10,Bartolomé Mitre (Posadas),Tucumán Central,1,0
+,10,Sarmiento De La Banda,Boca Unidos de Corrientes,3,0
+,10,Defensores Pto. Vilelas,San Martín de Formosa,2,3
+,11,Kimberley Mar Del Plata,Germinal,1,0
+,11,Sportivo Las Parejas,Atlético Escobar,1,0
+,11,Costa Brava (Gral Pico),Argentino Monte Maíz,2,0
+,11,Deportivo Rincón,Fundación Amigos por el Deporte,0,0
+,11,El Linqueño,Defensores Belgrano (VR),0,2
+,11,Independiente Chivilcoy,9 De Julio Rafaela,2,2
 ,11,Guillermo Brown,Alvarado,0,0
+,11,Sol de Mayo,Santamarina Tandil,3,2
 ,11,Círculo Deportivo,Villa Mitre,0,0
+,11,Douglas Haig,Gimnasia de Concepción,0,0
+,11,Boca Unidos de Corrientes,Bartolomé Mitre (Posadas),2,1
+,11,Sol De América,Juventud Antoniana,1,0
+,11,San Martín de Mendoza,Cipolletti,1,0
+,11,Huracán Las Heras,Juventud Unida San Luis,1,0
+,11,Sportivo Belgrano,CSCyD Gimnasia y Esgrima (Chivilcoy),1,0
+,11,Tucumán Central,Defensores Pto. Vilelas,2,0
+,11,Sarmiento de Resistencia,Sarmiento De La Banda,0,1
+,12,Defensores Pto. Vilelas,Boca Unidos de Corrientes,2,0
+,12,Bartolomé Mitre (Posadas),Sarmiento de Resistencia,2,0
+,12,Juventud Unida San Luis,Costa Brava (Gral Pico),0,0
 ,12,Germinal,Círculo Deportivo,0,0
 ,12,Alvarado,Sol de Mayo,2,0
 ,12,Olimpo,Guillermo Brown,0,0
+,12,Argentino Monte Maíz,Deportivo Rincón,2,0
+,12,Cipolletti,Huracán Las Heras,3,0
+,12,Atenas Río Cuarto,San Martín de Mendoza,0,0
+,12,Atlético Escobar,El Linqueño,1,0
+,12,CSCyD Gimnasia y Esgrima (Chivilcoy),Independiente Chivilcoy,0,0
+,12,9 De Julio Rafaela,Sportivo Las Parejas,2,2
+,12,Gimnasia de Concepción,Sportivo Belgrano,1,0
+,12,Defensores Belgrano (VR),Douglas Haig,1,0
+,12,Santamarina Tandil,Kimberley Mar Del Plata,1,0
+,12,Sarmiento De La Banda,Sol De América,2,0
+,12,San Martín de Formosa,Tucumán Central,3,2
+,13,Juventud Antoniana,Sarmiento De La Banda,0,1
+,13,Atlético Escobar,9 De Julio Rafaela,2,0
+,13,Sportivo Las Parejas,CSCyD Gimnasia y Esgrima (Chivilcoy),0,0
+,13,Fundación Amigos por el Deporte,Argentino Monte Maíz,2,2
+,13,Deportivo Rincón,Juventud Unida San Luis,2,1
+,13,El Linqueño,Douglas Haig,2,0
+,13,Independiente Chivilcoy,Gimnasia de Concepción,0,0
 ,13,Sol de Mayo,Olimpo,1,1
+,13,Kimberley Mar Del Plata,Alvarado,2,2
 ,13,Villa Mitre,Germinal,0,0
+,13,Círculo Deportivo,Santamarina Tandil,0,0
+,13,Huracán Las Heras,Atenas Río Cuarto,1,0
+,13,Boca Unidos de Corrientes,San Martín de Formosa,3,1
+,13,Sol De América,Bartolomé Mitre (Posadas),0,0
+,13,Sarmiento de Resistencia,Defensores Pto. Vilelas,2,0
+,13,Costa Brava (Gral Pico),Cipolletti,1,0
+,13,Sportivo Belgrano,Defensores Belgrano (VR),1,0
+,14,Juventud Unida San Luis,Fundación Amigos por el Deporte,0,0
+,14,CSCyD Gimnasia y Esgrima (Chivilcoy),Atlético Escobar,2,0
+,14,Douglas Haig,Sportivo Belgrano,0,0
 ,14,Alvarado,Círculo Deportivo,1,0
+,14,Olimpo,Kimberley Mar Del Plata,0,0
+,14,Bartolomé Mitre (Posadas),Juventud Antoniana,0,0
+,14,Santamarina Tandil,Villa Mitre,0,2
+,14,San Martín de Mendoza,Huracán Las Heras,3,1
 ,14,Guillermo Brown,Sol de Mayo,0,1
+,14,Cipolletti,Deportivo Rincón,2,1
+,14,Defensores Belgrano (VR),Independiente Chivilcoy,2,0
+,14,Defensores Pto. Vilelas,Sol De América,2,1
+,14,Gimnasia de Concepción,Sportivo Las Parejas,0,1
+,14,San Martín de Formosa,Sarmiento de Resistencia,3,0
+,14,Tucumán Central,Boca Unidos de Corrientes,2,0
+,14,Atenas Río Cuarto,Costa Brava (Gral Pico),1,1
+,14,9 De Julio Rafaela,El Linqueño,3,2
+,15,Fundación Amigos por el Deporte,Cipolletti,0,0
+,15,Deportivo Rincón,Atenas Río Cuarto,0,1
+,15,Argentino Monte Maíz,Juventud Unida San Luis,0,0
+,15,Sportivo Las Parejas,Defensores Belgrano (VR),1,1
+,15,El Linqueño,Sportivo Belgrano,1,1
+,15,Independiente Chivilcoy,Douglas Haig,0,4
+,15,Kimberley Mar Del Plata,Guillermo Brown,3,0
 ,15,Círculo Deportivo,Olimpo,1,1
 ,15,Villa Mitre,Alvarado,1,0
+,15,Germinal,Santamarina Tandil,1,0
+,15,Sol De América,San Martín de Formosa,1,2
+,15,Costa Brava (Gral Pico),San Martín de Mendoza,2,1
+,15,Atlético Escobar,Gimnasia de Concepción,2,1
+,15,Juventud Antoniana,Defensores Pto. Vilelas,4,0
+,15,9 De Julio Rafaela,CSCyD Gimnasia y Esgrima (Chivilcoy),2,1
+,15,Sarmiento de Resistencia,Tucumán Central,1,0
+,15,Sarmiento De La Banda,Bartolomé Mitre (Posadas),1,0
+,16,Huracán Las Heras,Costa Brava (Gral Pico),2,0
+,16,Defensores Pto. Vilelas,Sarmiento De La Banda,3,0
+,16,Atenas Río Cuarto,Fundación Amigos por el Deporte,1,3
+,16,Gimnasia de Concepción,9 De Julio Rafaela,3,0
+,16,Douglas Haig,Sportivo Las Parejas,0,0
+,16,Olimpo,Villa Mitre,0,0
+,16,Alvarado,Germinal,5,0
+,16,Guillermo Brown,Círculo Deportivo,1,0
+,16,Sol de Mayo,Kimberley Mar Del Plata,1,2
+,16,Cipolletti,Argentino Monte Maíz,2,2
+,16,Defensores Belgrano (VR),Atlético Escobar,1,1
+,16,Boca Unidos de Corrientes,Sarmiento de Resistencia,2,0
+,16,San Martín de Mendoza,Deportivo Rincón,1,0
+,16,CSCyD Gimnasia y Esgrima (Chivilcoy),El Linqueño,1,0
+,16,Sportivo Belgrano,Independiente Chivilcoy,1,1
+,16,San Martín de Formosa,Juventud Antoniana,0,0
+,16,Tucumán Central,Sol De América,0,1
