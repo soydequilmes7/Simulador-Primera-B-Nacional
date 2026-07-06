@@ -3376,6 +3376,11 @@ function iniciar() {
     poblarDatalist(TEAM_INDEX);
     poblarSelectEquipos(TEAM_INDEX);
 
+    // Si había una ficha abierta (el usuario ya buscó un equipo), la
+    // refrescamos con los datos nuevos (racha/probabilidades).
+    const busqueda = document.getElementById('team-search');
+    if (busqueda && busqueda.value) buscarEquipo(busqueda.value);
+
     // Si el link trae ?equipo=Nombre (compartido con "Copiar link"),
     // abrimos esa ficha directo sin que el usuario tenga que buscar.
     const equipoUrl = new URLSearchParams(window.location.search).get('equipo');
@@ -3468,6 +3473,14 @@ async function correrActualizacion(){
             status.classList.add('ok');
             status.textContent = `✓ Se cargaron ${cuerpo.cargados.length} partido(s) nuevo(s) y se re-simuló.`;
         } else {
+            // No había partidos nuevos, pero el backend igual nos devuelve
+            // el estado actual de Supabase (que puede ser más nuevo que el
+            // snapshot estático data.json que se cargó al abrir la página).
+            // Refrescamos con eso para no dejar tabla/racha viejas.
+            if (cuerpo.datos) {
+                DATA = cuerpo.datos;
+                iniciar();
+            }
             status.classList.add('ok');
             status.textContent = "✓ Consultado — no había partidos nuevos jugados todavía.";
         }
@@ -4162,6 +4175,11 @@ function iniciarPrimeraC(){
   poblarDatalistPrimeraC(TEAM_INDEX_PRIMERAC);
   poblarSelectEquiposPrimeraC(TEAM_INDEX_PRIMERAC);
 
+  // Si había una ficha abierta (el usuario ya buscó un equipo), la
+  // refrescamos con los datos nuevos (racha/probabilidades).
+  const busquedaPrimerac = document.getElementById('team-search-primerac');
+  if (busquedaPrimerac && busquedaPrimerac.value) buscarEquipoPrimeraC(busquedaPrimerac.value);
+
   const equipoUrl = new URLSearchParams(window.location.search).get('equipo');
   if (equipoUrl && TEAM_INDEX_PRIMERAC[equipoUrl]){
     document.getElementById('team-search-primerac').value = equipoUrl;
@@ -4465,6 +4483,12 @@ async function correrActualizacionPrimeraC(){
       status.classList.add('ok');
       status.textContent = `✓ Se cargaron ${cuerpo.cargados.length} partido(s) nuevo(s) y se re-simuló.`;
     } else {
+      // Sin partidos nuevos, pero refrescamos con el estado actual de
+      // Supabase (más nuevo que el snapshot estático data_primerac.json).
+      if (cuerpo.datos) {
+        DATA_PRIMERAC = cuerpo.datos;
+        iniciarPrimeraC();
+      }
       status.classList.add('ok');
       status.textContent = "✓ Consultado — no había partidos nuevos jugados todavía.";
     }
@@ -4962,6 +4986,12 @@ async function correrActualizacionLPF(){
       status.classList.add('ok');
       status.textContent = `✓ Se cargaron ${cuerpo.cargados.length} partido(s) nuevo(s) y se re-simuló.`;
     } else {
+      // Sin partidos nuevos, pero refrescamos con el estado actual de
+      // Supabase (más nuevo que el snapshot estático data_lpf.json).
+      if (cuerpo.datos) {
+        DATA_LPF = cuerpo.datos;
+        iniciarLPF();
+      }
       status.classList.add('ok');
       status.textContent = "✓ Consultado — no había partidos nuevos jugados todavía.";
     }
@@ -5503,6 +5533,12 @@ async function correrActualizacionBMetro(){
       status.classList.add('ok');
       status.textContent = `✓ Se cargaron ${cuerpo.cargados.length} partido(s) nuevo(s) y se re-simuló.`;
     } else {
+      // Sin partidos nuevos, pero refrescamos con el estado actual de
+      // Supabase (más nuevo que el snapshot estático data_bmetro.json).
+      if (cuerpo.datos) {
+        DATA_BMETRO = cuerpo.datos;
+        iniciarBMetro();
+      }
       status.classList.add('ok');
       status.textContent = "✓ Consultado — no había partidos nuevos jugados todavía.";
     }
@@ -6151,6 +6187,12 @@ async function correrActualizacionFederal(){
       status.classList.add('ok');
       status.textContent = `✓ Se cargaron ${cuerpo.cargados.length} partido(s) nuevo(s) y se re-simuló.`;
     } else {
+      // Sin partidos nuevos, pero refrescamos con el estado actual de
+      // Supabase (más nuevo que el snapshot estático data_federal_a.json).
+      if (cuerpo.datos) {
+        DATA_FEDERAL = cuerpo.datos;
+        iniciarFederal();
+      }
       status.classList.add('ok');
       status.textContent = "✓ Consultado — no había partidos nuevos jugados todavía.";
     }
@@ -6738,6 +6780,8 @@ async function correrActualizacionCopa(){
       status.classList.add('ok');
       status.textContent = `✓ Se cargaron ${cuerpo.cargados.length} cruce(s) nuevo(s) y se re-simuló.`;
     } else {
+      // Sin cruces nuevos, pero refrescamos con el estado actual de Supabase.
+      if (cuerpo.datos) { DATA_COPA = cuerpo.datos; iniciarCopa(); }
       status.classList.add('ok');
       status.textContent = "✓ Consultado — no había cruces nuevos terminados.";
     }

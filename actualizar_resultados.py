@@ -132,10 +132,19 @@ def actualizar(n_sims=1000, imprimir=True):
         if imprimir:
             print("  No hay partidos nuevos para cargar (todo ya estaba al día).")
         _guardar_log(ahora, cargados, sin_matchear, simulacion_corrida=False)
+        # Aunque no haya partidos nuevos, re-simulamos con los datos
+        # actuales de Supabase y devolvemos `datos`. El snapshot estático
+        # (data.json) que sirve la página puede estar más viejo que lo que
+        # ya hay cargado en Supabase, así que el frontend usa este `datos`
+        # para refrescar tabla/promedios/racha en vez de quedarse con el
+        # snapshot viejo. Ver correrActualizacion() en public/index.html.
+        from main import correr_simulacion
+        datos = correr_simulacion(n_sims=n_sims, imprimir=False, guardar_json=False)
         return {
             "actualizado": False,
             "cargados": cargados,
             "sin_matchear": sin_matchear,
+            "datos": datos,
             "mensaje": "No había partidos nuevos jugados que coincidan con el fixture pendiente.",
         }
 
