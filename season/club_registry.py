@@ -41,6 +41,28 @@ DIVISIONES: Dict[str, str] = {
 }
 
 
+def _normalizar_nombre(slug: str, nombre_crudo: str) -> str:
+    """Traduce el nombre "crudo" tal como aparece en tabla_X.csv al
+    nombre que usa el resto del ecosistema para esa división.
+
+    Solo LPF necesita esto: estadisticas_lpf.py normaliza internamente
+    nombres cortos ("Riestra", "Boca Jrs.", "Vélez") a los nombres
+    completos reales ("Deportivo Riestra", "Boca Juniors", "Vélez
+    Sarsfield") vía su propio NORMALIZACION_NOMBRES -- por eso TODO lo
+    que devuelve main_lpf.py (campeón, descensos, clasificados a copa)
+    ya viene con el nombre completo. Si el import falla (por ejemplo,
+    corriendo ClubRegistry aislado sin el resto del repo disponible),
+    se sigue con el nombre crudo tal cual en vez de romper -- degrada
+    con gracia, no bloquea Etapa 0."""
+    if slug != "lpf":
+        return nombre_crudo
+    try:
+        from modelos.estadisticas_lpf import normalizar
+    except ImportError:
+        return nombre_crudo
+    return normalizar(nombre_crudo)
+
+
 class ClubRegistry:
     """Registro de todos los Club conocidos, indexados por id y por
     nombre. No tiene ninguna lógica de simulación ni de ascensos/
@@ -67,7 +89,23 @@ class ClubRegistry:
         una división: violaría la regla de "un club, una sola vez", y en
         la práctica indicaría un problema de datos (nombre mal cargado
         en el tabla_X.csv equivocado) que conviene que reviente acá y no
-        se filtre en silencio a las etapas siguientes."""
+        se filtre en silencio a las etapas siguientes.
+
+        CASO ESPECIAL LPF: tablalpf.csv usa nombres cortos ("Riestra",
+        "Boca Jrs.", "Vélez", etc.) que estadisticas_lpf.py NORMALIZA
+        internamente a los nombres completos reales ("Deportivo
+        Riestra", "Boca Juniors", "Vélez Sarsfield") vía
+        NORMALIZACION_NOMBRES -- por eso TODO lo que devuelve main_lpf.py
+        (campeón, descensos, clasificados a copa) ya viene con el
+        nombre completo. Si acá se registrara el nombre corto tal cual
+        aparece en el CSV, PromotionManager no podría encontrar en el
+        registro a ninguno de esos ~19 clubes cuando ascienden o
+        descienden (se detectó corriendo la Etapa 5 con datos reales:
+        "Deportivo Riestra" no aparecía en el registro al intentar
+        moverlo). Se aplica la MISMA normalización acá, importada
+        directo de estadisticas_lpf.py (no se duplica el diccionario),
+        para que ClubRegistry hable el mismo idioma que el resto del
+        ecosistema de LPF."""
         divisiones = divisiones or DIVISIONES
         registro = cls()
 
@@ -76,7 +114,8 @@ class ClubRegistry:
         for slug, nombre_division in divisiones.items():
             _resultados, _fixture, tabla = data_access.league_data(slug)
 
-            for nombre in tabla["equipo"].tolist():
+            for nombre_crudo in tabla["equipo"].tolist():
+                nombre = _normalizar_nombre(slug, nombre_crudo)
                 if nombre in vistos_en:
                     raise ValueError(
                         f"Club duplicado entre divisiones: '{nombre}' aparece en "

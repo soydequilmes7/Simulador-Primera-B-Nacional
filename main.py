@@ -7,6 +7,24 @@ from modelos import estadisticas
 from modelos.estadisticas import Estadisticas
 
 
+def _ratings_finales_nacional(estadisticas_obj):
+    """Ratings finales de cada Equipo de Nacional DESPUÉS de
+    calcular_ratings(), en el shape que espera
+    ResultadoTorneo.ratings_finales (addendum Etapa 6, punto 3):
+    {nombre: {ataque_local, ataque_visitante, defensa_local,
+    defensa_visitante}}. Es la fuente real para los clubes que
+    ascienden a LPF (vía RatingCarryoverPolicy.rating_para_recien_llegado)."""
+    return {
+        nombre: {
+            "ataque_local": equipo.ataque_local,
+            "ataque_visitante": equipo.ataque_visitante,
+            "defensa_local": equipo.defensa_local,
+            "defensa_visitante": equipo.defensa_visitante,
+        }
+        for nombre, equipo in estadisticas_obj.equipos.items()
+    }
+
+
 def correr_simulacion(n_sims=1000, imprimir=True, guardar_json=True):
     """Corre toda la simulación (fase regular, final de ascenso, reducido y
     Monte Carlo) y devuelve el diccionario de resultados. Si guardar_json
@@ -112,6 +130,7 @@ def correr_simulacion(n_sims=1000, imprimir=True, guardar_json=True):
             "detalle_marcador": detalle.get("marcador", [0, 0]) if isinstance(detalle, dict) else [0, 0] 
         },
         "reducido": detalle_reducido, 
+        "ratings_finales": _ratings_finales_nacional(estadisticas_obj),
         "monte_carlo": {
             "A": mc_A,
             "B": mc_B

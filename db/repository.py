@@ -107,8 +107,36 @@ class SimulatorRepository:
             raise RuntimeError(f"No hay temporada activa para {competition_slug}")
         return int(row["id"])
 
-    def ensure_competition_season(self, competition_slug: str) -> int:
+    def ensure_competition_season(
+        self,
+        competition_slug: str,
+        season: str | None = None,
+        deactivate_others: bool = True,
+    ) -> int:
+        """Asegura que exista (y esté activa) la fila de `seasons` para
+        `season` (ej. "2027"). Si `season` es None, usa el default de
+        COMPETITIONS (comportamiento anterior, compatible con todo el
+        código que ya llama ensure_competition_season(slug) sin
+        segundo argumento).
+
+        ANTES: `spec.season` estaba hardcodeado a "2026" en COMPETITIONS
+        y esta función SIEMPRE hacía upsert contra (competition_slug,
+        "2026") -- no había forma de crear una temporada N+1 realmente
+        distinta, cualquier llamada pisaba la misma fila. Este es el fix
+        de ese problema (Etapa 6 del plan de Modo Temporada Nacional).
+
+        deactivate_others=True (default) desactiva cualquier OTRA fila
+        de `seasons` de esa competencia -- así season_id() (que filtra
+        `active = true`) resuelve sin ambigüedad a la temporada recién
+        creada. Pasar False si por algún motivo se necesita tener más
+        de una temporada activa a la vez (no es el caso normal)."""
         spec = COMPETITIONS[competition_slug]
+        season_name = season or spec.season
+        try:
+            year = int(season_name)
+        except ValueError:
+            year = int(spec.season)  # fallback si season no es puramente numérico
+
         self._execute(
             """
             insert into competitions (slug, name) values (%s, %s)
@@ -116,6 +144,11 @@ class SimulatorRepository:
             """,
             (spec.slug, spec.name),
         )
+        if deactivate_others:
+            self._execute(
+                "update seasons set active = false where competition_slug = %s and name != %s",
+                (competition_slug, season_name),
+            )
         self._execute(
             """
             insert into seasons (competition_slug, name, year, active)
@@ -124,7 +157,7 @@ class SimulatorRepository:
                 year = excluded.year,
                 active = true
             """,
-            (spec.slug, spec.season, int(spec.season)),
+            (competition_slug, season_name, year),
         )
         return self.season_id(competition_slug)
 

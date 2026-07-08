@@ -25,6 +25,7 @@ import numpy as np
 import data_access
 import rutas
 from modelos.estadisticas import Estadisticas
+from fixture_generator import generar_fixture_ida_vuelta
 
 
 # ---------------------------------------------------------------------
@@ -616,3 +617,240 @@ class EstadisticasLPF(Estadisticas):
         detalle["campeon_clausura"] = campeon_clausura
         detalle["campeon_trofeo"] = ganador
         return detalle
+
+    # ------------------------------------------------------------------
+    # ETAPA 6 (PLAN_ADDENDUM_ETAPA6_APERTURA_LPF): simular el Apertura de
+    # la temporada siguiente en vez de leerlo ya jugado de tablalpf.csv.
+    # Ninguno de los métodos de acá abajo toca cargar_datos_lpf(),
+    # calcular_ratings_lpf() ni correr_simulacion_lpf() -- el flujo 2026
+    # (Clausura desde CSV) sigue exactamente igual.
+    # ------------------------------------------------------------------
+
+    def _partidos_jugados_tabla_anual(self, zona_por_club: dict) -> dict:
+        """Partidos jugados en la Tabla Anual completa (Apertura +
+        Clausura) de la temporada QUE TERMINA, derivados analíticamente
+        del tamaño de zona en vez de leerlos de calcular_tabla_anual()
+        (que hoy no expone partidos_jugados -- PLAN_ADDENDUM_ETAPA6,
+        pendiente explícito resuelto así por decisión del usuario: NO
+        tocar calcular_tabla_anual(), derivarlo aparte).
+
+        zona_por_club acá es el reparto de zonas de la temporada QUE
+        TERMINA (no el de la temporada siguiente) -- Apertura y
+        Clausura de esa temporada comparten esa misma zona (no se
+        resortea a mitad de año), así que un club de una zona de
+        tamaño n jugó 2*(n-1) partidos en el Apertura y 2*(n-1) en el
+        Clausura (todos contra todos ida y vuelta, sin cruces de zona
+        en fase regular) -> 4*(n-1) en el año.
+
+        Devuelve {equipo: partidos_jugados}."""
+        tamanos_zona: dict = {}
+        for zona in zona_por_club.values():
+            tamanos_zona[zona] = tamanos_zona.get(zona, 0) + 1
+        return {
+            club: 4 * (tamanos_zona[zona] - 1)
+            for club, zona in zona_por_club.items()
+        }
+
+    def ratings_desde_tabla_anual(self, tabla_anual: pd.DataFrame, zona_por_club: dict) -> dict:
+        """Ratings iniciales para los clubes que SE QUEDAN en LPF de una
+        temporada a la otra (decisión 2a del PLAN_ADDENDUM_ETAPA6):
+        misma fórmula de regresión que ya usa calcular_ratings_lpf()
+        para bootstrapear el Clausura desde el Apertura (K_REGRESION=12,
+        factor_local/visitante contra el promedio de liga), pero
+        aplicada sobre la Tabla Anual COMPLETA de la temporada que
+        termina (Apertura + Clausura) en vez de sobre self.apertura
+        (que ahí es solo el primer torneo). No se factoriza el cálculo
+        compartido con calcular_ratings_lpf() para no tocar ese método
+        ya validado -- se acepta la duplicación de estas pocas líneas
+        de fórmula, documentada acá y ahí.
+
+        tabla_anual: shape de calcular_tabla_anual() -- columnas
+            equipo/puntos/gf/gc/dg, SIN partidos_jugados (ver
+            _partidos_jugados_tabla_anual).
+        zona_por_club: {equipo: "A"|"B"} de la temporada QUE TERMINA
+            (para derivar partidos_jugados -- ver
+            _partidos_jugados_tabla_anual). Los equipos de tabla_anual
+            que no estén acá (ej. quedaron afuera por descenso) se
+            ignoran: esta función es solo para los que continúan.
+
+        Devuelve {equipo: {ataque_local, ataque_visitante,
+        defensa_local, defensa_visitante}}, solo para los equipos
+        presentes en zona_por_club."""
+        K_REGRESION = 12
+        promedio_liga_neutral = (self.PROMEDIO_GF_LOCAL_LIGA + self.PROMEDIO_GF_VISITANTE_LIGA) / 2
+        factor_local = self.PROMEDIO_GF_LOCAL_LIGA / promedio_liga_neutral
+        factor_visitante = self.PROMEDIO_GF_VISITANTE_LIGA / promedio_liga_neutral
+
+        partidos_jugados = self._partidos_jugados_tabla_anual(zona_por_club)
+
+        tabla = tabla_anual[tabla_anual["equipo"].isin(zona_por_club.keys())].copy()
+        tabla["partidos_jugados"] = tabla["equipo"].map(partidos_jugados)
+
+        gf_prom_liga = (tabla["gf"] / tabla["partidos_jugados"]).mean()
+        gc_prom_liga = (tabla["gc"] / tabla["partidos_jugados"]).mean()
+
+        resultado = {}
+        for _, fila in tabla.iterrows():
+            nombre = fila["equipo"]
+            n = fila["partidos_jugados"]
+
+            ataque_general = (fila["gf"] / n) / gf_prom_liga
+            defensa_general = (fila["gc"] / n) / gc_prom_liga
+
+            resultado[nombre] = {
+                "ataque_local": round((n * ataque_general * factor_local + K_REGRESION) / (n + K_REGRESION), 3),
+                "ataque_visitante": round((n * ataque_general * factor_visitante + K_REGRESION) / (n + K_REGRESION), 3),
+                "defensa_local": round((n * defensa_general * factor_local + K_REGRESION) / (n + K_REGRESION), 3),
+                "defensa_visitante": round((n * defensa_general * factor_visitante + K_REGRESION) / (n + K_REGRESION), 3),
+            }
+        return resultado
+
+    def simular_apertura_desde_carryover(self, roster: list, zona_por_club: dict, ratings_iniciales: dict):
+        """Simula el Apertura de la temporada SIGUIENTE desde cero
+        (decisiones 1 y 2 del PLAN_ADDENDUM_ETAPA6_APERTURA_LPF): mismo
+        formato que el Clausura -- zonas A/B, todos contra todos ida y
+        vuelta, playoffs cruzados desde Octavos (jugar_playoffs()
+        heredado, SIN CAMBIOS) -- arrancando de un roster y ratings
+        iniciales dados por el caller (season/history_manager.py) en
+        vez de leer tablalpf.csv/fixture_lpf.csv/resultados_lpf.csv
+        como hace cargar_datos_lpf().
+
+        NO reusa simular_fase_regular() heredado: esa función no
+        trackea ganados/empatados/perdidos por equipo (solo puntos/gf/
+        gc), y hacen falta para el shape STANDING_COLUMNS completo que
+        espera repo.upsert_standings(). Este método arma su propio
+        loop sobre self.simular_partido() (mismo motor de partido,
+        Dixon-Coles + shock Gamma, sin cambios) con sus propios
+        totales W/D/L.
+
+        Pensado para llamarse sobre una instancia NUEVA y dedicada de
+        EstadisticasLPF (no la que corrió cargar_datos_lpf()) -- pisa
+        self.tabla/self.equipos/self.fixture con los datos del Apertura
+        que arranca, no con los del Clausura 2026 en curso.
+
+        roster: list[str], los equipos de LPF de la temporada
+            siguiente (después de PromotionManager -- ver
+            ClubRegistry.get_by_division("Liga Profesional") en
+            history_manager.py).
+        zona_por_club: {equipo: "A"|"B"} YA sorteado por
+            HistoryManager._sortear_zonas() para la temporada
+            siguiente -- Apertura y Clausura de esa temporada van a
+            compartir esta misma zona.
+        ratings_iniciales: {equipo: {ataque_local, ataque_visitante,
+            defensa_local, defensa_visitante}} -- combinación de
+            ratings_desde_tabla_anual() (clubes que continúan) +
+            RatingCarryoverPolicy.rating_para_recien_llegado()
+            (ascendidos), ya armada por el caller. Debe cubrir TODO
+            `roster` -- si falta alguno, ValueError (fail-fast: mejor
+            eso que arrancar un equipo con el default de
+            Equipo.__init__ sin que nadie se entere).
+
+        Devuelve (tabla_standing_por_zona, campeon):
+          tabla_standing_por_zona: {"A": list[dict], "B": list[dict]}
+            con el shape STANDING_COLUMNS completo (zona/posicion/
+            equipo/partidos_jugados/ganados/empatados/perdidos/gf/gc/
+            dg/puntos), listo para repo.upsert_standings("lpf", ...).
+          campeon: nombre del campeón de los playoffs -- el
+            CAMPEON_APERTURA dinámico de la temporada siguiente.
+        """
+        faltantes = [nombre for nombre in roster if nombre not in ratings_iniciales]
+        if faltantes:
+            raise ValueError(
+                f"Faltan ratings iniciales para: {faltantes} -- "
+                "ratings_iniciales debe cubrir TODO el roster."
+            )
+
+        # --- armar self.tabla/self.equipos en cero ---
+        self.equipos = {}
+        self.tabla = pd.DataFrame([
+            {
+                "zona": zona_por_club[nombre], "posicion": 1, "equipo": nombre,
+                "partidos_jugados": 0, "ganados": 0, "empatados": 0,
+                "perdidos": 0, "gf": 0, "gc": 0, "dg": 0, "puntos": 0,
+            }
+            for nombre in roster
+        ])
+        self.crear_equipos()  # heredado; usa self.tabla (en cero)
+
+        # --- pisar ratings por los del carryover ---
+        for nombre, ratings in ratings_iniciales.items():
+            equipo = self.equipos[nombre]
+            equipo.ataque_local = ratings["ataque_local"]
+            equipo.ataque_visitante = ratings["ataque_visitante"]
+            equipo.defensa_local = ratings["defensa_local"]
+            equipo.defensa_visitante = ratings["defensa_visitante"]
+
+        # --- armar fixture ida y vuelta DENTRO de cada zona ---
+        partidos = []
+        for zona in sorted(set(zona_por_club.values())):
+            clubes_zona = sorted(n for n, z in zona_por_club.items() if z == zona)
+            partidos += generar_fixture_ida_vuelta(clubes_zona)
+
+        self.fixture = pd.DataFrame([
+            {"fecha": "", "jornada": p.jornada, "equipo_local": p.equipo_local,
+             "equipo_visitante": p.equipo_visitante}
+            for p in partidos
+        ])
+        # invalida el cache de _pares_fixture() heredado, por si esta
+        # instancia se reusara para otra corrida (no debería, pero es gratis).
+        self._pares_fixture_cache = None
+
+        # --- simular partido a partido, con W/D/L propios ---
+        totales = {
+            nombre: {"pj": 0, "g": 0, "e": 0, "p": 0, "gf": 0, "gc": 0, "puntos": 0}
+            for nombre in roster
+        }
+        for local, visitante in self._pares_fixture():
+            gl, gv = self.simular_partido(local, visitante)
+
+            totales[local]["pj"] += 1
+            totales[visitante]["pj"] += 1
+            totales[local]["gf"] += gl
+            totales[local]["gc"] += gv
+            totales[visitante]["gf"] += gv
+            totales[visitante]["gc"] += gl
+
+            if gl > gv:
+                totales[local]["g"] += 1
+                totales[local]["puntos"] += 3
+                totales[visitante]["p"] += 1
+            elif gl < gv:
+                totales[visitante]["g"] += 1
+                totales[visitante]["puntos"] += 3
+                totales[local]["p"] += 1
+            else:
+                totales[local]["e"] += 1
+                totales[visitante]["e"] += 1
+                totales[local]["puntos"] += 1
+                totales[visitante]["puntos"] += 1
+
+        # --- armar tabla final (shape completo) + shape liviano para playoffs ---
+        tabla_standing_por_zona = {}
+        tablas_livianas = {}
+        for zona in sorted(set(zona_por_club.values())):
+            clubes_zona = [n for n, z in zona_por_club.items() if z == zona]
+            filas = []
+            for nombre in clubes_zona:
+                t = totales[nombre]
+                filas.append({
+                    "equipo": nombre, "partidos_jugados": t["pj"],
+                    "ganados": t["g"], "empatados": t["e"], "perdidos": t["p"],
+                    "gf": t["gf"], "gc": t["gc"], "dg": t["gf"] - t["gc"],
+                    "puntos": t["puntos"],
+                })
+            # mismo criterio de desempate que _armar_tabla_final(): puntos > dg > gf
+            filas.sort(key=lambda f: (-f["puntos"], -f["dg"], -f["gf"]))
+            for posicion, fila in enumerate(filas, start=1):
+                fila["posicion"] = posicion
+                fila["zona"] = zona
+
+            tabla_standing_por_zona[zona] = filas
+            tablas_livianas[zona] = pd.DataFrame([
+                {"equipo": f["equipo"], "puntos": f["puntos"],
+                 "gf": f["gf"], "gc": f["gc"], "dg": f["dg"]}
+                for f in filas
+            ])
+
+        campeon, _ = self.jugar_playoffs(tablas_livianas)
+
+        return tabla_standing_por_zona, campeon

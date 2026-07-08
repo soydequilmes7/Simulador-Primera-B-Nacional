@@ -111,6 +111,24 @@ def _rachas_lpf(e, n_partidos=5):
     }
 
 
+def _ratings_finales_lpf(e):
+    """Ratings finales de cada Equipo LPF DESPUÉS de calcular_ratings_lpf(),
+    en el shape que espera ResultadoTorneo.ratings_finales (addendum
+    Etapa 6, punto 3): {nombre: {ataque_local, ataque_visitante,
+    defensa_local, defensa_visitante}}. Es la fuente para bootstrapear
+    el Apertura simulado de la temporada siguiente (clubes que
+    continúan en LPF)."""
+    return {
+        nombre: {
+            "ataque_local": equipo.ataque_local,
+            "ataque_visitante": equipo.ataque_visitante,
+            "defensa_local": equipo.defensa_local,
+            "defensa_visitante": equipo.defensa_visitante,
+        }
+        for nombre, equipo in e.equipos.items()
+    }
+
+
 def armar_datos_web_lpf(e, tablas_clausura, campeon_clausura, detalle_playoffs,
                          tabla_anual, tabla_promedios, descensos, copas, trofeo,
                          n_sims, resumen_mc, tabla_esperada_mc):
@@ -135,6 +153,7 @@ def armar_datos_web_lpf(e, tablas_clausura, campeon_clausura, detalle_playoffs,
         "tabla_promedios": _tabla_promedios_a_lista(tabla_promedios),
         "tabla_actual": _tabla_actual_clausura(e),
         "rachas": _rachas_lpf(e),
+        "ratings_finales": _ratings_finales_lpf(e),
         "descensos": descensos,
         "copas": copas,
         "trofeo": trofeo,

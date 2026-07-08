@@ -36,12 +36,33 @@ class ResultadoTorneo:
                          consume el frontend (tablas, monte_carlo,
                          goleadores, etc.) ni tener que adivinar de
                          nuevo el shape más adelante.
+    ratings_finales:     dict[str, dict] -- {equipo: {ataque_local,
+                         ataque_visitante, defensa_local,
+                         defensa_visitante}} con el rating FINAL de
+                         cada equipo al cierre del torneo (leído de
+                         equipo.ataque_*/defensa_* DESPUÉS de
+                         calcular_ratings()/calcular_ratings_lpf()).
+                         Campo ADITIVO (PLAN_ADDENDUM_ETAPA6_APERTURA_LPF,
+                         punto 3): lo llenan los adaptadores que usan
+                         objetos Equipo real (Nacional, LPF, BMetro,
+                         PrimeraC); es la fuente para que un club
+                         ascendido/descendido herede su rating real
+                         vía RatingCarryoverPolicy en vez de arrancar
+                         siempre en el rating genérico. Queda vacío
+                         ({}) en los adaptadores que todavía no lo
+                         completan (comportamiento default seguro:
+                         un club ausente de este dict se trata igual
+                         que hoy, como recién llegado sin historial).
+                         Federal A (FederalAdapter) queda afuera a
+                         propósito -- motor vectorizado sin objetos
+                         Equipo.
     """
     campeon: str | None
     ascensos: list = field(default_factory=list)
     descensos: list = field(default_factory=list)
     clasificados_copa: list = field(default_factory=list)
     datos_crudos: dict = field(default_factory=dict)
+    ratings_finales: dict = field(default_factory=dict)
 
 
 class TournamentEngine(ABC):

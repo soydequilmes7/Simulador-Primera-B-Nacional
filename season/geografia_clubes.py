@@ -37,6 +37,28 @@ Infobae / Relatores.com.ar, sorteo de zonas Nacional 2026,
 22/12/2025) -- lo que cambió es el string usado como clave, no el
 criterio de AMBA/interior.
 
+--------------------------------------------------------------------
+DESAMBIGUACIÓN DE HOMÓNIMOS ENTRE DIVISIONES (confirmado con el
+usuario)
+--------------------------------------------------------------------
+ClubRegistry.build_from_current_data() exige nombre único en TODO el
+sistema (un club no puede pertenecer a dos divisiones a la vez). Al
+correrlo contra los tabla_X.csv reales aparecieron dos colisiones,
+ambas clubes distintos de verdad, no error de tipeo:
+
+    "Estudiantes"       -> Estudiantes de La Plata (LPF) vs.
+                           Estudiantes de Caseros (Primera Nacional)
+    "Central Córdoba"   -> Central Córdoba de Santiago del Estero (LPF)
+                           vs. Central Córdoba de Rosario (Primera C)
+
+Se renombró en el CSV de origen el lado que NO es LPF (el de LPF
+queda con el nombre corto, por ser el más conocido/mencionado sin
+aclaración en medios): "Estudiantes (Caseros)" en tabla.csv,
+"Central Córdoba (Rosario)" en tabla_primerac.csv. Central Córdoba
+(Rosario) no entra en CLUB_ZONA_GEOGRAFICA porque esta tabla es solo
+para clubes de Primera NACIONAL (los que necesitan resolver destino
+geográfico al descender) -- Primera C no desciende a ningún lado.
+
 Criterio de clasificación:
     "amba"     -> Ciudad Autónoma de Buenos Aires o Gran Buenos Aires
                   (el club desciende a B Metro si corresponde)
@@ -66,7 +88,10 @@ CLUB_ZONA_GEOGRAFICA = {
     "Dep. Madryn": "interior",
     "Bolivar": "interior",          # interior de la pcia. de Bs. As. (no GBA)
     "Alte. Brown": "amba",
-    "Estudiantes": "amba",          # Estudiantes (Caseros, GBA) -- no confundir con Estudiantes de Río Cuarto (ascendió a LPF)
+    "Estudiantes (Caseros)": "amba",  # Estudiantes de Caseros (GBA). Nombre desambiguado en
+                                       # tabla.csv porque "Estudiantes" a secas colisionaba con
+                                       # Estudiantes de La Plata (LPF) -- ver el aviso de
+                                       # ClubRegistry.build_from_current_data() que lo detectó.
     "Godoy Cruz": "interior",
     "San Miguel": "amba",
     "San Telmo": "amba",

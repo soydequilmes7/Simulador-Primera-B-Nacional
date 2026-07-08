@@ -1,0 +1,351 @@
+# -*- coding: utf-8 -*-
+"""
+season/history_manager.py
+
+Etapa 6 del plan (ver PLAN_MODO_TEMPORADA_NACIONAL.txt): HistoryManager
+toma el ClubRegistry YA ACTUALIZADO por PromotionManager (con las
+divisiones nuevas de cada club, ver season_engine.correr_temporada(...,
+aplicar_promocion=True)) y:
+
+  1. Crea/activa la temporada N+1 en la DB (ensure_competition_season()
+     parametrizado -- ver repository.py, este mismo trabajo detectó que
+     estaba hardcodeado a "2026" y lo rompía).
+  2. Arma la tabla de posiciones "en cero" (0 partidos jugados) de la
+     temporada nueva, con las zonas sorteadas al azar (decisión del
+     usuario -- no hay reparto por afiliación/cabezas de serie todavía).
+     EXCEPCIÓN: LPF (ver PLAN_ADDENDUM_ETAPA6_APERTURA_LPF) -- la tabla
+     no arranca en cero, arranca con el Apertura de esa temporada YA
+     SIMULADO (zonas A/B, todos contra todos + playoffs cruzados, igual
+     formato que el Clausura), con ratings iniciales combinando la
+     Tabla Anual de la temporada que termina (clubes que continúan) y
+     RatingCarryoverPolicy sobre los ratings finales de Nacional
+     (ascendidos). El Clausura de esa misma temporada comparte la
+     MISMA zona que el Apertura recién simulado.
+  3. Genera el fixture de ida y vuelta con fixture_generator.py y lo
+     persiste como partidos "pending" (repo.replace_matches()). Para
+     LPF, este fixture es el del CLAUSURA (el Apertura ya se simuló
+     completo en el paso 2, no queda pendiente).
+  4. Agrega una entrada a Club.history por cada club, con la temporada
+     ANTERIOR (de dónde viene) -- no la nueva, que todavía no jugó nada.
+  5. Para LPF, además persiste el campeón del Apertura recién simulado
+     vía data_access.guardar_campeon_apertura_lpf() (key
+     "lpf_campeon_apertura" en simulation_outputs) -- lo consume
+     EstadisticasLPF.CAMPEON_APERTURA (ver estadisticas_lpf.py) para el
+     Trofeo de Campeones y los cupos a copas de la temporada siguiente.
+
+--------------------------------------------------------------------
+ALCANCE: SOLO LAS 4 DIVISIONES CON FIXTURE ROUND-ROBIN SIMPLE
+--------------------------------------------------------------------
+Cubre nacional, lpf, bmetro, primerac. Federal A queda AFUERA a
+propósito: su fixture real no es un todos-contra-todos de una sola
+rueda -- es Primera Fase (4 zonas) -> Segunda Fase (2 zonas) ->
+camino principal de eliminación directa en paralelo con la Reválida
+de 6 etapas (ver season/adapters/federal_adapter.py). Generar eso
+requeriría un diseño de fixture propio que fixture_generator.py (un
+round-robin genérico) no cubre. Copa Argentina tampoco entra: su
+"fixture" es un sorteo de cuadro con invitados de varias categorías,
+no una liga con zonas.
+
+--------------------------------------------------------------------
+ZONAS: SORTEO AL AZAR (decisión del usuario, Etapa 6)
+--------------------------------------------------------------------
+A diferencia de geografia_clubes.py (que resuelve destino de DIVISIÓN
+por afiliación real), acá el usuario pidió explícitamente que el
+reparto de ZONA dentro de una misma división (A/B) sea al azar cada
+temporada, sin ningún criterio geográfico ni de cabezas de serie. Con
+cantidad impar de clubes, la zona A se lleva el que sobra (misma
+convención que ya usa BMetro con su "Unica", no afecta acá porque acá
+sí hay 2 zonas parejas en los 3 casos reales del proyecto).
+
+--------------------------------------------------------------------
+LO QUE ESTE MÓDULO *NO* HACE TODAVÍA
+--------------------------------------------------------------------
+- No corre goleadores_*.csv ni resetea scorer_totals (arranca la
+  temporada sin goleadores acumulados, que es lo correcto).
+- No toca Copa Argentina.
+- No resetea lpf_average_history -- ese historial es justamente
+  ACUMULATIVO entre temporadas (ver estadisticas_lpf.py), no se debe
+  tocar acá.
+- No decide qué pasa si `persist_season()` se llama dos veces para la
+  misma `temporada_siguiente` -- hoy es re-entrante en standings/matches
+  (ON CONFLICT DO UPDATE), pero Club.history quedaría con una entrada
+  duplicada. Si hace falta re-correr, es responsabilidad de quien llama
+  no invocarlo dos veces para la misma temporada, o limpiar
+  club.history a mano antes de reintentar.
+"""
+from __future__ import annotations
+
+import random
+from typing import Optional
+
+import data_access
+from season.club_registry import ClubRegistry, DIVISIONES
+from season.rating_carryover import RatingCarryoverPolicy
+from fixture_generator import generar_fixture_ida_vuelta
+from modelos.estadisticas_lpf import EstadisticasLPF
+
+# slug interno -> nombre lindo de división (mismo diccionario que ya
+# usa ClubRegistry, no se duplica).
+SLUG_A_DIVISION = DIVISIONES  # {"lpf": "Liga Profesional", ...}
+
+# Divisiones con 2 zonas parejas (A/B). BMetro NO entra acá -- es tabla
+# única, ver ZONA_UNICA_SLUGS más abajo.
+DIVISIONES_DOS_ZONAS = ("nacional", "lpf", "primerac")
+
+# Divisiones de zona única (el "truco" de poner a todos en "Unica" que
+# ya usa estadisticas_bmetro.py -- se respeta el mismo nombre de zona).
+DIVISIONES_ZONA_UNICA = ("bmetro",)
+
+SLUGS_CUBIERTOS = DIVISIONES_DOS_ZONAS + DIVISIONES_ZONA_UNICA
+
+
+def _sortear_zonas(clubes: list[str], rng: random.Random) -> dict[str, str]:
+    """Reparte `clubes` al azar en dos zonas A/B lo más parejas posible
+    (si es impar, A se lleva uno más). Devuelve {nombre_club: "A"|"B"}."""
+    mezclados = list(clubes)
+    rng.shuffle(mezclados)
+    mitad = (len(mezclados) + 1) // 2
+    return {nombre: "A" for nombre in mezclados[:mitad]} | {
+        nombre: "B" for nombre in mezclados[mitad:]
+    }
+
+
+def _armar_standings_en_cero(zona_por_club: dict[str, str]) -> list[dict]:
+    """Fila de standings "recién arrancada" para cada club: 0 partidos,
+    0 puntos, posición 1..N dentro de su zona (orden alfabético --
+    sin partidos jugados no hay ningún criterio deportivo para
+    ordenar, así que se usa uno estable y determinístico)."""
+    filas = []
+    for zona in sorted(set(zona_por_club.values())):
+        clubes_zona = sorted(n for n, z in zona_por_club.items() if z == zona)
+        for posicion, nombre in enumerate(clubes_zona, start=1):
+            filas.append({
+                "zona": zona,
+                "posicion": posicion,
+                "equipo": nombre,
+                "partidos_jugados": 0,
+                "ganados": 0,
+                "empatados": 0,
+                "perdidos": 0,
+                "gf": 0,
+                "gc": 0,
+                "dg": 0,
+                "puntos": 0,
+            })
+    return filas
+
+
+def _armar_fixture_pendiente(zona_por_club: dict[str, str]) -> list[dict]:
+    """Ida y vuelta DENTRO de cada zona (no hay cruces de zona en la
+    fase regular de ninguna de las 4 divisiones cubiertas). Devuelve
+    filas en el shape que espera repo.replace_matches()/MATCH_COLUMNS:
+    fecha/jornada/equipo_local/equipo_visitante, sin goles (pending)."""
+    filas = []
+    for zona in sorted(set(zona_por_club.values())):
+        clubes_zona = sorted(n for n, z in zona_por_club.items() if z == zona)
+        partidos = generar_fixture_ida_vuelta(clubes_zona)
+        for p in partidos:
+            filas.append({
+                "fecha": "",
+                "jornada": p.jornada,
+                "equipo_local": p.equipo_local,
+                "equipo_visitante": p.equipo_visitante,
+            })
+    return filas
+
+
+class HistoryManager:
+    """Persiste la temporada N+1 (standings en cero + fixture) para las
+    4 divisiones de fixture round-robin simple, y registra en
+    Club.history de dónde viene cada club. Ver docstring del módulo
+    para el alcance exacto (no cubre Federal A ni Copa)."""
+
+    def __init__(self, repo=None, rng: Optional[random.Random] = None):
+        # repo inyectable para poder testear con un mock/fake en vez de
+        # la DB real (mismo patrón que rng en PromotionManager).
+        self._repo = repo
+        self._rng = rng or random.Random()
+
+    def _get_repo(self):
+        if self._repo is not None:
+            return self._repo
+        from db.repository import repository
+        return repository()
+
+    def persist_season(
+        self,
+        club_registry: ClubRegistry,
+        temporada_actual: str,
+        temporada_siguiente: str,
+        resultados: Optional[dict] = None,
+    ) -> dict:
+        """
+        club_registry: el registro YA promocionado (después de
+            PromotionManager.aplicar()) -- club.division ya refleja
+            ascensos/descensos/altas/bajas de Federal A.
+        temporada_actual: string de la temporada que termina (ej.
+            "2026") -- se usa solo para la entrada de Club.history, no
+            se toca ningún dato de esa temporada en la DB.
+        temporada_siguiente: string de la temporada que arranca (ej.
+            "2027") -- nombre que va a `seasons.name`.
+        resultados: dict[str, ResultadoTorneo] con las corridas de la
+            temporada QUE TERMINA (la salida de
+            SeasonEngine._correr_competencias(), o equivalente armado a
+            mano) -- SOLO hace falta para la rama especial de LPF (ver
+            PLAN_ADDENDUM_ETAPA6_APERTURA_LPF): se leen
+            resultados["lpf"].datos_crudos["tabla_anual"] (Tabla Anual
+            de la temporada que termina, para los clubes que continúan
+            en LPF) y resultados["nacional"].ratings_finales (para los
+            ascendidos vía RatingCarryoverPolicy). Si el roster de LPF
+            de la temporada siguiente no está vacío y `resultados` es
+            None (o no trae "lpf"), levanta ValueError -- mejor fallar
+            fuerte que persistir standings en cero para LPF sin que
+            nadie note que el Apertura no se simuló.
+            nacional/bmetro/primerac NO usan este parámetro (siguen con
+            standings en cero + fixture simple, sin cambios).
+
+        Devuelve un resumen: {slug: {"clubes": N, "partidos": M,
+        "zonas": {"A": [...], "B": [...]}}} por cada división cubierta,
+        más "clubes_sin_persistir" con lo que quedó afuera (Federal A y
+        cualquier división no reconocida). Para "lpf" además incluye
+        "campeon_apertura" con el campeón recién simulado.
+        """
+        repo = self._get_repo()
+        resumen = {"divisiones": {}, "no_cubiertas": []}
+
+        for slug, nombre_division in SLUG_A_DIVISION.items():
+            if slug not in SLUGS_CUBIERTOS:
+                resumen["no_cubiertas"].append(slug)
+                continue
+
+            clubes = [c.name for c in club_registry.get_by_division(nombre_division)]
+            if not clubes:
+                resumen["divisiones"][slug] = {"clubes": 0, "partidos": 0, "zonas": {}}
+                continue
+
+            if slug in DIVISIONES_ZONA_UNICA:
+                zona_por_club = {nombre: "Unica" for nombre in clubes}
+            else:
+                zona_por_club = _sortear_zonas(clubes, self._rng)
+
+            campeon_apertura = None
+            if slug == "lpf":
+                if not resultados or "lpf" not in resultados:
+                    raise ValueError(
+                        "persist_season() necesita 'resultados[\"lpf\"]' (la corrida "
+                        "de LPF de la temporada que termina) para simular el Apertura "
+                        "siguiente -- ver PLAN_ADDENDUM_ETAPA6_APERTURA_LPF."
+                    )
+                standings, campeon_apertura = self._simular_apertura_lpf(
+                    clubes, zona_por_club, resultados
+                )
+                # el Clausura de esta misma temporada comparte zona con
+                # el Apertura recién simulado (decisión 1 del addendum).
+                fixture = _armar_fixture_pendiente(zona_por_club)
+            else:
+                standings = _armar_standings_en_cero(zona_por_club)
+                fixture = _armar_fixture_pendiente(zona_por_club)
+
+            repo.ensure_competition_season(slug, season=temporada_siguiente)
+            repo.upsert_standings(slug, standings)
+            repo.replace_matches(slug, pending=fixture, played=[])
+
+            if slug == "lpf":
+                data_access.guardar_campeon_apertura_lpf(campeon_apertura)
+
+            zonas_resumen: dict[str, list[str]] = {}
+            for nombre, zona in zona_por_club.items():
+                zonas_resumen.setdefault(zona, []).append(nombre)
+            for lista in zonas_resumen.values():
+                lista.sort()
+
+            entrada_resumen = {
+                "clubes": len(clubes),
+                "partidos": len(fixture),
+                "zonas": zonas_resumen,
+            }
+            if slug == "lpf":
+                entrada_resumen["campeon_apertura"] = campeon_apertura
+            resumen["divisiones"][slug] = entrada_resumen
+
+        for slug in ("federal_a",):
+            if slug not in resumen["no_cubiertas"]:
+                resumen["no_cubiertas"].append(slug)
+
+        self._actualizar_history(club_registry, temporada_actual)
+
+        return resumen
+
+    def _simular_apertura_lpf(
+        self, roster: list[str], zona_por_club: dict[str, str], resultados: dict,
+    ) -> tuple[list[dict], str]:
+        """Arma los ratings iniciales del Apertura siguiente (decisión 2
+        del addendum) y corre EstadisticasLPF.simular_apertura_desde_carryover().
+        Devuelve (standings_flat, campeon) -- standings_flat es una
+        lista plana (zonas A+B juntas) en shape STANDING_COLUMNS, lista
+        para repo.upsert_standings("lpf", ...)."""
+        ratings_iniciales = self._ratings_iniciales_lpf(resultados, roster)
+        tabla_por_zona, campeon = EstadisticasLPF().simular_apertura_desde_carryover(
+            roster, zona_por_club, ratings_iniciales
+        )
+        standings_flat: list[dict] = []
+        for filas_zona in tabla_por_zona.values():
+            standings_flat.extend(filas_zona)
+        return standings_flat, campeon
+
+    def _ratings_iniciales_lpf(self, resultados: dict, roster_siguiente: list[str]) -> dict:
+        """Combina las dos fuentes de ratings iniciales (decisión 2 del
+        PLAN_ADDENDUM_ETAPA6_APERTURA_LPF):
+          a) clubes que YA estaban en LPF: ratings_desde_tabla_anual()
+             sobre la Tabla Anual + zona de la temporada que termina
+             (resultados["lpf"].datos_crudos["tabla_anual"] / ["apertura"]
+             -- claves confirmadas en la Etapa 2 del plan, validada
+             contra Supabase real).
+          b) clubes recién ascendidos desde Nacional:
+             RatingCarryoverPolicy.rating_para_recien_llegado() usando
+             resultados["nacional"].ratings_finales (si existe esa
+             entrada -- si "nacional" no viene en `resultados`, o el
+             club no está en su ratings_finales todavía porque
+             main.py/nacional_adapter.py no llenan ese campo, se cae al
+             rating GENÉRICO de la política, degradando con gracia en
+             vez de romper)."""
+        resultado_lpf = resultados["lpf"]
+        tabla_anual = resultado_lpf.datos_crudos["tabla_anual"]
+        apertura_actual = resultado_lpf.datos_crudos["apertura"]
+        zona_por_club_actual = apertura_actual.set_index("equipo")["zona"].to_dict()
+
+        ratings_continuan = EstadisticasLPF().ratings_desde_tabla_anual(
+            tabla_anual, zona_por_club_actual
+        )
+
+        resultado_nacional = resultados.get("nacional")
+        ratings_finales_nacional = (
+            resultado_nacional.ratings_finales if resultado_nacional is not None else {}
+        )
+        politica = RatingCarryoverPolicy()
+
+        ratings: dict[str, dict] = {}
+        for club in roster_siguiente:
+            if club in ratings_continuan:
+                ratings[club] = ratings_continuan[club]
+                continue
+            ratings_origen = ratings_finales_nacional.get(club)
+            ratings[club] = politica.rating_para_recien_llegado(
+                ratings_origen,
+                "nacional" if ratings_origen is not None else None,
+                "lpf",
+            )
+        return ratings
+
+    def _actualizar_history(self, club_registry: ClubRegistry, temporada_actual: str) -> None:
+        """Agrega una entrada por club con la división en la que jugó
+        la temporada que termina. No toca la DB -- Club.history vive
+        en memoria sobre el objeto Club (ver modelos/club.py); quien
+        llama a persist_season() decide si/cómo persistir el
+        ClubRegistry completo más adelante (fuera del alcance de esta
+        etapa, ver docstring del módulo)."""
+        for club in club_registry.all_clubs():
+            club.history.append({
+                "temporada": temporada_actual,
+                "division": club.division,
+            })

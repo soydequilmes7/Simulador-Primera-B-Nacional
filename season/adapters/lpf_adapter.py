@@ -89,4 +89,11 @@ class LPFAdapter(TournamentEngine):
             descensos=datos_web["descensos"],
             clasificados_copa=clasificados_copa,
             datos_crudos=datos_web,
+            # Item c (addendum Etapa 6): ratings finales de cada club LPF,
+            # ya calculados por calcular_ratings_lpf() y expuestos por
+            # armar_datos_web_lpf() (ver item b, main_lpf.py). .get() con
+            # default {} por si corre contra un datos_web viejo (motor
+            # LPF sin este cambio todavía) -- no debería pasar en
+            # producción, pero no rompe el adaptador si pasa.
+            ratings_finales=datos_web.get("ratings_finales", {}),
         )
