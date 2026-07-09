@@ -800,11 +800,18 @@ def actualizar_endpoint(body: SimularBody = SimularBody()):
 
 
 class SimularTemporadaBody(BaseModel):
-    n_sims: int = 100
     aplicar_promocion: bool = True
 
 
 _lock_season = ReadWriteLock()
+# El campeón/ascensos/descensos de cada liga salen de UNA corrida
+# determinista (simular_fase_regular() y afines), no del Monte Carlo --
+# confirmado leyendo main.py/main_lpf.py/etc: n_sims solo afecta las
+# probabilidades estadísticas, que Modo Temporada ni siquiera muestra.
+# Fijo en 1 -- "una simulación por año", no un Monte Carlo de cientos
+# de repeticiones que no aporta nada acá y multiplica el tiempo de
+# respuesta por 6 ligas sin necesidad.
+N_SIMS_TEMPORADA = 1
 
 
 def _serializar_resultado_torneo(r) -> dict:
@@ -837,7 +844,7 @@ def season_play_endpoint(body: SimularTemporadaBody = SimularTemporadaBody()):
     quede mutado. Para generar la temporada siguiente de verdad
     (persistir en Supabase) hace falta un endpoint aparte, todavía no
     construido -- ver PLAN_MODO_TEMPORADA_NACIONAL, Etapa 7."""
-    n_sims = max(20, min(500, body.n_sims))
+    n_sims = N_SIMS_TEMPORADA
 
     ocupado = _adquirir_escritura(
         _lock_season,
@@ -869,7 +876,6 @@ def season_play_endpoint(body: SimularTemporadaBody = SimularTemporadaBody()):
 
 
 class GenerarTemporadaBody(BaseModel):
-    n_sims: int = 100
     temporada_actual: str
     temporada_siguiente: str
 
@@ -899,7 +905,7 @@ def season_generate_next_endpoint(body: GenerarTemporadaBody):
     Requiere SUPABASE_DB_URL configurada (HistoryManager() sin repo
     inyectado pega contra la base real vía db.repository.repository()).
     """
-    n_sims = max(20, min(500, body.n_sims))
+    n_sims = N_SIMS_TEMPORADA
 
     ocupado = _adquirir_escritura(
         _lock_season,
