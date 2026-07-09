@@ -3016,6 +3016,8 @@
         No usa el simulador del navegador: pega directo al backend.
       </p>
       <button id="btn-simular-temporada" class="btn-simular">▶ Simular la temporada completa</button>
+      <button id="btn-reiniciar-temporada" class="btn-actualizar" style="display:none;">↺ Volver a empezar desde datos reales</button>
+      <div id="temporada-ronda-info" style="display:none; color:var(--muted); font-family:'JetBrains Mono'; font-size:12px; margin-top:8px;"></div>
       <div id="temporada-status" class="sim-status"></div>
     </div>
 
@@ -7264,6 +7266,8 @@ const ORDEN_COMPETENCIAS = ["lpf", "nacional", "bmetro", "federal_a", "primerac"
 
 let DATA_TEMPORADA = null;
 let COMPETENCIA_ACTUAL_TEMPORADA = "lpf";
+let ESTADO_TEMPORADA_LOCAL = null;   // "proximo_estado" de la última ronda (null = arranca de datos reales)
+let NUMERO_RONDA_TEMPORADA = 1;
 
 function tablaSimpleHTML(filas, titulo){
   const filasHTML = (filas || []).map((f, i) => `
@@ -7425,36 +7429,62 @@ function renderTemporada(datos){
 async function correrTemporada(){
   const btn = document.getElementById('btn-simular-temporada');
   const status = document.getElementById('temporada-status');
+  const rondaInfo = document.getElementById('temporada-ronda-info');
+  const btnReiniciar = document.getElementById('btn-reiniciar-temporada');
 
   if (!beginApiAction(status)) return;
 
+  const esPrimeraRonda = !ESTADO_TEMPORADA_LOCAL;
   btn.disabled = true;
-  btn.textContent = "Simulando las 6 competencias…";
+  btn.textContent = esPrimeraRonda ? "Simulando las 6 competencias…" : `Simulando la ronda ${NUMERO_RONDA_TEMPORADA}…`;
   status.classList.remove('error', 'ok');
-  status.textContent = "Corriendo una temporada real de cada competencia, una atrás de la otra.";
+  status.textContent = esPrimeraRonda
+    ? "Corriendo una temporada real de cada competencia, una atrás de la otra."
+    : "Avanzando otra temporada sobre los planteles ya movidos -- nada de esto se guarda todavía.";
 
   try {
+    const body = { aplicar_promocion: true, numero_ronda: NUMERO_RONDA_TEMPORADA };
+    if (ESTADO_TEMPORADA_LOCAL) body.estado_anterior = ESTADO_TEMPORADA_LOCAL;
+
     const respuesta = await apiFetch(apiUrl("/api/season/play"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ aplicar_promocion: true })
+      body: JSON.stringify(body)
     });
     const cuerpo = await respuesta.json().catch(() => ({}));
     if (!respuesta.ok) throw apiResponseError(respuesta, cuerpo);
 
     renderTemporada(cuerpo);
+    ESTADO_TEMPORADA_LOCAL = cuerpo.proximo_estado;
+    NUMERO_RONDA_TEMPORADA += 1;
+
     status.classList.add('ok');
-    status.textContent = `✓ Temporada simulada (${cuerpo.generado})`;
+    status.textContent = `✓ Temporada simulada (${cuerpo.generado}) -- nada de esto se guardó en la base.`;
+    btnReiniciar.style.display = '';
+    rondaInfo.style.display = '';
+    rondaInfo.textContent = `Vas por la ronda ${NUMERO_RONDA_TEMPORADA - 1} en memoria (Federal A y Copa siguen leyendo datos reales cada vez -- no cubiertas por el avance local).`;
   } catch (e) {
     setApiErrorStatus(status, "No se pudo simular la temporada", e);
   } finally {
     btn.disabled = false;
-    btn.textContent = "▶ Simular la temporada completa";
+    btn.textContent = ESTADO_TEMPORADA_LOCAL ? "▶ Simular la temporada siguiente (local)" : "▶ Simular la temporada completa";
     endApiAction();
   }
 }
 
+function reiniciarTemporada(){
+  ESTADO_TEMPORADA_LOCAL = null;
+  NUMERO_RONDA_TEMPORADA = 1;
+  document.getElementById('btn-simular-temporada').textContent = "▶ Simular la temporada completa";
+  document.getElementById('btn-reiniciar-temporada').style.display = 'none';
+  document.getElementById('temporada-ronda-info').style.display = 'none';
+  const status = document.getElementById('temporada-status');
+  status.classList.remove('error', 'ok');
+  status.textContent = "Reiniciado -- la próxima simulación arranca de los datos reales de nuevo.";
+}
+
 document.getElementById('btn-simular-temporada').addEventListener('click', correrTemporada);
+document.getElementById('btn-reiniciar-temporada').addEventListener('click', reiniciarTemporada);
 
 async function correrGenerarTemporada(){
   const btn = document.getElementById('btn-generar-temporada');

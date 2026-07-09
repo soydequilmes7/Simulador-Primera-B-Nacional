@@ -167,6 +167,15 @@ class Estadisticas:
         regresión a la media para equipos con pocos partidos jugados."""
         print("\nCalculando ratings...")
 
+        if len(self.resultados) == 0:
+            # Mismo caso borde que en modelos/estadisticas.py: sin
+            # partidos jugados no hay de dónde calcular el promedio de
+            # la liga (.mean() sobre una tabla vacía da NaN para
+            # TODOS los equipos). Se deja el rating genérico que
+            # Equipo.__init__() ya pone por default (1.0/1.0).
+            print(f"Sin partidos jugados todavía: rating genérico para los {len(self.equipos)} equipos.")
+            return
+
         DECAY = 0.99        # peso decae con la antigüedad del partido (por jornada)
         K_REGRESION = 12    # "partidos virtuales" de peso hacia el promedio de liga
 

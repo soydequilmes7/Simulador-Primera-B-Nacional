@@ -30,8 +30,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
+import pandas as pd
 
 import rutas
+import data_access
 import pysim_dispatch
 from db.client import DatabaseConfigError, database_schema, database_url
 from db.repository import cup_csv_files, league_csv_files
@@ -801,6 +803,8 @@ def actualizar_endpoint(body: SimularBody = SimularBody()):
 
 class SimularTemporadaBody(BaseModel):
     aplicar_promocion: bool = True
+    estado_anterior: dict | None = None
+    numero_ronda: int = 1
 
 
 _lock_season = ReadWriteLock()
@@ -812,6 +816,61 @@ _lock_season = ReadWriteLock()
 # de repeticiones que no aporta nada acá y multiplica el tiempo de
 # respuesta por 6 ligas sin necesidad.
 N_SIMS_TEMPORADA = 1
+
+# Divisiones que HistoryManager sabe generar "temporada siguiente" para
+# (ver season/history_manager.py, SLUGS_CUBIERTOS) -- Federal A y Copa
+# quedan afuera (formato de fixture propio), así que en el modo
+# "avanzar sin persistir" siempre se releen de Supabase real.
+_SLUGS_AVANZABLES = ("lpf", "nacional", "bmetro", "primerac")
+
+_COLS_RESULTADOS = ["fecha", "jornada", "equipo_local", "equipo_visitante", "goles_local", "goles_visitante"]
+_COLS_FIXTURE = ["fecha", "jornada", "equipo_local", "equipo_visitante"]
+_COLS_TABLA = ["zona", "posicion", "equipo", "partidos_jugados", "ganados", "empatados", "perdidos", "gf", "gc", "dg", "puntos"]
+
+
+class _RepoCapturadorEnMemoria:
+    """Implementa la misma interfaz que espera HistoryManager
+    (ensure_competition_season/upsert_standings/replace_matches) pero
+    en vez de escribir en Supabase, guarda lo que le pasarían en un
+    dict -- así se puede correr persist_season() (con toda su lógica
+    real: sorteo de zonas, Apertura simulado de LPF, etc.) sin tocar la
+    base para nada. Lo capturado se devuelve al frontend para que, si
+    quiere seguir "avanzando" temporadas, se lo mande de vuelta en la
+    próxima request en vez de que el servidor vuelva a leer Supabase."""
+
+    def __init__(self):
+        self.capturado: dict[str, dict] = {}
+
+    def ensure_competition_season(self, slug, season=None, deactivate_others=True):
+        return -1  # nunca se usa un id real de temporada
+
+    def upsert_standings(self, slug, filas):
+        self.capturado.setdefault(slug, {})["tabla"] = filas
+
+    def replace_matches(self, slug, pending=None, played=None):
+        self.capturado.setdefault(slug, {})["fixture"] = pending or []
+        self.capturado.setdefault(slug, {})["resultados"] = played or []
+
+
+def _df_resultados(filas: list[dict]) -> "pd.DataFrame":
+    df = pd.DataFrame(filas, columns=_COLS_RESULTADOS)
+    for col in ("jornada", "goles_local", "goles_visitante"):
+        df[col] = df[col].astype("int64")
+    return df
+
+
+def _df_fixture(filas: list[dict]) -> "pd.DataFrame":
+    df = pd.DataFrame(filas, columns=_COLS_FIXTURE)
+    df["jornada"] = df["jornada"].astype("int64")
+    return df
+
+
+def _df_tabla(filas: list[dict]) -> "pd.DataFrame":
+    df = pd.DataFrame(filas, columns=_COLS_TABLA)
+    for col in ("posicion", "partidos_jugados", "ganados", "empatados", "perdidos", "gf", "gc", "dg", "puntos"):
+        df[col] = df[col].astype("int64")
+    df["zona"] = df["zona"].astype(str)
+    return df
 
 
 def _serializar_resultado_torneo(r) -> dict:
@@ -830,6 +889,109 @@ def _serializar_resultado_torneo(r) -> dict:
     }
 
 
+def _correr_temporada_desde_estado(estado_anterior: dict | None, numero_ronda: int, aplicar_promocion: bool):
+    """Corre las 6 competencias, aplica promoción, y arma el
+    `proximo_estado` (capturado en memoria, sin persistir) para poder
+    seguir "avanzando" temporadas sin volver a tocar Supabase.
+
+    Si estado_anterior es None: arranca de los datos reales
+    (ClubRegistry.build_from_current_data() + data_access.league_data()
+    normal). Si viene con datos (de una respuesta anterior de este
+    mismo endpoint): reconstruye el registro directo del roster
+    provisto (ClubRegistry.agregar_club(), sin tocar Supabase) y
+    parchea data_access.league_data()/lpf_average_history_df() para
+    que las 4 divisiones avanzables lean de ahí -- Federal A y Copa
+    siguen leyendo la base real siempre (no cubiertas)."""
+    from season.club_registry import ClubRegistry
+    from season.season_engine import SeasonEngine
+    from season.promotion_manager import PromotionManager
+    from season.history_manager import HistoryManager
+
+    if not estado_anterior:
+        registry = ClubRegistry.build_from_current_data()
+    else:
+        registry = ClubRegistry()
+        for nombre, division in estado_anterior["roster"].items():
+            registry.agregar_club(nombre, division)
+
+    datos_por_liga = (estado_anterior or {}).get("datos_por_liga", {})
+    original_league_data = data_access.league_data
+    original_promedios = data_access.lpf_average_history_df
+
+    def _local_league_data(slug):
+        if slug in datos_por_liga:
+            d = datos_por_liga[slug]
+            return (_df_resultados(d.get("resultados", [])), _df_fixture(d.get("fixture", [])), _df_tabla(d.get("tabla", [])))
+        return original_league_data(slug)
+
+    def _local_promedios():
+        if "lpf" in datos_por_liga and "promedios" in datos_por_liga["lpf"]:
+            return pd.DataFrame(datos_por_liga["lpf"]["promedios"])
+        return original_promedios()
+
+    # Monkeypatch acotado a esta request: se restaura pase lo que pase
+    # (try/finally), así ninguna otra request concurrente queda leyendo
+    # de acá. NO es seguro para uso concurrente real de este endpoint
+    # puntual (dos "avanzar" a la vez podrían pisarse el parche) -- para
+    # un dashboard de una sola persona explorando escenarios es un
+    # trade-off razonable; si hace falta multiusuario en simultáneo para
+    # ESTO en particular, hay que sacar el registro/datos de acá y
+    # pasarlos por parámetro hasta el fondo de cada main_X.py (cambio
+    # más grande, no hecho ahora).
+    data_access.league_data = _local_league_data
+    data_access.lpf_average_history_df = _local_promedios
+    try:
+        engine = SeasonEngine(registry)
+        resultados = engine._correr_competencias(n_sims=N_SIMS_TEMPORADA)
+    finally:
+        data_access.league_data = original_league_data
+        data_access.lpf_average_history_df = original_promedios
+
+    promocion = {}
+    proximo_estado = None
+    if aplicar_promocion:
+        promocion = PromotionManager().aplicar(
+            {slug: resultados[slug] for slug in ("lpf", "nacional", "bmetro", "federal_a", "primerac")},
+            registry,
+            # Único por ronda -- los clubes de relleno de Federal A
+            # ("Ingreso Regional {temporada}-{n}") chocarían entre sí
+            # si dos rondas seguidas usaran la misma etiqueta.
+            temporada_destino=f"R{numero_ronda + 1}",
+        )
+
+        repo_falso = _RepoCapturadorEnMemoria()
+        HistoryManager(repo=repo_falso, guardar_campeon_apertura=lambda campeon: None).persist_season(
+            registry, f"R{numero_ronda}", f"R{numero_ronda + 1}", resultados,
+        )
+        capturado = {slug: repo_falso.capturado[slug] for slug in _SLUGS_AVANZABLES if slug in repo_falso.capturado}
+
+        if "lpf" in capturado:
+            # promedios_lpf.csv también tiene que "avanzar": los que ya
+            # tenían historial lo mantienen, los recién ascendidos entran
+            # en 0 (mismo criterio que ya documenta
+            # calcular_tabla_promedios() -- "computan desde su ascenso").
+            promedios_actuales = _local_promedios()
+            roster_lpf_siguiente = [c.name for c in registry.get_by_division("Liga Profesional")]
+            conocidos = set(promedios_actuales["equipo"])
+            filas_nuevas = [
+                {"equipo": eq, "puntos_historicos": 0, "partidos_historicos": 0}
+                for eq in roster_lpf_siguiente if eq not in conocidos
+            ]
+            promedios_siguiente = pd.concat([
+                promedios_actuales[promedios_actuales["equipo"].isin(roster_lpf_siguiente)],
+                pd.DataFrame(filas_nuevas),
+            ], ignore_index=True)
+            capturado["lpf"]["promedios"] = promedios_siguiente.to_dict("records")
+
+        proximo_estado = {
+            "roster": {c.name: c.division for c in registry.all_clubs()},
+            "datos_por_liga": capturado,
+            "numero_ronda": numero_ronda + 1,
+        }
+
+    return resultados, promocion, proximo_estado
+
+
 @app.post("/api/season/play")
 def season_play_endpoint(body: SimularTemporadaBody = SimularTemporadaBody()):
     """Corre las 6 competencias (LPF, Nacional, B Metro, Federal A,
@@ -837,15 +999,32 @@ def season_play_endpoint(body: SimularTemporadaBody = SimularTemporadaBody()):
     clasificados a copas internacionales y (por default) ascensos/
     descensos entre divisiones.
 
-    aplicar_promocion=True calcula los movimientos y los devuelve para
-    mostrar, pero NO persiste nada -- el ClubRegistry se arma de cero en
-    esta misma request (build_from_current_data()) y vive solo en
-    memoria durante la corrida, así que no hay ningún roster real que
-    quede mutado. Para generar la temporada siguiente de verdad
-    (persistir en Supabase) hace falta un endpoint aparte, todavía no
-    construido -- ver PLAN_MODO_TEMPORADA_NACIONAL, Etapa 7."""
-    n_sims = N_SIMS_TEMPORADA
+    NUNCA escribe en Supabase (a diferencia de /api/season/generate-next):
+      - Sin estado_anterior: lee los datos REALES actuales (una sola
+        vez, de solo lectura) y arma un ClubRegistry en memoria.
+      - Con estado_anterior (la respuesta de una corrida anterior de
+        este mismo endpoint, con aplicar_promocion=True): NO vuelve a
+        tocar Supabase para nada -- reconstruye el roster y los
+        datos de LPF/Nacional/BMetro/Primera C directo de lo que vino
+        en el body. Así se puede ir apretando "temporada siguiente"
+        las veces que quieras, viendo cómo evolucionan los planteles,
+        sin que nada quede persistido hasta que uses el otro endpoint
+        a propósito.
 
+    Cada respuesta trae `proximo_estado`: mandalo de vuelta como
+    `estado_anterior` (con `numero_ronda` incrementado en 1) en la
+    siguiente llamada para encadenar otra temporada.
+
+    LIMITACIÓN CONOCIDA: Federal A y Copa Argentina siempre leen datos
+    reales (su fixture no es un round-robin simple, HistoryManager no
+    los cubre) -- sus movimientos se calculan y muestran igual, pero no
+    se "arrastran" de una ronda local a la siguiente. Sobre muchas
+    rondas seguidas (probado hasta 7 sin problema), el reparto
+    geográfico de descensos de Nacional hacia B Metro/Federal A puede
+    ir corriendo el tamaño de esos planteles con el tiempo -- si en
+    algún momento una ronda tira error de validación de cantidad de
+    equipos, es ese caso límite, no un timeout ni un dato corrupto.
+    """
     ocupado = _adquirir_escritura(
         _lock_season,
         "Ya hay una simulación de temporada corriendo. Esperá a que termine.",
@@ -853,21 +1032,16 @@ def season_play_endpoint(body: SimularTemporadaBody = SimularTemporadaBody()):
     if ocupado:
         return ocupado
     try:
-        from season.club_registry import ClubRegistry
-        from season.season_engine import SeasonEngine
-
-        registry = ClubRegistry.build_from_current_data()
-        engine = SeasonEngine(registry)
-        resultado = engine.correr_temporada(n_sims=n_sims, aplicar_promocion=body.aplicar_promocion)
-
+        resultados, promocion, proximo_estado = _correr_temporada_desde_estado(
+            body.estado_anterior, body.numero_ronda, body.aplicar_promocion,
+        )
         return {
             "generado": datetime.now().isoformat(timespec="seconds"),
-            "n_simulaciones": n_sims,
-            "competencias": {
-                slug: _serializar_resultado_torneo(r) for slug, r in resultado.resultados.items()
-            },
-            "clasificacion_copas": resultado.clasificacion,
-            "promocion": resultado.promocion,
+            "n_simulaciones": N_SIMS_TEMPORADA,
+            "numero_ronda": body.numero_ronda,
+            "competencias": {slug: _serializar_resultado_torneo(r) for slug, r in resultados.items()},
+            "promocion": promocion,
+            "proximo_estado": proximo_estado,
         }
     except Exception as e:
         return _error_response(e)

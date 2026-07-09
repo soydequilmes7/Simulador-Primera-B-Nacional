@@ -122,9 +122,22 @@ class EstadisticasLPF(Estadisticas):
             )
 
         conteo_fixture = pd.concat([self.fixture["equipo_local"], self.fixture["equipo_visitante"]]).value_counts()
-        mal_contados = conteo_fixture[conteo_fixture != 16]
-        if not mal_contados.empty:
-            raise ValueError(f"Estos equipos no tienen exactamente 16 partidos en fixture_lpf.csv:\n{mal_contados}")
+        # ANTES: exigía exactamente 16 partidos por equipo. El Clausura
+        # real de hoy da 16 porque mezcla equipos de las dos zonas para
+        # que las 30 puntas jueguen todas las fechas sin descanso (una
+        # zona de 15, impar, necesitaría bye si fuera puramente interna
+        # a la zona) -- un algoritmo de scheduling específico que no se
+        # puede reconstruir con un round-robin genérico por zona. Lo que
+        # realmente hace falta para que el resto del motor funcione es
+        # que TODOS los equipos tengan la MISMA cantidad de partidos
+        # entre sí (fixture parejo), no que ese número sea 16 en
+        # particular -- si se genera una temporada nueva con otra
+        # cantidad de fechas, sigue siendo válida mientras sea pareja.
+        if conteo_fixture.nunique() > 1:
+            raise ValueError(
+                f"Los equipos no tienen la misma cantidad de partidos en fixture_lpf.csv "
+                f"(debería ser pareja para todos):\n{conteo_fixture}"
+            )
 
         equipos_promedios = set(self.promedios_historicos["equipo"])
         if equipos_promedios != equipos_apertura:

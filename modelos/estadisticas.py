@@ -139,6 +139,20 @@ class Estadisticas:
         regresión a la media para equipos con pocos partidos jugados."""
         print("\nCalculando ratings...")
 
+        if len(self.resultados) == 0:
+            # Temporada 100% arrancando (nadie jugó nada todavía -- ej.
+            # la "próxima temporada" recién generada de Modo Temporada,
+            # antes de simular su primer partido): promedio_gf_liga
+            # sobre una tabla vacía da NaN para TODOS los equipos, no
+            # solo los recién ascendidos. Sin partidos de referencia no
+            # hay de dónde derivar nada -- se deja el rating genérico
+            # que Equipo.__init__() ya pone por default (1.0/1.0),
+            # mismo criterio "sin evidencia, sin ventaja" que ya usa el
+            # resto del proyecto para equipos sin historial (ver
+            # ATAQUE_ASCENSO/DEFENSA_ASCENSO en estadisticas_copa.py).
+            print(f"Sin partidos jugados todavía: rating genérico para los {len(self.equipos)} equipos.")
+            return
+
         DECAY = 0.99        # peso decae con la antigüedad del partido (por jornada)
         K_REGRESION = 12    # "partidos virtuales" de peso hacia el promedio de liga
 

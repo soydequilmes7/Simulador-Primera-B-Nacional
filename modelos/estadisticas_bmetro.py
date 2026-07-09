@@ -83,12 +83,20 @@ class EstadisticasBMetro(Estadisticas):
         # forma relevante (ya se probó empíricamente: ~62.1% -> ~62.5% en el
         # % puntero de Excursionistas), pero deja el motor calibrado
         # correctamente para esta liga.
-        self.PROMEDIO_GF_LOCAL_LIGA = round(self.resultados["goles_local"].mean(), 3)
-        self.PROMEDIO_GF_VISITANTE_LIGA = round(self.resultados["goles_visitante"].mean(), 3)
-        print(
-            f"Promedios de liga recalibrados para B Metro: "
-            f"local={self.PROMEDIO_GF_LOCAL_LIGA}, visitante={self.PROMEDIO_GF_VISITANTE_LIGA}"
-        )
+        # Si todavía no se jugó NADA en la temporada (self.resultados
+        # vacío -- ej. una temporada recién generada por Modo Temporada),
+        # no hay de dónde recalibrar: .mean() sobre una tabla vacía da
+        # NaN, que se arrastraría a cada partido simulado. Se deja el
+        # default heredado de la clase base en vez de pisarlo con NaN.
+        if len(self.resultados) > 0:
+            self.PROMEDIO_GF_LOCAL_LIGA = round(self.resultados["goles_local"].mean(), 3)
+            self.PROMEDIO_GF_VISITANTE_LIGA = round(self.resultados["goles_visitante"].mean(), 3)
+            print(
+                f"Promedios de liga recalibrados para B Metro: "
+                f"local={self.PROMEDIO_GF_LOCAL_LIGA}, visitante={self.PROMEDIO_GF_VISITANTE_LIGA}"
+            )
+        else:
+            print("Sin partidos jugados todavía: se mantiene el promedio de liga por default.")
 
     def _validar_datos_bmetro(self):
         if (self.tabla["zona"] != "Unica").any():
@@ -97,8 +105,20 @@ class EstadisticasBMetro(Estadisticas):
                 "B Metropolitana es tabla única -- todas las filas deben decir "
                 "zona=Unica (es el truco para reusar la clase base sin zonas reales)."
             )
-        if len(self.tabla) != 22:
-            raise ValueError(f"tabla_bmetro.csv debería tener 22 equipos, tiene {len(self.tabla)}")
+        # ANTES: exigía exactamente 22 (bien para los datos de hoy, pero
+        # season/promotion_manager.py reparte los 4 descensos de
+        # Nacional hacia B Metro/Federal A por AFILIACIÓN GEOGRÁFICA
+        # real (a propósito, no 2-y-2 fijo -- ver su docstring), así que
+        # el roster de B Metro puede terminar con más o menos de 22
+        # según qué clubes bajen en cada temporada. Se cambia a un rango
+        # amplio (10-30) que sigue atajando datos realmente rotos (CSV
+        # vacío, un scraper duplicando filas) sin bloquear una
+        # composición legítima distinta a la de hoy.
+        if not (10 <= len(self.tabla) <= 30):
+            raise ValueError(
+                f"tabla_bmetro.csv tiene {len(self.tabla)} equipos, fuera del rango "
+                "esperado (10-30) -- revisar si el archivo está roto/vacío/duplicado."
+            )
 
         # Reusa el resto de las validaciones genéricas (columnas, tipos,
         # resultados/fixture disjuntos, etc.)

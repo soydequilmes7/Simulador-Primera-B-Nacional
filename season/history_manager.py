@@ -83,7 +83,7 @@ import pandas as pd
 import data_access
 from season.club_registry import ClubRegistry, DIVISIONES
 from season.rating_carryover import RatingCarryoverPolicy
-from fixture_generator import generar_fixture_ida_vuelta
+from fixture_generator import generar_fixture_ida_vuelta, generar_fixture_una_rueda
 from modelos.estadisticas_lpf import EstadisticasLPF
 
 # slug interno -> nombre lindo de división (mismo diccionario que ya
@@ -137,15 +137,27 @@ def _armar_standings_en_cero(zona_por_club: dict[str, str]) -> list[dict]:
     return filas
 
 
-def _armar_fixture_pendiente(zona_por_club: dict[str, str]) -> list[dict]:
-    """Ida y vuelta DENTRO de cada zona (no hay cruces de zona en la
-    fase regular de ninguna de las 4 divisiones cubiertas). Devuelve
-    filas en el shape que espera repo.replace_matches()/MATCH_COLUMNS:
-    fecha/jornada/equipo_local/equipo_visitante, sin goles (pending)."""
+def _armar_fixture_pendiente(zona_por_club: dict[str, str], ida_y_vuelta: bool = True) -> list[dict]:
+    """Fixture DENTRO de cada zona (no hay cruces de zona en la fase
+    regular de ninguna de las 4 divisiones cubiertas). Devuelve filas
+    en el shape que espera repo.replace_matches()/MATCH_COLUMNS:
+    fecha/jornada/equipo_local/equipo_visitante, sin goles (pending).
+
+    ida_y_vuelta=True (default): rueda doble -- Nacional/BMetro/
+    Primera C juegan la fase regular completa a ida y vuelta, mismo
+    formato real. ida_y_vuelta=False: rueda simple -- el Clausura de
+    LPF es más corto que la fase regular de las otras 3 (BUG
+    ENCONTRADO: antes esta función siempre generaba ida y vuelta
+    también para LPF -- 28 partidos por equipo en vez de los 16 reales
+    del Clausura -- lo que hacía que _validar_datos_lpf() rechazara el
+    fixture recién generado apenas se intentaba simular esa temporada;
+    no se había notado porque nadie había llegado a simular DOS
+    temporadas seguidas todavía)."""
     filas = []
+    generador = generar_fixture_ida_vuelta if ida_y_vuelta else generar_fixture_una_rueda
     for zona in sorted(set(zona_por_club.values())):
         clubes_zona = sorted(n for n, z in zona_por_club.items() if z == zona)
-        partidos = generar_fixture_ida_vuelta(clubes_zona)
+        partidos = generador(clubes_zona)
         for p in partidos:
             filas.append({
                 "fecha": "",
@@ -268,7 +280,10 @@ class HistoryManager:
                 )
                 # el Clausura de esta misma temporada comparte zona con
                 # el Apertura recién simulado (decisión 1 del addendum).
-                fixture = _armar_fixture_pendiente(zona_por_club)
+                # Rueda SIMPLE -- el Clausura real es más corto que la
+                # fase regular completa de las otras 3 divisiones (ver
+                # el comentario de _armar_fixture_pendiente()).
+                fixture = _armar_fixture_pendiente(zona_por_club, ida_y_vuelta=False)
             else:
                 standings = _armar_standings_en_cero(zona_por_club)
                 fixture = _armar_fixture_pendiente(zona_por_club)
