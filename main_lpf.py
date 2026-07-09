@@ -141,7 +141,9 @@ def armar_datos_web_lpf(e, tablas_clausura, campeon_clausura, detalle_playoffs,
         "liga": "lpf",
         "generado": datetime.now().strftime("%Y-%m-%d %H:%M"),
         "n_simulaciones": n_sims,
-        "campeon_apertura": EstadisticasLPF.CAMPEON_APERTURA,
+        # Instancia, no clase: e.CAMPEON_APERTURA puede estar pisado por el
+        # campeón dinámico del Apertura (ver cargar_datos_lpf()).
+        "campeon_apertura": e.CAMPEON_APERTURA,
         "apertura": _apertura_a_zonas(e.apertura),
         "tablas_clausura": {
             "A": _tabla_a_lista(tablas_clausura["A"]),
