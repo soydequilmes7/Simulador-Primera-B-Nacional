@@ -63,7 +63,18 @@ class PrimeraCAdapter(TournamentEngine):
         self._datos_web = None
         self._clubes = None
 
-    def setup(self, clubes):
+    def setup(self, clubes=None):
+        # BUG DE SHAPE encontrado (ver ADDENDUM v14): esta firma exigía
+        # `clubes` como posicional obligatorio, sin default. SeasonEngine.
+        # _correr_competencias() llama a adapter.setup() SIN argumentos
+        # para los 6 adaptadores por igual (mismo patrón que BMetro/
+        # Federal/Copa, que usan **kwargs) -- con la firma vieja,
+        # correr_temporada() rompía con TypeError apenas le tocaba el
+        # turno a Primera C. Default=None preserva la intención original
+        # del comentario de abajo (roster real llega en Etapa 5+, hoy
+        # correr_simulacion() sigue leyendo su propio CSV) sin romper el
+        # llamado uniforme de SeasonEngine.
+        #
         # Todavía no se usa: correr_simulacion() lee su propio CSV
         # (datos/tabla_primerac.csv) directamente, igual que hoy. Se
         # deja la firma lista para cuando el roster venga del

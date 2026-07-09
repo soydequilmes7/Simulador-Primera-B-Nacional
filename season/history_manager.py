@@ -78,6 +78,8 @@ from __future__ import annotations
 import random
 from typing import Optional
 
+import pandas as pd
+
 import data_access
 from season.club_registry import ClubRegistry, DIVISIONES
 from season.rating_carryover import RatingCarryoverPolicy
@@ -160,11 +162,36 @@ class HistoryManager:
     Club.history de dónde viene cada club. Ver docstring del módulo
     para el alcance exacto (no cubre Federal A ni Copa)."""
 
-    def __init__(self, repo=None, rng: Optional[random.Random] = None):
+    def __init__(self, repo=None, rng: Optional[random.Random] = None,
+                 guardar_campeon_apertura=None):
         # repo inyectable para poder testear con un mock/fake en vez de
         # la DB real (mismo patrón que rng en PromotionManager).
         self._repo = repo
         self._rng = rng or random.Random()
+        # ADDENDUM v13 (hallazgo de diseño del v12, resuelto): antes,
+        # persist_season() llamaba SIEMPRE a
+        # data_access.guardar_campeon_apertura_lpf(), que pega contra
+        # el singleton global db.repository.repository() -- sin
+        # importar qué `repo` se haya inyectado acá. Si alguien
+        # inyectaba un repo custom (tests, staging) sin también
+        # parchear el singleton global a mano (como hizo el smoke
+        # test del addendum v12), el campeón del Apertura terminaba
+        # guardado en un repo distinto del resto de persist_season().
+        #
+        # Ahora es inyectable, mismo patrón que `repo`: si no se pasa
+        # nada, el default sigue siendo data_access.guardar_campeon_
+        # apertura_lpf() (comportamiento IDÉNTICO al de antes, cero
+        # cambio para quien no inyecta nada). Si se inyecta un `repo`
+        # custom, quien llama debe inyectar TAMBIÉN un
+        # `guardar_campeon_apertura` que pegue contra ESE mismo repo
+        # (ej. `lambda campeon: mi_repo.guardar_campeon_apertura_lpf(campeon)`
+        # si el repo custom expone ese método, o cualquier callable
+        # equivalente) -- de lo contrario, sigue yendo al singleton
+        # global, pero ahora es una decisión EXPLÍCITA de quien
+        # instancia HistoryManager, no un bug escondido.
+        self._guardar_campeon_apertura = (
+            guardar_campeon_apertura or data_access.guardar_campeon_apertura_lpf
+        )
 
     def _get_repo(self):
         if self._repo is not None:
@@ -251,7 +278,10 @@ class HistoryManager:
             repo.replace_matches(slug, pending=fixture, played=[])
 
             if slug == "lpf":
-                data_access.guardar_campeon_apertura_lpf(campeon_apertura)
+                # antes: data_access.guardar_campeon_apertura_lpf(...)
+                # directo, bypasseando self._repo -- ver ADDENDUM v13
+                # en __init__.
+                self._guardar_campeon_apertura(campeon_apertura)
 
             zonas_resumen: dict[str, list[str]] = {}
             for nombre, zona in zona_por_club.items():
@@ -310,9 +340,25 @@ class HistoryManager:
              rating GENÉRICO de la política, degradando con gracia en
              vez de romper)."""
         resultado_lpf = resultados["lpf"]
-        tabla_anual = resultado_lpf.datos_crudos["tabla_anual"]
+        # BUG ENCONTRADO Y CORREGIDO acá (confirmado leyendo main_lpf.py
+        # real): datos_crudos["tabla_anual"] y ["apertura"] NO son los
+        # DataFrames originales de calcular_tabla_anual()/self.apertura --
+        # main_lpf.armar_datos_web_lpf() los aplana para JSON antes de
+        # meterlos en datos_web (_tabla_a_lista() -> list[dict];
+        # _apertura_a_zonas() -> {"A": [...], "B": [...]}). Como
+        # ResultadoTorneo.datos_crudos = datos_web tal cual (ver
+        # LPFAdapter.result()), acá llegan ya aplanados.
+        # ratings_desde_tabla_anual() (estadisticas_lpf.py) exige un
+        # DataFrame real (usa .isin()/indexing por columna) y un dict
+        # plano {equipo: zona} -- NO se puede llamar .set_index() sobre
+        # un dict, por eso se reconstruyen los dos acá antes de llamarla.
+        tabla_anual = pd.DataFrame(resultado_lpf.datos_crudos["tabla_anual"])
         apertura_actual = resultado_lpf.datos_crudos["apertura"]
-        zona_por_club_actual = apertura_actual.set_index("equipo")["zona"].to_dict()
+        zona_por_club_actual = {
+            fila["equipo"]: zona
+            for zona, filas in apertura_actual.items()
+            for fila in filas
+        }
 
         ratings_continuan = EstadisticasLPF().ratings_desde_tabla_anual(
             tabla_anual, zona_por_club_actual

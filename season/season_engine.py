@@ -45,6 +45,7 @@ from season.adapters.primerac_adapter import PrimeraCAdapter
 from season.adapters.copa_adapter import CopaAdapter
 from season.promotion_manager import PromotionManager
 from season.qualification_manager import QualificationManager
+from season.history_manager import HistoryManager
 
 # Slugs que espera PromotionManager.aplicar() según su docstring
 # (DIVISIONES_PROMOTION) -- Copa queda afuera a propósito, no alimenta
@@ -70,6 +71,9 @@ class ResultadoTemporada:
     resultados: Dict[str, ResultadoTorneo] = field(default_factory=dict)
     clasificacion: dict = field(default_factory=dict)   # output de QualificationManager
     promocion: dict = field(default_factory=dict)        # output de PromotionManager (vacío si no se aplicó)
+    # Etapa 7: output de HistoryManager.persist_season() (vacío si
+    # generar_temporada_siguiente=False, ver correr_temporada()).
+    historia: dict = field(default_factory=dict)
 
 
 class SeasonEngine:
@@ -105,7 +109,32 @@ class SeasonEngine:
         return resultados
 
     def correr_temporada(self, n_sims: int = 1000,
-                          aplicar_promocion: bool = False) -> ResultadoTemporada:
+                          aplicar_promocion: bool = False,
+                          generar_temporada_siguiente: bool = False,
+                          temporada_actual: str | None = None,
+                          temporada_siguiente: str | None = None,
+                          history_manager: HistoryManager | None = None) -> ResultadoTemporada:
+        """
+        generar_temporada_siguiente: Etapa 7 -- si es True, además de
+            correr las 6 competencias y (opcionalmente) promocionar,
+            persiste la temporada N+1 vía HistoryManager.persist_season()
+            (standings/fixture de las 4 divisiones round-robin simple +
+            el Apertura simulado de LPF, ver PLAN_ADDENDUM_ETAPA6_
+            APERTURA_LPF.txt). Requiere aplicar_promocion=True -- si no,
+            se levanta ValueError: persistir la temporada siguiente
+            contra un club_registry SIN promocionar dejaría a cada club
+            en la división de la temporada que recién terminó, no en la
+            que le corresponde.
+        temporada_actual / temporada_siguiente: strings requeridos si
+            generar_temporada_siguiente=True (ej. "2026"/"2027") --
+            ver HistoryManager.persist_season().
+        history_manager: instancia inyectable (mismo patrón que
+            PromotionManager/QualificationManager no toman una custom,
+            pero HistoryManager sí porque encapsula acceso a repo/rng
+            -- ver su constructor). Si no se pasa, se instancia
+            HistoryManager() default (repo real vía db.repository,
+            rng sin semilla).
+        """
         resultados = self._correr_competencias(n_sims)
 
         # QualificationManager.calcular(resultado_lpf, resultado_copa)
@@ -127,8 +156,36 @@ class SeasonEngine:
                 resultados_promotion, self.club_registry, temporada_destino="N+1",
             )
 
+        historia = {}
+        if generar_temporada_siguiente:
+            if not aplicar_promocion:
+                raise ValueError(
+                    "generar_temporada_siguiente=True necesita aplicar_promocion=True -- "
+                    "si no, HistoryManager.persist_season() armaría la temporada siguiente "
+                    "leyendo el club_registry SIN promocionar (cada club seguiría en la "
+                    "división de la temporada que recién terminó, no en la que le "
+                    "corresponde tras ascensos/descensos)."
+                )
+            if not temporada_actual or not temporada_siguiente:
+                raise ValueError(
+                    "generar_temporada_siguiente=True necesita temporada_actual y "
+                    "temporada_siguiente (ej. '2026' / '2027')."
+                )
+            hm = history_manager or HistoryManager()
+            # persist_season(club_registry, temporada_actual,
+            # temporada_siguiente, resultados) -- confirmado contra
+            # season/history_manager.py real (con el fix de
+            # PLAN_ADDENDUM_v9). resultados se pasa TAL CUAL viene de
+            # _correr_competencias(), de la temporada QUE TERMINA --
+            # HistoryManager usa resultados["lpf"]/["nacional"] para el
+            # Apertura simulado de LPF (ver su docstring).
+            historia = hm.persist_season(
+                self.club_registry, temporada_actual, temporada_siguiente, resultados,
+            )
+
         return ResultadoTemporada(
             resultados=resultados,
             clasificacion=clasificacion,
             promocion=promocion,
+            historia=historia,
         )
