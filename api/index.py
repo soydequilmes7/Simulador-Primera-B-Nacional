@@ -818,10 +818,17 @@ _lock_season = ReadWriteLock()
 N_SIMS_TEMPORADA = 1
 
 # Divisiones que HistoryManager sabe generar "temporada siguiente" para
-# (ver season/history_manager.py, SLUGS_CUBIERTOS) -- Federal A y Copa
-# quedan afuera (formato de fixture propio), así que en el modo
-# "avanzar sin persistir" siempre se releen de Supabase real.
-_SLUGS_AVANZABLES = ("lpf", "nacional", "bmetro", "primerac")
+# (ver season/history_manager.py, SLUGS_CUBIERTOS) -- Copa Argentina
+# queda afuera (su "fixture" es un sorteo de cuadro, no una liga por
+# zonas), así que en el modo "avanzar sin persistir" siempre se relee
+# de Supabase real. Federal A YA está cubierta (Primera Fase a 4
+# zonas, ver history_manager.py) y por eso entra acá -- antes no
+# estaba en esta tupla aunque persist_season() ya la generaba, así que
+# el roster/tabla/fixture nuevos se descartaban al armar
+# `proximo_estado` y la ronda siguiente volvía a leer los datos reales
+# sin tocar de Supabase (síntoma: "los equipos no cambian" ronda tras
+# ronda en el frontend).
+_SLUGS_AVANZABLES = ("lpf", "nacional", "bmetro", "primerac", "federal_a")
 
 _COLS_RESULTADOS = ["fecha", "jornada", "equipo_local", "equipo_visitante", "goles_local", "goles_visitante"]
 _COLS_FIXTURE = ["fecha", "jornada", "equipo_local", "equipo_visitante"]
@@ -896,12 +903,19 @@ def _correr_temporada_desde_estado(estado_anterior: dict | None, numero_ronda: i
 
     Si estado_anterior es None: arranca de los datos reales
     (ClubRegistry.build_from_current_data() + data_access.league_data()
-    normal). Si viene con datos (de una respuesta anterior de este
-    mismo endpoint): reconstruye el registro directo del roster
-    provisto (ClubRegistry.agregar_club(), sin tocar Supabase) y
-    parchea data_access.league_data()/lpf_average_history_df() para
-    que las 4 divisiones avanzables lean de ahí -- Federal A y Copa
-    siguen leyendo la base real siempre (no cubiertas)."""
+    normal), y el pool de reposición de Federal A arranca de
+    POOL_ASCENSO_REGIONAL (los 10 nombres originales). Si viene con
+    datos (de una respuesta anterior de este mismo endpoint):
+    reconstruye el registro directo del roster provisto
+    (ClubRegistry.agregar_club(), sin tocar Supabase), parchea
+    data_access.league_data()/lpf_average_history_df() para que las 5
+    divisiones avanzables (ver _SLUGS_AVANZABLES) lean de ahí -- Copa
+    Argentina sigue leyendo la base real siempre (no cubierta) -- y
+    retoma el pool de Federal A donde quedó (estado_anterior
+    ["pool_regional_federal"], ver PromotionManager.aplicar() /
+    "pool_regional_restante"), para que los clubes que bajaron por
+    Reválida en rondas anteriores sigan disponibles para re-ascender
+    más adelante en vez de perderse."""
     from season.club_registry import ClubRegistry
     from season.season_engine import SeasonEngine
     from season.promotion_manager import PromotionManager
@@ -950,7 +964,17 @@ def _correr_temporada_desde_estado(estado_anterior: dict | None, numero_ronda: i
     promocion = {}
     proximo_estado = None
     if aplicar_promocion:
-        promocion = PromotionManager().aplicar(
+        # pool_regional_federal: estado de PromotionManager._pool_restante
+        # de la ronda anterior (ver season/promotion_manager.py,
+        # PromotionManager.aplicar() -> resumen["pool_regional_restante"]).
+        # PromotionManager no tiene memoria propia entre requests (se
+        # instancia una por llamada), así que sin pasarlo acá el pool se
+        # resetearía a los 10 nombres originales cada vez y el reciclado
+        # de clubes que bajan de Federal A por Reválida no tendría
+        # efecto. En None (primera ronda / sin estado_anterior),
+        # PromotionManager arranca de POOL_ASCENSO_REGIONAL.
+        pool_regional_federal = (estado_anterior or {}).get("pool_regional_federal")
+        promocion = PromotionManager(pool_regional=pool_regional_federal).aplicar(
             {slug: resultados[slug] for slug in ("lpf", "nacional", "bmetro", "federal_a", "primerac")},
             registry,
             # Único por ronda -- los clubes de relleno de Federal A
@@ -987,6 +1011,7 @@ def _correr_temporada_desde_estado(estado_anterior: dict | None, numero_ronda: i
             "roster": {c.name: c.division for c in registry.all_clubs()},
             "datos_por_liga": capturado,
             "numero_ronda": numero_ronda + 1,
+            "pool_regional_federal": promocion.get("pool_regional_restante", []),
         }
 
     return resultados, promocion, proximo_estado
@@ -1005,25 +1030,29 @@ def season_play_endpoint(body: SimularTemporadaBody = SimularTemporadaBody()):
       - Con estado_anterior (la respuesta de una corrida anterior de
         este mismo endpoint, con aplicar_promocion=True): NO vuelve a
         tocar Supabase para nada -- reconstruye el roster y los
-        datos de LPF/Nacional/BMetro/Primera C directo de lo que vino
-        en el body. Así se puede ir apretando "temporada siguiente"
-        las veces que quieras, viendo cómo evolucionan los planteles,
-        sin que nada quede persistido hasta que uses el otro endpoint
-        a propósito.
+        datos de LPF/Nacional/BMetro/Primera C/Federal A directo de
+        lo que vino en el body. Así se puede ir apretando "temporada
+        siguiente" las veces que quieras, viendo cómo evolucionan los
+        planteles, sin que nada quede persistido hasta que uses el
+        otro endpoint a propósito.
 
     Cada respuesta trae `proximo_estado`: mandalo de vuelta como
     `estado_anterior` (con `numero_ronda` incrementado en 1) en la
     siguiente llamada para encadenar otra temporada.
 
-    LIMITACIÓN CONOCIDA: Federal A y Copa Argentina siempre leen datos
-    reales (su fixture no es un round-robin simple, HistoryManager no
-    los cubre) -- sus movimientos se calculan y muestran igual, pero no
-    se "arrastran" de una ronda local a la siguiente. Sobre muchas
-    rondas seguidas (probado hasta 7 sin problema), el reparto
-    geográfico de descensos de Nacional hacia B Metro/Federal A puede
-    ir corriendo el tamaño de esos planteles con el tiempo -- si en
-    algún momento una ronda tira error de validación de cantidad de
-    equipos, es ese caso límite, no un timeout ni un dato corrupto.
+    LIMITACIÓN CONOCIDA: Copa Argentina siempre lee datos reales (su
+    "fixture" es un sorteo de cuadro con invitados de varias
+    categorías, no una liga por zonas, HistoryManager no la cubre) --
+    sus movimientos se calculan y muestran igual, pero no se
+    "arrastran" de una ronda local a la siguiente. Federal A SÍ
+    arrastra (Primera Fase a 4 zonas, ver history_manager.py).
+
+    Aparte, sobre muchas rondas seguidas (probado hasta 7 sin
+    problema), el reparto geográfico de descensos de Nacional hacia
+    B Metro/Federal A puede ir corriendo el tamaño de esos planteles
+    con el tiempo -- si en algún momento una ronda tira error de
+    validación de cantidad de equipos, es ese caso límite, no un
+    timeout ni un dato corrupto.
     """
     ocupado = _adquirir_escritura(
         _lock_season,
@@ -1062,15 +1091,17 @@ def season_generate_next_endpoint(body: GenerarTemporadaBody):
     este endpoint corre las 6 competencias, aplica ascensos/descensos
     de verdad y le pide a HistoryManager.persist_season() que:
       - active la temporada `temporada_siguiente` en Supabase para
-        LPF/Nacional/BMetro/Primera C (crea la fila si no existe),
+        LPF/Nacional/BMetro/Primera C/Federal A (crea la fila si no
+        existe),
       - sortee zonas, ponga standings en cero (o el Apertura simulado
-        para LPF) y arme el fixture ida-vuelta de esas 4 divisiones,
+        para LPF, o la Primera Fase a 4 zonas para Federal A) y arme
+        el fixture ida-vuelta de esas 5 divisiones,
       - guarde en Club.history de dónde viene cada club.
 
-    Federal A y Copa Argentina NO quedan cubiertos (ver docstring de
-    HistoryManager) -- sus fixtures no son un round-robin simple y
-    quedan con los datos de la temporada anterior hasta que se
-    implemente su propio generador.
+    Copa Argentina NO queda cubierta (ver docstring de HistoryManager)
+    -- su fixture es un sorteo de cuadro con invitados de varias
+    categorías, no una liga por zonas, y queda con los datos de la
+    temporada anterior hasta que se implemente su propio generador.
 
     `temporada_actual`/`temporada_siguiente` son OBLIGATORIOS a
     propósito (ej. "2026"/"2027") -- sin default, para que nadie dispare

@@ -34,17 +34,19 @@ aplicar_promocion=True)) y:
      Trofeo de Campeones y los cupos a copas de la temporada siguiente.
 
 --------------------------------------------------------------------
-ALCANCE: SOLO LAS 4 DIVISIONES CON FIXTURE ROUND-ROBIN SIMPLE
+ALCANCE: LAS 5 DIVISIONES CON FIXTURE DE LIGA POR ZONAS
 --------------------------------------------------------------------
-Cubre nacional, lpf, bmetro, primerac. Federal A queda AFUERA a
-propósito: su fixture real no es un todos-contra-todos de una sola
-rueda -- es Primera Fase (4 zonas) -> Segunda Fase (2 zonas) ->
-camino principal de eliminación directa en paralelo con la Reválida
-de 6 etapas (ver season/adapters/federal_adapter.py). Generar eso
-requeriría un diseño de fixture propio que fixture_generator.py (un
-round-robin genérico) no cubre. Copa Argentina tampoco entra: su
-"fixture" es un sorteo de cuadro con invitados de varias categorías,
-no una liga con zonas.
+Cubre nacional, lpf, bmetro, primerac y federal_a. Para Federal A
+sólo se genera la PRIMERA FASE (4 zonas, round-robin ida y vuelta,
+mismo generador genérico que las demás divisiones -- confirmado
+contra fixture_federal_a.csv real: 37 clubes en zonas de 9/10,
+18 jornadas = 2×9, o sea rueda doble). La Segunda Fase, el camino
+principal de eliminación directa y la Reválida (6 etapas, ver
+season/adapters/federal_adapter.py) NO se persisten acá -- se
+calculan en vivo durante la simulación de la temporada, igual que ya
+pasa con los playoffs de las otras divisiones. Copa Argentina sigue
+sin entrar: su "fixture" es un sorteo de cuadro con invitados de
+varias categorías, no una liga con zonas.
 
 --------------------------------------------------------------------
 ZONAS: SORTEO AL AZAR (decisión del usuario, Etapa 6)
@@ -56,6 +58,12 @@ temporada, sin ningún criterio geográfico ni de cabezas de serie. Con
 cantidad impar de clubes, la zona A se lleva el que sobra (misma
 convención que ya usa BMetro con su "Unica", no afecta acá porque acá
 sí hay 2 zonas parejas en los 3 casos reales del proyecto).
+
+Federal A es el mismo criterio (sorteo al azar, sin geografía ni
+cabezas de serie) pero a 4 zonas en vez de 2 -- ver _sortear_zonas_n()
+más abajo, generalización de _sortear_zonas() para N zonas parejas
+(con 37 clubes no repartidos exactos entre 4, el resto se lleva un
+club extra en las primeras zonas, "1", "2", ... en ese orden).
 
 --------------------------------------------------------------------
 LO QUE ESTE MÓDULO *NO* HACE TODAVÍA
@@ -98,7 +106,13 @@ DIVISIONES_DOS_ZONAS = ("nacional", "lpf", "primerac")
 # ya usa estadisticas_bmetro.py -- se respeta el mismo nombre de zona).
 DIVISIONES_ZONA_UNICA = ("bmetro",)
 
-SLUGS_CUBIERTOS = DIVISIONES_DOS_ZONAS + DIVISIONES_ZONA_UNICA
+# Federal A: Primera Fase se juega en 4 zonas (confirmado contra
+# fixture_federal_a.csv real -- 37 clubes en zonas de 9/10, ver
+# docstring del módulo). Va aparte de DIVISIONES_DOS_ZONAS porque el
+# resto del código (ej. _sortear_zonas) asume 2 zonas A/B a mano.
+DIVISIONES_CUATRO_ZONAS = ("federal_a",)
+
+SLUGS_CUBIERTOS = DIVISIONES_DOS_ZONAS + DIVISIONES_ZONA_UNICA + DIVISIONES_CUATRO_ZONAS
 
 
 def _sortear_zonas(clubes: list[str], rng: random.Random) -> dict[str, str]:
@@ -110,6 +124,28 @@ def _sortear_zonas(clubes: list[str], rng: random.Random) -> dict[str, str]:
     return {nombre: "A" for nombre in mezclados[:mitad]} | {
         nombre: "B" for nombre in mezclados[mitad:]
     }
+
+
+def _sortear_zonas_n(clubes: list[str], n: int, rng: random.Random) -> dict[str, str]:
+    """Generalización de _sortear_zonas a N zonas parejas (hace falta
+    para Federal A, Primera Fase a 4 zonas -- ver docstring del
+    módulo). Reparte `clubes` al azar lo más parejo posible entre `n`
+    zonas etiquetadas "1".."n"; si no hay reparto exacto, el resto se
+    lleva un club extra cada una, empezando por la zona "1" (mismo
+    criterio que _sortear_zonas usa para el que sobra en 2 zonas).
+    Devuelve {nombre_club: "1"|"2"|...|str(n)}."""
+    mezclados = list(clubes)
+    rng.shuffle(mezclados)
+    base, resto = divmod(len(mezclados), n)
+    zona_por_club: dict[str, str] = {}
+    idx = 0
+    for i in range(n):
+        tamanio_zona = base + (1 if i < resto else 0)
+        etiqueta = str(i + 1)
+        for _ in range(tamanio_zona):
+            zona_por_club[mezclados[idx]] = etiqueta
+            idx += 1
+    return zona_por_club
 
 
 def _armar_standings_en_cero(zona_por_club: dict[str, str]) -> list[dict]:
@@ -170,9 +206,10 @@ def _armar_fixture_pendiente(zona_por_club: dict[str, str], ida_y_vuelta: bool =
 
 class HistoryManager:
     """Persiste la temporada N+1 (standings en cero + fixture) para las
-    4 divisiones de fixture round-robin simple, y registra en
-    Club.history de dónde viene cada club. Ver docstring del módulo
-    para el alcance exacto (no cubre Federal A ni Copa)."""
+    5 divisiones de liga por zonas (para Federal A, sólo la Primera
+    Fase -- ver docstring del módulo), y registra en Club.history de
+    dónde viene cada club. Ver docstring del módulo para el alcance
+    exacto (no cubre Copa Argentina)."""
 
     def __init__(self, repo=None, rng: Optional[random.Random] = None,
                  guardar_campeon_apertura=None):
@@ -240,13 +277,16 @@ class HistoryManager:
             None (o no trae "lpf"), levanta ValueError -- mejor fallar
             fuerte que persistir standings en cero para LPF sin que
             nadie note que el Apertura no se simuló.
-            nacional/bmetro/primerac NO usan este parámetro (siguen con
-            standings en cero + fixture simple, sin cambios).
+            nacional/bmetro/primerac/federal_a NO usan este parámetro
+            (siguen con standings en cero + fixture simple, sin
+            cambios; para federal_a, "fixture simple" es la Primera
+            Fase a 4 zonas -- ver docstring del módulo).
 
         Devuelve un resumen: {slug: {"clubes": N, "partidos": M,
-        "zonas": {"A": [...], "B": [...]}}} por cada división cubierta,
-        más "clubes_sin_persistir" con lo que quedó afuera (Federal A y
-        cualquier división no reconocida). Para "lpf" además incluye
+        "zonas": {"A": [...], "B": [...]}}} por cada división cubierta
+        (para federal_a, "zonas" usa las etiquetas "1".."4"), más
+        "clubes_sin_persistir" con lo que quedó afuera (Copa Argentina
+        y cualquier división no reconocida). Para "lpf" además incluye
         "campeon_apertura" con el campeón recién simulado.
         """
         repo = self._get_repo()
@@ -264,6 +304,8 @@ class HistoryManager:
 
             if slug in DIVISIONES_ZONA_UNICA:
                 zona_por_club = {nombre: "Unica" for nombre in clubes}
+            elif slug in DIVISIONES_CUATRO_ZONAS:
+                zona_por_club = _sortear_zonas_n(clubes, 4, self._rng)
             else:
                 zona_por_club = _sortear_zonas(clubes, self._rng)
 
@@ -312,10 +354,6 @@ class HistoryManager:
             if slug == "lpf":
                 entrada_resumen["campeon_apertura"] = campeon_apertura
             resumen["divisiones"][slug] = entrada_resumen
-
-        for slug in ("federal_a",):
-            if slug not in resumen["no_cubiertas"]:
-                resumen["no_cubiertas"].append(slug)
 
         self._actualizar_history(club_registry, temporada_actual)
 

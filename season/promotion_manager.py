@@ -63,10 +63,16 @@ cada adaptador -- ver season/adapters/*.py y el plan, sección 4)
                                Reválida, a torneos regionales que
                                este proyecto NO simula. Esos 4 clubes
                                salen del ClubRegistry. Por decisión
-                               del usuario (Etapa 4), se generan
-                               clubes de relleno ficticios para
-                               reponer el roster de Federal A y que no
-                               se achique temporada a temporada.
+                               del usuario (Etapa 4), se reponen esos
+                               cupos con clubes REALES del Torneo
+                               Regional Federal Amateur (ver
+                               POOL_ASCENSO_REGIONAL más abajo)
+                               mientras el pool tenga nombres sin usar;
+                               si se agota, cae a un nombre ficticio
+                               tipo "Ingreso Regional N" como
+                               respaldo, para que el roster de
+                               Federal A no se achique temporada a
+                               temporada.
     Primera C  -> (nada):      Primera C es el piso del sistema
                                modelado, no tiene descensos (ya
                                confirmado en Etapa 1/2, PrimeraCAdapter
@@ -87,6 +93,24 @@ DIVISIONES_PROMOTION = ("lpf", "nacional", "bmetro", "federal_a", "primerac")
 # pierde por Reválida (1 a 1: se repone exactamente lo que se fue).
 RELLENO_FEDERAL_POR_DESCENSO = 1
 
+# Pool real de clubes que ascienden a Federal A por el Torneo Regional
+# Federal Amateur (torneo que este proyecto no simula -- ver más abajo,
+# _elegir_club_relleno()). Lista provista por el usuario; reemplaza los
+# nombres ficticios tipo "Ingreso Regional N" mientras haya clubes
+# disponibles en el pool sin usar.
+POOL_ASCENSO_REGIONAL = (
+    "Ben Hur",
+    "Crucero del Norte",
+    "Gutiérrez Sportivo",
+    "Estudiantes (SL)",
+    "Defensores de Pronunciamiento",
+    "Ferro Carril Oeste (GP)",
+    "Sansinena",
+    "Unión (S)",
+    "Liniers (BB)",
+    "Sportivo Peñarol (C)",
+)
+
 
 def _nombre_de(club) -> str:
     """Soporta tanto Club real (.name) como un mock que use .nombre,
@@ -95,11 +119,31 @@ def _nombre_de(club) -> str:
 
 
 class PromotionManager:
-    def __init__(self, rng: random.Random | None = None):
+    def __init__(self, rng: random.Random | None = None, pool_regional: list[str] | None = None):
         # rng inyectable para que validar_etapa4.py pueda fijar semilla
         # y tener corridas reproducibles al testear el fallback al azar.
         self._rng = rng or random.Random()
         self._contador_relleno = 0
+        # Pool de reposición real, en orden -- se va agotando a medida
+        # que aplicar() lo usa (no se repite un club mientras esté
+        # activo en el registro), pero un club que vuelve a bajar de
+        # Federal A por Reválida se reincorpora al final de la cola
+        # (ver _retirar_club) para poder re-ascender más adelante en
+        # vez de perderse para siempre -- así, mientras el sistema siga
+        # corriendo temporadas, casi nunca hace falta el nombre
+        # ficticio de respaldo.
+        #
+        # `pool_regional` es inyectable para que quien llame (ver
+        # api/index.py, _correr_temporada_desde_estado) pueda pasar el
+        # estado del pool de la ronda anterior en vez de arrancar
+        # siempre de los 10 nombres originales de POOL_ASCENSO_REGIONAL
+        # -- PromotionManager se instancia de nuevo en cada request
+        # (no hay estado en memoria entre rondas), así que sin esto el
+        # pool se reseteaba entero cada vez.
+        self._pool_restante = (
+            list(pool_regional) if pool_regional is not None
+            else list(POOL_ASCENSO_REGIONAL)
+        )
 
     def aplicar(self, resultados: dict, club_registry, temporada_destino: str = "N+1") -> dict:
         """
@@ -115,10 +159,18 @@ class PromotionManager:
             clubes de relleno generados (ej. "2027").
 
         Devuelve un resumen (dict) con "movimientos" (lista de dicts
-        club/origen/destino/motivo, en SLUGS) y "avisos" (lista de
+        club/origen/destino/motivo, en SLUGS), "avisos" (lista de
         strings -- clubes no encontrados, clasificaciones geográficas
-        resueltas al azar, etc.), para poder auditar todo lo que se
-        decidió.
+        resueltas al azar, etc.) y "pool_regional_restante" (lista de
+        nombres, el estado del pool de reposición de Federal A después
+        de esta corrida -- incluye tanto lo que quedó sin usar de
+        POOL_ASCENSO_REGIONAL como los clubes que bajaron por Reválida
+        en ESTA misma corrida y volvieron a la cola). Quien llama debe
+        guardar esa lista y pasarla como `pool_regional` en la próxima
+        instancia de PromotionManager (ver api/index.py,
+        _correr_temporada_desde_estado) -- si no se hace, el pool se
+        resetea a los 10 nombres originales en cada ronda y el
+        reciclado de clubes que bajan no tiene efecto.
         """
         faltantes = [d for d in DIVISIONES_PROMOTION if d not in resultados]
         if faltantes:
@@ -153,25 +205,36 @@ class PromotionManager:
 
         # 5) Federal A pierde 4 por Reválida -> salen del sistema,
         #    se generan clubes de relleno para reponer el roster.
+        #    (reincorporar_al_pool=True: el club retirado vuelve a la
+        #    cola de candidatos a re-ascender más adelante, ver
+        #    _retirar_club()).
         descensos_federal = resultados["federal_a"].descensos
         for nombre in descensos_federal:
-            self._retirar_club(club_registry, nombre, resumen)
+            self._retirar_club(club_registry, nombre, resumen, reincorporar_al_pool=True)
 
         n_relleno = len(descensos_federal) * RELLENO_FEDERAL_POR_DESCENSO
         for _ in range(n_relleno):
-            nombre_nuevo = self._generar_nombre_relleno(temporada_destino)
+            nombre_nuevo, del_pool = self._elegir_club_relleno(club_registry, temporada_destino)
             club = club_registry.agregar_club(nombre_nuevo, DIVISIONES["federal_a"])
             try:
                 club.es_relleno = True
             except Exception:
                 pass  # si Club usara __slots__, no es crítico -- el resumen ya lo etiqueta
+            motivo = (
+                "ascenso_torneo_regional (reemplaza baja por Reválida -- club real "
+                "del Torneo Regional Federal Amateur, ver POOL_ASCENSO_REGIONAL)"
+                if del_pool else
+                "relleno_federal_a (reemplaza baja por Reválida hacia torneo regional "
+                "no simulado -- pool de clubes reales agotado, nombre ficticio de respaldo)"
+            )
             resumen["movimientos"].append({
                 "club": nombre_nuevo,
                 "origen": None,
                 "destino": "federal_a",
-                "motivo": "relleno_federal_a (reemplaza baja por Reválida hacia torneo regional no simulado)",
+                "motivo": motivo,
             })
 
+        resumen["pool_regional_restante"] = list(self._pool_restante)
         return resumen
 
     # ------------------------------------------------------------
@@ -219,7 +282,8 @@ class PromotionManager:
             "motivo": "ascenso" if _es_ascenso(division_origen_esperada_slug, division_destino_slug) else "descenso",
         })
 
-    def _retirar_club(self, club_registry, nombre: str, resumen: dict) -> None:
+    def _retirar_club(self, club_registry, nombre: str, resumen: dict,
+                       reincorporar_al_pool: bool = False) -> None:
         club = club_registry.get_by_name(nombre)
         if club is None:
             resumen["avisos"].append(
@@ -234,8 +298,30 @@ class PromotionManager:
             "destino": None,
             "motivo": "descenso_fuera_del_sistema (Reválida Federal A, torneo regional no simulado)",
         })
+        if reincorporar_al_pool:
+            # Se va al final de la cola (no al principio): en la misma
+            # ronda en la que baja no debería volver a subir de
+            # casualidad -- primero se prueban los candidatos que ya
+            # estaban esperando en el pool. Ver POOL_ASCENSO_REGIONAL
+            # y _elegir_club_relleno().
+            self._pool_restante.append(nombre)
 
-    def _generar_nombre_relleno(self, temporada_destino: str) -> str:
+    def _elegir_club_relleno(self, club_registry, temporada_destino: str) -> tuple[str, bool]:
+        """Elige el próximo club para reponer un cupo de Federal A.
+        Recorre self._pool_restante en orden (sin repetir mientras
+        haya otros disponibles) y descarta cualquier candidato que ya
+        esté en el ClubRegistry (por si en algún momento ya se agregó
+        antes por otra vía) probando con el siguiente. Si el pool se
+        agota, cae al nombre ficticio de siempre como respaldo, sin
+        romper. Devuelve (nombre, es_del_pool)."""
+        while self._pool_restante:
+            candidato = self._pool_restante.pop(0)
+            if club_registry.get_by_name(candidato) is None:
+                return candidato, True
+            # ya está en el registro -- se descarta, se prueba el que sigue
+        return self._generar_nombre_relleno_ficticio(temporada_destino), False
+
+    def _generar_nombre_relleno_ficticio(self, temporada_destino: str) -> str:
         self._contador_relleno += 1
         return f"Ingreso Regional {temporada_destino}-{self._contador_relleno}"
 
