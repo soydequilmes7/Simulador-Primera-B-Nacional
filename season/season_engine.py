@@ -45,6 +45,7 @@ from season.adapters.primerac_adapter import PrimeraCAdapter
 from season.adapters.copa_adapter import CopaAdapter
 from season.promotion_manager import PromotionManager
 from season.qualification_manager import QualificationManager
+from season.copa_argentina_manager import CopaArgentinaManager
 from season.history_manager import HistoryManager
 
 # Slugs que espera PromotionManager.aplicar() según su docstring
@@ -70,6 +71,12 @@ class ResultadoTemporada:
     """Lo que devuelve una corrida completa del SeasonEngine."""
     resultados: Dict[str, ResultadoTorneo] = field(default_factory=dict)
     clasificacion: dict = field(default_factory=dict)   # output de QualificationManager
+    # Etapa 8 (Boletín 6812 AFA 2027): output de CopaArgentinaManager --
+    # quién clasifica a la PRÓXIMA Copa Argentina (64 invitados de las 5
+    # divisiones que alimentan, ver season/copa_argentina_manager.py).
+    # No confundir con `clasificacion` de arriba, que es a copas
+    # internacionales (Libertadores/Sudamericana).
+    clasificacion_copa_argentina: dict = field(default_factory=dict)
     promocion: dict = field(default_factory=dict)        # output de PromotionManager (vacío si no se aplicó)
     # Etapa 7: output de HistoryManager.persist_season() (vacío si
     # generar_temporada_siguiente=False, ver correr_temporada()).
@@ -144,6 +151,12 @@ class SeasonEngine:
             resultado_copa=resultados["copa"],
         )
 
+        # CopaArgentinaManager.calcular(resultados) -- quién clasifica a
+        # la PRÓXIMA Copa Argentina (Boletín 6812 AFA 2027), a partir de
+        # las 5 divisiones que alimentan invitados (Copa Argentina misma
+        # queda afuera, ver docstring de CopaArgentinaManager).
+        clasificacion_copa_argentina = CopaArgentinaManager().calcular(resultados)
+
         promocion = {}
         if aplicar_promocion:
             resultados_promotion = {slug: resultados[slug] for slug in SLUGS_PROMOTION}
@@ -186,6 +199,7 @@ class SeasonEngine:
         return ResultadoTemporada(
             resultados=resultados,
             clasificacion=clasificacion,
+            clasificacion_copa_argentina=clasificacion_copa_argentina,
             promocion=promocion,
             historia=historia,
         )

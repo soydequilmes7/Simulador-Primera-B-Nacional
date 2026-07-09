@@ -378,19 +378,32 @@ class EstadisticasFederal(Estadisticas):
 
         # ---- Reválida 1ª Etapa: slots de Zona A y Zona B (con slot(s)
         # fantasma para el/los 5° condicional(es)) ----
+        # OJO: los límites superiores de estos rangos NO pueden ser
+        # literales (10, 9, 9) -- eso asume que Zona 1 siempre tiene 10
+        # equipos y Zonas 2/3/4 siempre 9, lo cual deja de valer apenas
+        # el roster de Federal A cambia de tamaño entre rondas locales
+        # (ver /api/season/play, ronda 2+: un ascenso/descenso corrido
+        # de otra división puede dejar una zona con 9 equipos en vez de
+        # 10). Usamos el tamaño real de cada zona (idx_zona[z].shape[0]),
+        # igual que ya hace la versión no vectorizada de más abajo
+        # (simular_primera_fase/clasificados_primera_fase, que sólo
+        # slicea listas y por eso nunca tuvo este bug).
+        n1, n2, n3, n4 = (idx_zona[z].shape[0] for z in ("1", "2", "3", "4"))
         slots_ra = np.stack(
-            [idx_zona["1"][orden_pf["1"][i, :]] for i in range(CLASIFICAN_ZONA_DIEZ, 10)]
-            + [idx_zona["2"][orden_pf["2"][i, :]] for i in range(CLASIFICAN_ZONA_NUEVE + 1, 9)]
+            [idx_zona["1"][orden_pf["1"][i, :]] for i in range(CLASIFICAN_ZONA_DIEZ, n1)]
+            + [idx_zona["2"][orden_pf["2"][i, :]] for i in range(CLASIFICAN_ZONA_NUEVE + 1, n2)]
             + [quinto_equipo_idx["2"]]
         )
-        reales_ra = np.stack([np.ones(S, dtype=bool)] * 9 + [mejor_quinto_zona_i != 0])
+        n_reales_ra = (n1 - CLASIFICAN_ZONA_DIEZ) + (n2 - CLASIFICAN_ZONA_NUEVE - 1)
+        reales_ra = np.stack([np.ones(S, dtype=bool)] * n_reales_ra + [mejor_quinto_zona_i != 0])
 
         slots_rb = np.stack(
-            [idx_zona["3"][orden_pf["3"][i, :]] for i in range(CLASIFICAN_ZONA_NUEVE + 1, 9)]
-            + [idx_zona["4"][orden_pf["4"][i, :]] for i in range(CLASIFICAN_ZONA_NUEVE + 1, 9)]
+            [idx_zona["3"][orden_pf["3"][i, :]] for i in range(CLASIFICAN_ZONA_NUEVE + 1, n3)]
+            + [idx_zona["4"][orden_pf["4"][i, :]] for i in range(CLASIFICAN_ZONA_NUEVE + 1, n4)]
             + [quinto_equipo_idx["3"], quinto_equipo_idx["4"]]
         )
-        reales_rb = np.stack([np.ones(S, dtype=bool)] * 8 + [mejor_quinto_zona_i != 1, mejor_quinto_zona_i != 2])
+        n_reales_rb = (n3 - CLASIFICAN_ZONA_NUEVE - 1) + (n4 - CLASIFICAN_ZONA_NUEVE - 1)
+        reales_rb = np.stack([np.ones(S, dtype=bool)] * n_reales_rb + [mejor_quinto_zona_i != 1, mejor_quinto_zona_i != 2])
 
         puntos_ra, gf_ra, gc_ra = self._simular_zona_slots_vectorizada(nombres, slots_ra, S, es_real_slot=reales_ra)
         puntos_rb, gf_rb, gc_rb = self._simular_zona_slots_vectorizada(nombres, slots_rb, S, es_real_slot=reales_rb)

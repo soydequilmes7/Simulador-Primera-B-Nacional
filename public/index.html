@@ -464,7 +464,8 @@
     transition: box-shadow 0.25s ease, transform 0.25s ease;
   }
   .copa-card:hover{ box-shadow: var(--card-shadow-hover); transform: var(--hover-lift); }
-  .copa-card .copa-title{ font-family:'JetBrains Mono'; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:12px; }
+  .copa-card .copa-title{ font-family:'JetBrains Mono'; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+  .copa-card .copa-title img.copa-logo{ height:22px; width:auto; flex-shrink:0; }
   .copa-card.libertadores{ border-top: 3px solid var(--azul); }
   .copa-card.sudamericana{ border-top: 3px solid var(--zone-b); }
   .copa-card.libertadores .copa-title{ color: var(--azul); }
@@ -725,6 +726,14 @@
     border:1px solid var(--line); border-left:3px solid var(--qualified-accent); border-radius:999px; padding:8px 16px 8px 14px;
     background:var(--bg-panel); font-size:13px; color:var(--ink-dim);
   }
+  .temporada-copa-chip img.copa-logo{ height:16px; width:auto; flex-shrink:0; }
+  .temporada-copa-argentina-grupos{ display:flex; flex-direction:column; gap:22px; }
+  .temporada-copa-argentina-grupo .grupo-titulo{
+    display:flex; align-items:center; gap:8px; font-family:'JetBrains Mono'; font-size:11px;
+    color:var(--tc-color, var(--muted)); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:10px;
+  }
+  .temporada-copa-argentina-grupo .grupo-titulo .cantidad{ color:var(--muted); text-transform:none; letter-spacing:0; }
+  .temporada-copa-argentina-grupo .temporada-copas-lista .temporada-copa-chip{ border-left-color:var(--tc-color, var(--qualified-accent)); }
   .temporada-avisos{ margin-top:14px; font-size:12px; color:var(--muted); font-family:'JetBrains Mono'; }
   .temporada-detalle-header{
     border:1px solid var(--line); border-left:4px solid var(--tc-color, var(--amber)); border-radius:var(--radius); padding:20px 24px;
@@ -2802,11 +2811,11 @@
     <p class="section-note">Cupos a Libertadores y Sudamericana según la Tabla Anual, más los campeones de Apertura y Clausura. La Copa Argentina no está simulada, así que el cupo que le corresponde se completa con un candidato elegido al azar entre los equipos de la Tabla Anual.</p>
     <div class="copas-grid">
       <div class="copa-card libertadores">
-        <div class="copa-title">Copa Libertadores 2027</div>
+        <div class="copa-title"><img class="copa-logo" src="logos-torneos/copa-libertadores.png" alt="" onerror="this.remove()">Copa Libertadores 2027</div>
         <ol id="libertadores-lpf"></ol>
       </div>
       <div class="copa-card sudamericana">
-        <div class="copa-title">Copa Sudamericana 2027</div>
+        <div class="copa-title"><img class="copa-logo" src="logos-torneos/copa-sudamericana.png" alt="" onerror="this.remove()">Copa Sudamericana 2027</div>
         <ol id="sudamericana-lpf"></ol>
       </div>
     </div>
@@ -3084,7 +3093,8 @@
         Corre las 6 competencias (Liga Profesional, Primera Nacional, B Metropolitana,
         Federal A, Primera C y Copa Argentina) UNA vez cada una — el resultado real de
         esta temporada, no un promedio de probabilidades — y calcula quién asciende,
-        quién desciende y quién clasifica a las copas internacionales.
+        quién desciende, quién clasifica a las copas internacionales y quién clasifica
+        a la próxima Copa Argentina.
         No usa el simulador del navegador: pega directo al backend.
       </p>
       <button id="btn-simular-temporada" class="btn-simular">▶ Simular la temporada completa</button>
@@ -3122,6 +3132,13 @@
       <section id="sec-temporada-copas">
         <div class="section-head"><span class="idx">04</span><h2>Clasificados a copas internacionales</h2><div class="rule"></div></div>
         <div id="temporada-copas-list" class="temporada-copas-lista"></div>
+      </section>
+
+      <section id="sec-temporada-copa-argentina">
+        <div class="section-head"><span class="idx">05</span><h2>Clasificados a la Copa Argentina</h2><div class="rule"></div></div>
+        <p class="section-note" style="margin-top:0;">Los 64 clasificados a la próxima edición, agrupados por la división de la que salen (Boletín Especial 6812 de AFA).</p>
+        <div id="temporada-copa-argentina-list" class="temporada-copa-argentina-grupos"></div>
+        <div id="temporada-copa-argentina-avisos" class="temporada-avisos"></div>
       </section>
     </div>
   </div>
@@ -7371,7 +7388,21 @@ function tablasCompetenciaHTML(slug, comp){
   const [ascDirecto, ascReducido] = comp.ascensos || [];
   const descSet = new Set(comp.descensos || []);
   if (slug === "lpf"){
-    return `<div class="temporada-tablas-grid uno">${tablaSimpleHTML(datos.tabla_anual, "Tabla Anual (Apertura + Clausura)", null, null, descSet)}</div>`;
+    const copas = datos.copas || {};
+    const libertadores = (copas.libertadores_2027 || []).filter(e => !e.toLowerCase().includes('no simulado'));
+    const sudamericana = copas.sudamericana_2027 || [];
+    const copasHTML = (libertadores.length || sudamericana.length) ? `
+      <div class="copas-grid" style="margin-top:20px;">
+        <div class="copa-card libertadores">
+          <div class="copa-title"><img class="copa-logo" src="logos-torneos/copa-libertadores.png" alt="" onerror="this.remove()">Copa Libertadores 2027</div>
+          <ol>${libertadores.map(equipo => `<li>${escudoHTML(equipo)}${equipo}</li>`).join('') || '<li style="color:var(--muted);">Sin clasificados</li>'}</ol>
+        </div>
+        <div class="copa-card sudamericana">
+          <div class="copa-title"><img class="copa-logo" src="logos-torneos/copa-sudamericana.png" alt="" onerror="this.remove()">Copa Sudamericana 2027</div>
+          <ol>${sudamericana.map(equipo => `<li>${escudoHTML(equipo)}${equipo}</li>`).join('') || '<li style="color:var(--muted);">Sin clasificados</li>'}</ol>
+        </div>
+      </div>` : '';
+    return `<div class="temporada-tablas-grid uno">${tablaSimpleHTML(datos.tabla_anual, "Tabla Anual (Apertura + Clausura)", null, null, descSet)}</div>${copasHTML}`;
   }
   if (slug === "bmetro"){
     return `<div class="temporada-tablas-grid uno">${tablaSimpleHTML(datos.tabla, null, ascDirecto, ascReducido, descSet)}</div>`;
@@ -7390,8 +7421,11 @@ function tablasCompetenciaHTML(slug, comp){
       </div>`;
   }
   if (slug === "copa"){
+    const rondasCopa = datos.rondas || {};
+    const bracketCopaInner = (typeof bracketCopaHTML === "function") ? bracketCopaHTML(rondasCopa, comp.campeon) : "";
     return `<p class="section-note" style="margin-top:0;">La Copa Argentina es un cuadro de eliminación directa, no tiene tabla de posiciones.
-      Quedaron con vida ${(datos.equipos_vivos || []).length} equipos antes de esta corrida.</p>`;
+      Quedaron con vida ${(datos.equipos_vivos || []).length} equipos antes de esta corrida.</p>
+      <div class="bracket-scroll"><div class="bracket">${bracketCopaInner}</div></div>`;
   }
   return '';
 }
@@ -7574,9 +7608,46 @@ function renderTemporada(datos){
 
   const copasList = document.getElementById('temporada-copas-list');
   const clasificados = (datos.clasificacion_copas && datos.clasificacion_copas.clasificados) || [];
+  // Para saber si cada clasificado va a Libertadores o a Sudamericana usamos
+  // los datos crudos de LPF (mismo shape que ya consume la pestaña LPF, ver
+  // tablasCompetenciaHTML). Un clasificado que no aparece en ninguna de las
+  // dos listas (típicamente el campeón de Copa Argentina, que LPFAdapter no
+  // incluye en clasificados_copa) va a Libertadores por reglamento real
+  // (ver season/adapters/copa_adapter.py).
+  const copasLPF = (datos.competencias.lpf && datos.competencias.lpf.datos && datos.competencias.lpf.datos.copas) || {};
+  const setSudamericana = new Set(copasLPF.sudamericana_2027 || []);
   copasList.innerHTML = clasificados.length
-    ? clasificados.map(equipo => `<div class="temporada-copa-chip">🏆 ${escudoHTML(equipo)}${equipo}</div>`).join('')
+    ? clasificados.map(equipo => {
+        const esSudamericana = setSudamericana.has(equipo);
+        const logo = esSudamericana ? 'copa-sudamericana' : 'copa-libertadores';
+        return `<div class="temporada-copa-chip"><img class="copa-logo" src="logos-torneos/${logo}.png" alt="" onerror="this.remove()">${escudoHTML(equipo)}${equipo}</div>`;
+      }).join('')
     : '<div style="color:var(--muted);">Sin clasificados calculados en esta corrida.</div>';
+
+  // Orden fijo del Boletín 6812 (LPF 30 / Nacional 15 / BMetro 5 / Primera C 4 / Federal A 10 = 64).
+  const ORDEN_COPA_ARGENTINA = ["lpf", "nacional", "bmetro", "primerac", "federal_a"];
+  const copaArgList = document.getElementById('temporada-copa-argentina-list');
+  const porDivisionCopaArg = (datos.clasificacion_copa_argentina && datos.clasificacion_copa_argentina.por_division) || {};
+  const hayCopaArgentina = ORDEN_COPA_ARGENTINA.some(slug => (porDivisionCopaArg[slug] || []).length);
+  copaArgList.innerHTML = hayCopaArgentina
+    ? ORDEN_COPA_ARGENTINA
+        .filter(slug => (porDivisionCopaArg[slug] || []).length)
+        .map(slug => {
+          const equipos = porDivisionCopaArg[slug];
+          return `<div class="temporada-copa-argentina-grupo" style="--tc-color:${COLOR_COMPETENCIA[slug] || 'var(--amber)'};">
+            <div class="grupo-titulo">${NOMBRE_LINDO_COMPETENCIA[slug] || slug} <span class="cantidad">(${equipos.length})</span></div>
+            <div class="temporada-copas-lista">
+              ${equipos.map(equipo => `<div class="temporada-copa-chip">🇦🇷 ${escudoHTML(equipo)}${equipo}</div>`).join('')}
+            </div>
+          </div>`;
+        }).join('')
+    : '<div style="color:var(--muted);">Sin clasificados calculados en esta corrida.</div>';
+
+  const avisosCopaArgDiv = document.getElementById('temporada-copa-argentina-avisos');
+  const avisosCopaArg = (datos.clasificacion_copa_argentina && datos.clasificacion_copa_argentina.avisos) || [];
+  avisosCopaArgDiv.innerHTML = avisosCopaArg.length
+    ? 'Avisos: ' + avisosCopaArg.map(a => typeof a === 'string' ? a : JSON.stringify(a)).join(' · ')
+    : '';
 
   document.getElementById('temporada-resultado').style.display = '';
 

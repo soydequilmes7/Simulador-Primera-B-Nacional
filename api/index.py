@@ -920,6 +920,8 @@ def _correr_temporada_desde_estado(estado_anterior: dict | None, numero_ronda: i
     from season.season_engine import SeasonEngine
     from season.promotion_manager import PromotionManager
     from season.history_manager import HistoryManager
+    from season.qualification_manager import QualificationManager
+    from season.copa_argentina_manager import CopaArgentinaManager
 
     if not estado_anterior:
         registry = ClubRegistry.build_from_current_data()
@@ -960,6 +962,25 @@ def _correr_temporada_desde_estado(estado_anterior: dict | None, numero_ronda: i
     finally:
         data_access.league_data = original_league_data
         data_access.lpf_average_history_df = original_promedios
+
+    # Clasificación a copas internacionales (Libertadores/Sudamericana):
+    # engine.correr_temporada() la calcula solo vía QualificationManager
+    # a partir de resultados["lpf"]/["copa"] (ver season_engine.py), pero
+    # acá corremos _correr_competencias() directo (no correr_temporada())
+    # para poder inyectar el monkeypatch de datos_por_liga -- así que hay
+    # que llamarlo a mano con el mismo criterio, si no esta ronda nunca
+    # trae clasificados (el frontend quedaba mostrando siempre "Sin
+    # clasificados calculados en esta corrida").
+    clasificacion = QualificationManager().calcular(
+        resultado_lpf=resultados["lpf"],
+        resultado_copa=resultados["copa"],
+    )
+
+    # Igual criterio que arriba (ver comentario de `clasificacion`):
+    # CopaArgentinaManager.calcular() vive en season_engine.correr_
+    # temporada(), que acá no llamamos directo -- así que se corre a
+    # mano con los mismos `resultados` de esta ronda.
+    clasificacion_copa_argentina = CopaArgentinaManager().calcular(resultados)
 
     promocion = {}
     proximo_estado = None
@@ -1014,7 +1035,7 @@ def _correr_temporada_desde_estado(estado_anterior: dict | None, numero_ronda: i
             "pool_regional_federal": promocion.get("pool_regional_restante", []),
         }
 
-    return resultados, promocion, proximo_estado
+    return resultados, promocion, proximo_estado, clasificacion, clasificacion_copa_argentina
 
 
 @app.post("/api/season/play")
@@ -1061,7 +1082,7 @@ def season_play_endpoint(body: SimularTemporadaBody = SimularTemporadaBody()):
     if ocupado:
         return ocupado
     try:
-        resultados, promocion, proximo_estado = _correr_temporada_desde_estado(
+        resultados, promocion, proximo_estado, clasificacion, clasificacion_copa_argentina = _correr_temporada_desde_estado(
             body.estado_anterior, body.numero_ronda, body.aplicar_promocion,
         )
         return {
@@ -1069,6 +1090,8 @@ def season_play_endpoint(body: SimularTemporadaBody = SimularTemporadaBody()):
             "n_simulaciones": N_SIMS_TEMPORADA,
             "numero_ronda": body.numero_ronda,
             "competencias": {slug: _serializar_resultado_torneo(r) for slug, r in resultados.items()},
+            "clasificacion_copas": clasificacion,
+            "clasificacion_copa_argentina": clasificacion_copa_argentina,
             "promocion": promocion,
             "proximo_estado": proximo_estado,
         }
@@ -1141,6 +1164,7 @@ def season_generate_next_endpoint(body: GenerarTemporadaBody):
                 slug: _serializar_resultado_torneo(r) for slug, r in resultado.resultados.items()
             },
             "clasificacion_copas": resultado.clasificacion,
+            "clasificacion_copa_argentina": resultado.clasificacion_copa_argentina,
             "promocion": resultado.promocion,
             "historia": resultado.historia,
         }
