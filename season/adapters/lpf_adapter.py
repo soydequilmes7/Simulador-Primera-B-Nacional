@@ -12,15 +12,18 @@ Claude, ver conversación de Etapa 2 -- LPFAdapter):
 
   1. ResultadoTorneo.campeon = datos_web["campeon_clausura"].
      LPF no tiene un único "campeón" obvio en el dict: existen
-     campeon_clausura (lo único que de verdad simula este motor),
-     EstadisticasLPF.CAMPEON_APERTURA (dato histórico fijo, "Belgrano",
-     el Apertura ya se jugó en la realidad y NO se simula acá) y
-     datos_web["trofeo"] (Apertura vs Clausura a partido único, Art.
-     20 del reglamento -- salvo que sea el mismo equipo en ambos
-     torneos, caso en que ni siquiera se simula esa final, ver
-     calcular_trofeo_campeones()). Se decidió que el campeón relevante
-     para el SeasonEngine es el del Clausura, sin jugar el Trofeo de
-     Campeones.
+     campeon_clausura (lo único que de verdad simula este motor en la
+     corrida 2026), EstadisticasLPF.CAMPEON_APERTURA (por default el
+     dato real 2026 "Belgrano", pero YA dinámico: en temporadas
+     hipotéticas del Modo Temporada cargar_datos_lpf() lo pisa con el
+     campeón del Apertura que persistió HistoryManager, ver
+     PLAN_ADDENDUM_ETAPA6_APERTURA_LPF punto 4) y datos_web["trofeo"]
+     (Apertura vs Clausura a partido único, Art. 20 del reglamento --
+     salvo que sea el mismo equipo en ambos torneos, o que el campeón
+     del Apertura ya no juegue en Primera esa temporada, casos en que
+     ni siquiera se simula esa final, ver calcular_trofeo_campeones()).
+     Se decidió que el campeón relevante para el SeasonEngine es el del
+     Clausura, sin jugar el Trofeo de Campeones.
 
   2. ResultadoTorneo.clasificados_copa = libertadores_2027 +
      sudamericana_2027, FILTRANDO el string placeholder que

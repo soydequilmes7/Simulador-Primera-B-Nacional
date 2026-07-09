@@ -96,9 +96,23 @@ class EstadisticasLPF(Estadisticas):
 
         self._validar_datos_lpf()
 
+        # CAMPEON_APERTURA dinámico (PLAN_ADDENDUM_ETAPA6_APERTURA_LPF,
+        # punto 4). En el flujo real 2026 no hay nada persistido y
+        # campeon_apertura_lpf() devuelve None -> cae al default de clase
+        # ("Belgrano", el campeón real). En temporadas hipotéticas del Modo
+        # Temporada, HistoryManager ya simuló y guardó el campeón del
+        # Apertura siguiente (guardar_campeon_apertura_lpf()); lo leemos acá
+        # como atributo de instancia que pisa el default de clase, así el
+        # Trofeo de Campeones y las copas usan al campeón que de verdad ganó
+        # ese Apertura, no siempre "Belgrano".
+        campeon_dinamico = data_access.campeon_apertura_lpf()
+        if campeon_dinamico:
+            self.CAMPEON_APERTURA = normalizar(campeon_dinamico)
+
         print(f"Apertura (base histórica): {len(self.apertura)} equipos")
         print(f"Fixture Clausura: {len(self.fixture)} partidos pendientes")
         print(f"Resultados Clausura ya jugados: {len(self.resultados)}")
+        print(f"Campeón del Apertura: {self.CAMPEON_APERTURA}")
 
     def _validar_datos_lpf(self):
         columnas_apertura = {"zona", "posicion", "equipo", "partidos_jugados",
@@ -623,6 +637,23 @@ class EstadisticasLPF(Estadisticas):
                     "Campeones sale de un desempate entre los subcampeones de ambos torneos "
                     "(Art. 20.2), no simulado en esta versión."
                 ),
+            }
+
+        if self.CAMPEON_APERTURA not in self.equipos:
+            # El campeón del Apertura ya no está en Primera esta ronda (caso
+            # típico de temporadas hipotéticas del Modo Temporada: descendió
+            # por promedios/anual pese a haber ganado el Apertura). Sin él no
+            # hay final que jugar -- antes esto explotaba con KeyError al
+            # buscarlo en self.equipos (jugar_final_ascenso). Se sale
+            # limpio en vez de romper la simulación.
+            return {
+                "situacion_especial": True,
+                "mensaje": (
+                    f"El campeón del Apertura ({self.CAMPEON_APERTURA}) ya no juega en Primera "
+                    "esta temporada (descendió), así que no se disputa el Trofeo de Campeones."
+                ),
+                "campeon_apertura": self.CAMPEON_APERTURA,
+                "campeon_clausura": campeon_clausura,
             }
 
         ganador, perdedor, detalle = self.jugar_final_ascenso(self.CAMPEON_APERTURA, campeon_clausura)
