@@ -13,7 +13,7 @@ fecha,jornada,equipo_local,equipo_visitante,goles_local,goles_visitante
 ,1,Chacarita,San Martín,1,1
 ,1,Güemes,Chicago,0,1
 ,1,Los Andes,Alte. Brown,0,0
-,1,Racing (Cba),Estudiantes,1,0
+,1,Racing (Cba),Estudiantes (Caseros),1,0
 ,1,San Martín (T),Patronato,0,0
 ,1,Atlanta,Quilmes,1,0
 ,1,Gimnasia (J),Midland,2,1
@@ -33,7 +33,7 @@ fecha,jornada,equipo_local,equipo_visitante,goles_local,goles_visitante
 ,2,Chacarita,Gimnasia (J),3,1
 ,2,Central Norte,Colón,0,0
 ,2,Colegiales,Atlanta,1,0
-,2,CA Mitre,Estudiantes,1,0
+,2,CA Mitre,Estudiantes (Caseros),1,0
 ,3,Gimnasia y Tiro,Almagro,2,0
 ,3,Los Andes,Defensores,0,1
 ,3,San Miguel,Chaco For Ever,2,0
@@ -48,14 +48,14 @@ fecha,jornada,equipo_local,equipo_visitante,goles_local,goles_visitante
 ,3,Güemes,Chacarita,2,1
 ,3,San Martín (T),Maipú,2,2
 ,3,Racing (Cba),CA Mitre,0,0
-,3,Estudiantes,Alte. Brown,0,1
+,3,Estudiantes (Caseros),Alte. Brown,0,1
 ,3,Atlético Rafaela,Temperley,1,0
 ,3,Tristan Suárez,San Martín,2,1
 ,3,Atlanta,Patronato,0,0
 ,5,Racing (Cba),Alte. Brown,2,1
 ,5,Atlético Rafaela,San Martín,1,0
 ,5,Los Andes,Central Norte,0,0
-,5,Estudiantes,Defensores,0,2
+,5,Estudiantes (Caseros),Defensores,0,2
 ,5,All Boys,Dep. Madryn,1,0
 ,5,Morón,Chaco For Ever,3,2
 ,5,San Miguel,San Telmo,1,1
@@ -76,7 +76,7 @@ fecha,jornada,equipo_local,equipo_visitante,goles_local,goles_visitante
 ,6,Acassuso,Morón,0,3
 ,6,Defensores,CA Mitre,0,0
 ,6,Bolivar,Alte. Brown,0,0
-,6,Dep. Madryn,Estudiantes,3,0
+,6,Dep. Madryn,Estudiantes (Caseros),3,0
 ,6,Ferro,Los Andes,0,2
 ,6,Tristan Suárez,Gimnasia (J),3,0
 ,6,Chaco For Ever,Godoy Cruz,1,1
@@ -94,7 +94,7 @@ fecha,jornada,equipo_local,equipo_visitante,goles_local,goles_visitante
 ,7,Colegiales,San Miguel,0,0
 ,7,Los Andes,Temperley,0,1
 ,7,Chicago,All Boys,0,0
-,7,Chacarita,Estudiantes,0,3
+,7,Chacarita,Estudiantes (Caseros),0,3
 ,7,Dep. Madryn,San Martín (T),1,1
 ,7,Patronato,Colón,0,2
 ,7,San Telmo,Quilmes,0,3
@@ -106,7 +106,7 @@ fecha,jornada,equipo_local,equipo_visitante,goles_local,goles_visitante
 ,8,All Boys,Ferro,0,0
 ,8,Agropecuario,Tristan Suárez,0,2
 ,8,Colegiales,Almagro,1,0
-,8,Estudiantes,Central Norte,1,0
+,8,Estudiantes (Caseros),Central Norte,1,0
 ,8,Midland,Temperley,0,0
 ,8,Godoy Cruz,Acassuso,2,0
 ,8,San Martín (T),Chacarita,1,1
@@ -127,7 +127,7 @@ fecha,jornada,equipo_local,equipo_visitante,goles_local,goles_visitante
 ,9,Colón,Racing (Cba),1,0
 ,9,Acassuso,Los Andes,0,1
 ,9,Chaco For Ever,All Boys,2,0
-,9,Ferro,Estudiantes,0,1
+,9,Ferro,Estudiantes (Caseros),0,1
 ,9,Central Norte,CA Mitre,1,1
 ,9,Dep. Madryn,Alte. Brown,2,1
 ,9,Defensores,Bolivar,0,0
@@ -150,7 +150,7 @@ fecha,jornada,equipo_local,equipo_visitante,goles_local,goles_visitante
 ,10,Racing (Cba),Defensores,3,0
 ,10,Alte. Brown,Central Norte,1,0
 ,10,CA Mitre,Ferro,0,1
-,10,Estudiantes,Chaco For Ever,0,0
+,10,Estudiantes (Caseros),Chaco For Ever,0,0
 ,10,Gimnasia (J),Almagro,6,1
 ,10,Colegiales,Temperley,1,1
 ,10,Gimnasia y Tiro,Güemes,1,1
@@ -165,7 +165,7 @@ fecha,jornada,equipo_local,equipo_visitante,goles_local,goles_visitante
 ,11,Morón,Racing (Cba),2,1
 ,11,Tristan Suárez,Gimnasia y Tiro,2,1
 ,11,Chicago,Colegiales,0,0
-,11,Acassuso,Estudiantes,0,1
+,11,Acassuso,Estudiantes (Caseros),0,1
 ,11,Chacarita,Midland,1,0
 ,11,Dep. Madryn,Defensores,2,1
 ,11,Agropecuario,San Martín (T),2,0
@@ -179,7 +179,7 @@ fecha,jornada,equipo_local,equipo_visitante,goles_local,goles_visitante
 ,12,Los Andes,Colón,1,1
 ,12,San Martín (T),Atlético Rafaela,2,1
 ,12,Defensores,Central Norte,1,1
-,12,Estudiantes,San Telmo,1,1
+,12,Estudiantes (Caseros),San Telmo,1,1
 ,12,Colegiales,San Martín,2,0
 ,12,Atlanta,Tristan Suárez,3,1
 ,12,CA Mitre,Acassuso,2,0
@@ -195,7 +195,7 @@ fecha,jornada,equipo_local,equipo_visitante,goles_local,goles_visitante
 ,12,Gimnasia y Tiro,Agropecuario,2,3
 ,13,Morón,Los Andes,0,0
 ,13,San Telmo,CA Mitre,0,0
-,13,San Miguel,Estudiantes,1,1
+,13,San Miguel,Estudiantes (Caseros),1,1
 ,13,Tristan Suárez,Midland,1,3
 ,13,Temperley,Maipú,0,5
 ,13,San Martín,Patronato,1,1
@@ -215,7 +215,7 @@ fecha,jornada,equipo_local,equipo_visitante,goles_local,goles_visitante
 ,14,Atlanta,Atlético Rafaela,2,0
 ,14,Los Andes,Godoy Cruz,1,0
 ,14,Alte. Brown,San Telmo,0,0
-,14,Estudiantes,Colón,1,1
+,14,Estudiantes (Caseros),Colón,1,1
 ,14,Bolivar,Acassuso,1,0
 ,14,Colegiales,Güemes,4,1
 ,14,Dep. Madryn,Ferro,1,0
@@ -237,7 +237,7 @@ fecha,jornada,equipo_local,equipo_visitante,goles_local,goles_visitante
 ,15,Atlético Rafaela,Midland,1,0
 ,15,San Martín,Maipú,2,1
 ,15,Acassuso,Defensores,1,0
-,15,Morón,Estudiantes,2,0
+,15,Morón,Estudiantes (Caseros),2,0
 ,15,Chacarita,Almagro,1,0
 ,15,Agropecuario,Quilmes,0,0
 ,15,Chaco For Ever,Dep. Madryn,1,2
@@ -249,7 +249,7 @@ fecha,jornada,equipo_local,equipo_visitante,goles_local,goles_visitante
 ,15,San Martín (T),Atlanta,0,1
 ,16,Racing (Cba),Ferro,0,0
 ,16,Colegiales,Agropecuario,0,0
-,16,Estudiantes,Godoy Cruz,1,0
+,16,Estudiantes (Caseros),Godoy Cruz,1,0
 ,16,All Boys,Los Andes,0,0
 ,16,Alte. Brown,Colón,1,1
 ,16,Defensores,San Telmo,1,0
@@ -267,7 +267,7 @@ fecha,jornada,equipo_local,equipo_visitante,goles_local,goles_visitante
 ,16,Gimnasia (J),Chicago,4,0
 ,17,Gimnasia y Tiro,Midland,1,0
 ,17,Atlanta,Gimnasia (J),3,0
-,17,Los Andes,Estudiantes,0,0
+,17,Los Andes,Estudiantes (Caseros),0,0
 ,17,Acassuso,Central Norte,2,1
 ,17,San Miguel,Defensores,0,0
 ,17,San Martín,Chicago,1,0
@@ -292,7 +292,7 @@ fecha,jornada,equipo_local,equipo_visitante,goles_local,goles_visitante
 ,18,Colegiales,San Martín (T),2,0
 ,18,Quilmes,Gimnasia y Tiro,1,0
 ,4,San Telmo,Racing (Cba),2,0
-,4,Bolivar,Estudiantes,1,2
+,4,Bolivar,Estudiantes (Caseros),1,2
 ,4,Almagro,Atlanta,2,0
 ,4,Colegiales,Quilmes,3,1
 ,4,Acassuso,San Miguel,0,2
@@ -311,7 +311,7 @@ fecha,jornada,equipo_local,equipo_visitante,goles_local,goles_visitante
 ,4,Chicago,Atlético Rafaela,0,0
 ,18,Alte. Brown,Godoy Cruz,1,0
 ,18,Dep. Madryn,San Miguel,2,2
-,18,Estudiantes,All Boys,2,1
+,18,Estudiantes (Caseros),All Boys,2,1
 ,18,Ferro,Acassuso,2,1
 ,18,Patronato,Atlético Rafaela,0,0
 ,18,Racing (Cba),Chaco For Ever,2,0

@@ -1,5 +1,5 @@
 fecha,jornada,equipo_local,equipo_visitante
-,19,Estudiantes,Racing (Cba)
+,19,Estudiantes (Caseros),Racing (Cba)
 ,19,CA Mitre,All Boys
 ,19,Alte. Brown,Los Andes
 ,19,Bolivar,Godoy Cruz
@@ -25,7 +25,7 @@ fecha,jornada,equipo_local,equipo_visitante
 ,20,Godoy Cruz,Defensores
 ,20,Los Andes,Bolivar
 ,20,All Boys,Alte. Brown
-,20,Estudiantes,CA Mitre
+,20,Estudiantes (Caseros),CA Mitre
 ,20,Gimnasia (J),Chacarita
 ,20,Güemes,San Martín
 ,20,Tristan Suárez,Chicago
@@ -36,7 +36,7 @@ fecha,jornada,equipo_local,equipo_visitante
 ,20,Atlanta,Colegiales
 ,20,Midland,Quilmes
 ,21,CA Mitre,Racing (Cba)
-,21,Alte. Brown,Estudiantes
+,21,Alte. Brown,Estudiantes (Caseros)
 ,21,Bolivar,All Boys
 ,21,Defensores,Los Andes
 ,21,Dep. Madryn,Godoy Cruz
@@ -60,7 +60,7 @@ fecha,jornada,equipo_local,equipo_visitante
 ,22,Godoy Cruz,Central Norte
 ,22,Los Andes,Dep. Madryn
 ,22,All Boys,Defensores
-,22,Estudiantes,Bolivar
+,22,Estudiantes (Caseros),Bolivar
 ,22,CA Mitre,Alte. Brown
 ,22,Gimnasia (J),Güemes
 ,22,Tristan Suárez,Chacarita
@@ -73,7 +73,7 @@ fecha,jornada,equipo_local,equipo_visitante
 ,22,Quilmes,Colegiales
 ,23,Alte. Brown,Racing (Cba)
 ,23,Bolivar,CA Mitre
-,23,Defensores,Estudiantes
+,23,Defensores,Estudiantes (Caseros)
 ,23,Dep. Madryn,All Boys
 ,23,Central Norte,Los Andes
 ,23,Ferro,Godoy Cruz
@@ -95,7 +95,7 @@ fecha,jornada,equipo_local,equipo_visitante
 ,24,Godoy Cruz,Chaco For Ever
 ,24,Los Andes,Ferro
 ,24,All Boys,Central Norte
-,24,Estudiantes,Dep. Madryn
+,24,Estudiantes (Caseros),Dep. Madryn
 ,24,CA Mitre,Defensores
 ,24,Alte. Brown,Bolivar
 ,24,Gimnasia (J),Tristan Suárez
@@ -112,7 +112,7 @@ fecha,jornada,equipo_local,equipo_visitante
 ,25,San Martín (T),Dep. Madryn
 ,25,Gimnasia (J),Chaco For Ever
 ,25,Morón,Almagro
-,25,Estudiantes,Chacarita
+,25,Estudiantes (Caseros),Chacarita
 ,25,Racing (Cba),San Martín
 ,25,Temperley,Los Andes
 ,25,CA Mitre,Güemes
@@ -128,7 +128,7 @@ fecha,jornada,equipo_local,equipo_visitante
 ,26,Bolivar,Racing (Cba)
 ,26,Defensores,Alte. Brown
 ,26,Dep. Madryn,CA Mitre
-,26,Central Norte,Estudiantes
+,26,Central Norte,Estudiantes (Caseros)
 ,26,Ferro,All Boys
 ,26,Chaco For Ever,Los Andes
 ,26,Acassuso,Godoy Cruz
@@ -148,7 +148,7 @@ fecha,jornada,equipo_local,equipo_visitante
 ,27,Godoy Cruz,San Telmo
 ,27,Los Andes,Acassuso
 ,27,All Boys,Chaco For Ever
-,27,Estudiantes,Ferro
+,27,Estudiantes (Caseros),Ferro
 ,27,CA Mitre,Central Norte
 ,27,Alte. Brown,Dep. Madryn
 ,27,Bolivar,Defensores
@@ -165,7 +165,7 @@ fecha,jornada,equipo_local,equipo_visitante
 ,28,Dep. Madryn,Bolivar
 ,28,Central Norte,Alte. Brown
 ,28,Ferro,CA Mitre
-,28,Chaco For Ever,Estudiantes
+,28,Chaco For Ever,Estudiantes (Caseros)
 ,28,Acassuso,All Boys
 ,28,San Telmo,Los Andes
 ,28,San Miguel,Godoy Cruz
@@ -183,7 +183,7 @@ fecha,jornada,equipo_local,equipo_visitante
 ,29,Godoy Cruz,Colón
 ,29,Los Andes,San Miguel
 ,29,All Boys,San Telmo
-,29,Estudiantes,Acassuso
+,29,Estudiantes (Caseros),Acassuso
 ,29,CA Mitre,Chaco For Ever
 ,29,Alte. Brown,Ferro
 ,29,Bolivar,Central Norte
@@ -202,7 +202,7 @@ fecha,jornada,equipo_local,equipo_visitante
 ,30,Ferro,Bolivar
 ,30,Chaco For Ever,Alte. Brown
 ,30,Acassuso,CA Mitre
-,30,San Telmo,Estudiantes
+,30,San Telmo,Estudiantes (Caseros)
 ,30,San Miguel,All Boys
 ,30,Colón,Los Andes
 ,30,Morón,Godoy Cruz
@@ -218,7 +218,7 @@ fecha,jornada,equipo_local,equipo_visitante
 ,31,Racing (Cba),Godoy Cruz
 ,31,Los Andes,Morón
 ,31,All Boys,Colón
-,31,Estudiantes,San Miguel
+,31,Estudiantes (Caseros),San Miguel
 ,31,CA Mitre,San Telmo
 ,31,Alte. Brown,Acassuso
 ,31,Bolivar,Chaco For Ever
@@ -239,7 +239,7 @@ fecha,jornada,equipo_local,equipo_visitante
 ,32,Acassuso,Bolivar
 ,32,San Telmo,Alte. Brown
 ,32,San Miguel,CA Mitre
-,32,Colón,Estudiantes
+,32,Colón,Estudiantes (Caseros)
 ,32,Morón,All Boys
 ,32,Godoy Cruz,Los Andes
 ,32,Temperley,Gimnasia (J)
@@ -253,7 +253,7 @@ fecha,jornada,equipo_local,equipo_visitante
 ,32,San Martín (T),Gimnasia y Tiro
 ,33,Racing (Cba),Los Andes
 ,33,All Boys,Godoy Cruz
-,33,Estudiantes,Morón
+,33,Estudiantes (Caseros),Morón
 ,33,CA Mitre,Colón
 ,33,Alte. Brown,San Miguel
 ,33,Bolivar,San Telmo
@@ -276,7 +276,7 @@ fecha,jornada,equipo_local,equipo_visitante
 ,34,San Miguel,Bolivar
 ,34,Colón,Alte. Brown
 ,34,Morón,CA Mitre
-,34,Godoy Cruz,Estudiantes
+,34,Godoy Cruz,Estudiantes (Caseros)
 ,34,Los Andes,All Boys
 ,34,Chicago,Gimnasia (J)
 ,34,San Martín,Temperley
@@ -288,7 +288,7 @@ fecha,jornada,equipo_local,equipo_visitante
 ,34,San Martín (T),Midland
 ,34,Gimnasia y Tiro,Atlanta
 ,35,Racing (Cba),All Boys
-,35,Estudiantes,Los Andes
+,35,Estudiantes (Caseros),Los Andes
 ,35,CA Mitre,Godoy Cruz
 ,35,Alte. Brown,Morón
 ,35,Bolivar,Colón
@@ -313,7 +313,7 @@ fecha,jornada,equipo_local,equipo_visitante
 ,36,Morón,Bolivar
 ,36,Godoy Cruz,Alte. Brown
 ,36,Los Andes,CA Mitre
-,36,All Boys,Estudiantes
+,36,All Boys,Estudiantes (Caseros)
 ,36,San Martín,Gimnasia (J)
 ,36,Chacarita,Chicago
 ,36,Güemes,Temperley

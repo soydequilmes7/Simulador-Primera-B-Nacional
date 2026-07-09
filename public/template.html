@@ -644,6 +644,38 @@
   .ascenso-footer{ text-align:center; margin-top:14px; color:var(--ink-dim); font-size:13px; }
   .ascenso-footer b{ color: var(--amber); }
 
+  /* ---------- MODO TEMPORADA ---------- */
+  .temporada-grid{
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr));
+    gap:16px; margin-bottom:8px;
+  }
+  .temporada-card{
+    border:1px solid var(--line); border-radius:var(--radius); padding:20px 22px;
+    background: var(--card-grad, var(--bg-panel)); background-color:var(--bg-panel);
+    box-shadow:var(--card-shadow); transition:box-shadow 0.25s ease, transform 0.25s ease;
+  }
+  .temporada-card:hover{ box-shadow:var(--card-shadow-hover); transform:var(--hover-lift); }
+  .temporada-card .liga-nombre{
+    font-family:'JetBrains Mono'; font-size:11px; color:var(--muted);
+    letter-spacing:0.08em; text-transform:uppercase; margin-bottom:10px;
+  }
+  .temporada-card .campeon-nombre{ font-size:19px; font-weight:700; color:var(--ink); margin-bottom:14px; }
+  .temporada-card .campeon-nombre .trofeo{ margin-right:6px; }
+  .temporada-mov-fila{ display:flex; gap:8px; align-items:baseline; font-size:14px; margin-bottom:6px; }
+  .temporada-mov-fila .etiqueta{ min-width:64px; font-family:'JetBrains Mono'; font-size:11px; text-transform:uppercase; letter-spacing:0.06em; }
+  .temporada-mov-fila.asciende .etiqueta{ color:#3fb97c; }
+  .temporada-mov-fila.desciende .etiqueta{ color:var(--danger); }
+  .temporada-mov-fila .equipos{ color:var(--ink-dim); }
+  .temporada-movimientos-tabla{ font-family:'JetBrains Mono'; font-size:13px; line-height:1.9; }
+  .temporada-movimientos-tabla .mov{ padding:4px 0; border-bottom:1px solid var(--line); }
+  .temporada-movimientos-tabla .mov:last-child{ border-bottom:none; }
+  .temporada-copas-lista{ display:flex; flex-wrap:wrap; gap:10px; }
+  .temporada-copa-chip{
+    border:1px solid var(--line); border-radius:999px; padding:8px 16px;
+    background:var(--bg-panel); font-size:13px; color:var(--ink-dim);
+  }
+  .temporada-avisos{ margin-top:14px; font-size:12px; color:var(--muted); font-family:'JetBrains Mono'; }
+
   /* ---------- BRACKET ---------- */
   .bracket-wrap{ position:relative; }
   /* Los cuadros pueden tener mucha más altura que la pantalla (una ronda
@@ -2446,6 +2478,7 @@
       <button class="liga-tab" data-liga="bmetro">B Metropolitana</button>
       <button class="liga-tab" data-liga="federal">Federal A</button>
       <button class="liga-tab" data-liga="primerac">Primera C</button>
+      <button class="liga-tab" data-liga="temporada">Modo Temporada</button>
     </div>
     <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Cambiar entre modo claro y oscuro">
       <span id="theme-toggle-icon">🌙</span><span id="theme-toggle-label">Oscuro</span>
@@ -2961,6 +2994,69 @@
   </section>
 
   </div><!-- /vista-federal -->
+
+  <div id="vista-temporada" style="display:none">
+    <div class="search-section" style="text-align:center;">
+      <p style="color:var(--ink-dim); max-width:640px; margin:0 auto 18px;">
+        Corre las 6 competencias (Liga Profesional, Primera Nacional, B Metropolitana,
+        Federal A, Primera C y Copa Argentina) para una temporada completa, calcula quién
+        asciende, quién desciende y quién clasifica a las copas internacionales.
+        No usa el simulador del navegador: pega directo al backend.
+      </p>
+      <div class="sim-select-row" style="justify-content:center; margin-bottom:14px;">
+        <label for="temporada-n-sims">Simulaciones por competencia</label>
+        <input type="number" id="temporada-n-sims" value="100" min="20" max="500" step="10">
+        <span class="rango">(20–500)</span>
+      </div>
+      <button id="btn-simular-temporada" class="btn-simular">▶ Simular la temporada completa</button>
+      <div id="temporada-status" class="sim-status"></div>
+    </div>
+
+    <div id="temporada-resultado" style="display:none">
+      <section id="sec-temporada-competencias">
+        <div class="section-head"><span class="idx">01</span><h2>Cómo terminó cada competencia</h2><div class="rule"></div></div>
+        <div id="temporada-competencias-grid" class="temporada-grid"></div>
+      </section>
+
+      <section id="sec-temporada-movimientos">
+        <div class="section-head"><span class="idx">02</span><h2>Ascensos y descensos</h2><div class="rule"></div></div>
+        <div class="table-wrap"><div id="temporada-movimientos-list" class="temporada-movimientos-tabla" style="padding:18px 22px;"></div></div>
+        <div id="temporada-avisos" class="temporada-avisos"></div>
+      </section>
+
+      <section id="sec-temporada-copas">
+        <div class="section-head"><span class="idx">03</span><h2>Clasificados a copas internacionales</h2><div class="rule"></div></div>
+        <div id="temporada-copas-list" class="temporada-copas-lista"></div>
+      </section>
+
+      <section id="sec-temporada-generar">
+        <div class="section-head"><span class="idx">04</span><h2>Generar la temporada siguiente</h2><div class="rule"></div></div>
+        <div class="table-wrap" style="padding:22px 24px;">
+          <p style="color:var(--ink-dim); margin:0 0 16px;">
+            <b style="color:var(--danger);">Esto sí escribe en la base de datos.</b>
+            Activa la temporada nueva para Liga Profesional, Primera Nacional, B Metropolitana
+            y Primera C (zonas sorteadas, standings en cero — Apertura simulado para LPF —
+            y fixture armado), y guarda el historial de cada club. Federal A y Copa Argentina
+            no se tocan (formato de fixture propio, no cubierto todavía).
+            Corré primero "Simular la temporada completa" de arriba para ver el resultado antes
+            de generar de verdad.
+          </p>
+          <div class="sim-select-row" style="margin-bottom:10px;">
+            <label for="temporada-actual-input">Temporada que termina</label>
+            <input type="text" id="temporada-actual-input" placeholder="2026" style="width:100px;">
+          </div>
+          <div class="sim-select-row" style="margin-bottom:16px;">
+            <label for="temporada-siguiente-input">Temporada nueva</label>
+            <input type="text" id="temporada-siguiente-input" placeholder="2027" style="width:100px;">
+          </div>
+          <button id="btn-generar-temporada" class="btn-actualizar" style="border-color:var(--danger); color:var(--danger);">
+            ⚠ Generar temporada siguiente (persiste)
+          </button>
+          <div id="temporada-generar-status" class="sim-status"></div>
+        </div>
+      </section>
+    </div>
+  </div>
 
   <div id="vista-primerac" style="display:none">
 
@@ -6326,6 +6422,12 @@ document.getElementById('btn-campeon-federal').addEventListener('click', simular
 
 /* ---------- SELECTOR DE LIGA ---------- */
 const HERO_TEXTOS = {
+  temporada: {
+    eyebrow: () => `MODO TEMPORADA`,
+    titulo: "TODO EL FÚTBOL ARGENTINO",
+    sub: "Las 6 competencias juntas: quién sale campeón, quién asciende, quién desciende y quién clasifica a copas internacionales, todo en una sola corrida.",
+    ascensosLbl: "Competencias",
+  },
   nacional: {
     eyebrow: () => `SIMULACIÓN MONTE CARLO — <span id="hero-n">${(DATA && DATA.n_simulaciones) || 0}</span> CORRIDAS`,
     titulo: "PRIMERA NACIONAL",
@@ -6413,6 +6515,7 @@ function setLiga(liga){
   document.getElementById('vista-bmetro').style.display = liga === 'bmetro' ? '' : 'none';
   document.getElementById('vista-federal').style.display = liga === 'federal' ? '' : 'none';
   document.getElementById('vista-primerac').style.display = liga === 'primerac' ? '' : 'none';
+  document.getElementById('vista-temporada').style.display = liga === 'temporada' ? '' : 'none';
   document.getElementById('sim-control-nacional').style.display = liga === 'nacional' ? '' : 'none';
   document.getElementById('sim-control-lpf').style.display = liga === 'lpf' ? '' : 'none';
   document.getElementById('sim-control-copa').style.display = liga === 'copa' ? '' : 'none';
@@ -6425,7 +6528,8 @@ function setLiga(liga){
   document.body.classList.toggle('liga-bmetro', liga === 'bmetro');
   document.body.classList.toggle('liga-federal', liga === 'federal');
   document.body.classList.toggle('liga-primerac', liga === 'primerac');
-  actualizarHero(liga);
+  document.body.classList.toggle('liga-temporada', liga === 'temporada');
+  if (liga !== 'temporada') actualizarHero(liga);
   // El cuadro recién visible puede haber quedado con medidas en 0 (display:none
   // no dispara el MutationObserver de los brackets), así que se refresca a mano.
   refreshAllBracketNavs();
@@ -7138,4 +7242,171 @@ window.addEventListener('resize', () => {
 refreshAllBracketNavs();
 refreshAllBracketLines();
 
+/* ---------- MODO TEMPORADA ---------- */
+const NOMBRE_LINDO_COMPETENCIA = {
+  lpf: "Liga Profesional", nacional: "Primera Nacional", bmetro: "B Metropolitana",
+  federal_a: "Federal A", primerac: "Primera C", copa: "Copa Argentina",
+};
+const ORDEN_COMPETENCIAS = ["lpf", "nacional", "bmetro", "federal_a", "primerac", "copa"];
+
+function leerNSimsTemporada(){
+  const input = document.getElementById('temporada-n-sims');
+  let n = parseInt(input.value, 10);
+  if (!Number.isFinite(n)) n = 100;
+  n = Math.max(20, Math.min(500, n));
+  input.value = n;
+  return n;
+}
+
+function competenciaCardHTML(slug, comp){
+  const nombre = NOMBRE_LINDO_COMPETENCIA[slug] || slug;
+  const campeonHTML = comp.campeon
+    ? `<div class="campeon-nombre"><span class="trofeo">🏆</span>${escudoHTML(comp.campeon)}${comp.campeon}</div>`
+    : `<div class="campeon-nombre" style="color:var(--muted); font-size:15px;">Sin campeón único</div>`;
+
+  const filas = [];
+  if (comp.ascensos.length){
+    filas.push(`<div class="temporada-mov-fila asciende"><span class="etiqueta">▲ Asciende</span><span class="equipos">${comp.ascensos.map(e => escudoHTML(e)+e).join(', ')}</span></div>`);
+  }
+  if (comp.descensos.length){
+    filas.push(`<div class="temporada-mov-fila desciende"><span class="etiqueta">▼ Desciende</span><span class="equipos">${comp.descensos.map(e => escudoHTML(e)+e).join(', ')}</span></div>`);
+  }
+
+  return `<div class="temporada-card">
+    <div class="liga-nombre">${nombre}</div>
+    ${campeonHTML}
+    ${filas.join('')}
+  </div>`;
+}
+
+function renderTemporada(datos){
+  const grid = document.getElementById('temporada-competencias-grid');
+  grid.innerHTML = ORDEN_COMPETENCIAS
+    .filter(slug => datos.competencias[slug])
+    .map(slug => competenciaCardHTML(slug, datos.competencias[slug]))
+    .join('');
+
+  const movList = document.getElementById('temporada-movimientos-list');
+  const movimientos = (datos.promocion && datos.promocion.movimientos) || [];
+  movList.innerHTML = movimientos.length
+    ? movimientos.map(m => {
+        if (typeof m === 'string') return `<div class="mov">${m}</div>`;
+        const origen = NOMBRE_LINDO_COMPETENCIA[m.origen] || m.origen || '';
+        const destino = NOMBRE_LINDO_COMPETENCIA[m.destino] || m.destino || '';
+        const flecha = m.motivo === 'ascenso' ? '↑' : (m.motivo === 'descenso' ? '↓' : '→');
+        return `<div class="mov">${escudoHTML(m.club || '')}<b>${m.club || ''}</b> &nbsp;${flecha}&nbsp; ${origen} → ${destino}${m.motivo ? ` <span style="color:var(--muted);">(${m.motivo})</span>` : ''}</div>`;
+      }).join('')
+    : '<div style="color:var(--muted);">No se aplicaron movimientos entre divisiones en esta corrida.</div>';
+
+  const avisos = (datos.promocion && datos.promocion.avisos) || [];
+  const avisosDiv = document.getElementById('temporada-avisos');
+  avisosDiv.innerHTML = avisos.length
+    ? 'Avisos: ' + avisos.map(a => typeof a === 'string' ? a : JSON.stringify(a)).join(' · ')
+    : '';
+
+  const copasList = document.getElementById('temporada-copas-list');
+  const clasificados = (datos.clasificacion_copas && datos.clasificacion_copas.clasificados) || [];
+  copasList.innerHTML = clasificados.length
+    ? clasificados.map(equipo => `<div class="temporada-copa-chip">${escudoHTML(equipo)}${equipo}</div>`).join('')
+    : '<div style="color:var(--muted);">Sin clasificados calculados en esta corrida.</div>';
+
+  document.getElementById('temporada-resultado').style.display = '';
+
+  document.getElementById('hero-eyebrow').innerHTML =
+    `MODO TEMPORADA — <span id="hero-n">${datos.n_simulaciones}</span> SIMULACIONES POR COMPETENCIA`;
+}
+
+async function correrTemporada(){
+  const btn = document.getElementById('btn-simular-temporada');
+  const input = document.getElementById('temporada-n-sims');
+  const status = document.getElementById('temporada-status');
+  const nSims = leerNSimsTemporada();
+
+  if (!beginApiAction(status)) return;
+
+  btn.disabled = true;
+  input.disabled = true;
+  btn.textContent = "Simulando las 6 competencias…";
+  status.classList.remove('error', 'ok');
+  status.textContent = "Esto corre 6 motores completos, uno atrás del otro — puede tardar bastante más que una liga sola.";
+
+  try {
+    const respuesta = await apiFetch(apiUrl("/api/season/play"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ n_sims: Number(nSims), aplicar_promocion: true })
+    });
+    const cuerpo = await respuesta.json().catch(() => ({}));
+    if (!respuesta.ok) throw apiResponseError(respuesta, cuerpo);
+
+    renderTemporada(cuerpo);
+    status.classList.add('ok');
+    status.textContent = `✓ Temporada simulada (${cuerpo.generado})`;
+  } catch (e) {
+    setApiErrorStatus(status, "No se pudo simular la temporada", e);
+  } finally {
+    btn.disabled = false;
+    input.disabled = false;
+    btn.textContent = "▶ Simular la temporada completa";
+    endApiAction();
+  }
+}
+
+document.getElementById('btn-simular-temporada').addEventListener('click', correrTemporada);
+
+async function correrGenerarTemporada(){
+  const btn = document.getElementById('btn-generar-temporada');
+  const status = document.getElementById('temporada-generar-status');
+  const actual = document.getElementById('temporada-actual-input').value.trim();
+  const siguiente = document.getElementById('temporada-siguiente-input').value.trim();
+  const nSims = leerNSimsTemporada();
+
+  if (!actual || !siguiente){
+    status.classList.add('error');
+    status.classList.remove('ok');
+    status.textContent = "Completá las dos temporadas (ej. 2026 / 2027) antes de generar.";
+    return;
+  }
+
+  const confirmado = window.confirm(
+    `Esto va a escribir en la base de datos de verdad:\n\n` +
+    `Activa la temporada ${siguiente} para Liga Profesional, Primera Nacional, ` +
+    `B Metropolitana y Primera C, con las zonas/fixture ya armados, y aplica los ` +
+    `ascensos y descensos de la temporada ${actual}.\n\n` +
+    `¿Confirmás que querés hacerlo ahora?`
+  );
+  if (!confirmado) return;
+
+  if (!beginApiAction(status)) return;
+
+  btn.disabled = true;
+  btn.textContent = "Generando (esto puede tardar)…";
+  status.classList.remove('error', 'ok');
+  status.textContent = "Corriendo las 6 competencias y escribiendo la temporada nueva en Supabase...";
+
+  try {
+    const respuesta = await apiFetch(apiUrl("/api/season/generate-next"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ n_sims: Number(nSims), temporada_actual: actual, temporada_siguiente: siguiente })
+    });
+    const cuerpo = await respuesta.json().catch(() => ({}));
+    if (!respuesta.ok) throw apiResponseError(respuesta, cuerpo);
+
+    renderTemporada(cuerpo);
+    status.classList.add('ok');
+    const divisiones = Object.keys((cuerpo.historia && cuerpo.historia.divisiones) || {});
+    status.textContent = `✓ Temporada ${siguiente} generada y guardada (${divisiones.join(', ')}).`;
+  } catch (e) {
+    setApiErrorStatus(status, "No se pudo generar la temporada", e);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "⚠ Generar temporada siguiente (persiste)";
+    endApiAction();
+  }
+}
+
+document.getElementById('btn-generar-temporada').addEventListener('click', correrGenerarTemporada);
+
+/* ---------- FIN MODO TEMPORADA ---------- */
 </script>

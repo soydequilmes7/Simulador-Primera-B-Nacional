@@ -15,6 +15,7 @@ Render:
 """
 import sys
 import threading
+from datetime import datetime
 from pathlib import Path
 
 # Este archivo vive en api/; los módulos del simulador (main.py,
@@ -796,6 +797,146 @@ def actualizar_endpoint(body: SimularBody = SimularBody()):
         return _error_response(e)
     finally:
         _lock_nacional.release_write()
+
+
+class SimularTemporadaBody(BaseModel):
+    n_sims: int = 100
+    aplicar_promocion: bool = True
+
+
+_lock_season = ReadWriteLock()
+
+
+def _serializar_resultado_torneo(r) -> dict:
+    """ResultadoTorneo -> dict JSON-safe. datos_crudos es literalmente
+    lo que devuelve main_X.correr_simulacion() (mismo shape que ya
+    consume el frontend de cada liga individual -- tablas, monte_carlo,
+    etc., ya con tipos nativos de Python). ratings_finales se omite del
+    JSON: es un detalle interno para el carryover de la próxima
+    temporada, no algo que haga falta mostrar."""
+    return {
+        "campeon": r.campeon,
+        "ascensos": r.ascensos,
+        "descensos": r.descensos,
+        "clasificados_copa": r.clasificados_copa,
+        "datos": r.datos_crudos,
+    }
+
+
+@app.post("/api/season/play")
+def season_play_endpoint(body: SimularTemporadaBody = SimularTemporadaBody()):
+    """Corre las 6 competencias (LPF, Nacional, B Metro, Federal A,
+    Primera C, Copa Argentina) para una temporada completa, calcula
+    clasificados a copas internacionales y (por default) ascensos/
+    descensos entre divisiones.
+
+    aplicar_promocion=True calcula los movimientos y los devuelve para
+    mostrar, pero NO persiste nada -- el ClubRegistry se arma de cero en
+    esta misma request (build_from_current_data()) y vive solo en
+    memoria durante la corrida, así que no hay ningún roster real que
+    quede mutado. Para generar la temporada siguiente de verdad
+    (persistir en Supabase) hace falta un endpoint aparte, todavía no
+    construido -- ver PLAN_MODO_TEMPORADA_NACIONAL, Etapa 7."""
+    n_sims = max(20, min(500, body.n_sims))
+
+    ocupado = _adquirir_escritura(
+        _lock_season,
+        "Ya hay una simulación de temporada corriendo. Esperá a que termine.",
+    )
+    if ocupado:
+        return ocupado
+    try:
+        from season.club_registry import ClubRegistry
+        from season.season_engine import SeasonEngine
+
+        registry = ClubRegistry.build_from_current_data()
+        engine = SeasonEngine(registry)
+        resultado = engine.correr_temporada(n_sims=n_sims, aplicar_promocion=body.aplicar_promocion)
+
+        return {
+            "generado": datetime.now().isoformat(timespec="seconds"),
+            "n_simulaciones": n_sims,
+            "competencias": {
+                slug: _serializar_resultado_torneo(r) for slug, r in resultado.resultados.items()
+            },
+            "clasificacion_copas": resultado.clasificacion,
+            "promocion": resultado.promocion,
+        }
+    except Exception as e:
+        return _error_response(e)
+    finally:
+        _lock_season.release_write()
+
+
+class GenerarTemporadaBody(BaseModel):
+    n_sims: int = 100
+    temporada_actual: str
+    temporada_siguiente: str
+
+
+@app.post("/api/season/generate-next")
+def season_generate_next_endpoint(body: GenerarTemporadaBody):
+    """*** OPERACIÓN QUE ESCRIBE EN SUPABASE DE VERDAD ***
+
+    A diferencia de /api/season/play (shadow, memoria, sin persistir),
+    este endpoint corre las 6 competencias, aplica ascensos/descensos
+    de verdad y le pide a HistoryManager.persist_season() que:
+      - active la temporada `temporada_siguiente` en Supabase para
+        LPF/Nacional/BMetro/Primera C (crea la fila si no existe),
+      - sortee zonas, ponga standings en cero (o el Apertura simulado
+        para LPF) y arme el fixture ida-vuelta de esas 4 divisiones,
+      - guarde en Club.history de dónde viene cada club.
+
+    Federal A y Copa Argentina NO quedan cubiertos (ver docstring de
+    HistoryManager) -- sus fixtures no son un round-robin simple y
+    quedan con los datos de la temporada anterior hasta que se
+    implemente su propio generador.
+
+    `temporada_actual`/`temporada_siguiente` son OBLIGATORIOS a
+    propósito (ej. "2026"/"2027") -- sin default, para que nadie dispare
+    esto sin saber exactamente qué temporada está creando.
+
+    Requiere SUPABASE_DB_URL configurada (HistoryManager() sin repo
+    inyectado pega contra la base real vía db.repository.repository()).
+    """
+    n_sims = max(20, min(500, body.n_sims))
+
+    ocupado = _adquirir_escritura(
+        _lock_season,
+        "Ya hay una operación de temporada en curso. Esperá a que termine.",
+    )
+    if ocupado:
+        return ocupado
+    try:
+        from season.club_registry import ClubRegistry
+        from season.season_engine import SeasonEngine
+
+        registry = ClubRegistry.build_from_current_data()
+        engine = SeasonEngine(registry)
+        resultado = engine.correr_temporada(
+            n_sims=n_sims,
+            aplicar_promocion=True,
+            generar_temporada_siguiente=True,
+            temporada_actual=body.temporada_actual,
+            temporada_siguiente=body.temporada_siguiente,
+        )
+
+        return {
+            "generado": datetime.now().isoformat(timespec="seconds"),
+            "n_simulaciones": n_sims,
+            "temporada_actual": body.temporada_actual,
+            "temporada_siguiente": body.temporada_siguiente,
+            "competencias": {
+                slug: _serializar_resultado_torneo(r) for slug, r in resultado.resultados.items()
+            },
+            "clasificacion_copas": resultado.clasificacion,
+            "promocion": resultado.promocion,
+            "historia": resultado.historia,
+        }
+    except Exception as e:
+        return _error_response(e)
+    finally:
+        _lock_season.release_write()
 
 
 # En Render este mismo proceso sirve el dashboard de public/. En Vercel,

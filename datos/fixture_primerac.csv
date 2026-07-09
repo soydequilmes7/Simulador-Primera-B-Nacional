@@ -1,5 +1,5 @@
 fecha,jornada,equipo_local,equipo_visitante
-,18,Cañuelas,Central Córdoba
+,18,Cañuelas,Central Córdoba (Rosario)
 ,18,CA Atlas,Claypole
 ,18,General Lamadrid,El Porvenir
 ,18,Club Luján,CA Fenix
@@ -8,7 +8,7 @@ fecha,jornada,equipo_local,equipo_visitante
 ,18,Centro Español,Mercedes
 ,19,Deportivo Español,Cañuelas
 ,19,El Porvenir,Club Luján
-,19,Central Córdoba,CA Atlas
+,19,Central Córdoba (Rosario),CA Atlas
 ,19,Yupanqui,Muñiz
 ,19,Defensores Cambaceres,Sacachispas
 ,19,Central Ballester,General Lamadrid
@@ -26,7 +26,7 @@ fecha,jornada,equipo_local,equipo_visitante
 ,20,CA Fenix,Puerto Nuevo
 ,20,CA Lugano,Sportivo Barracas
 ,20,Claypole,Juventud Unida SM
-,20,Berazategui,Central Córdoba
+,20,Berazategui,Central Córdoba (Rosario)
 ,20,CA Atlas,Sacachispas
 ,20,Defensores Cambaceres,General Lamadrid
 ,20,Deportivo Paraguayo,Central Ballester
@@ -47,11 +47,11 @@ fecha,jornada,equipo_local,equipo_visitante
 ,21,Berazategui,Mercedes
 ,21,Victoriano Arenas,Justo José Urquiza
 ,21,CA Lugano,Centro Español
-,21,Leones de Rosario FC,Central Córdoba
+,21,Leones de Rosario FC,Central Córdoba (Rosario)
 ,22,El Porvenir,CA Fenix
 ,22,Central Ballester,Sportivo Barracas
 ,22,Claypole,Club Luján
-,22,Central Córdoba,General Lamadrid
+,22,Central Córdoba (Rosario),General Lamadrid
 ,22,Muñiz,CA Atlas
 ,22,Yupanqui,Cañuelas
 ,22,Centro Español,Victoriano Arenas
@@ -63,7 +63,7 @@ fecha,jornada,equipo_local,equipo_visitante
 ,22,Defensores Cambaceres,CA Lugano
 ,22,Deportivo Español,Leones de Rosario FC
 ,23,CA Atlas,Cañuelas
-,23,Club Luján,Central Córdoba
+,23,Club Luján,Central Córdoba (Rosario)
 ,23,General Lamadrid,Deportivo Español
 ,23,Sportivo Barracas,Claypole
 ,23,CA Fenix,Central Ballester
@@ -87,12 +87,12 @@ fecha,jornada,equipo_local,equipo_visitante
 ,24,Muñiz,Juventud Unida SM
 ,24,Puerto Nuevo,Yupanqui
 ,24,Claypole,Mercedes
-,24,Centro Español,Central Córdoba
+,24,Centro Español,Central Córdoba (Rosario)
 ,24,Victoriano Arenas,General Lamadrid
 ,24,Leones de Rosario FC,Defensores Cambaceres
 ,25,El Porvenir,Central Ballester
 ,25,Claypole,CA Fenix
-,25,Central Córdoba,Sportivo Barracas
+,25,Central Córdoba (Rosario),Sportivo Barracas
 ,25,Deportivo Español,Club Luján
 ,25,Muñiz,General Lamadrid
 ,25,Yupanqui,CA Atlas
@@ -116,7 +116,7 @@ fecha,jornada,equipo_local,equipo_visitante
 ,26,General Lamadrid,Cañuelas
 ,26,Club Luján,Muñiz
 ,26,Sportivo Barracas,Deportivo Español
-,26,CA Fenix,Central Córdoba
+,26,CA Fenix,Central Córdoba (Rosario)
 ,26,Leones de Rosario FC,CA Atlas
 ,27,Berazategui,Estrella del Sur
 ,27,Victoriano Arenas,Argentino Rosario
@@ -126,7 +126,7 @@ fecha,jornada,equipo_local,equipo_visitante
 ,27,Deportivo Paraguayo,Leandro N. Alem
 ,27,Puerto Nuevo,CA Lugano
 ,27,Claypole,Central Ballester
-,27,Central Córdoba,El Porvenir
+,27,Central Córdoba (Rosario),El Porvenir
 ,27,Deportivo Español,CA Fenix
 ,27,Muñiz,Sportivo Barracas
 ,27,Cañuelas,Club Luján
@@ -144,7 +144,7 @@ fecha,jornada,equipo_local,equipo_visitante
 ,28,Defensores Cambaceres,Sportivo Barracas
 ,28,Cañuelas,Victoriano Arenas
 ,28,Berazategui,CA Atlas
-,28,Central Córdoba,Argentino Rosario
+,28,Central Córdoba (Rosario),Argentino Rosario
 ,28,CA Lugano,Leones de Rosario FC
 ,29,Puerto Nuevo,Deportivo Paraguayo
 ,29,Leandro N. Alem,Mercedes
@@ -157,7 +157,7 @@ fecha,jornada,equipo_local,equipo_visitante
 ,29,Sportivo Barracas,Cañuelas
 ,29,CA Fenix,Muñiz
 ,29,El Porvenir,Deportivo Español
-,29,Central Ballester,Central Córdoba
+,29,Central Ballester,Central Córdoba (Rosario)
 ,29,Claypole,Yupanqui
 ,29,General Lamadrid,Leones de Rosario FC
 ,30,Estrella del Sur,Argentino Rosario
@@ -166,7 +166,7 @@ fecha,jornada,equipo_local,equipo_visitante
 ,30,Centro Español,Defensores Cambaceres
 ,30,Justo José Urquiza,Leandro N. Alem
 ,30,Mercedes,Puerto Nuevo
-,30,Central Córdoba,Claypole
+,30,Central Córdoba (Rosario),Claypole
 ,30,Deportivo Paraguayo,CA Lugano
 ,30,Deportivo Español,Central Ballester
 ,30,Muñiz,El Porvenir
@@ -186,7 +186,7 @@ fecha,jornada,equipo_local,equipo_visitante
 ,31,El Porvenir,Cañuelas
 ,31,Claypole,Deportivo Español
 ,31,Central Ballester,Muñiz
-,31,Central Córdoba,Yupanqui
+,31,Central Córdoba (Rosario),Yupanqui
 ,31,Sportivo Barracas,Leones de Rosario FC
 ,32,Argentino Rosario,Sacachispas
 ,32,Estrella del Sur,Juventud Unida SM
@@ -195,7 +195,7 @@ fecha,jornada,equipo_local,equipo_visitante
 ,32,Centro Español,Puerto Nuevo
 ,32,Justo José Urquiza,Deportivo Paraguayo
 ,32,Mercedes,CA Lugano
-,32,Deportivo Español,Central Córdoba
+,32,Deportivo Español,Central Córdoba (Rosario)
 ,32,Muñiz,Claypole
 ,32,Cañuelas,Central Ballester
 ,32,CA Atlas,El Porvenir

@@ -76,7 +76,9 @@ def main():
     # (estadisticas.py resuelve data_access.league_data en tiempo de
     # llamada, no en tiempo de import) -- se deja explícito para que el
     # orden quede claro y no dependa de un detalle de implementación.
-    from season.adapters.nacional_adapter import NacionalAdapter, _extraer_campeon_reducido
+    from season.adapters.nacional_adapter import (
+        NacionalAdapter, _extraer_campeon_reducido, _extraer_descendidos,
+    )
 
     adapter = NacionalAdapter()
     adapter.setup()
@@ -88,9 +90,11 @@ def main():
 
     ganador_manual = datos_web["final_ascenso"]["ganador"]
     campeon_reducido_manual = _extraer_campeon_reducido(datos_web["reducido"])
+    descensos_manual = _extraer_descendidos(datos_web["tablas"])
 
     print(f"\nGanador final_ascenso (manual):     {ganador_manual}")
     print(f"Campeón reducido (manual):           {campeon_reducido_manual}")
+    print(f"Descensos (manual, últimos 2 x zona): {descensos_manual}")
     print(f"\nresult().campeon:                    {resultado.campeon}")
     print(f"result().ascensos:                    {resultado.ascensos}")
     print(f"result().descensos:                   {resultado.descensos}")
@@ -106,8 +110,10 @@ def main():
             f"ascensos: adaptador dio {resultado.ascensos}, "
             f"manual dio {[ganador_manual, campeon_reducido_manual]}"
         )
-    if resultado.descensos != []:
-        errores.append(f"descensos: esperaba [], adaptador dio {resultado.descensos}")
+    if resultado.descensos != descensos_manual:
+        errores.append(
+            f"descensos: adaptador dio {resultado.descensos}, manual dio {descensos_manual}"
+        )
     if resultado.clasificados_copa != []:
         errores.append(f"clasificados_copa: esperaba [], adaptador dio {resultado.clasificados_copa}")
 
