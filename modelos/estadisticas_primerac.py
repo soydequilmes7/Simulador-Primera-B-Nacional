@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 
 import rutas
+import data_access
 from modelos import equipo
 from modelos.equipo import Equipo
 
@@ -58,10 +59,20 @@ class Estadisticas:
 
         print("Leyendo archivos...")
 
-        datos_dir = rutas.datos_dir()
-        self.resultados = pd.read_csv(datos_dir / "resultados_primerac.csv")
-        self.fixture = pd.read_csv(datos_dir / "fixture_primerac.csv")
-        self.tabla = pd.read_csv(datos_dir / "tabla_primerac.csv")
+        # Antes: pd.read_csv() directo sobre datos/tabla_primerac.csv +
+        # resultados_primerac.csv + fixture_primerac.csv. Eso dejaba a
+        # Primera C desconectada de Supabase -- PromotionManager movía
+        # a un club ascendido (ej. Berazategui) fuera de Primera C en
+        # el ClubRegistry, y HistoryManager.persist_season() armaba el
+        # roster nuevo (sin ese club) en Supabase, pero esta función
+        # nunca lo leía: seguía devolviendo siempre el mismo CSV
+        # estático, con el club ascendido todavía adentro. Mismo
+        # patrón que ya usan nacional/lpf/bmetro/federal_a vía
+        # data_access.league_data() -- en Pyodide sigue leyendo los
+        # mismos 3 CSV (ver data_access.usando_pyodide()), en backend
+        # lee de Supabase (con bootstrap automático desde CSV la
+        # primera vez, ver data_access.league_data()).
+        self.resultados, self.fixture, self.tabla = data_access.league_data("primerac")
 
         print(f"Resultados: {len(self.resultados)}")
         print(f"Fixture: {len(self.fixture)}")
@@ -166,15 +177,6 @@ class Estadisticas:
         relativa al promedio de la liga, ponderando partidos recientes y aplicando
         regresión a la media para equipos con pocos partidos jugados."""
         print("\nCalculando ratings...")
-
-        if len(self.resultados) == 0:
-            # Mismo caso borde que en modelos/estadisticas.py: sin
-            # partidos jugados no hay de dónde calcular el promedio de
-            # la liga (.mean() sobre una tabla vacía da NaN para
-            # TODOS los equipos). Se deja el rating genérico que
-            # Equipo.__init__() ya pone por default (1.0/1.0).
-            print(f"Sin partidos jugados todavía: rating genérico para los {len(self.equipos)} equipos.")
-            return
 
         DECAY = 0.99        # peso decae con la antigüedad del partido (por jornada)
         K_REGRESION = 12    # "partidos virtuales" de peso hacia el promedio de liga
