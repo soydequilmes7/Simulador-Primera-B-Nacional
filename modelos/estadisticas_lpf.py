@@ -78,6 +78,20 @@ class EstadisticasLPF(Estadisticas):
         self.resultados, self.fixture, self.apertura = data_access.league_data("lpf")
         self.apertura["equipo"] = self.apertura["equipo"].apply(normalizar)
 
+        # fixture_lpf.csv y resultados_lpf.csv usan los mismos alias
+        # "cortos" que tablalpf.csv (p.ej. "Estudiantes" en vez de
+        # "Estudiantes de La Plata"). Antes solo se normalizaba
+        # self.apertura, así que un alias que SÍ estaba en
+        # NORMALIZACION_NOMBRES igual rompía _validar_datos_lpf(): la
+        # tabla quedaba con el nombre largo y el fixture con el corto,
+        # y ninguna cantidad de alias nuevos lo iba a arreglar porque el
+        # fixture nunca pasaba por normalizar(). Se normalizan acá las
+        # dos columnas de equipo en fixture y resultados, antes de
+        # cualquier comparación o de armar self.tabla/self.equipos.
+        for col in ["equipo_local", "equipo_visitante"]:
+            self.fixture[col] = self.fixture[col].apply(normalizar)
+            self.resultados[col] = self.resultados[col].apply(normalizar)
+
         # Tabla de promedios (Art. 26 / Estatuto AFA art. 93): puntos y
         # partidos jugados ACUMULADOS ANTES del Apertura 2026 (últimas ~3
         # temporadas). Los recién ascendidos arrancan en 0/0 porque solo
@@ -95,6 +109,7 @@ class EstadisticasLPF(Estadisticas):
             self.tabla[col] = 0
 
         self._validar_datos_lpf()
+
 
         # CAMPEON_APERTURA dinámico (PLAN_ADDENDUM_ETAPA6_APERTURA_LPF,
         # punto 4). En el flujo real 2026 no hay nada persistido y
@@ -299,6 +314,43 @@ class EstadisticasLPF(Estadisticas):
         diccionario["subcampeon_clausura"] = subcampeon
 
         return campeon, diccionario
+
+    # ------------------------------------------------------------------
+    # Playoffs "ilustrativos" del Apertura (Modo Temporada)
+    # ------------------------------------------------------------------
+    def simular_playoffs_apertura(self):
+        """El Apertura 2026 ya se jugó en la realidad y NO tuvo cuadro de
+        playoffs -- solo tenemos su tabla final (self.apertura) y el
+        campeón real (self.CAMPEON_APERTURA, "Belgrano" por default). No
+        hay forma de reconstruir los cruces reales porque ese dato
+        simplemente no existe en el proyecto.
+
+        A pedido del usuario, para Modo Temporada se arma un cuadro de
+        playoffs FICTICIO del Apertura, simulado con el mismo motor que
+        jugar_playoffs() usa para el Clausura (mismo formato de cruces
+        desde Octavos), tomando como semillas la tabla final real del
+        Apertura por zona. Es puramente ilustrativo: el ganador de este
+        cuadro casi seguro NO va a coincidir con self.CAMPEON_APERTURA
+        (el campeón real), y el frontend tiene que dejar eso bien claro.
+        """
+        tablas_apertura = {
+            zona: self.apertura[self.apertura["zona"] == zona]
+                      .sort_values("posicion")[["equipo", "puntos", "gf", "gc", "dg"]]
+                      .reset_index(drop=True)
+            for zona in ["A", "B"]
+        }
+
+        _, detalle = self.jugar_playoffs(tablas_apertura)
+
+        # jugar_playoffs() devuelve las claves "campeon_clausura" /
+        # "subcampeon_clausura" porque ese es su uso normal (Clausura de
+        # verdad). Acá se renombran para que quede claro en el JSON que
+        # esto es una simulación ficticia del Apertura, y no se pise ni
+        # se confunda con self.CAMPEON_APERTURA (el campeón real).
+        detalle["campeon_apertura_simulado"] = detalle.pop("campeon_clausura")
+        detalle["subcampeon_apertura_simulado"] = detalle.pop("subcampeon_clausura")
+
+        return detalle
 
     # ------------------------------------------------------------------
     # Tabla Anual, descensos y copas (Reglamento Art. 24, 26, 27, 28)

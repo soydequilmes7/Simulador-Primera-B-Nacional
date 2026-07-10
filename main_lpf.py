@@ -131,7 +131,7 @@ def _ratings_finales_lpf(e):
 
 def armar_datos_web_lpf(e, tablas_clausura, campeon_clausura, detalle_playoffs,
                          tabla_anual, tabla_promedios, descensos, copas, trofeo,
-                         n_sims, resumen_mc, tabla_esperada_mc):
+                         n_sims, resumen_mc, tabla_esperada_mc, detalle_playoffs_apertura=None):
     """Arma el dict con la forma que espera template.html (sección LPF) y
     que se puede tirar directo a JSON."""
     mc_A = resumen_mc[resumen_mc["zona"] == "A"].drop(columns=["zona"]).to_dict(orient="records")
@@ -150,6 +150,11 @@ def armar_datos_web_lpf(e, tablas_clausura, campeon_clausura, detalle_playoffs,
             "B": _tabla_a_lista(tablas_clausura["B"]),
         },
         "playoffs": detalle_playoffs,
+        # Cuadro FICTICIO del Apertura (simulado con el mismo motor que el
+        # Clausura, ver EstadisticasLPF.simular_playoffs_apertura()). None
+        # si por algún motivo no se corrió esa simulación -- el frontend
+        # tiene que tratar ausencia/None igual que hace con "playoffs".
+        "playoffs_apertura": detalle_playoffs_apertura,
         "campeon_clausura": campeon_clausura,
         "tabla_anual": _tabla_a_lista(tabla_anual),
         "tabla_promedios": _tabla_promedios_a_lista(tabla_promedios),
@@ -206,6 +211,17 @@ def correr_simulacion_lpf(imprimir=True, guardar_json=True, n_sims=300):
         print(f"\nFinal: {detalle_playoffs['final']['texto']}")
         print(f"CAMPEÓN DEL CLAUSURA: {campeon_clausura}")
 
+    # Cuadro ficticio del Apertura, solo para Modo Temporada (ver
+    # docstring de simular_playoffs_apertura()). No afecta ningún otro
+    # cálculo (tabla anual, descensos, copas, etc. siguen usando el
+    # campeón REAL del Apertura, e.CAMPEON_APERTURA).
+    if imprimir:
+        print("\n--- Playoffs del Apertura (SIMULADO, ficticio) ---")
+    detalle_playoffs_apertura = e.simular_playoffs_apertura()
+    if imprimir:
+        print(f"CAMPEÓN SIMULADO DEL APERTURA: {detalle_playoffs_apertura['campeon_apertura_simulado']} "
+              f"(campeón real: {e.CAMPEON_APERTURA})")
+
     tabla_anual = e.calcular_tabla_anual(tablas_clausura)
     if imprimir:
         print("\n--- Tabla Anual 2026 (Apertura + Clausura) ---")
@@ -242,6 +258,7 @@ def correr_simulacion_lpf(imprimir=True, guardar_json=True, n_sims=300):
         e, tablas_clausura, campeon_clausura, detalle_playoffs,
         tabla_anual, tabla_promedios, descensos, copas, trofeo,
         n_sims, resumen_mc, tabla_esperada_mc,
+        detalle_playoffs_apertura=detalle_playoffs_apertura,
     )
 
     if guardar_json:

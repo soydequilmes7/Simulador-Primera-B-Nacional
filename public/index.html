@@ -7832,14 +7832,46 @@ function tablasCompetenciaHTML(slug, comp){
           </div>
         </div>
       </div></div>
-      ${campeonAnuncioHTML(datos.campeon_clausura, '▲')}
-      <p class="section-note" style="margin-top:6px;">El Apertura 2026 ya se jugó como dato real -- tenemos su tabla final pero no el cuadro de playoffs de esa edición, por eso acá solo se muestra el cruce del Clausura.</p>` : '';
+      ${campeonAnuncioHTML(datos.campeon_clausura, '▲')}` : '';
+    // Bracket del Apertura: NO es un dato real -- el Apertura 2026 ya se
+    // jugó y no tuvo este cuadro de playoffs, solo tenemos su tabla
+    // final y el campeón real (datos.campeon_apertura). A pedido del
+    // usuario se simula un cuadro FICTICIO con el mismo motor que el
+    // del Clausura (backend: EstadisticasLPF.simular_playoffs_apertura(),
+    // datos.playoffs_apertura), para poder mostrar los dos brackets uno
+    // al lado del otro en Modo Temporada. Se deja bien aclarado en el
+    // encabezado y en el section-note que es inventado, y el anuncio de
+    // campeón usa un color distinto (nota) al de los campeones reales.
+    const pa = datos.playoffs_apertura || {};
+    const playoffsAperturaHTML = (pa.octavos && pa.octavos.length) ? `
+      <div class="temporada-reducido-label">Playoffs del Apertura (SIMULADO — no ocurrió así en la realidad)</div>
+      <div class="bracket-scroll"><div class="bracket">
+        <div class="round"><div class="round-title">Octavos</div><div class="round-body">${pa.octavos.map(m => matchHTML(m)).join('')}</div></div>
+        <div class="round"><div class="round-title">Cuartos</div><div class="round-body">${(pa.cuartos || []).map(m => matchHTML(m)).join('')}</div></div>
+        <div class="round"><div class="round-title">Semifinal</div><div class="round-body">${(pa.semis || []).map(m => matchHTML(m)).join('')}</div></div>
+        <div class="round final-col">
+          <div class="round-title">Final</div>
+          <div class="round-body">
+            <div class="match">
+              ${(pa.semis || []).map(m => {
+                const equipo = m.avanza;
+                const esCampeon = equipo === pa.campeon_apertura_simulado;
+                return `<div class="row ${esCampeon ? 'winner' : ''}"><span>${escudoHTML(equipo)}${equipo}</span></div>`;
+              }).join('')}
+              <div class="leg-detail">${pa.final ? pa.final.texto : ''}</div>
+            </div>
+          </div>
+        </div>
+      </div></div>
+      ${campeonAnuncioHTML(pa.campeon_apertura_simulado, '?')}
+      <p class="section-note" style="margin-top:6px;">Este cuadro es ficticio: el Apertura 2026 ya se jugó y no tuvo playoffs, solo tabla final. Se simula acá con el mismo motor que el Clausura, a modo ilustrativo. El campeón REAL del Apertura fue <strong>${datos.campeon_apertura}</strong>, no ${pa.campeon_apertura_simulado}.</p>` : '';
     return `
       <div class="temporada-reducido-label" style="margin-top:0;">Apertura 2026 (dato real)</div>
       <div class="temporada-tablas-grid dos">
         ${tablaSimpleHTML(apertura.A, "Zona A", null, null, null)}
         ${tablaSimpleHTML(apertura.B, "Zona B", null, null, null)}
       </div>
+      ${playoffsAperturaHTML}
       <div class="temporada-reducido-label">Clausura 2026 (simulado)</div>
       <div class="temporada-tablas-grid dos">
         ${tablaSimpleHTML(clausura.A, "Zona A", null, null, null)}
