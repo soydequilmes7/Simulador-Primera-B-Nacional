@@ -771,14 +771,41 @@
   .palmares-tabla td .campeon-celda{ display:inline-flex; align-items:center; gap:6px; }
   .palmares-tabla td.vacio{ color:var(--muted); font-style:italic; }
   .palmares-vacio{ color:var(--muted); }
-  .palmares-resumen{ display:flex; flex-wrap:wrap; gap:8px; padding:16px 14px 0; }
-  .palmares-resumen-chip{
-    display:inline-flex; align-items:center; gap:7px; padding:6px 12px 6px 8px;
-    border:1px solid var(--line); border-radius:999px; background:var(--bg-panel); font-size:12.5px;
+  /* Vitrina de trofeos (ranking de clubes de más a menos títulos), estilo
+     palmarés de Football Manager: cada club es una fila con su posición,
+     el total arriba, y el detalle por competencia (cuántas veces y en qué
+     años) debajo, en vez de una fila de chips "Equipo 1×, Equipo 2×". */
+  .palmares-ranking{
+    display:flex; flex-direction:column; gap:2px; padding:14px 14px 18px;
   }
-  .palmares-resumen-chip .escudo{ width:18px; height:18px; }
-  .palmares-resumen-chip .equipo{ font-weight:600; }
-  .palmares-resumen-chip .cantidad{ font-family:'JetBrains Mono'; color:var(--amber); font-weight:700; }
+  .palmares-ranking-item{
+    padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius-sm);
+    background:var(--bg-panel);
+  }
+  .palmares-ranking-item + .palmares-ranking-item{ margin-top:8px; }
+  .palmares-ranking-top{ display:flex; align-items:center; gap:9px; flex-wrap:wrap; }
+  .palmares-ranking-pos{
+    font-family:'JetBrains Mono'; font-size:13px; font-weight:700; color:var(--muted);
+    min-width:26px;
+  }
+  .palmares-ranking-item .escudo{ width:22px; height:22px; }
+  .palmares-ranking-equipo{ font-weight:700; font-size:14.5px; flex:1 1 auto; }
+  .palmares-ranking-total{
+    font-family:'JetBrains Mono'; font-size:11.5px; color:var(--amber); font-weight:700;
+    border:1px solid var(--amber); border-radius:999px; padding:2px 10px; white-space:nowrap;
+  }
+  .palmares-ranking-detalle{
+    display:flex; flex-direction:column; gap:5px; margin-top:10px; padding-top:10px;
+    border-top:1px dashed var(--line);
+  }
+  .palmares-ranking-comp{ display:flex; align-items:center; gap:8px; font-size:12.5px; flex-wrap:wrap; }
+  .palmares-ranking-comp img{ height:14px; width:auto; flex-shrink:0; }
+  .palmares-ranking-comp .comp-nombre{ color:var(--ink); min-width:130px; }
+  .palmares-ranking-comp .comp-cantidad{ font-family:'JetBrains Mono'; color:var(--amber); font-weight:700; }
+  .palmares-ranking-comp .comp-anios{ color:var(--muted); font-family:'JetBrains Mono'; font-size:11.5px; }
+  @media (max-width: 560px){
+    .palmares-ranking-comp .comp-nombre{ min-width:0; width:100%; }
+  }
   .palmares-th-liga{ display:inline-flex; align-items:center; gap:6px; white-space:nowrap; }
   .palmares-th-liga img{ height:14px; width:auto; flex-shrink:0; }
   .palmares-tabla tbody tr.palmares-ultima td{ background:var(--qualified-bg); }
@@ -797,6 +824,16 @@
     color:var(--tc-color, var(--muted)); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:10px;
   }
   .temporada-detalle-header .liga-nombre img{ height:18px; width:auto; }
+  .campeon-etiqueta{
+    font-family:'JetBrains Mono'; font-size:10.5px; text-transform:uppercase; letter-spacing:0.06em;
+    color:var(--muted); margin-bottom:4px;
+  }
+  /* Apertura y Clausura son torneos cortos aparte de la Tabla Anual (que
+     define al campeón de arriba) -- se muestran como dos mini-fichas al
+     lado, mismo componente .temporada-equipo-chip que ascensos/descensos. */
+  .temporada-torneos-cortos{ display:flex; flex-wrap:wrap; gap:20px; margin-top:14px; padding-top:14px; border-top:1px dashed var(--line); }
+  .torneo-corto-item{ display:flex; align-items:center; gap:9px; }
+  .torneo-corto-label{ font-family:'JetBrains Mono'; font-size:11.5px; color:var(--muted); white-space:nowrap; }
   .temporada-tablas-grid{ display:grid; gap:20px; margin-bottom:8px; }
   .temporada-tablas-grid.uno{ grid-template-columns:minmax(0,640px); justify-content:center; }
   .temporada-tablas-grid.dos{ grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); }
@@ -7644,6 +7681,11 @@ let COMPETENCIA_ACTUAL_TEMPORADA = "lpf";
 let ESTADO_TEMPORADA_LOCAL = null;   // "proximo_estado" de la última ronda (null = arranca de datos reales)
 let NUMERO_RONDA_TEMPORADA = 1;
 let PALMARES_TEMPORADA = [];   // acumulado {ronda, campeones:{slug: nombre|null}} por cada ronda simulada, ver renderPalmares()
+// La ronda 1 corresponde a la temporada 2026 (Apertura 2026 real + Clausura
+// 2026 simulado); cada ronda siguiente representa el año siguiente. Se usa
+// para mostrar "2026", "2027"... en vez de "R1", "R2" en el Palmarés.
+const ANIO_BASE_TEMPORADA = 2026;
+const anioDeRondaTemporada = (ronda) => ANIO_BASE_TEMPORADA + (ronda - 1);
 
 function tablaSimpleHTML(filas, titulo, ascensoDirecto, ascensoReducido, descensosSet){
   const filasHTML = (filas || []).map((f, i) => {
@@ -8032,9 +8074,30 @@ function detalleCompetenciaHTML(slug, comp){
   const nombre = NOMBRE_LINDO_COMPETENCIA[slug] || slug;
   const color = COLOR_COMPETENCIA[slug] || 'var(--amber)';
   const logo = LOGO_COMPETENCIA[slug];
+  const campeonEtiquetaHTML = slug === 'lpf'
+    ? `<div class="campeon-etiqueta">Campeón de Liga — Tabla Anual</div>` : '';
   const campeonHTML = comp.campeon
-    ? `<div class="campeon-nombre" style="font-size:22px;"><span class="trofeo">🏆</span>${escudoHTML(comp.campeon)}${comp.campeon}</div>`
+    ? `<div class="campeon-nombre" style="font-size:22px;">${campeonEtiquetaHTML}<div><span class="trofeo">🏆</span>${escudoHTML(comp.campeon)}${comp.campeon}</div></div>`
     : `<div class="campeon-nombre" style="color:var(--muted); font-size:15px;">Sin campeón único</div>`;
+
+  // La Liga Profesional juega Apertura y Clausura como torneos cortos
+  // aparte de la Tabla Anual (que es la que define el campeón de arriba,
+  // los descensos y los cupos a copas) -- se muestran los dos campeones
+  // cortos al lado para no esconderlos.
+  const datosLPF = comp.datos || {};
+  const torneosCortosHTML = (slug === 'lpf' && (datosLPF.campeon_apertura || datosLPF.campeon_clausura)) ? `
+    <div class="temporada-torneos-cortos">
+      ${datosLPF.campeon_apertura ? `
+        <div class="torneo-corto-item">
+          <span class="torneo-corto-label">🏆 Apertura</span>
+          <span class="temporada-equipo-chip">${escudoHTML(datosLPF.campeon_apertura)}${datosLPF.campeon_apertura}</span>
+        </div>` : ''}
+      ${datosLPF.campeon_clausura ? `
+        <div class="torneo-corto-item">
+          <span class="torneo-corto-label">🏆 Clausura</span>
+          <span class="temporada-equipo-chip">${escudoHTML(datosLPF.campeon_clausura)}${datosLPF.campeon_clausura}</span>
+        </div>` : ''}
+    </div>` : '';
 
   const filas = [];
   if (comp.ascensos.length){
@@ -8048,6 +8111,7 @@ function detalleCompetenciaHTML(slug, comp){
     <div class="temporada-detalle-header" style="--tc-color:${color};">
       <div class="liga-nombre">${logo ? `<img src="logos-torneos/${logo}.png" alt="" onerror="this.remove()">` : ''}<span>${nombre}</span></div>
       ${campeonHTML}
+      ${torneosCortosHTML}
       ${filas.length ? `<div style="margin-top:10px;">${filas.join('')}</div>` : ''}
     </div>
     ${tablasCompetenciaHTML(slug, comp)}
@@ -8577,42 +8641,67 @@ function renderPalmares(){
     return;
   }
 
-  // Resumen de títulos: cuántas veces salió campeón cada club en toda
-  // la corrida en memoria, sumado entre las 6 competencias, para que no
-  // haga falta contar a mano bajando por la tabla ronda por ronda.
-  const conteoTitulos = new Map();
+  // Vitrina de trofeos estilo Football Manager: en vez de una fila de
+  // chips sueltos "Equipo 1×, Equipo 2×" que no decía qué había ganado
+  // cada uno, se arma un ranking de clubes de más a menos títulos, y
+  // debajo de cada uno el detalle por competencia (cuántas veces y en
+  // qué años), igual que un cuadro de palmarés de jugador en FM.
+  const trofeosPorEquipo = new Map();
   PALMARES_TEMPORADA.forEach(fila => {
+    const anio = anioDeRondaTemporada(fila.ronda);
     ORDEN_COMPETENCIAS.forEach(slug => {
       const campeon = fila.campeones[slug];
       if (!campeon) return;
-      conteoTitulos.set(campeon, (conteoTitulos.get(campeon) || 0) + 1);
+      if (!trofeosPorEquipo.has(campeon)){
+        trofeosPorEquipo.set(campeon, { total: 0, porCompetencia: new Map() });
+      }
+      const reg = trofeosPorEquipo.get(campeon);
+      reg.total += 1;
+      if (!reg.porCompetencia.has(slug)) reg.porCompetencia.set(slug, []);
+      reg.porCompetencia.get(slug).push(anio);
     });
   });
-  const rankingTitulos = [...conteoTitulos.entries()]
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 6);
 
-  const resumenHTML = rankingTitulos.length ? `
-    <div class="palmares-resumen">
-      ${rankingTitulos.map(([equipo, cantidad]) => `
-        <div class="palmares-resumen-chip">
-          ${escudoHTML(equipo)}<span class="equipo">${equipo}</span>
-          <span class="cantidad">${cantidad}×</span>
+  const rankingEquipos = [...trofeosPorEquipo.entries()].sort((a, b) => b[1].total - a[1].total);
+  const medalla = (i) => i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i + 1}°`;
+
+  const rankingHTML = rankingEquipos.length ? `
+    <div class="palmares-ranking">
+      ${rankingEquipos.map(([equipo, reg], i) => `
+        <div class="palmares-ranking-item">
+          <div class="palmares-ranking-top">
+            <span class="palmares-ranking-pos">${medalla(i)}</span>
+            ${escudoHTML(equipo)}
+            <span class="palmares-ranking-equipo">${equipo}</span>
+            <span class="palmares-ranking-total">${reg.total} título${reg.total === 1 ? '' : 's'}</span>
+          </div>
+          <div class="palmares-ranking-detalle">
+            ${ORDEN_COMPETENCIAS.filter(slug => reg.porCompetencia.has(slug)).map(slug => {
+              const anios = reg.porCompetencia.get(slug).sort((a, b) => a - b);
+              return `
+                <div class="palmares-ranking-comp">
+                  <img src="logos-torneos/${LOGO_COMPETENCIA[slug] || slug}.png" alt="" onerror="this.remove()">
+                  <span class="comp-nombre">${NOMBRE_LINDO_COMPETENCIA[slug]}</span>
+                  <span class="comp-cantidad">${anios.length}×</span>
+                  <span class="comp-anios">${anios.join(', ')}</span>
+                </div>`;
+            }).join('')}
+          </div>
         </div>`).join('')}
     </div>` : '';
 
-  // Ronda más reciente arriba (es la que más interesa después de cada
-  // simulación) y resaltada, en vez de tener que scrollear hasta abajo
+  // Año más reciente arriba (es el que más interesa después de cada
+  // simulación) y resaltado, en vez de tener que scrollear hasta abajo
   // cada vez que se corre una ronda nueva.
   const rondaMasReciente = PALMARES_TEMPORADA[PALMARES_TEMPORADA.length - 1].ronda;
   const filasOrdenadas = [...PALMARES_TEMPORADA].reverse();
 
   cont.innerHTML = `
-    ${resumenHTML}
+    ${rankingHTML}
     <table class="palmares-tabla">
       <thead>
         <tr>
-          <th>Ronda</th>
+          <th>Temporada</th>
           ${ORDEN_COMPETENCIAS.map(slug => `
             <th style="color:${COLOR_COMPETENCIA[slug] || 'inherit'};">
               <span class="palmares-th-liga">
@@ -8624,7 +8713,7 @@ function renderPalmares(){
       </thead>
       <tbody>
         ${filasOrdenadas.map(fila => `<tr class="${fila.ronda === rondaMasReciente ? 'palmares-ultima' : ''}">
-          <td class="ronda">R${fila.ronda}${fila.ronda === rondaMasReciente ? ' <span class="palmares-tag-nueva">última</span>' : ''}</td>
+          <td class="ronda">${anioDeRondaTemporada(fila.ronda)}${fila.ronda === rondaMasReciente ? ' <span class="palmares-tag-nueva">última</span>' : ''}</td>
           ${ORDEN_COMPETENCIAS.map(slug => {
             const campeon = fila.campeones[slug];
             return campeon
