@@ -163,9 +163,32 @@ class EstadisticasLPF(Estadisticas):
         # particular -- si se genera una temporada nueva con otra
         # cantidad de fechas, sigue siendo válida mientras sea pareja.
         if conteo_fixture.nunique() > 1:
+            # Caso frecuente y confuso: un club asciende con un alias
+            # corto sin desambiguar (ver PromotionManager._mover_club,
+            # que ahora normaliza esto en el momento del ascenso -- si
+            # de todos modos se llega hasta acá, probablemente entró
+            # por otro camino, ej. datos cargados a mano o Supabase con
+            # el alias corto todavía sin arreglar). El síntoma es
+            # SIEMPRE el mismo: un nombre con exactamente el DOBLE de
+            # partidos que el resto -- normalizar() fusionó dos clubes
+            # distintos en un solo nombre. Se lo señala explícito para
+            # no perder tiempo interpretando la tabla de conteos.
+            maximo = conteo_fixture.max()
+            sospechosos = conteo_fixture[conteo_fixture == maximo].index.tolist()
+            pista = ""
+            if len(sospechosos) < len(conteo_fixture) and maximo == 2 * conteo_fixture.min():
+                pista = (
+                    f"\nPinta a colisión de nombres, no a un fixture mal generado: "
+                    f"{sospechosos} tiene(n) EXACTAMENTE el doble de partidos que el "
+                    f"resto -- normalizar()/NORMALIZACION_NOMBRES probablemente fusionó "
+                    f"dos clubes distintos en un solo nombre (típico: un club recién "
+                    f"ascendido que llegó con un alias corto sin desambiguar en el "
+                    f"origen de datos). Revisar el nombre real de ese club en el origen "
+                    f"(Supabase/tablalpf.csv) antes de re-simular."
+                )
             raise ValueError(
                 f"Los equipos no tienen la misma cantidad de partidos en fixture_lpf.csv "
-                f"(debería ser pareja para todos):\n{conteo_fixture}"
+                f"(debería ser pareja para todos):\n{conteo_fixture}{pista}"
             )
 
         equipos_promedios = set(self.promedios_historicos["equipo"])

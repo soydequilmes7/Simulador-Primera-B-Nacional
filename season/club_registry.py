@@ -178,6 +178,54 @@ class ClubRegistry:
             )
         return self._agregar(name, division)
 
+    def renombrar_club(self, nombre_actual: str, nombre_nuevo: str) -> Club:
+        """Cambia el nombre de un club YA existente, reindexando
+        `_por_nombre` (el `id` y todo lo demás no se tocan). Pensado
+        para PromotionManager: cuando un club asciende a una división
+        cuyo motor normaliza alias cortos internamente (hoy solo LPF,
+        ver estadisticas_lpf.NORMALIZACION_NOMBRES), hay que aplicar
+        esa misma normalización ACÁ, en el momento del ascenso -- si
+        no, el club queda con el alias corto en el registro y en el
+        próximo fixture generado, y la temporada siguiente
+        EstadisticasLPF.cargar_datos_lpf() lo renombra por su cuenta
+        al cargar el fixture, fusionándolo por accidente con el club
+        que YA tenía el nombre completo (bug real: dos clubes
+        distintos terminan compartiendo un nombre y sus partidos se
+        suman en uno solo -- ver el commit que agrega este método).
+
+        Si nombre_actual == nombre_nuevo no hace nada (caso normal:
+        el club ya tenía el nombre completo). Lanza ValueError si
+        nombre_actual no existe, o si nombre_nuevo ya pertenece a
+        OTRO club (colisión real -- mejor fallar acá, con el club y
+        la división a mano, que más adelante con un fixture roto y
+        un mensaje de error genérico)."""
+        club = self._por_nombre.get(nombre_actual)
+        if club is None:
+            raise ValueError(
+                f"No existe ningún club con el nombre '{nombre_actual}' "
+                f"en el registro."
+            )
+        if nombre_actual == nombre_nuevo:
+            return club
+
+        existente = self._por_nombre.get(nombre_nuevo)
+        if existente is not None and existente is not club:
+            raise ValueError(
+                f"Colisión de nombres: '{nombre_actual}' normaliza a "
+                f"'{nombre_nuevo}', pero ese nombre ya pertenece a otro "
+                f"club distinto (id={existente.id}, división "
+                f"'{existente.division}'). Esto indica que el club que "
+                f"está ascendiendo llegó con un alias corto sin "
+                f"desambiguar en el origen de datos -- revisar el "
+                f"nombre real ahí (probablemente Supabase) antes de "
+                f"re-simular."
+            )
+
+        del self._por_nombre[nombre_actual]
+        club.name = nombre_nuevo
+        self._por_nombre[nombre_nuevo] = club
+        return club
+
     def retirar_club(self, name: str) -> Optional[Club]:
         """Saca un club del registro por completo (no solo le cambia
         la división). Pensado para PromotionManager (Etapa 4): bajas

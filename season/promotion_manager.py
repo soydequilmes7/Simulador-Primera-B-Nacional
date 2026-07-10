@@ -274,9 +274,35 @@ class PromotionManager:
                 f"una inconsistencia con el ClubRegistry (revisar antes de Etapa 5)."
             )
 
+        # BUG ENCONTRADO Y CORREGIDO: LPF normaliza alias cortos
+        # internamente (estadisticas_lpf.NORMALIZACION_NOMBRES, p.ej.
+        # "Estudiantes" -> "Estudiantes de La Plata") cada vez que
+        # EstadisticasLPF.cargar_datos_lpf() lee un fixture. Si un club
+        # asciende a LPF con un alias corto sin desambiguar en el
+        # origen de datos (ej. Estudiantes de Caseros llegando como
+        # "Estudiantes" a secas), quedaba así en el registro; la
+        # temporada siguiente, cargar_datos_lpf() lo renombraba por su
+        # cuenta al cargar el fixture recién generado -- fusionándolo
+        # por accidente con el Estudiantes de La Plata real (mismo
+        # nombre final, dos clubes distintos) y duplicando sus
+        # partidos en el fixture (detectado con la validación de
+        # "todos deben tener la misma cantidad de partidos"). Se
+        # aplica la MISMA normalización acá, en el momento del
+        # ascenso, para que el registro y el fixture generado ya
+        # queden con el nombre completo -- si el nombre normalizado
+        # ya pertenece a OTRO club, renombrar_club() corta con un
+        # ValueError explícito en vez de dejar que la colisión se
+        # filtre en silencio hasta la ronda siguiente.
+        nombre_final = nombre
+        if division_destino_slug == "lpf":
+            from modelos.estadisticas_lpf import normalizar as _normalizar_lpf
+            nombre_final = _normalizar_lpf(nombre)
+            if nombre_final != nombre:
+                club_registry.renombrar_club(nombre, nombre_final)
+
         club.division = DIVISIONES[division_destino_slug]
         resumen["movimientos"].append({
-            "club": nombre,
+            "club": nombre_final,
             "origen": division_origen_esperada_slug,
             "destino": division_destino_slug,
             "motivo": "ascenso" if _es_ascenso(division_origen_esperada_slug, division_destino_slug) else "descenso",
