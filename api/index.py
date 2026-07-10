@@ -934,6 +934,7 @@ def _correr_temporada_desde_estado(estado_anterior: dict | None, numero_ronda: i
     datos_por_liga = (estado_anterior or {}).get("datos_por_liga", {})
     original_league_data = data_access.league_data
     original_promedios = data_access.lpf_average_history_df
+    original_campeon_apertura = data_access.campeon_apertura_lpf
 
     def _local_league_data(slug):
         if slug in datos_por_liga:
@@ -946,6 +947,11 @@ def _correr_temporada_desde_estado(estado_anterior: dict | None, numero_ronda: i
             return pd.DataFrame(datos_por_liga["lpf"]["promedios"])
         return original_promedios()
 
+    def _local_campeon_apertura():
+        if "lpf" in datos_por_liga and "campeon_apertura" in datos_por_liga["lpf"]:
+            return datos_por_liga["lpf"]["campeon_apertura"]
+        return original_campeon_apertura()
+
     # Monkeypatch acotado a esta request: se restaura pase lo que pase
     # (try/finally), así ninguna otra request concurrente queda leyendo
     # de acá. NO es seguro para uso concurrente real de este endpoint
@@ -957,6 +963,7 @@ def _correr_temporada_desde_estado(estado_anterior: dict | None, numero_ronda: i
     # más grande, no hecho ahora).
     data_access.league_data = _local_league_data
     data_access.lpf_average_history_df = _local_promedios
+    data_access.campeon_apertura_lpf = _local_campeon_apertura
     try:
         engine = SeasonEngine(registry)
         # cuadro_copa_override: el sorteo de 32avos ya armado en la ronda
@@ -976,6 +983,7 @@ def _correr_temporada_desde_estado(estado_anterior: dict | None, numero_ronda: i
     finally:
         data_access.league_data = original_league_data
         data_access.lpf_average_history_df = original_promedios
+        data_access.campeon_apertura_lpf = original_campeon_apertura
 
     # Clasificación a copas internacionales (Libertadores/Sudamericana):
     # engine.correr_temporada() la calcula solo vía QualificationManager
@@ -1033,10 +1041,22 @@ def _correr_temporada_desde_estado(estado_anterior: dict | None, numero_ronda: i
         )
 
         repo_falso = _RepoCapturadorEnMemoria()
-        HistoryManager(repo=repo_falso, guardar_campeon_apertura=lambda campeon: None).persist_season(
+        campeon_apertura_capturado = {}
+        HistoryManager(
+            repo=repo_falso,
+            guardar_campeon_apertura=lambda campeon: campeon_apertura_capturado.__setitem__("valor", campeon),
+        ).persist_season(
             registry, f"R{numero_ronda}", f"R{numero_ronda + 1}", resultados,
         )
         capturado = {slug: repo_falso.capturado[slug] for slug in _SLUGS_AVANZABLES if slug in repo_falso.capturado}
+        if "lpf" in capturado and "valor" in campeon_apertura_capturado:
+            # El campeón que HistoryManager acaba de simular para el
+            # PRÓXIMO Apertura -- sin esto, la ronda siguiente no
+            # encuentra nada en Supabase (nunca se escribió ahí) y
+            # estadisticas_lpf.py cae al CAMPEON_APERTURA="Belgrano"
+            # hardcodeado de la clase, sin importar quién ganó de
+            # verdad en la simulación (bug real, reportado).
+            capturado["lpf"]["campeon_apertura"] = campeon_apertura_capturado["valor"]
 
         if "lpf" in capturado:
             # promedios_lpf.csv también tiene que "avanzar": los que ya

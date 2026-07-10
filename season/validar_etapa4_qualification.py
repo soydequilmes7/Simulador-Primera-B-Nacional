@@ -2,10 +2,11 @@
 """
 season/validar_etapa4_qualification.py
 
-Validación de Etapa 4 (QualificationManager). Por diseño, se prueba
-con mocks -- objetos con .clasificados_copa, no con LPFAdapter/
-CopaAdapter reales corriendo simulaciones (ver
-season/qualification_manager.py).
+Validación de QualificationManager (reglas reales de AFA para
+Libertadores/Sudamericana, con cascada de cupos -- ver docstring de
+season/qualification_manager.py). Se prueba con mocks -- objetos con
+la misma forma que ResultadoTorneo (datos_crudos, descensos, campeon),
+no con LPFAdapter/CopaAdapter reales corriendo simulaciones.
 
 Correrlo desde la raíz del proyecto:
 
@@ -14,88 +15,110 @@ Correrlo desde la raíz del proyecto:
 from season.qualification_manager import QualificationManager
 
 
-class MockResultado:
-    def __init__(self, clasificados_copa):
-        self.clasificados_copa = clasificados_copa
+class MockResultadoLPF:
+    def __init__(self, campeon_apertura, campeon_clausura, tabla_anual, descensos=None):
+        self.datos_crudos = {
+            "campeon_apertura": campeon_apertura,
+            "campeon_clausura": campeon_clausura,
+            "tabla_anual": [{"equipo": e} for e in tabla_anual],
+        }
+        self.descensos = descensos or []
+
+
+class MockResultadoCopa:
+    def __init__(self, campeon, rondas=None):
+        self.campeon = campeon
+        self.datos_crudos = {"rondas": rondas or {}}
+
+
+TABLA_TIPICA = [
+    "Boca", "River", "Racing", "Independiente", "San Lorenzo", "Vélez",
+    "Huracán", "Estudiantes", "Talleres", "Belgrano", "Unión", "Colón",
+]
 
 
 def main():
     print("=" * 70)
-    print("VALIDACIÓN ETAPA 4 -- QualificationManager (mocks)")
+    print("VALIDACIÓN QualificationManager -- reglas reales AFA")
     print("=" * 70)
 
     errores = []
     manager = QualificationManager()
 
-    # ------------------------------------------------------------
-    # Caso 1: sin solapamiento -- unión simple
-    # ------------------------------------------------------------
-    print("\n[Caso 1] Sin solapamiento")
-    resultado_lpf = MockResultado(["Club A", "Club B", "Club C"])
-    resultado_copa = MockResultado(["Club D"])
-    salida = manager.calcular(resultado_lpf, resultado_copa)
-    print(f"  clasificados: {salida['clasificados']}")
-    print(f"  avisos: {salida['avisos']}")
-    esperado = ["Club A", "Club B", "Club C", "Club D"]
-    if salida["clasificados"] != esperado:
-        errores.append(f"[sin solapamiento] esperado {esperado}, obtenido {salida['clasificados']}")
-    if salida["avisos"]:
-        errores.append(f"[sin solapamiento] no se esperaban avisos, hubo: {salida['avisos']}")
+    def check(nombre, cond, detalle=""):
+        estado = "OK" if cond else "FALLÓ"
+        print(f"  [{estado}] {nombre}" + (f" -- {detalle}" if detalle and not cond else ""))
+        if not cond:
+            errores.append(f"{nombre}: {detalle}")
 
-    # ------------------------------------------------------------
-    # Caso 2: con solapamiento -- campeón de copa ya clasificó por LPF
-    # ------------------------------------------------------------
-    print("\n[Caso 2] Con solapamiento (campeón de Copa ya clasificó por LPF)")
-    resultado_lpf = MockResultado(["Club A", "Club B", "Club C"])
-    resultado_copa = MockResultado(["Club B"])  # Club B se repite
-    salida = manager.calcular(resultado_lpf, resultado_copa)
-    print(f"  clasificados: {salida['clasificados']}")
-    print(f"  avisos: {salida['avisos']}")
-    esperado = ["Club A", "Club B", "Club C"]  # deduplicado, sin cupo extra
-    if salida["clasificados"] != esperado:
-        errores.append(f"[con solapamiento] esperado {esperado}, obtenido {salida['clasificados']}")
-    if not any("Club B" in a and "cascada de cupos" in a for a in salida["avisos"]):
-        errores.append("[con solapamiento] se esperaba un aviso mencionando a 'Club B' y 'cascada de cupos'")
+    print("\n[Caso 1] Sin cascadas")
+    lpf = MockResultadoLPF("Boca", "River", TABLA_TIPICA)
+    copa = MockResultadoCopa("Racing")
+    salida = manager.calcular(lpf, copa)
+    check("Argentina 1 = campeón Apertura", salida["detalle"].get("argentina_1") == "Boca")
+    check("Argentina 2 = campeón Clausura", salida["detalle"].get("argentina_2") == "River")
+    check("Argentina 3 = campeón Copa", salida["detalle"].get("argentina_3") == "Racing")
+    check("6 cupos de Libertadores", len(salida["libertadores"]) == 6, str(salida["libertadores"]))
+    check("Sudamericana no repite a nadie de Libertadores",
+          not (set(salida["libertadores"]) & set(salida["sudamericana"])))
+    check("Sin avisos", not salida["avisos"], str(salida["avisos"]))
 
-    # ------------------------------------------------------------
-    # Caso 3: LPF vacío -- caso sospechoso, debe avisar
-    # ------------------------------------------------------------
-    print("\n[Caso 3] LPF sin clasificados (sospechoso)")
-    resultado_lpf = MockResultado([])
-    resultado_copa = MockResultado(["Club Campeón Copa"])
-    salida = manager.calcular(resultado_lpf, resultado_copa)
-    print(f"  clasificados: {salida['clasificados']}")
-    print(f"  avisos: {salida['avisos']}")
-    if salida["clasificados"] != ["Club Campeón Copa"]:
-        errores.append(f"[LPF vacío] esperado ['Club Campeón Copa'], obtenido {salida['clasificados']}")
-    if not any("vino vacío" in a for a in salida["avisos"]):
-        errores.append("[LPF vacío] se esperaba un aviso sobre LPF sin clasificados")
+    print("\n[Caso 2] Apertura = Clausura (mismo campeón)")
+    lpf = MockResultadoLPF("Boca", "Boca", TABLA_TIPICA)
+    copa = MockResultadoCopa("Racing")
+    salida = manager.calcular(lpf, copa)
+    check("Boca aparece una sola vez", salida["libertadores"].count("Boca") == 1)
+    check("6 cupos igual se cubren", len(salida["libertadores"]) == 6, str(salida["libertadores"]))
+    check("Hay aviso de la cascada", any("Apertura y Clausura" in a for a in salida["avisos"]))
 
-    # ------------------------------------------------------------
-    # Caso 4: trazabilidad -- por_lpf/por_copa se devuelven tal cual
-    # ------------------------------------------------------------
-    print("\n[Caso 4] Trazabilidad de por_lpf / por_copa")
-    resultado_lpf = MockResultado(["Club X", "Club Y"])
-    resultado_copa = MockResultado(["Club Z"])
-    salida = manager.calcular(resultado_lpf, resultado_copa)
-    if salida["por_lpf"] != ["Club X", "Club Y"]:
-        errores.append(f"[trazabilidad] por_lpf incorrecto: {salida['por_lpf']}")
-    if salida["por_copa"] != ["Club Z"]:
-        errores.append(f"[trazabilidad] por_copa incorrecto: {salida['por_copa']}")
-    print("  OK" if not errores else "  Hay errores, ver más abajo")
+    print("\n[Caso 3] Campeón de Copa Argentina == campeón del Apertura")
+    lpf = MockResultadoLPF("Boca", "River", TABLA_TIPICA)
+    rondas = {"final": [{"local": "Boca", "visitante": "Vélez", "avanza": "Boca"}]}
+    copa = MockResultadoCopa("Boca", rondas=rondas)
+    salida = manager.calcular(lpf, copa)
+    check("Argentina 3 pasa al finalista perdedor (Vélez)",
+          salida["detalle"].get("argentina_3_cascada") == "Vélez", str(salida["detalle"]))
+    check("Hay aviso explicando la cascada de Copa", any("ya había clasificado" in a for a in salida["avisos"]))
+
+    print("\n[Caso 4] Campeón de Copa Argentina no es de Primera")
+    lpf = MockResultadoLPF("Boca", "River", TABLA_TIPICA)
+    rondas = {
+        "final": [{"local": "Deportivo Maipú", "visitante": "Racing", "avanza": "Deportivo Maipú"}],
+        "semis": [{"local": "Racing", "visitante": "San Lorenzo", "avanza": "Racing"},
+                  {"local": "Deportivo Maipú", "visitante": "Talleres", "avanza": "Deportivo Maipú"}],
+    }
+    copa = MockResultadoCopa("Deportivo Maipú", rondas=rondas)
+    salida = manager.calcular(lpf, copa)
+    check("Argentina 3 pasa al finalista perdedor de Primera (Racing)",
+          salida["detalle"].get("argentina_3_cascada") == "Racing", str(salida["detalle"]))
+
+    print("\n[Caso 5] Campeón del Apertura descendió")
+    lpf = MockResultadoLPF("Boca", "River", TABLA_TIPICA, descensos=["Boca", "Colón"])
+    copa = MockResultadoCopa("Racing")
+    salida = manager.calcular(lpf, copa)
+    check("Boca NO está en Libertadores", "Boca" not in salida["libertadores"])
+    check("6 cupos igual se cubren (cascada a la tabla)", len(salida["libertadores"]) == 6, str(salida["libertadores"]))
+    check("Colón (descendido) tampoco aparece en ningún lado",
+          "Colón" not in salida["libertadores"] and "Colón" not in salida["sudamericana"])
+
+    print("\n[Caso 6] Sin nadie de Primera disponible para la cascada de Copa")
+    lpf = MockResultadoLPF("Boca", "River", TABLA_TIPICA)
+    rondas = {"final": [{"local": "Deportivo Maipú", "visitante": "Estudiantes RC", "avanza": "Deportivo Maipú"}]}
+    copa = MockResultadoCopa("Deportivo Maipú", rondas=rondas)
+    salida = manager.calcular(lpf, copa)
+    check("Aviso de cupo sin cubrir", any("sin asignar" in a for a in salida["avisos"]), str(salida["avisos"]))
 
     print("\n" + "=" * 70)
     if errores:
-        print("❌ QualificationManager NO pasó todos los chequeos:")
+        print(f"❌ {len(errores)} chequeo(s) fallaron:")
         for e in errores:
             print(f"   - {e}")
     else:
-        print("✅ QualificationManager pasó todos los chequeos con mocks.")
-        print("   Recordatorio: NO resuelve la cascada de cupos real (ver docstring")
-        print("   de season/qualification_manager.py) -- limitación documentada,")
-        print("   pendiente si hace falta más adelante.")
+        print("✅ QualificationManager pasó todos los chequeos (con cascadas reales).")
     print("=" * 70)
+    return len(errores) == 0
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+    sys.exit(0 if main() else 1)

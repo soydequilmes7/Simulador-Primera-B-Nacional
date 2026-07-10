@@ -936,6 +936,18 @@
   .temporada-card .temporada-mov-fila{ margin-bottom:8px; }
   .temporada-card .temporada-mov-fila:last-child{ margin-bottom:0; }
   .temporada-card-foot{ margin-top:auto; }
+  /* Apertura/Clausura chiquitos dentro de la tarjeta resumen de LPF (sección
+     01) -- versión compacta de .temporada-torneos-cortos, pensada para caber
+     entre el campeón grande y el separador sin agrandar la tarjeta. */
+  .temporada-card-torneos-cortos{
+    display:flex; flex-direction:column; gap:6px; margin-top:12px;
+  }
+  .temporada-card-torneos-cortos .torneo-corto-item{ display:flex; align-items:center; gap:8px; }
+  .temporada-card-torneos-cortos .torneo-corto-label{
+    font-family:'JetBrains Mono'; font-size:10.5px; color:var(--muted);
+    white-space:nowrap; width:56px;
+  }
+  .temporada-card-torneos-cortos .temporada-equipo-chip{ font-size:12.5px; }
 
   /* ---------- MODO TEMPORADA · buscador global de equipos ---------- */
   .temporada-buscador{
@@ -7875,38 +7887,17 @@ function tablasCompetenciaHTML(slug, comp){
         </div>
       </div></div>
       ${campeonAnuncioHTML(datos.campeon_clausura, '▲')}` : '';
-    // Bracket del Apertura: NO es un dato real -- el Apertura 2026 ya se
-    // jugó y no tuvo este cuadro de playoffs, solo tenemos su tabla
-    // final y el campeón real (datos.campeon_apertura). A pedido del
-    // usuario se simula un cuadro FICTICIO con el mismo motor que el
-    // del Clausura (backend: EstadisticasLPF.simular_playoffs_apertura(),
-    // datos.playoffs_apertura), para poder mostrar los dos brackets uno
-    // al lado del otro en Modo Temporada. Se deja bien aclarado en el
-    // encabezado y en el section-note que es inventado, y el anuncio de
-    // campeón usa un color distinto (nota) al de los campeones reales.
-    const pa = datos.playoffs_apertura || {};
-    const playoffsAperturaHTML = (pa.octavos && pa.octavos.length) ? `
-      <div class="temporada-reducido-label">Playoffs del Apertura (SIMULADO — no ocurrió así en la realidad)</div>
-      <div class="bracket-scroll"><div class="bracket">
-        <div class="round"><div class="round-title">Octavos</div><div class="round-body">${pa.octavos.map(m => matchHTML(m)).join('')}</div></div>
-        <div class="round"><div class="round-title">Cuartos</div><div class="round-body">${(pa.cuartos || []).map(m => matchHTML(m)).join('')}</div></div>
-        <div class="round"><div class="round-title">Semifinal</div><div class="round-body">${(pa.semis || []).map(m => matchHTML(m)).join('')}</div></div>
-        <div class="round final-col">
-          <div class="round-title">Final</div>
-          <div class="round-body">
-            <div class="match">
-              ${(pa.semis || []).map(m => {
-                const equipo = m.avanza;
-                const esCampeon = equipo === pa.campeon_apertura_simulado;
-                return `<div class="row ${esCampeon ? 'winner' : ''}"><span>${escudoHTML(equipo)}${equipo}</span></div>`;
-              }).join('')}
-              <div class="leg-detail">${pa.final ? pa.final.texto : ''}</div>
-            </div>
-          </div>
-        </div>
-      </div></div>
-      ${campeonAnuncioHTML(pa.campeon_apertura_simulado, '?')}
-      <p class="section-note" style="margin-top:6px;">Este cuadro es ficticio: el Apertura 2026 ya se jugó y no tuvo playoffs, solo tabla final. Se simula acá con el mismo motor que el Clausura, a modo ilustrativo. El campeón REAL del Apertura fue <strong>${datos.campeon_apertura}</strong>, no ${pa.campeon_apertura_simulado}.</p>` : '';
+    // El bracket "ficticio" del Apertura (simular_playoffs_apertura())
+    // se sacó de Modo Temporada: para la temporada REAL (ronda 1) era
+    // una curiosidad ("qué hubiera pasado si el Apertura tenía
+    // playoffs"), pero para una temporada HIPOTÉTICA (ronda 2 en
+    // adelante) no tiene sentido -- ese Apertura ya se simuló ENTERO,
+    // con sus propios playoffs reales (ver
+    // EstadisticasLPF.simular_apertura_desde_carryover(), que es de
+    // donda sale datos.campeon_apertura), así que mostrar un segundo
+    // cuadro inventado al lado, con un campeón distinto, es puro ruido
+    // -- exactamente lo que reportaron como confuso.
+    const playoffsAperturaHTML = '';
     return `
       <div class="temporada-reducido-label" style="margin-top:0;">Apertura 2026 (dato real)</div>
       <div class="temporada-tablas-grid dos">
@@ -8136,6 +8127,25 @@ function competenciaCardHTML(slug, comp){
     ? `<div class="campeon-nombre"><span class="trofeo">🏆</span>${escudoHTML(comp.campeon)}${comp.campeon}</div>`
     : `<div class="campeon-nombre" style="color:var(--muted); font-size:15px;">Sin campeón único</div>`;
 
+  // La Liga Profesional también reparte Apertura y Clausura aparte de la
+  // Tabla Anual -- se muestran chiquitos en la tarjeta resumen para no
+  // esconderlos (el detalle completo ya los tiene en torneosCortosHTML,
+  // ver detalleCompetenciaHTML()).
+  const datosLPFCard = comp.datos || {};
+  const torneosCortosCardHTML = (slug === 'lpf' && (datosLPFCard.campeon_apertura || datosLPFCard.campeon_clausura)) ? `
+    <div class="temporada-card-torneos-cortos">
+      ${datosLPFCard.campeon_apertura ? `
+        <div class="torneo-corto-item">
+          <span class="torneo-corto-label">Apertura</span>
+          <span class="temporada-equipo-chip">${escudoHTML(datosLPFCard.campeon_apertura)}${datosLPFCard.campeon_apertura}</span>
+        </div>` : ''}
+      ${datosLPFCard.campeon_clausura ? `
+        <div class="torneo-corto-item">
+          <span class="torneo-corto-label">Clausura</span>
+          <span class="temporada-equipo-chip">${escudoHTML(datosLPFCard.campeon_clausura)}${datosLPFCard.campeon_clausura}</span>
+        </div>` : ''}
+    </div>` : '';
+
   const filas = [];
   if (comp.ascensos.length){
     filas.push(`<div class="temporada-mov-fila asciende"><span class="etiqueta">▲ Asciende</span><span class="equipos">${comp.ascensos.map(e => `<span class="temporada-equipo-chip">${escudoHTML(e)}${e}</span>`).join('')}</span></div>`);
@@ -8147,6 +8157,7 @@ function competenciaCardHTML(slug, comp){
   return `<div class="temporada-card" style="--tc-color:${color};" onclick="setLigaTemporadaScrollTo('${slug}')" role="button" tabindex="0">
     <div class="liga-nombre">${logo ? `<img src="logos-torneos/${logo}.png" alt="" onerror="this.remove()">` : ''}<span>${nombre}</span></div>
     ${campeonHTML}
+    ${torneosCortosCardHTML}
     <div class="temporada-card-sep"></div>
     <div class="temporada-card-foot">${filas.join('') || '<div style="color:var(--muted); font-size:12.5px;">Sin ascensos ni descensos en esta competencia.</div>'}</div>
   </div>`;

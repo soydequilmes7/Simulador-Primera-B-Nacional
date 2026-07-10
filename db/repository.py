@@ -299,50 +299,131 @@ class SimulatorRepository:
             records.append(item)
         return records
 
+    def _ensure_teams_bulk(self, names: list[str]) -> dict[str, int]:
+        """Como ensure_team() pero para muchos nombres a la vez -- UN
+        solo viaje a la base en vez de uno por equipo. Mismo INSERT ...
+        ON CONFLICT ... DO UPDATE de siempre, solo que con varias filas
+        de VALUES juntas; RETURNING trae el id tanto de las filas
+        insertadas como de las que ya existían (conflicto)."""
+        nombres_unicos = list(dict.fromkeys(names))  # dedup preservando orden
+        if not nombres_unicos:
+            return {}
+        placeholders = ", ".join(["(%s)"] * len(nombres_unicos))
+        filas = self._execute(
+            f"""
+            insert into teams (name) values {placeholders}
+            on conflict (name) do update set name = excluded.name
+            returning id, name
+            """,
+            nombres_unicos,
+        )
+        return {fila["name"]: fila["id"] for fila in filas}
+
     def upsert_standings(self, competition_slug: str, filas: list[dict]) -> None:
+        """Antes: 1 round-trip para season_id + 1 para ensure_team +
+        1 insert POR FILA (varios cientos en una tabla como Nacional).
+        Ahora: 1 round-trip para season_id + 1 para los equipos (batch)
+        + 1 insert con todas las filas juntas -- 3 en total, sea cual
+        sea el tamaño de la tabla. Mismo comportamiento (mismo upsert
+        por competition_slug+season_id+team_id), solo que agrupado."""
+        if not filas:
+            return
         season_id = self.season_id(competition_slug)
+        equipo_id = self._ensure_teams_bulk([fila["equipo"] for fila in filas])
+
+        valores = []
+        parametros = []
         for fila in filas:
-            team_id = self.ensure_team(fila["equipo"])
-            self._execute(
-                """
-                insert into standings (
-                    competition_slug, season_id, zona, posicion, team_id,
-                    partidos_jugados, ganados, empatados, perdidos, gf, gc, dg, puntos, updated_at
-                )
-                values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, now())
-                on conflict (competition_slug, season_id, team_id) do update set
-                    zona = excluded.zona,
-                    posicion = excluded.posicion,
-                    partidos_jugados = excluded.partidos_jugados,
-                    ganados = excluded.ganados,
-                    empatados = excluded.empatados,
-                    perdidos = excluded.perdidos,
-                    gf = excluded.gf,
-                    gc = excluded.gc,
-                    dg = excluded.dg,
-                    puntos = excluded.puntos,
-                    updated_at = now()
-                """,
-                (
-                    competition_slug, season_id, fila["zona"], int(fila["posicion"]), team_id,
-                    int(fila["partidos_jugados"]), int(fila["ganados"]), int(fila["empatados"]),
-                    int(fila["perdidos"]), int(fila["gf"]), int(fila["gc"]), int(fila["dg"]),
-                    int(fila["puntos"]),
-                ),
+            valores.append("(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, now())")
+            parametros.extend([
+                competition_slug, season_id, fila["zona"], int(fila["posicion"]), equipo_id[fila["equipo"]],
+                int(fila["partidos_jugados"]), int(fila["ganados"]), int(fila["empatados"]),
+                int(fila["perdidos"]), int(fila["gf"]), int(fila["gc"]), int(fila["dg"]),
+                int(fila["puntos"]),
+            ])
+
+        self._execute(
+            f"""
+            insert into standings (
+                competition_slug, season_id, zona, posicion, team_id,
+                partidos_jugados, ganados, empatados, perdidos, gf, gc, dg, puntos, updated_at
             )
+            values {", ".join(valores)}
+            on conflict (competition_slug, season_id, team_id) do update set
+                zona = excluded.zona,
+                posicion = excluded.posicion,
+                partidos_jugados = excluded.partidos_jugados,
+                ganados = excluded.ganados,
+                empatados = excluded.empatados,
+                perdidos = excluded.perdidos,
+                gf = excluded.gf,
+                gc = excluded.gc,
+                dg = excluded.dg,
+                puntos = excluded.puntos,
+                updated_at = now()
+            """,
+            parametros,
+        )
 
     def replace_matches(self, competition_slug: str, pending: list[dict], played: list[dict]) -> None:
+        """Antes: delete + 1 insert POR PARTIDO, cada uno con SUS
+        PROPIOS round-trips de season_id + 2x ensure_team (~4 viajes
+        por partido -- para una tabla de 400+ partidos, más de 1500
+        round-trips a una base en otra región, tiempo de sobra para
+        que Render/el navegador corten por timeout). Ahora: 1 round-trip
+        para season_id + el delete + 1 para TODOS los equipos (batch,
+        local y visitante de pending y played juntos) + 1 insert con
+        todos los partidos juntos -- 4 en total sea cual sea la
+        cantidad de partidos. Mismo resultado final en la tabla."""
         season_id = self.season_id(competition_slug)
         self._execute(
             "delete from matches where competition_slug = %s and season_id = %s",
             (competition_slug, season_id),
         )
-        for row in pending:
-            self.upsert_match(competition_slug, row, "pending")
-        for row in played:
-            self.upsert_match(competition_slug, row, "played")
+
+        partidos = [(row, "pending") for row in pending] + [(row, "played") for row in played]
+        if not partidos:
+            return
+
+        nombres_equipos = []
+        for row, _status in partidos:
+            nombres_equipos.append(row["equipo_local"])
+            nombres_equipos.append(row["equipo_visitante"])
+        equipo_id = self._ensure_teams_bulk(nombres_equipos)
+
+        valores = []
+        parametros = []
+        for row, status in partidos:
+            valores.append("(%s, %s, %s, %s, %s, %s, %s, %s, %s, now())")
+            parametros.extend([
+                competition_slug, season_id, row.get("fecha") or "", int(row.get("jornada") or 0),
+                equipo_id[row["equipo_local"]], equipo_id[row["equipo_visitante"]],
+                _nullable_int(row.get("goles_local")), _nullable_int(row.get("goles_visitante")), status,
+            ])
+
+        self._execute(
+            f"""
+            insert into matches (
+                competition_slug, season_id, fecha, jornada, equipo_local_id, equipo_visitante_id,
+                goles_local, goles_visitante, status, updated_at
+            )
+            values {", ".join(valores)}
+            on conflict (competition_slug, season_id, jornada, equipo_local_id, equipo_visitante_id)
+            do update set
+                fecha = excluded.fecha,
+                goles_local = excluded.goles_local,
+                goles_visitante = excluded.goles_visitante,
+                status = excluded.status,
+                updated_at = now()
+            """,
+            parametros,
+        )
 
     def upsert_match(self, competition_slug: str, row: dict, status: str) -> None:
+        """Se mantiene para quien necesite cargar UN partido suelto
+        (ej. scripts/seed_supabase.py) -- replace_matches() ya NO la
+        usa (ver arriba), así que la ruta de temporada completa no pasa
+        más por acá."""
         season_id = self.season_id(competition_slug)
         local_id = self.ensure_team(row["equipo_local"])
         visitante_id = self.ensure_team(row["equipo_visitante"])
