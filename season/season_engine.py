@@ -46,6 +46,7 @@ from season.adapters.copa_adapter import CopaAdapter
 from season.promotion_manager import PromotionManager
 from season.qualification_manager import QualificationManager
 from season.copa_argentina_manager import CopaArgentinaManager
+from season.copa_argentina_sorteo import sortear_32avos
 from season.history_manager import HistoryManager
 
 # Slugs que espera PromotionManager.aplicar() según su docstring
@@ -81,6 +82,15 @@ class ResultadoTemporada:
     # Etapa 7: output de HistoryManager.persist_season() (vacío si
     # generar_temporada_siguiente=False, ver correr_temporada()).
     historia: dict = field(default_factory=dict)
+    # Cuadro de 32avos YA SORTEADO para la PRÓXIMA Copa Argentina (ver
+    # season/copa_argentina_sorteo.py), armado con los 64 clasificados
+    # de esta misma corrida (`clasificacion_copa_argentina` de arriba).
+    # Pasarlo como `cuadro_copa_override` en la próxima llamada a
+    # correr_temporada()/_correr_competencias() para que esa Copa
+    # Argentina se juegue con equipos nuevos en vez de repetir siempre
+    # el cuadro real. Lista vacía si el sorteo no se pudo armar (avisos
+    # de conteo en CopaArgentinaManager, ver armar_grupos_sorteo()).
+    cuadro_copa_siguiente: list = field(default_factory=list)
 
 
 class SeasonEngine:
@@ -101,16 +111,23 @@ class SeasonEngine:
     def __init__(self, club_registry: ClubRegistry):
         self.club_registry = club_registry
 
-    def _correr_competencias(self, n_sims: int) -> Dict[str, ResultadoTorneo]:
+    def _correr_competencias(self, n_sims: int, cuadro_copa_override: list | None = None) -> Dict[str, ResultadoTorneo]:
+        """cuadro_copa_override: cuadro de 32avos ya sorteado (ver
+        season/copa_argentina_sorteo.py) para pasarle a CopaAdapter en
+        vez de que lea el cuadro real -- pensado para encadenar rondas
+        del Modo Temporada (ver api/index.py, _correr_temporada_desde_
+        estado()). None (default) deja a CopaAdapter con su
+        comportamiento de siempre (cuadro real)."""
         resultados = {}
         for slug, adapter_cls in ADAPTERS.items():
             adapter = adapter_cls()
-            # Ningún adaptador necesita recibir nada externo hoy (los 5
-            # motores reales leen sus propios CSV vía data_access.
-            # league_data()). El parámetro setup() queda para cuando el
-            # SeasonEngine necesite pasar el roster actualizado -- ver
-            # TournamentEngine.setup().
-            adapter.setup()
+            # Ningún adaptador necesita recibir nada externo hoy salvo
+            # Copa (ver arriba). Los 5 motores de liga reales leen sus
+            # propios CSV vía data_access.league_data(). El parámetro
+            # setup() queda para cuando el SeasonEngine necesite pasar
+            # el roster actualizado -- ver TournamentEngine.setup().
+            kwargs = {"cuadro_override": cuadro_copa_override} if slug == "copa" else {}
+            adapter.setup(**kwargs)
             adapter.run(n_sims=n_sims)
             resultados[slug] = adapter.result()
         return resultados
@@ -120,8 +137,12 @@ class SeasonEngine:
                           generar_temporada_siguiente: bool = False,
                           temporada_actual: str | None = None,
                           temporada_siguiente: str | None = None,
-                          history_manager: HistoryManager | None = None) -> ResultadoTemporada:
+                          history_manager: HistoryManager | None = None,
+                          cuadro_copa_override: list | None = None) -> ResultadoTemporada:
         """
+        cuadro_copa_override: ver _correr_competencias() -- cuadro de
+            32avos ya sorteado para esta corrida de Copa Argentina, en
+            vez del cuadro real de siempre.
         generar_temporada_siguiente: Etapa 7 -- si es True, además de
             correr las 6 competencias y (opcionalmente) promocionar,
             persiste la temporada N+1 vía HistoryManager.persist_season()
@@ -142,7 +163,7 @@ class SeasonEngine:
             HistoryManager() default (repo real vía db.repository,
             rng sin semilla).
         """
-        resultados = self._correr_competencias(n_sims)
+        resultados = self._correr_competencias(n_sims, cuadro_copa_override=cuadro_copa_override)
 
         # QualificationManager.calcular(resultado_lpf, resultado_copa)
         # -- confirmado contra season/qualification_manager.py real.
@@ -196,10 +217,24 @@ class SeasonEngine:
                 self.club_registry, temporada_actual, temporada_siguiente, resultados,
             )
 
+        # Sorteo de 32avos para la PRÓXIMA Copa Argentina, con los 64
+        # clasificados que acaba de armar CopaArgentinaManager (ver
+        # season/copa_argentina_sorteo.py). Si los conteos no cierran
+        # 32+32 (avisos de CopaArgentinaManager por algún caso raro),
+        # se deja vacío -- quien reciba este ResultadoTemporada debería
+        # entonces NO pasar cuadro_copa_override en la corrida
+        # siguiente, y CopaAdapter vuelve a su comportamiento de
+        # siempre (cuadro real).
+        try:
+            cuadro_copa_siguiente = sortear_32avos(clasificacion_copa_argentina)
+        except ValueError:
+            cuadro_copa_siguiente = []
+
         return ResultadoTemporada(
             resultados=resultados,
             clasificacion=clasificacion,
             clasificacion_copa_argentina=clasificacion_copa_argentina,
             promocion=promocion,
             historia=historia,
+            cuadro_copa_siguiente=cuadro_copa_siguiente,
         )

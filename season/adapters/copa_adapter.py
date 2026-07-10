@@ -52,6 +52,7 @@ class CopaAdapter(TournamentEngine):
 
     def __init__(self):
         self._datos_web = None
+        self._cuadro_override = None
 
     def setup(self, **kwargs):
         # main_copa.correr_simulacion_copa() lee sus propios datos vía
@@ -59,12 +60,19 @@ class CopaAdapter(TournamentEngine):
         # internamente llama a data_access.league_data("lpf")/
         # ("nacional") pero atrapa sus propias excepciones); no
         # necesita nada externo todavía (ver nota en
-        # TournamentEngine.setup).
-        pass
+        # TournamentEngine.setup) -- SALVO cuadro_override: cuando el
+        # SeasonEngine ya sorteó un cuadro nuevo de 32avos con los 64
+        # clasificados de la ronda anterior (ver season/
+        # copa_argentina_sorteo.py), lo pasamos acá para simular ESE
+        # cuadro en vez del real. Si no viene (primera ronda, todavía
+        # sin clasificados propios), sigue leyendo el cuadro real de
+        # siempre.
+        self._cuadro_override = kwargs.get("cuadro_override")
 
     def run(self, n_sims: int = 1000):
         self._datos_web = main_copa.correr_simulacion_copa(
-            imprimir=False, guardar_json=False, n_sims=n_sims
+            imprimir=False, guardar_json=False, n_sims=n_sims,
+            cuadro_override=self._cuadro_override,
         )
 
     def result(self) -> ResultadoTorneo:

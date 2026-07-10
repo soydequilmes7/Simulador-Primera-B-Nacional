@@ -79,7 +79,7 @@ class CopaArgentinaManager:
         """
         por_division = {
             "lpf": self._clasificados_lpf(resultados["lpf"].datos_crudos),
-            "nacional": self._clasificados_nacional(resultados["nacional"].datos_crudos),
+            "nacional": self._clasificados_nacional(resultados["nacional"]),
             "bmetro": self._clasificados_bmetro(resultados["bmetro"]),
             "primerac": self._clasificados_primerac(resultados["primerac"]),
             "federal_a": self._clasificados_federal(resultados["federal_a"].datos_crudos),
@@ -93,6 +93,25 @@ class CopaArgentinaManager:
                 avisos.append(
                     f"{slug}: se esperaban {cantidad_esperada} clasificados y se "
                     f"armaron {cantidad}."
+                )
+
+        # El sorteo de 32avos (season/copa_argentina_sorteo.py) asume que
+        # los primeros 2 nombres de por_division["nacional"] son el
+        # campeón y el ganador del Reducido -- si por algún motivo no
+        # quedaron ahí (ver _clasificados_nacional), avisamos en vez de
+        # fallar en silencio más adelante.
+        nacional_resultado = resultados.get("nacional")
+        if nacional_resultado is not None:
+            cabezas_esperadas = [n for n in (nacional_resultado.campeon,
+                                              nacional_resultado.ascensos[1] if len(nacional_resultado.ascensos) > 1 else None)
+                                  if n]
+            nacional_lista = por_division["nacional"]
+            if cabezas_esperadas and nacional_lista[:len(cabezas_esperadas)] != cabezas_esperadas:
+                avisos.append(
+                    "nacional: el campeón y/o el ganador del Reducido no quedaron "
+                    "primeros en por_division['nacional'] (no se encontraron entre los "
+                    "clasificados de la zona) -- el sorteo de 32avos podría agrupar mal "
+                    "Grupo 1/Grupo 2."
                 )
 
         clasificados = []
@@ -129,16 +148,29 @@ class CopaArgentinaManager:
         return [fila["equipo"] for fila in datos_web["tabla_anual"]]
 
     # ------------------------------------------------------------------
-    # Primera Nacional -- 7 + 7 + mejor 8°.
+    # Primera Nacional -- 7 + 7 + mejor 8°. El campeón (ascenso directo)
+    # y el ganador del Reducido (2° ascenso) quedan SIEMPRE primeros en
+    # la lista devuelta -- no se suman clasificados de más (ambos ya
+    # están entre los top-7/mejor-8° de alguna zona, se los reordena
+    # nomás), pero así el sorteo de 32avos (season/copa_argentina_
+    # sorteo.py) puede separarlos con nacional[:2]/nacional[2:] sin
+    # tener que volver a tocar el ResultadoTorneo.
     # ------------------------------------------------------------------
     @staticmethod
-    def _clasificados_nacional(datos_web: dict) -> list[str]:
+    def _clasificados_nacional(resultado) -> list[str]:
+        datos_web = resultado.datos_crudos
         zona_a = datos_web["tablas"]["A"]
         zona_b = datos_web["tablas"]["B"]
         top_a, top_b = zona_a[:7], zona_b[:7]
         octavos = [fila for fila in (zona_a[7:8] + zona_b[7:8])]
         mejor_octavo = [_mejor(octavos)["equipo"]] if octavos else []
-        return [f["equipo"] for f in top_a] + [f["equipo"] for f in top_b] + mejor_octavo
+        resto = [f["equipo"] for f in top_a] + [f["equipo"] for f in top_b] + mejor_octavo
+
+        campeon = resultado.campeon
+        reducido = resultado.ascensos[1] if len(resultado.ascensos) > 1 else None
+        cabezas = [nombre for nombre in (campeon, reducido) if nombre and nombre in resto]
+
+        return cabezas + [nombre for nombre in resto if nombre not in cabezas]
 
     # ------------------------------------------------------------------
     # B Metropolitana -- campeón + reducido + 3 mejores de la general

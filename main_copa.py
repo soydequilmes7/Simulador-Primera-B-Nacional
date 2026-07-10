@@ -17,9 +17,18 @@ from modelos.estadisticas_copa import EstadisticasCopa, RONDAS
 RUTA_JSON_COPA = rutas.public_dir() / "data_copa.json"
 
 
-def _preparar_motor():
+def _preparar_motor(cuadro_override=None):
+    """cuadro_override: si viene (lista de cruces con el shape de
+    data_access.cup_records(), ver season/copa_argentina_sorteo.py),
+    se usa ESE cuadro en vez de leer el real -- pensado para el Modo
+    Temporada, que sortea un cuadro nuevo con los 64 clasificados de la
+    corrida en vez de repetir siempre la misma Copa Argentina real (ver
+    season/adapters/copa_adapter.py)."""
     e = EstadisticasCopa()
-    e.cargar_datos_copa()
+    if cuadro_override is not None:
+        e.cuadro = cuadro_override
+    else:
+        e.cargar_datos_copa()
     e.crear_equipos_copa()
     return e
 
@@ -41,10 +50,15 @@ def guardar_json_copa(datos_web, ruta=None):
     return "simulation_outputs:copa"
 
 
-def correr_simulacion_copa(imprimir=True, guardar_json=True, n_sims=1000):
+def correr_simulacion_copa(imprimir=True, guardar_json=True, n_sims=1000, cuadro_override=None):
     """Simula el cuadro completo una vez (para mostrar) + Monte Carlo de
-    n_sims corridas (para los %). Devuelve el dict del JSON."""
-    e = _preparar_motor()
+    n_sims corridas (para los %). Devuelve el dict del JSON.
+
+    cuadro_override: ver _preparar_motor(). Cuando viene, guardar_json
+    debería ir en False (es un cuadro hipotético del Modo Temporada, no
+    la Copa Argentina real -- no hay que pisar data_copa.json/
+    simulation_outputs con esto)."""
+    e = _preparar_motor(cuadro_override=cuadro_override)
 
     rondas_detalle, campeon = e.simular_copa()
     mc = e.monte_carlo_copa(n_simulaciones=n_sims)

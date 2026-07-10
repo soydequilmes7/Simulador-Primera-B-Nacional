@@ -922,6 +922,7 @@ def _correr_temporada_desde_estado(estado_anterior: dict | None, numero_ronda: i
     from season.history_manager import HistoryManager
     from season.qualification_manager import QualificationManager
     from season.copa_argentina_manager import CopaArgentinaManager
+    from season.copa_argentina_sorteo import sortear_32avos
 
     if not estado_anterior:
         registry = ClubRegistry.build_from_current_data()
@@ -958,7 +959,20 @@ def _correr_temporada_desde_estado(estado_anterior: dict | None, numero_ronda: i
     data_access.lpf_average_history_df = _local_promedios
     try:
         engine = SeasonEngine(registry)
-        resultados = engine._correr_competencias(n_sims=N_SIMS_TEMPORADA)
+        # cuadro_copa_override: el sorteo de 32avos ya armado en la ronda
+        # ANTERIOR (ver más abajo, `cuadro_copa_siguiente`), guardado en
+        # estado_anterior["cuadro_copa_32avos"]. Sin este parámetro,
+        # CopaAdapter volvía a leer SIEMPRE el cuadro real (datos/
+        # copa_argentina.csv) sin importar cuántas rondas se avanzaran --
+        # este era el bug: la infraestructura del sorteo (season/
+        # copa_argentina_sorteo.py) ya existía pero nunca se llamaba desde
+        # acá. En None (primera ronda, todavía no hay clasificados
+        # propios): CopaAdapter sigue con su comportamiento de siempre
+        # (cuadro real).
+        resultados = engine._correr_competencias(
+            n_sims=N_SIMS_TEMPORADA,
+            cuadro_copa_override=(estado_anterior or {}).get("cuadro_copa_32avos"),
+        )
     finally:
         data_access.league_data = original_league_data
         data_access.lpf_average_history_df = original_promedios
@@ -981,6 +995,20 @@ def _correr_temporada_desde_estado(estado_anterior: dict | None, numero_ronda: i
     # temporada(), que acá no llamamos directo -- así que se corre a
     # mano con los mismos `resultados` de esta ronda.
     clasificacion_copa_argentina = CopaArgentinaManager().calcular(resultados)
+
+    # Sorteo de 32avos para la Copa Argentina de la RONDA SIGUIENTE, con
+    # los 64 clasificados que se acaban de calcular acá. Se guarda en
+    # proximo_estado (más abajo) para que la próxima llamada a este
+    # endpoint lo pase como cuadro_copa_override -- así cada ronda de
+    # Modo Temporada juega una Copa Argentina nueva con los equipos que
+    # clasificaron de verdad, en vez de repetir siempre el cuadro real.
+    # Lista vacía si los conteos no cerraron 32+32 (avisos de
+    # CopaArgentinaManager): la ronda siguiente cae de vuelta al cuadro
+    # real en vez de romper.
+    try:
+        cuadro_copa_siguiente = sortear_32avos(clasificacion_copa_argentina)
+    except ValueError:
+        cuadro_copa_siguiente = []
 
     promocion = {}
     proximo_estado = None
@@ -1033,6 +1061,7 @@ def _correr_temporada_desde_estado(estado_anterior: dict | None, numero_ronda: i
             "datos_por_liga": capturado,
             "numero_ronda": numero_ronda + 1,
             "pool_regional_federal": promocion.get("pool_regional_restante", []),
+            "cuadro_copa_32avos": cuadro_copa_siguiente,
         }
 
     return resultados, promocion, proximo_estado, clasificacion, clasificacion_copa_argentina

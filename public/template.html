@@ -665,7 +665,11 @@
   body.liga-temporada .liga-tab.active{
     background: linear-gradient(135deg, #6D3FC7, #8B5CF6);
     color:#fff;
+    box-shadow: 0 4px 18px rgba(124,77,255,0.38);
+    border-color: transparent;
   }
+  body.liga-temporada .liga-tab{ transition: background 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, transform 0.15s ease; }
+  body.liga-temporada .liga-tab:not(.active):hover{ border-color: var(--amber); transform: translateY(-1px); }
   /* El h1 del hero es "SIMULADOR <span>LIGA</span>" en el resto de pestañas;
      en Modo Temporada no hay una sola liga que simular, así que se oculta
      el prefijo y el span pasa a decir directamente "MODO TEMPORADA". */
@@ -673,7 +677,30 @@
   /* Los números de arriba (Equipos/Zonas/Ascensos/Descensos) son de UNA
      competencia -- no hay un valor único que tenga sentido acá, así que
      en vez de mostrar datos de la última liga visitada, se ocultan. */
-  body.liga-temporada .hero .meta{ display:none; }
+  /* Antes se ocultaba acá (display:none): ahora se reutiliza para mostrar
+     Equipos / Competencias / Ascensos por temporada / Descensos por
+     temporada, ver actualizarHero() y aplicarMetaTemporada(). */
+
+  /* Botón principal más premium: mismo componente (.btn-simular), solo
+     más presencia -- padding, glow violeta e icono más grandes -- para
+     que "llame inmediatamente la atención" como pide el objetivo. */
+  body.liga-temporada .btn-simular{
+    padding: 15px 32px; font-size:14px; border-radius:999px;
+    box-shadow: 0 8px 24px rgba(124,77,255,0.4), 0 0 0 1px rgba(255,255,255,0.08) inset;
+  }
+  body.liga-temporada .btn-simular:hover:not(:disabled){ box-shadow: 0 10px 30px rgba(124,77,255,0.55), 0 0 0 1px rgba(255,255,255,0.1) inset; }
+  body.liga-temporada .btn-actualizar{ padding:15px 30px; border-radius:999px; }
+
+  /* Títulos de sección con más presencia dentro de Modo Temporada. */
+  body.liga-temporada .section-head{ margin-bottom:26px; }
+  body.liga-temporada .section-head .idx{
+    color:#fff; background:linear-gradient(135deg, #6D3FC7, #8B5CF6);
+    font-weight:700; font-size:11px; letter-spacing:0.06em;
+    padding:4px 9px; border-radius:6px;
+  }
+  body.liga-temporada .section-head h2{ font-size:26px; letter-spacing:0.02em; }
+  body.liga-temporada .section-head .rule{ background: linear-gradient(90deg, rgba(124,77,255,0.45), transparent); }
+  body.liga-temporada section{ margin-bottom:52px; }
 
   /* ---------- MODO TEMPORADA ---------- */
   .temporada-grid{
@@ -735,6 +762,31 @@
   .temporada-copa-argentina-grupo .grupo-titulo .cantidad{ color:var(--muted); text-transform:none; letter-spacing:0; }
   .temporada-copa-argentina-grupo .temporada-copas-lista .temporada-copa-chip{ border-left-color:var(--tc-color, var(--qualified-accent)); }
   .temporada-avisos{ margin-top:14px; font-size:12px; color:var(--muted); font-family:'JetBrains Mono'; }
+  .palmares-tabla{ width:100%; border-collapse:collapse; font-size:13px; }
+  .palmares-tabla th, .palmares-tabla td{ padding:10px 14px; border-bottom:1px solid var(--line); text-align:left; white-space:nowrap; }
+  .palmares-tabla thead th{ font-family:'JetBrains Mono'; font-size:10.5px; text-transform:uppercase; letter-spacing:0.06em; color:var(--muted); border-bottom:1px solid var(--line); }
+  .palmares-tabla tbody tr:last-child td{ border-bottom:none; }
+  .palmares-tabla tbody tr:hover td{ background:var(--bg-panel); }
+  .palmares-tabla td.ronda{ font-family:'JetBrains Mono'; color:var(--muted); font-size:12px; }
+  .palmares-tabla td .campeon-celda{ display:inline-flex; align-items:center; gap:6px; }
+  .palmares-tabla td.vacio{ color:var(--muted); font-style:italic; }
+  .palmares-vacio{ color:var(--muted); }
+  .palmares-resumen{ display:flex; flex-wrap:wrap; gap:8px; padding:16px 14px 0; }
+  .palmares-resumen-chip{
+    display:inline-flex; align-items:center; gap:7px; padding:6px 12px 6px 8px;
+    border:1px solid var(--line); border-radius:999px; background:var(--bg-panel); font-size:12.5px;
+  }
+  .palmares-resumen-chip .escudo{ width:18px; height:18px; }
+  .palmares-resumen-chip .equipo{ font-weight:600; }
+  .palmares-resumen-chip .cantidad{ font-family:'JetBrains Mono'; color:var(--amber); font-weight:700; }
+  .palmares-th-liga{ display:inline-flex; align-items:center; gap:6px; white-space:nowrap; }
+  .palmares-th-liga img{ height:14px; width:auto; flex-shrink:0; }
+  .palmares-tabla tbody tr.palmares-ultima td{ background:var(--qualified-bg); }
+  .palmares-tabla tbody tr.palmares-ultima td.ronda{ color:var(--ink); font-weight:700; }
+  .palmares-tag-nueva{
+    font-family:'JetBrains Mono'; font-size:9.5px; text-transform:uppercase; letter-spacing:0.04em;
+    color:var(--qualified-accent); border:1px solid var(--qualified-accent); border-radius:4px; padding:1px 5px; margin-left:4px;
+  }
   .temporada-detalle-header{
     border:1px solid var(--line); border-left:4px solid var(--tc-color, var(--amber)); border-radius:var(--radius); padding:20px 24px;
     background: var(--card-grad, var(--bg-panel)); background-color:var(--bg-panel);
@@ -748,7 +800,17 @@
   .temporada-tablas-grid{ display:grid; gap:20px; margin-bottom:8px; }
   .temporada-tablas-grid.uno{ grid-template-columns:minmax(0,640px); justify-content:center; }
   .temporada-tablas-grid.dos{ grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); }
-  .temporada-tablas-grid.cuatro{ grid-template-columns:repeat(auto-fit, minmax(240px,1fr)); }
+  /* Las 4 zonas de la Primera Fase de Federal A: antes usaban auto-fit con un
+     mínimo de 240px, que con 6 columnas de datos (#/Equipo/Pts/GF/GC/DG) no
+     entraba y cada tarjeta terminaba con su propio scroll horizontal, y
+     además auto-fit podía acomodar 3 zonas en una fila y 1 sola en la
+     siguiente según el ancho disponible, dejando la grilla dispareja. Se fija
+     a 2 columnas siempre (2x2) para que las 4 zonas queden prolijamente
+     alineadas y cada tabla tenga ancho de sobra para sus 6 columnas. */
+  .temporada-tablas-grid.cuatro{ grid-template-columns:repeat(2, minmax(0,1fr)); align-items:start; }
+  @media (max-width: 640px){
+    .temporada-tablas-grid.cuatro{ grid-template-columns:1fr; }
+  }
   .temporada-card{ cursor:pointer; }
   .temporada-card:focus-visible{ outline:2px solid var(--azul); outline-offset:2px; }
   .temporada-reducido-label{
@@ -767,6 +829,167 @@
     background:var(--tc-color, var(--amber-dim)); color:#fff; border-color:var(--tc-color, var(--amber));
   }
   #temporada-competencia-tabs-group .zone-tab.active::before{ background:#fff; }
+
+  /* ---------- MODO TEMPORADA · dashboard superior ----------
+     Convierte el arranque de la pestaña en un mini-dashboard (mismo
+     lenguaje visual que .hero: gradiente violeta, texto claro) con las
+     métricas más importantes de la corrida en tarjetas grandes. Vive
+     dentro de #vista-temporada, no dentro de .hero (.hero es compartido
+     por las 7 pestañas y su contenido/JS no se toca). */
+  .temporada-dashboard{
+    background: var(--hero-bg); border-radius: var(--radius);
+    padding: 34px 28px 30px; margin: 28px 0 40px; text-align:center;
+    position:relative; overflow:hidden; box-shadow: var(--card-shadow);
+    animation: fade-in 0.5s ease forwards;
+  }
+  .temporada-dashboard::after{
+    content:""; position:absolute; left:0; right:0; bottom:0; height:3px;
+    background: var(--hero-accent); opacity:0.9;
+  }
+  .temporada-dashboard-eyebrow{
+    display:inline-block; font-family:'JetBrains Mono'; font-size:11px;
+    letter-spacing:0.3em; color: var(--hero-dim); margin-bottom:10px;
+  }
+  .temporada-dashboard-title{
+    font-family:'Oswald'; text-transform:uppercase; letter-spacing:0.02em;
+    font-size:clamp(22px,4vw,30px); font-weight:600; color: var(--hero-ink);
+  }
+  .temporada-dashboard-sub{ margin-top:8px; color: var(--hero-dim); font-size:13px; font-family:'JetBrains Mono'; }
+  .temporada-dashboard-metrics{
+    margin-top:26px; display:grid; grid-template-columns:repeat(auto-fit, minmax(180px,1fr));
+    gap:14px; max-width:460px; margin-left:auto; margin-right:auto;
+  }
+  .temporada-metric-card{
+    background: rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.16);
+    border-radius: var(--radius-sm); padding:16px 14px; backdrop-filter: blur(6px);
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+  .temporada-metric-card:hover{ background: rgba(255,255,255,0.11); transform: translateY(-2px); }
+  .temporada-metric-card .lbl{
+    font-family:'JetBrains Mono'; font-size:10.5px; letter-spacing:0.06em; text-transform:uppercase;
+    color: var(--hero-dim); margin-bottom:8px; display:flex; align-items:center; justify-content:center; gap:6px;
+  }
+  .temporada-metric-card .val{
+    font-family:'Oswald'; font-size:17px; font-weight:600; color: var(--hero-ink);
+    display:flex; align-items:center; justify-content:center; gap:7px; line-height:1.25;
+  }
+  .temporada-metric-card .val img.escudo{ width:20px; height:20px; }
+  .temporada-metric-card .val.num{ font-family:'JetBrains Mono'; font-size:24px; color: var(--hero-accent); }
+  @media (max-width: 640px){
+    .temporada-dashboard{ padding:28px 18px 24px; }
+  }
+
+  /* ---------- MODO TEMPORADA · tarjetas de resumen mejoradas ----------
+     El campeón pasa a ser el protagonista: escudo grande, separador y
+     ascensos/descensos como franjas en vez de chips sueltos. Reusa
+     .temporada-card/.temporada-grid, no crea un componente nuevo. */
+  .temporada-grid{ grid-template-columns:repeat(3, minmax(0,1fr)); gap:20px; }
+  @media (max-width: 980px){ .temporada-grid{ grid-template-columns:repeat(2, minmax(0,1fr)); } }
+  @media (max-width: 620px){ .temporada-grid{ grid-template-columns:1fr; } }
+  .temporada-card{
+    padding:22px 22px 20px; display:flex; flex-direction:column; height:100%;
+    animation: fade-in 0.4s ease forwards;
+  }
+  .temporada-card .campeon-nombre{
+    display:flex; align-items:center; gap:10px; font-size:20px; margin-bottom:0;
+  }
+  .temporada-card .campeon-nombre img.escudo{ width:34px; height:34px; }
+  .temporada-card .campeon-nombre .trofeo{ font-size:17px; }
+  .temporada-card-sep{ height:1px; background:var(--line); margin:16px 0 14px; }
+  .temporada-card .temporada-mov-fila{ margin-bottom:8px; }
+  .temporada-card .temporada-mov-fila:last-child{ margin-bottom:0; }
+  .temporada-card-foot{ margin-top:auto; }
+
+  /* ---------- MODO TEMPORADA · buscador global de equipos ---------- */
+  .temporada-buscador{
+    position:relative; max-width:560px; margin:0 auto 40px;
+  }
+  .temporada-buscador-input-wrap{ position:relative; }
+  .temporada-buscador-input-wrap::before{
+    content:"🔍"; position:absolute; left:18px; top:50%; transform:translateY(-50%);
+    font-size:14px; opacity:0.6; pointer-events:none;
+  }
+  #temporada-buscador-input{
+    width:100%; padding:14px 18px 14px 44px; border-radius:999px;
+    border:1px solid var(--line); background:var(--bg-panel); color:var(--ink);
+    font-size:14px; font-family:'Inter'; outline:none;
+    box-shadow: var(--card-shadow); transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  #temporada-buscador-input:focus{ border-color:var(--amber); box-shadow: 0 0 0 3px var(--amber-dim); }
+  #temporada-buscador-input::placeholder{ color:var(--muted); }
+  .temporada-buscador-sugerencias{
+    position:absolute; left:0; right:0; top:calc(100% + 8px); z-index:20;
+    background:var(--bg-panel); border:1px solid var(--line); border-radius:var(--radius-sm);
+    box-shadow:var(--card-shadow-hover); overflow:hidden; max-height:320px; overflow-y:auto;
+    display:none;
+  }
+  .temporada-buscador-sugerencias.abierta{ display:block; animation: fade-in 0.15s ease forwards; }
+  .temporada-sugerencia{
+    display:flex; align-items:center; gap:10px; padding:10px 16px; cursor:pointer;
+    font-size:13.5px; color:var(--ink); border-bottom:1px solid var(--line);
+  }
+  .temporada-sugerencia:last-child{ border-bottom:none; }
+  .temporada-sugerencia:hover, .temporada-sugerencia.activa{ background:var(--bg-panel-2); }
+  .temporada-sugerencia img.escudo{ width:20px; height:20px; flex-shrink:0; }
+  .temporada-sugerencia .comp{
+    margin-left:auto; font-family:'JetBrains Mono'; font-size:10px; text-transform:uppercase;
+    letter-spacing:0.05em; color:var(--tc-color, var(--muted));
+  }
+  .temporada-buscador-vacio{ padding:14px 16px; font-size:13px; color:var(--muted); }
+
+  /* Ficha de equipo: card estilo Football Manager/Sofascore con el
+     resumen completo de la temporada de un club, reusa .table-wrap y
+     los tokens semánticos ya usados en toda la tabla de posiciones. */
+  .temporada-ficha-wrap{ max-width:560px; margin:14px auto 0; }
+  .temporada-ficha{
+    border:1px solid var(--line); border-top:4px solid var(--tc-color, var(--amber));
+    border-radius:var(--radius); background:var(--card-grad, var(--bg-panel)); background-color:var(--bg-panel);
+    box-shadow:var(--card-shadow); padding:22px 24px; animation: fade-in 0.3s ease forwards;
+  }
+  .temporada-ficha-head{ display:flex; align-items:center; gap:14px; }
+  .temporada-ficha-head img.escudo{ width:48px; height:48px; }
+  .temporada-ficha-head .nombre{ font-family:'Oswald'; font-size:22px; font-weight:600; color:var(--ink); text-transform:uppercase; letter-spacing:0.01em; }
+  .temporada-ficha-head .comp{
+    font-family:'JetBrains Mono'; font-size:11px; letter-spacing:0.06em; text-transform:uppercase;
+    color:var(--tc-color, var(--muted)); margin-top:3px; display:flex; align-items:center; gap:6px;
+  }
+  .temporada-ficha-head .comp img{ height:14px; width:auto; }
+  .temporada-ficha-cerrar{
+    margin-left:auto; align-self:flex-start; background:none; border:none; cursor:pointer;
+    color:var(--muted); font-size:18px; line-height:1; padding:4px;
+  }
+  .temporada-ficha-cerrar:hover{ color:var(--ink); }
+  .temporada-ficha-sep{ height:1px; background:var(--line); margin:16px 0; }
+  .temporada-ficha-datos{ display:grid; grid-template-columns:1fr 1fr; gap:10px 18px; }
+  .temporada-ficha-dato{ display:flex; align-items:center; justify-content:space-between; font-size:13.5px; padding:7px 0; border-bottom:1px solid var(--line); }
+  .temporada-ficha-dato .k{ color:var(--ink-dim); display:flex; align-items:center; gap:6px; }
+  .temporada-ficha-dato .v{ font-weight:600; color:var(--ink); font-family:'JetBrains Mono'; }
+  .temporada-ficha-dato .v.si{ color:var(--qualified-accent); }
+  .temporada-ficha-dato .v.no{ color:var(--muted); font-weight:500; }
+  .temporada-ficha-dato .v.oro{ color:var(--leader-accent); }
+  .temporada-ficha-dato .v.rojo{ color:var(--danger); }
+  .temporada-ficha-stats{ display:flex; gap:18px; margin-top:14px; flex-wrap:wrap; }
+  .temporada-ficha-stat{ text-align:center; }
+  .temporada-ficha-stat .num{ font-family:'JetBrains Mono'; font-size:19px; font-weight:700; color:var(--ink); }
+  .temporada-ficha-stat .lbl{ font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-top:2px; }
+  .temporada-ficha-btn{
+    margin-top:18px; width:100%; padding:12px; border-radius:999px; border:none; cursor:pointer;
+    font-family:'JetBrains Mono'; font-size:12.5px; font-weight:600; letter-spacing:0.03em;
+    color:#fff; background: linear-gradient(135deg, #6D3FC7, #8B5CF6);
+    transition: filter 0.15s ease, transform 0.15s ease;
+  }
+  .temporada-ficha-btn:hover{ filter:brightness(1.1); transform:translateY(-1px); }
+  @media (max-width:480px){ .temporada-ficha-datos{ grid-template-columns:1fr; } }
+
+  /* Resalta la fila del equipo cuando se llega desde el buscador. Usa
+     los mismos tokens (--amber/--amber-dim) que el resto del Modo
+     Temporada -- se apaga sola por transición (tbody tr ya tiene
+     transition:background definida más arriba) al sacarle la clase. */
+  tbody tr.temporada-fila-resaltada{
+    background: var(--amber-dim) !important;
+    box-shadow: inset 3px 0 0 var(--amber) !important;
+  }
+  tbody tr.temporada-fila-resaltada td:nth-child(2){ color: var(--ink); font-weight:700; }
 
   /* ---------- BRACKET ---------- */
   .bracket-wrap{ position:relative; }
@@ -2471,10 +2694,10 @@
     <h1 class="display"><span id="hero-title-prefix">SIMULADOR </span><span id="hero-title-span">PRIMERA NACIONAL</span></h1>
     <p class="sub" id="hero-sub">Probabilidades de ascenso y descenso calculadas simulando la temporada completa hasta cinco mil veces con un modelo Poisson ajustado por forma reciente y corrección Dixon-Coles.</p>
     <div class="meta">
-      <div><div class="num mono" id="meta-equipos">—</div><div class="lbl">Equipos</div></div>
-      <div><div class="num mono" id="meta-zonas">2</div><div class="lbl">Zonas</div></div>
+      <div><div class="num mono" id="meta-equipos">—</div><div class="lbl" id="meta-equipos-lbl">Equipos</div></div>
+      <div><div class="num mono" id="meta-zonas">2</div><div class="lbl" id="meta-zonas-lbl">Zonas</div></div>
       <div><div class="num mono" id="meta-ascensos">2</div><div class="lbl" id="meta-ascensos-lbl">Ascensos por edición</div></div>
-      <div><div class="num mono" id="meta-descensos">4</div><div class="lbl">Descensos por edición</div></div>
+      <div><div class="num mono" id="meta-descensos">4</div><div class="lbl" id="meta-descensos-lbl">Descensos por edición</div></div>
     </div>
 
     <div class="sim-control" id="sim-control-nacional">
@@ -3104,6 +3327,21 @@
     </div>
 
     <div id="temporada-resultado" style="display:none">
+      <div class="temporada-dashboard">
+        <span class="temporada-dashboard-eyebrow">MODO TEMPORADA</span>
+        <h2 class="temporada-dashboard-title">Así quedó la temporada</h2>
+        <p class="temporada-dashboard-sub" id="temporada-dashboard-estado">Corrida real completa — sin Monte Carlo</p>
+        <div class="temporada-dashboard-metrics" id="temporada-dashboard-metrics"></div>
+      </div>
+
+      <div class="temporada-buscador">
+        <div class="temporada-buscador-input-wrap">
+          <input type="text" id="temporada-buscador-input" placeholder="Buscar un equipo…" autocomplete="off" aria-label="Buscar un equipo en la temporada">
+        </div>
+        <div class="temporada-buscador-sugerencias" id="temporada-buscador-sugerencias"></div>
+        <div class="temporada-ficha-wrap" id="temporada-ficha-wrap"></div>
+      </div>
+
       <section id="sec-temporada-resumen">
         <div class="section-head"><span class="idx">01</span><h2>Resumen de la temporada</h2><div class="rule"></div></div>
         <p class="section-note" style="margin-top:0;">Un vistazo rápido a las 6 competencias: campeón, quién asciende y quién desciende. Tocá una tarjeta para ver el detalle completo, tablas y el Reducido de cada una.</p>
@@ -3139,6 +3377,12 @@
         <p class="section-note" style="margin-top:0;">Los 64 clasificados a la próxima edición, agrupados por la división de la que salen (Boletín Especial 6812 de AFA).</p>
         <div id="temporada-copa-argentina-list" class="temporada-copa-argentina-grupos"></div>
         <div id="temporada-copa-argentina-avisos" class="temporada-avisos"></div>
+      </section>
+
+      <section id="sec-temporada-palmares">
+        <div class="section-head"><span class="idx">06</span><h2>Palmarés de la simulación</h2><div class="rule"></div></div>
+        <p class="section-note" style="margin-top:0;">Un campeón por ronda y por competencia, acumulado a medida que vas simulando temporadas seguidas. Se reinicia si volvés a empezar desde datos reales.</p>
+        <div class="table-wrap"><div id="temporada-palmares-tabla"></div></div>
       </section>
     </div>
   </div>
@@ -3756,6 +4000,12 @@ const ESCUDOS = {
   'Juventud Unida San Luis':'juventud_unida_u', 'Tucumán Central':'Tucumán_Central', 'La Ferrere':'laferrere',
   'Kimberley Mar Del Plata':'kimberley',  
   'Santamarina Tandil':'santamarina',
+  // "Estudiantes (SL)" (Estudiantes de San Luis, club de relleno del pool
+  // de ascenso regional de Federal A, ver POOL_ASCENSO_REGIONAL en
+  // season/promotion_manager.py) sin esta entrada exacta colisionaba con
+  // la genérica 'Estudiantes':'estudiantes_caseros' de más arriba, porque
+  // escudoHTML() le saca el "(SL)" antes de buscar en el diccionario.
+  'Estudiantes (SL)':'estudiantessl', 'Estudiantes de San Luis':'estudiantessl',
   'San Martín de Burzaco':'smburzaco', 'San Martín de Mendoza':'san_martin_mendoza', 'Fundación Amigos por el Deporte':'Amigos',
   'Sportivo Italiano':'spitaliano',
   'Gimnasia de Concepción':'gimansia_cdu', 'Talleres (RE)':'talleres_re', 'Talleres Remedios de Escalada':'talleres_re',
@@ -6511,52 +6761,90 @@ const HERO_TEXTOS = {
     eyebrow: () => `TODAS LAS COMPETENCIAS — UNA SOLA CORRIDA`,
     titulo: "MODO TEMPORADA",
     sub: "Las 6 competencias juntas: quién sale campeón, quién asciende, quién desciende y quién clasifica a copas internacionales, todo en una sola corrida.",
-    ascensosLbl: "Competencias",
+    equiposLbl: "Equipos",
+    zonasLbl: "Competencias",
+    ascensosLbl: "Ascensos por temporada",
+    descensosLbl: "Descensos por temporada",
   },
   nacional: {
     eyebrow: () => `SIMULACIÓN MONTE CARLO — <span id="hero-n">${(DATA && DATA.n_simulaciones) || 0}</span> CORRIDAS`,
     titulo: "PRIMERA NACIONAL",
     sub: "Probabilidades de ascenso y descenso calculadas simulando la temporada completa hasta cinco mil veces con un modelo Poisson ajustado por forma reciente y corrección Dixon-Coles.",
+    equiposLbl: "Equipos",
+    zonasLbl: "Zonas",
     ascensosLbl: "Ascensos por edición",
+    descensosLbl: "Descensos por edición",
   },
   copa: {
     eyebrow: () => `SIMULACIÓN MONTE CARLO — <span id="hero-n">${(DATA_COPA && DATA_COPA.n_simulaciones) || 0}</span> CORRIDAS`,
     titulo: "COPA ARGENTINA",
     sub: "Cuadro real de 64 equipos: los cruces ya jugados quedan fijos y los pendientes se simulan a partido único en cancha neutral con el mismo modelo Poisson — alargue y penales incluidos.",
+    equiposLbl: "Equipos",
+    zonasLbl: "Zonas",
     ascensosLbl: "Rondas",
+    descensosLbl: "Descensos por edición",
   },
   lpf: {
     eyebrow: () => `SIMULACIÓN MONTE CARLO — <span id="hero-n">${(DATA_LPF && DATA_LPF.n_simulaciones) || 0}</span> CORRIDAS`,
     titulo: "LIGA PROFESIONAL",
     sub: "Apertura 2026 ya jugado (dato real) + Clausura simulado con el mismo modelo Poisson — playoffs cruzados, Tabla Anual, copas internacionales y Trofeo de Campeones.",
+    equiposLbl: "Equipos",
+    zonasLbl: "Zonas",
     ascensosLbl: "Playoffs (equipos)",
+    descensosLbl: "Descensos por edición",
   },
   bmetro: {
     eyebrow: () => `SIMULACIÓN MONTE CARLO — <span id="hero-n">${(DATA_BMETRO && DATA_BMETRO.n_simulaciones) || 0}</span> CORRIDAS`,
     titulo: "PRIMERA B METROPOLITANA",
     sub: "Temporada regular simulada con el mismo modelo Poisson ajustado por forma reciente y corrección Dixon-Coles: 1 ascenso directo (puntero) + 1 por el Torneo Reducido, tabla única sin zonas.",
+    equiposLbl: "Equipos",
+    zonasLbl: "Zonas",
     ascensosLbl: "Ascensos por edición",
+    descensosLbl: "Descensos por edición",
   },
   federal: {
     eyebrow: () => `SIMULACIÓN MONTE CARLO — <span id="hero-n">${(DATA_FEDERAL && DATA_FEDERAL.n_simulaciones) || 0}</span> CORRIDAS`,
     titulo: "TORNEO FEDERAL A",
     sub: "Primera Fase (4 zonas) + Segunda Fase (2 zonas) simuladas con el mismo modelo Poisson, seguidas del camino al 1° ascenso y las 6 etapas de la Reválida, todo a eliminación directa ida y vuelta.",
+    equiposLbl: "Equipos",
+    zonasLbl: "Zonas",
     ascensosLbl: "Ascensos por edición",
+    descensosLbl: "Descensos por edición",
   },
   primerac: {
     eyebrow: () => `SIMULACIÓN MONTE CARLO — <span id="hero-n">${(DATA_PRIMERAC && DATA_PRIMERAC.n_simulaciones) || 0}</span> CORRIDAS`,
     titulo: "PRIMERA C",
     sub: "Fase de zonas simulada con el mismo modelo Poisson, seguida de la Final por el 1er ascenso (ida y vuelta) y el Torneo Reducido por el 2do ascenso. Sin descenso directo: el último de cada zona juega la desafiliación.",
+    equiposLbl: "Equipos",
+    zonasLbl: "Zonas",
     ascensosLbl: "Ascensos por edición",
+    descensosLbl: "Descensos por edición",
   }
 };
+
+// Última corrida de Modo Temporada, para poder repoblar el bloque de
+// métricas (Equipos/Competencias/Ascensos/Descensos por temporada) al
+// volver a esta pestaña sin tener que simular de nuevo. Ver
+// renderDashboardTemporada() y aplicarMetaTemporada().
+let TEMPORADA_META_CACHE = null;
+
+function aplicarMetaTemporada(){
+  const c = TEMPORADA_META_CACHE;
+  document.getElementById('meta-equipos').textContent = c ? c.equipos : '—';
+  document.getElementById('meta-zonas').textContent = c ? c.competencias : '—';
+  document.getElementById('meta-ascensos').textContent = c ? c.ascensos : '—';
+  document.getElementById('meta-descensos').textContent = c ? c.descensos : '—';
+}
 
 function actualizarHero(liga){
   const t = HERO_TEXTOS[liga];
   document.getElementById('hero-eyebrow').innerHTML = t.eyebrow();
   document.getElementById('hero-title-span').textContent = t.titulo;
   document.getElementById('hero-sub').textContent = t.sub;
+  document.getElementById('meta-equipos-lbl').textContent = t.equiposLbl;
+  document.getElementById('meta-zonas-lbl').textContent = t.zonasLbl;
   document.getElementById('meta-ascensos-lbl').textContent = t.ascensosLbl;
+  document.getElementById('meta-descensos-lbl').textContent = t.descensosLbl;
   if (liga === 'copa'){
     document.getElementById('meta-equipos').textContent = 64;
     document.getElementById('meta-zonas').textContent = '—';
@@ -6586,9 +6874,10 @@ function actualizarHero(liga){
     document.getElementById('meta-ascensos').textContent = 2;
     document.getElementById('meta-descensos').textContent = 2;
   } else if (liga === 'temporada'){
-    // Los números de Equipos/Zonas/Ascensos/Descensos son propios de UNA
-    // competencia; en Modo Temporada ese bloque queda oculto por CSS
-    // (ver body.liga-temporada .hero .meta), así que no hace falta setearlos.
+    // Equipos/Competencias/Ascensos/Descensos por temporada salen de la
+    // última corrida real (TEMPORADA_META_CACHE), no son un dato fijo de
+    // una sola competencia como en las otras pestañas.
+    aplicarMetaTemporada();
   } else if (DATA) {
     document.getElementById('meta-equipos').textContent = DATA.tablas.A.length + DATA.tablas.B.length;
     document.getElementById('meta-ascensos').textContent = 2;
@@ -7354,6 +7643,7 @@ let DATA_TEMPORADA = null;
 let COMPETENCIA_ACTUAL_TEMPORADA = "lpf";
 let ESTADO_TEMPORADA_LOCAL = null;   // "proximo_estado" de la última ronda (null = arranca de datos reales)
 let NUMERO_RONDA_TEMPORADA = 1;
+let PALMARES_TEMPORADA = [];   // acumulado {ronda, campeones:{slug: nombre|null}} por cada ronda simulada, ver renderPalmares()
 
 function tablaSimpleHTML(filas, titulo, ascensoDirecto, ascensoReducido, descensosSet){
   const filasHTML = (filas || []).map((f, i) => {
@@ -7383,26 +7673,184 @@ function tablaSimpleHTML(filas, titulo, ascensoDirecto, ascensoReducido, descens
     </div>`;
 }
 
+function tablaPromediosHTML(filas, descendidosSet){
+  const filasHTML = (filas || []).map((f, i) => {
+    const clase = descendidosSet && descendidosSet.has(f.equipo) ? 'descenso' : '';
+    const promedio = typeof f.promedio === 'number' ? f.promedio.toFixed(3) : f.promedio;
+    return `
+    <tr class="${clase}">
+      <td>${i + 1}</td>
+      <td>${escudoHTML(f.equipo)}${f.equipo}</td>
+      <td>${f.puntos}</td>
+      <td>${f.partidos_jugados}</td>
+      <td>${promedio}</td>
+    </tr>`;
+  }).join('');
+  return `
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>PJ</th><th>Promedio</th></tr></thead>
+        <tbody>${filasHTML || '<tr><td colspan="5" style="text-align:center; color:var(--muted);">Sin datos</td></tr>'}</tbody>
+      </table>
+    </div>`;
+}
+
+// La Copa Argentina no está simulada dentro del Modo Temporada (mismo
+// gap documentado en season/qualification_manager.py), así que --
+// igual que ya hace elegirCampeonCopaArgentinaInventado() para la LPF
+// "real" -- inventamos un campeón determinístico (misma ronda = mismo
+// resultado) entre los equipos de mitad de tabla para arriba de ESTA
+// tabla anual, para poder completar el cupo ARGENTINA 3 en vez de
+// dejarlo vacío.
+function elegirCampeonCopaArgentinaTemporada(tablaAnual, generado){
+  if (!tablaAnual || !tablaAnual.length) return null;
+  const desde = 4, hasta = Math.max(desde + 1, tablaAnual.length - 2);
+  const candidatos = tablaAnual.slice(desde, hasta);
+  const pool = candidatos.length ? candidatos : tablaAnual;
+  const semilla = hashStringLPF((generado || '') + tablaAnual.map(f => f.equipo + f.puntos).join('|'));
+  return pool[semilla % pool.length].equipo;
+}
+
+// Arma los cupos a copas internacionales SIEMPRE con 6 clasificados a
+// Libertadores y 6 a Sudamericana (Art. 27/28 del reglamento), con la
+// cascada de cupos real: si el mismo club sale campeón de más de un
+// torneo (Apertura/Clausura/Copa Argentina) el cupo que le sobra pasa
+// al siguiente mejor ubicado de la Tabla Anual que todavía no haya
+// clasificado, en vez de dejar la lista de Libertadores con 4 o 5
+// nombres. Devuelve { libertadores: [{equipo, etiqueta, inventado}],
+// sudamericana: [equipo, ...] }, ambas listas de largo 6 (o menos solo
+// si la Tabla Anual tiene menos de 12 equipos en total).
+function calcularCuposCopasLPF(tablaAnual, campeonApertura, campeonClausura, campeonCopaArgentina){
+  const orden = (tablaAnual || []).map(f => f.equipo);
+  const yaClasificado = new Set();
+  const libertadores = [];
+
+  const agregarDirecto = (equipo, etiqueta, inventado) => {
+    if (!equipo || yaClasificado.has(equipo) || libertadores.length >= 6) return;
+    libertadores.push({ equipo, etiqueta, inventado: !!inventado });
+    yaClasificado.add(equipo);
+  };
+  agregarDirecto(campeonApertura, 'Campeón Apertura');
+  agregarDirecto(campeonClausura, 'Campeón Clausura');
+  if (campeonCopaArgentina){
+    agregarDirecto(campeonCopaArgentina.equipo, 'Campeón Copa Argentina', campeonCopaArgentina.inventado);
+  }
+
+  for (const equipo of orden){
+    if (libertadores.length >= 6) break;
+    if (yaClasificado.has(equipo)) continue;
+    libertadores.push({ equipo, etiqueta: 'Tabla Anual', inventado: false });
+    yaClasificado.add(equipo);
+  }
+
+  const sudamericana = [];
+  for (const equipo of orden){
+    if (sudamericana.length >= 6) break;
+    if (yaClasificado.has(equipo)) continue;
+    sudamericana.push(equipo);
+    yaClasificado.add(equipo);
+  }
+
+  return { libertadores, sudamericana };
+}
+
+// La Copa Argentina SÍ se simula como una competencia más del Modo
+// Temporada (pestaña "copa", con su propio cuadro de eliminación
+// directa) -- antes acá se ignoraba ese resultado y siempre se
+// inventaba un campeón al azar para completar el cupo Libertadores,
+// lo que podía mostrar un club distinto del que realmente salió
+// campeón en la pestaña de Copa Argentina de esa misma corrida. Ahora
+// se usa el campeón real (datos.competencias.copa.campeon) siempre
+// que esté disponible, y el inventado (elegirCampeonCopaArgentinaTemporada)
+// queda solo como respaldo si por algún motivo esa competencia no
+// vino en la respuesta.
+function obtenerCampeonCopaArgentinaTemporada(competencias, tablaAnualLPF, generadoLPF){
+  const campeonReal = competencias && competencias.copa && competencias.copa.campeon;
+  if (campeonReal) return { equipo: campeonReal, inventado: false };
+  const inventado = elegirCampeonCopaArgentinaTemporada(tablaAnualLPF, generadoLPF);
+  return inventado ? { equipo: inventado, inventado: true } : null;
+}
+
 function tablasCompetenciaHTML(slug, comp){
   const datos = comp.datos || {};
   const [ascDirecto, ascReducido] = comp.ascensos || [];
   const descSet = new Set(comp.descensos || []);
   if (slug === "lpf"){
-    const copas = datos.copas || {};
-    const libertadores = (copas.libertadores_2027 || []).filter(e => !e.toLowerCase().includes('no simulado'));
-    const sudamericana = copas.sudamericana_2027 || [];
-    const copasHTML = (libertadores.length || sudamericana.length) ? `
+    // Cupos a copas internacionales SIEMPRE 6 a Libertadores y 6 a
+    // Sudamericana (Art. 27/28), con cascada real: si el mismo equipo
+    // sale campeón de más de un torneo (Apertura/Clausura/Copa
+    // Argentina), el cupo que le sobra pasa al siguiente mejor ubicado
+    // de la Tabla Anual que todavía no haya clasificado -- ver
+    // calcularCuposCopasLPF() más abajo. Antes acá se armaba la lista
+    // filtrando el placeholder "(Campeón Copa Argentina -- no
+    // simulado)" sin reemplazarlo por nadie, así que Libertadores
+    // terminaba mostrando 4 o 5 equipos en vez de 6.
+    const campeonCopaArgTemporada = obtenerCampeonCopaArgentinaTemporada(DATA_TEMPORADA && DATA_TEMPORADA.competencias, datos.tabla_anual, datos.generado);
+    const cupos = calcularCuposCopasLPF(datos.tabla_anual, datos.campeon_apertura, datos.campeon_clausura, campeonCopaArgTemporada);
+    const copasHTML = (cupos.libertadores.length || cupos.sudamericana.length) ? `
       <div class="copas-grid" style="margin-top:20px;">
         <div class="copa-card libertadores">
           <div class="copa-title"><img class="copa-logo" src="logos-torneos/copa-libertadores.png" alt="" onerror="this.remove()">Copa Libertadores 2027</div>
-          <ol>${libertadores.map(equipo => `<li>${escudoHTML(equipo)}${equipo}</li>`).join('') || '<li style="color:var(--muted);">Sin clasificados</li>'}</ol>
+          <ol>${cupos.libertadores.map(c => `<li class="${c.inventado ? 'inventado' : ''}">${escudoHTML(c.equipo)}${c.equipo}<span style="margin-left:auto; color:var(--muted); font-size:11px; font-style:normal;">${c.etiqueta}</span></li>`).join('') || '<li style="color:var(--muted);">Sin clasificados</li>'}</ol>
         </div>
         <div class="copa-card sudamericana">
           <div class="copa-title"><img class="copa-logo" src="logos-torneos/copa-sudamericana.png" alt="" onerror="this.remove()">Copa Sudamericana 2027</div>
-          <ol>${sudamericana.map(equipo => `<li>${escudoHTML(equipo)}${equipo}</li>`).join('') || '<li style="color:var(--muted);">Sin clasificados</li>'}</ol>
+          <ol>${cupos.sudamericana.map(equipo => `<li>${escudoHTML(equipo)}${equipo}</li>`).join('') || '<li style="color:var(--muted);">Sin clasificados</li>'}</ol>
         </div>
       </div>` : '';
-    return `<div class="temporada-tablas-grid uno">${tablaSimpleHTML(datos.tabla_anual, "Tabla Anual (Apertura + Clausura)", null, null, descSet)}</div>${copasHTML}`;
+    // Antes acá solo se pintaba la Tabla Anual, y el Apertura (real) y el
+    // Clausura (simulado) que la componen quedaban invisibles en el Modo
+    // Temporada aunque el motor ya los devuelve (datos.apertura y
+    // datos.tablas_clausura, ambas por zona A/B, mismo shape que
+    // tabla_anual). Se agregan las dos antes de la Tabla Anual para que se
+    // pueda ver cómo se llegó a ese resultado, no solo el total.
+    const apertura = datos.apertura || {};
+    const clausura = datos.tablas_clausura || {};
+    // Cruces (bracket) del Clausura: el Apertura ya se jugó como dato
+    // real 2026 (solo tenemos la tabla final, no el cuadro de playoffs
+    // de esa edición), así que el único cruce que el motor simula y
+    // devuelve es el del Clausura (datos.playoffs: octavos/cuartos/
+    // semis/final, mismo shape que usa la página propia de LPF).
+    const p = datos.playoffs || {};
+    const playoffsHTML = (p.octavos && p.octavos.length) ? `
+      <div class="temporada-reducido-label">Playoffs del Clausura (cruces cara a cara)</div>
+      <div class="bracket-scroll"><div class="bracket">
+        <div class="round"><div class="round-title">Octavos</div><div class="round-body">${p.octavos.map(m => matchHTML(m)).join('')}</div></div>
+        <div class="round"><div class="round-title">Cuartos</div><div class="round-body">${(p.cuartos || []).map(m => matchHTML(m)).join('')}</div></div>
+        <div class="round"><div class="round-title">Semifinal</div><div class="round-body">${(p.semis || []).map(m => matchHTML(m)).join('')}</div></div>
+        <div class="round final-col">
+          <div class="round-title">Final</div>
+          <div class="round-body">
+            <div class="match">
+              ${(p.semis || []).map(m => {
+                const equipo = m.avanza;
+                const esCampeon = equipo === datos.campeon_clausura;
+                return `<div class="row ${esCampeon ? 'winner' : ''}"><span>${escudoHTML(equipo)}${equipo}</span></div>`;
+              }).join('')}
+              <div class="leg-detail">${p.final ? p.final.texto : ''}</div>
+            </div>
+          </div>
+        </div>
+      </div></div>
+      ${campeonAnuncioHTML(datos.campeon_clausura, '▲')}
+      <p class="section-note" style="margin-top:6px;">El Apertura 2026 ya se jugó como dato real -- tenemos su tabla final pero no el cuadro de playoffs de esa edición, por eso acá solo se muestra el cruce del Clausura.</p>` : '';
+    return `
+      <div class="temporada-reducido-label" style="margin-top:0;">Apertura 2026 (dato real)</div>
+      <div class="temporada-tablas-grid dos">
+        ${tablaSimpleHTML(apertura.A, "Zona A", null, null, null)}
+        ${tablaSimpleHTML(apertura.B, "Zona B", null, null, null)}
+      </div>
+      <div class="temporada-reducido-label">Clausura 2026 (simulado)</div>
+      <div class="temporada-tablas-grid dos">
+        ${tablaSimpleHTML(clausura.A, "Zona A", null, null, null)}
+        ${tablaSimpleHTML(clausura.B, "Zona B", null, null, null)}
+      </div>
+      ${playoffsHTML}
+      <div class="temporada-reducido-label">Tabla Anual 2026 (Apertura + Clausura)</div>
+      <div class="temporada-tablas-grid uno">${tablaSimpleHTML(datos.tabla_anual, null, null, null, descSet)}</div>
+      <div class="temporada-reducido-label">Tabla de Promedios (Art. 26 — define uno de los 2 descensos)</div>
+      <div class="temporada-tablas-grid uno">${tablaPromediosHTML(datos.tabla_promedios, descSet)}</div>
+      ${copasHTML}`;
   }
   if (slug === "bmetro"){
     return `<div class="temporada-tablas-grid uno">${tablaSimpleHTML(datos.tabla, null, ascDirecto, ascReducido, descSet)}</div>`;
@@ -7415,10 +7863,62 @@ function tablasCompetenciaHTML(slug, comp){
   }
   if (slug === "federal_a"){
     const zonas = (datos.primera_fase && datos.primera_fase.tablas) || {};
+    const zonas2f = (datos.segunda_fase && datos.segunda_fase.tablas) || {};
+    const camino = datos.camino_principal || {};
+    const revalida = datos.revalida || {};
+    const zonasRevalida = (revalida.primera_etapa && revalida.primera_etapa.tablas) || {};
+    const descensosRevalida = new Set(revalida.descensos || []);
+
+    // Antes esta pestaña terminaba en la Primera Fase: la Segunda Fase, el
+    // camino al 1° ascenso (Tercera/Cuarta/Quinta Fase) y toda la Reválida
+    // (que es donde de verdad se define el 2° ascenso y los 4 descensos, ver
+    // el section-note de más abajo) no se mostraban en el Modo Temporada.
+    // Reusa exactamente el mismo shape de datos y los mismos componentes de
+    // bracket (.bracket/.round/seriesHTML/matchHTML/campeonAnuncioHTML) que
+    // ya pinta la página propia de Federal A (ver renderCaminoFederal() y
+    // renderRevalidaBracketFederal()), para que el look sea consistente.
+    const segundaFaseHTML = (zonas2f.A || zonas2f.B) ? `
+      <div class="temporada-reducido-label" style="margin-top:28px;">Segunda Fase</div>
+      <div class="temporada-tablas-grid dos">
+        ${tablaSimpleHTML(zonas2f.A, "Zona A", null, null, null)}
+        ${tablaSimpleHTML(zonas2f.B, "Zona B", null, null, null)}
+      </div>` : '';
+
+    const caminoHTML = camino.tercera_fase ? `
+      <div class="temporada-reducido-label">Camino al 1° ascenso</div>
+      <div class="bracket-scroll"><div class="bracket">
+        <div class="round"><div class="round-title">Tercera Fase</div><div class="round-body">${Object.values(camino.tercera_fase).map(m => seriesHTML(m)).join('')}</div></div>
+        <div class="round"><div class="round-title">Cuarta Fase</div><div class="round-body">${Object.values(camino.cuarta_fase).map(m => seriesHTML(m)).join('')}</div></div>
+        <div class="round final-col"><div class="round-title">Final — 1° Ascenso</div><div class="round-body">${matchHTML(camino.quinta_fase_final)}</div></div>
+      </div></div>
+      ${camino.ascenso_1 ? campeonAnuncioHTML(camino.ascenso_1, '▲') : ''}` : '';
+
+    const revalidaTablasHTML = (zonasRevalida.RA || zonasRevalida.RB) ? `
+      <div class="temporada-reducido-label" style="margin-top:28px;">Reválida — Primera Etapa</div>
+      <div class="temporada-tablas-grid dos">
+        ${tablaSimpleHTML(zonasRevalida.RA, "Zona RA", null, null, descensosRevalida)}
+        ${tablaSimpleHTML(zonasRevalida.RB, "Zona RB", null, null, descensosRevalida)}
+      </div>` : '';
+
+    const revalidaBracketHTML = revalida.segunda_etapa ? `
+      <div class="temporada-reducido-label">Reválida — camino al 2° ascenso</div>
+      <div class="bracket-scroll"><div class="bracket">
+        <div class="round"><div class="round-title">2ª Etapa</div><div class="round-body">${Object.values(revalida.segunda_etapa.resultados).map(m => seriesHTML(m)).join('')}</div></div>
+        <div class="round"><div class="round-title">3ª Etapa</div><div class="round-body">${Object.values(revalida.tercera_etapa.resultados).map(m => seriesHTML(m)).join('')}</div></div>
+        <div class="round"><div class="round-title">4ª Etapa</div><div class="round-body">${Object.values(revalida.cuarta_etapa.resultados).map(m => seriesHTML(m)).join('')}</div></div>
+        <div class="round"><div class="round-title">5ª Etapa</div><div class="round-body">${Object.values(revalida.quinta_etapa).map(m => seriesHTML(m)).join('')}</div></div>
+        <div class="round final-col"><div class="round-title">6ª Etapa — Final (2° Ascenso)</div><div class="round-body">${seriesHTML(revalida.sexta_etapa_final)}</div></div>
+      </div></div>
+      ${revalida.ascenso_2 ? campeonAnuncioHTML(revalida.ascenso_2, '▲') : ''}` : '';
+
     return `<p class="section-note" style="margin-top:0;">Tablas de la Primera Fase (4 zonas) — el ascenso/descenso real de Federal A se define después, en la Reválida.</p>
       <div class="temporada-tablas-grid cuatro">
         ${["1", "2", "3", "4"].map(z => tablaSimpleHTML(zonas[z], `Zona ${z}`, ascDirecto, ascReducido, descSet)).join('')}
-      </div>`;
+      </div>
+      ${segundaFaseHTML}
+      ${caminoHTML}
+      ${revalidaTablasHTML}
+      ${revalidaBracketHTML}`;
   }
   if (slug === "copa"){
     const rondasCopa = datos.rondas || {};
@@ -7551,13 +8051,28 @@ function competenciaCardHTML(slug, comp){
   return `<div class="temporada-card" style="--tc-color:${color};" onclick="setLigaTemporadaScrollTo('${slug}')" role="button" tabindex="0">
     <div class="liga-nombre">${logo ? `<img src="logos-torneos/${logo}.png" alt="" onerror="this.remove()">` : ''}<span>${nombre}</span></div>
     ${campeonHTML}
-    ${filas.join('')}
+    <div class="temporada-card-sep"></div>
+    <div class="temporada-card-foot">${filas.join('') || '<div style="color:var(--muted); font-size:12.5px;">Sin ascensos ni descensos en esta competencia.</div>'}</div>
   </div>`;
 }
 
 function setLigaTemporadaScrollTo(slug){
   setCompetenciaTemporada(slug);
   document.getElementById('sec-temporada-tablas').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// Traduce los motivos crudos que manda el backend (pensados para logs,
+// no para mostrar en pantalla -- ver DESCENSO_FUERA_DEL_SISTEMA y
+// ASCENSO_TORNEO_REGIONAL con toda su explicación entre paréntesis) a
+// una etiqueta corta y prolija, del mismo estilo que "ascenso"/"descenso".
+function friendlyMotivoTemporada(motivo){
+  const m = String(motivo || '');
+  const up = m.toUpperCase();
+  if (up.startsWith('ASCENSO_TORNEO_REGIONAL')) return { texto: 'Asciende del Torneo Regional', tipo: 'ascenso' };
+  if (up.startsWith('DESCENSO_FUERA_DEL_SISTEMA')) return { texto: 'Desciende al Torneo Regional', tipo: 'descenso' };
+  if (up.startsWith('ASCENSO')) return { texto: 'ascenso', tipo: 'ascenso' };
+  if (up.startsWith('DESCENSO')) return { texto: 'descenso', tipo: 'descenso' };
+  return { texto: m, tipo: null };
 }
 
 function renderTemporada(datos){
@@ -7587,15 +8102,16 @@ function renderTemporada(datos){
         if (typeof m === 'string') return `<div class="mov">${m}</div>`;
         const origen = NOMBRE_LINDO_COMPETENCIA[m.origen] || m.origen || '';
         const destino = NOMBRE_LINDO_COMPETENCIA[m.destino] || m.destino || '';
-        const esAscenso = m.motivo === 'ascenso';
-        const esDescenso = m.motivo === 'descenso';
+        const infoMotivo = friendlyMotivoTemporada(m.motivo);
+        const esAscenso = infoMotivo.tipo === 'ascenso';
+        const esDescenso = infoMotivo.tipo === 'descenso';
         const flecha = esAscenso ? '▲' : (esDescenso ? '▼' : '→');
         const color = esAscenso ? 'var(--qualified-accent)' : (esDescenso ? 'var(--danger)' : 'var(--muted)');
         return `<div class="mov">
           <span class="mov-flecha" style="color:${color};">${flecha}</span>
           <span class="mov-club">${escudoHTML(m.club || '')}<b>${m.club || ''}</b></span>
           <span class="mov-ruta">${origen} <span style="color:var(--muted);">→</span> ${destino}</span>
-          ${m.motivo ? `<span class="mov-motivo" style="color:${color};">${m.motivo}</span>` : ''}
+          ${infoMotivo.texto ? `<span class="mov-motivo" style="color:${color};">${infoMotivo.texto}</span>` : ''}
         </div>`;
       }).join('')
     : '<div style="color:var(--muted);">No se aplicaron movimientos entre divisiones en esta corrida.</div>';
@@ -7607,21 +8123,34 @@ function renderTemporada(datos){
     : '';
 
   const copasList = document.getElementById('temporada-copas-list');
-  const clasificados = (datos.clasificacion_copas && datos.clasificacion_copas.clasificados) || [];
-  // Para saber si cada clasificado va a Libertadores o a Sudamericana usamos
-  // los datos crudos de LPF (mismo shape que ya consume la pestaña LPF, ver
-  // tablasCompetenciaHTML). Un clasificado que no aparece en ninguna de las
-  // dos listas (típicamente el campeón de Copa Argentina, que LPFAdapter no
-  // incluye en clasificados_copa) va a Libertadores por reglamento real
-  // (ver season/adapters/copa_adapter.py).
-  const copasLPF = (datos.competencias.lpf && datos.competencias.lpf.datos && datos.competencias.lpf.datos.copas) || {};
-  const setSudamericana = new Set(copasLPF.sudamericana_2027 || []);
-  copasList.innerHTML = clasificados.length
-    ? clasificados.map(equipo => {
-        const esSudamericana = setSudamericana.has(equipo);
-        const logo = esSudamericana ? 'copa-sudamericana' : 'copa-libertadores';
-        return `<div class="temporada-copa-chip"><img class="copa-logo" src="logos-torneos/${logo}.png" alt="" onerror="this.remove()">${escudoHTML(equipo)}${equipo}</div>`;
-      }).join('')
+  // Antes esto salía de datos.clasificacion_copas (QualificationManager
+  // en el backend), que solo deduplica solapamientos sin resolver la
+  // cascada de cupos (ver season/qualification_manager.py, "LIMITACIÓN
+  // DOCUMENTADA" en su docstring) -- así que si el campeón del Apertura
+  // y el del Clausura eran el mismo equipo, la lista terminaba con
+  // menos de 12 clasificados en vez de los 6+6 que exige el reglamento.
+  // Se recalcula acá con calcularCuposCopasLPF() (misma función que usa
+  // la pestaña LPF, ver tablasCompetenciaHTML), que sí aplica la
+  // cascada real.
+  const datosLPFTemporada = (datos.competencias.lpf && datos.competencias.lpf.datos) || {};
+  const campeonCopaArgTemporadaResumen = obtenerCampeonCopaArgentinaTemporada(datos.competencias, datosLPFTemporada.tabla_anual, datosLPFTemporada.generado);
+  const cuposResumen = calcularCuposCopasLPF(
+    datosLPFTemporada.tabla_anual,
+    datosLPFTemporada.campeon_apertura,
+    datosLPFTemporada.campeon_clausura,
+    campeonCopaArgTemporadaResumen
+  );
+  copasList.innerHTML = (cuposResumen.libertadores.length || cuposResumen.sudamericana.length) ? `
+    <div class="copas-grid">
+      <div class="copa-card libertadores">
+        <div class="copa-title"><img class="copa-logo" src="logos-torneos/copa-libertadores.png" alt="" onerror="this.remove()">Copa Libertadores 2027</div>
+        <ol>${cuposResumen.libertadores.map(c => `<li class="${c.inventado ? 'inventado' : ''}">${escudoHTML(c.equipo)}${c.equipo}<span style="margin-left:auto; color:var(--muted); font-size:11px; font-style:normal;">${c.etiqueta}</span></li>`).join('')}</ol>
+      </div>
+      <div class="copa-card sudamericana">
+        <div class="copa-title"><img class="copa-logo" src="logos-torneos/copa-sudamericana.png" alt="" onerror="this.remove()">Copa Sudamericana 2027</div>
+        <ol>${cuposResumen.sudamericana.map(equipo => `<li>${escudoHTML(equipo)}${equipo}</li>`).join('')}</ol>
+      </div>
+    </div>`
     : '<div style="color:var(--muted);">Sin clasificados calculados en esta corrida.</div>';
 
   // Orden fijo del Boletín 6812 (LPF 30 / Nacional 15 / BMetro 5 / Primera C 4 / Federal A 10 = 64).
@@ -7651,7 +8180,428 @@ function renderTemporada(datos){
 
   document.getElementById('temporada-resultado').style.display = '';
 
+  // Palmarés acumulado: un campeón por competencia en ESTA ronda (número
+  // vigente en NUMERO_RONDA_TEMPORADA, todavía sin incrementar acá -- eso
+  // pasa después en correrTemporada()), agregado a la lista de rondas ya
+  // simuladas. Se resetea en reiniciarTemporada().
+  const campeonesRonda = {};
+  ORDEN_COMPETENCIAS.forEach(slug => {
+    campeonesRonda[slug] = (datos.competencias[slug] && datos.competencias[slug].campeon) || null;
+  });
+  PALMARES_TEMPORADA.push({ ronda: NUMERO_RONDA_TEMPORADA, campeones: campeonesRonda });
+  renderPalmares();
+
   document.getElementById('hero-eyebrow').innerHTML = `CORRIDA REAL COMPLETADA — SIN MONTE CARLO`;
+
+  renderDashboardTemporada(datos);
+  INDICE_EQUIPOS_TEMPORADA = construirIndiceEquiposTemporada(datos);
+  const buscadorInput = document.getElementById('temporada-buscador-input');
+  if (buscadorInput) buscadorInput.value = '';
+  cerrarSugerenciasTemporada();
+  cerrarFichaEquipoTemporada();
+}
+
+// Dashboard superior de Modo Temporada: 4 métricas grandes (campeón LPF,
+// ascensos totales, descensos totales, campeón de Copa Argentina) a modo
+// de portada, ver objetivo "1 Hero" del rediseño.
+function renderDashboardTemporada(datos){
+  const estado = document.getElementById('temporada-dashboard-estado');
+  if (estado){
+    estado.textContent = NUMERO_RONDA_TEMPORADA > 1
+      ? `Ronda ${NUMERO_RONDA_TEMPORADA} en memoria — corrida real, sin Monte Carlo`
+      : 'Corrida real completa — sin Monte Carlo';
+  }
+
+  const compLPF = datos.competencias.lpf;
+  const compCopa = datos.competencias.copa;
+  let totalAscensos = 0, totalDescensos = 0, totalCompetencias = 0;
+  ORDEN_COMPETENCIAS.forEach(slug => {
+    const c = datos.competencias[slug];
+    if (!c) return;
+    totalCompetencias += 1;
+    totalAscensos += (c.ascensos || []).length;
+    totalDescensos += (c.descensos || []).length;
+  });
+
+  // Equipos/Competencias/Ascensos/Descensos por temporada: se muestran
+  // arriba de todo, reutilizando el bloque .hero .meta (ver
+  // aplicarMetaTemporada() y actualizarHero()), no acá en las tarjetas.
+  TEMPORADA_META_CACHE = {
+    equipos: construirIndiceEquiposTemporada(datos).size,
+    competencias: totalCompetencias,
+    ascensos: totalAscensos,
+    descensos: totalDescensos,
+  };
+  aplicarMetaTemporada();
+
+  const metricas = [
+    {
+      lbl: '🏆 Campeón LPF',
+      val: compLPF && compLPF.campeon ? `${escudoHTML(compLPF.campeon)}${compLPF.campeon}` : 'Sin definir',
+      clase: compLPF && compLPF.campeon ? '' : 'num',
+    },
+    {
+      lbl: '🏆 Copa Argentina',
+      val: compCopa && compCopa.campeon ? `${escudoHTML(compCopa.campeon)}${compCopa.campeon}` : 'Sin definir',
+      clase: compCopa && compCopa.campeon ? '' : 'num',
+    },
+  ];
+
+  const cont = document.getElementById('temporada-dashboard-metrics');
+  if (cont){
+    cont.innerHTML = metricas.map(m => `
+      <div class="temporada-metric-card">
+        <div class="lbl">${m.lbl}</div>
+        <div class="val ${m.clase}">${m.val}</div>
+      </div>`).join('');
+  }
+}
+
+/* ---------- MODO TEMPORADA · buscador global de equipos ----------
+   Índice equipo -> [{competencia, posición, puntos, ascenso/descenso,
+   campeón, clasificado al Reducido, clasificado a la próxima Copa
+   Argentina, ...}], armado UNA vez por corrida (no en cada tecla) y
+   reutilizado tanto para las sugerencias como para la "ficha" del club.
+   No toca la lógica de simulación: solo lee datos ya generados. */
+let INDICE_EQUIPOS_TEMPORADA = new Map();
+let EQUIPO_FICHA_ACTUAL = null;
+let SUGERENCIA_ACTIVA_TEMPORADA = -1;
+
+function normalizarTextoTemporada(s){
+  return String(s || '')
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase().trim();
+}
+
+// Camina cualquier objeto de "reducido" (distinto shape por competencia)
+// juntando todos los nombres de equipo que aparecen como local/visitante
+// de algún cruce -- así sabemos quién participó del Reducido sin tener
+// que modelar cada fase a mano.
+function extraerEquiposDeObjetoTemporada(obj, acc){
+  if (!obj || typeof obj !== 'object') return;
+  if (Array.isArray(obj)){ obj.forEach(v => extraerEquiposDeObjetoTemporada(v, acc)); return; }
+  for (const k in obj){
+    const v = obj[k];
+    if ((k === 'local' || k === 'visitante' || k === 'equipo_x' || k === 'equipo_y') && typeof v === 'string' && v){
+      acc.add(v);
+    } else if (v && typeof v === 'object'){
+      extraerEquiposDeObjetoTemporada(v, acc);
+    }
+  }
+}
+
+function construirIndiceEquiposTemporada(datos){
+  const indice = new Map(); // clave normalizada -> {nombre, entradas:[...]}
+  const porDivisionCopaArg = (datos.clasificacion_copa_argentina && datos.clasificacion_copa_argentina.por_division) || {};
+
+  function agregar(equipo, entrada){
+    const norm = normalizarTextoTemporada(equipo);
+    if (!norm) return;
+    if (!indice.has(norm)) indice.set(norm, { nombre: equipo, entradas: [] });
+    indice.get(norm).entradas.push(entrada);
+  }
+
+  function filaBase(slug, comp, fila, zona){
+    const [ascDirecto, ascReducido] = comp.ascensos || [];
+    const descSet = new Set(comp.descensos || []);
+    const equiposReducido = new Set();
+    if (comp.datos && comp.datos.reducido) extraerEquiposDeObjetoTemporada(comp.datos.reducido, equiposReducido);
+    const clasificaCopaArg = (porDivisionCopaArg[slug] || []).includes(fila.equipo);
+    return {
+      slug, nombre: NOMBRE_LINDO_COMPETENCIA[slug] || slug,
+      color: COLOR_COMPETENCIA[slug], logo: LOGO_COMPETENCIA[slug],
+      zona: zona || null, posicion: fila._pos,
+      puntos: fila.puntos, gf: fila.gf, gc: fila.gc, dg: fila.dg,
+      campeon: !!(comp.campeon && comp.campeon === fila.equipo),
+      ascendioDirecto: !!(ascDirecto && ascDirecto === fila.equipo),
+      ascendioReducido: !!(ascReducido && ascReducido === fila.equipo),
+      clasificoReducido: equiposReducido.has(fila.equipo),
+      descendio: descSet.has(fila.equipo),
+      clasificaCopaArgentina: clasificaCopaArg,
+      campeonCopaArgentinaTorneo: false,
+    };
+  }
+
+  ORDEN_COMPETENCIAS.forEach(slug => {
+    const comp = datos.competencias[slug];
+    if (!comp) return;
+    const d = comp.datos || {};
+    if (slug === 'lpf'){
+      const tabla = d.tabla_anual || [];
+      const copas = d.copas || {};
+      const libSet = new Set((copas.libertadores_2027 || []).filter(e => !String(e).toLowerCase().includes('no simulado')));
+      const sudSet = new Set(copas.sudamericana_2027 || []);
+      tabla.forEach((fila, i) => {
+        fila._pos = i + 1;
+        const entrada = filaBase(slug, comp, fila);
+        entrada.libertadores = libSet.has(fila.equipo);
+        entrada.sudamericana = sudSet.has(fila.equipo);
+        agregar(fila.equipo, entrada);
+      });
+    } else if (slug === 'nacional' || slug === 'primerac'){
+      ['A', 'B'].forEach(z => {
+        const tabla = (d.tablas && d.tablas[z]) || [];
+        tabla.forEach((fila, i) => { fila._pos = i + 1; agregar(fila.equipo, filaBase(slug, comp, fila, 'Zona ' + z)); });
+      });
+    } else if (slug === 'bmetro'){
+      (d.tabla || []).forEach((fila, i) => { fila._pos = i + 1; agregar(fila.equipo, filaBase(slug, comp, fila)); });
+    } else if (slug === 'federal_a'){
+      const zonas = (d.primera_fase && d.primera_fase.tablas) || {};
+      ['1', '2', '3', '4'].forEach(z => {
+        (zonas[z] || []).forEach((fila, i) => { fila._pos = i + 1; agregar(fila.equipo, filaBase(slug, comp, fila, 'Zona ' + z)); });
+      });
+    } else if (slug === 'copa' && comp.campeon){
+      const norm = normalizarTextoTemporada(comp.campeon);
+      if (indice.has(norm)) indice.get(norm).entradas.forEach(e => { e.campeonCopaArgentinaTorneo = true; });
+    }
+  });
+
+  return indice;
+}
+
+// Búsqueda: ignora may/min y acentos, permite coincidencia parcial en
+// cualquier parte del nombre (no solo al principio) -- "gimnasia" debe
+// devolver las 4 variantes (Mendoza/Tiro/Chivilcoy/Jujuy).
+function buscarEquiposTemporada(consulta){
+  const q = normalizarTextoTemporada(consulta);
+  if (!q) return [];
+  const resultados = [];
+  INDICE_EQUIPOS_TEMPORADA.forEach((registro, norm) => {
+    if (norm.includes(q)) resultados.push(registro);
+  });
+  resultados.sort((a, b) => {
+    const na = normalizarTextoTemporada(a.nombre), nb = normalizarTextoTemporada(b.nombre);
+    const posA = na.indexOf(q), posB = nb.indexOf(q);
+    if (posA !== posB) return posA - posB;
+    return na.localeCompare(nb);
+  });
+  return resultados.slice(0, 8);
+}
+
+function renderSugerenciasTemporada(resultados, consulta){
+  const cont = document.getElementById('temporada-buscador-sugerencias');
+  if (!cont) return;
+  SUGERENCIA_ACTIVA_TEMPORADA = -1;
+  if (!resultados.length){
+    cont.innerHTML = `<div class="temporada-buscador-vacio">Sin resultados para "${consulta}"</div>`;
+    cont.classList.add('abierta');
+    return;
+  }
+  cont.innerHTML = resultados.map(r => {
+    const e = r.entradas[0];
+    return `<div class="temporada-sugerencia" data-equipo="${r.nombre}" onclick="seleccionarEquipoTemporada('${r.nombre.replace(/'/g, "\\'")}')">${escudoHTML(r.nombre)}<span>${r.nombre}</span><span class="comp" style="--tc-color:${e.color};">${e.nombre}</span></div>`;
+  }).join('');
+  cont.classList.add('abierta');
+}
+
+function cerrarSugerenciasTemporada(){
+  const cont = document.getElementById('temporada-buscador-sugerencias');
+  if (!cont) return;
+  cont.classList.remove('abierta');
+  cont.innerHTML = '';
+  SUGERENCIA_ACTIVA_TEMPORADA = -1;
+}
+
+function seleccionarEquipoTemporada(nombre){
+  const input = document.getElementById('temporada-buscador-input');
+  if (input) input.value = nombre;
+  cerrarSugerenciasTemporada();
+  renderFichaEquipoTemporada(nombre);
+}
+
+function cerrarFichaEquipoTemporada(){
+  EQUIPO_FICHA_ACTUAL = null;
+  const cont = document.getElementById('temporada-ficha-wrap');
+  if (cont) cont.innerHTML = '';
+}
+
+function datoFichaHTML(k, valorHTML, clase){
+  return `<div class="temporada-ficha-dato"><span class="k">${k}</span><span class="v ${clase || ''}">${valorHTML}</span></div>`;
+}
+
+function renderFichaEquipoTemporada(nombre){
+  const norm = normalizarTextoTemporada(nombre);
+  const registro = INDICE_EQUIPOS_TEMPORADA.get(norm);
+  const cont = document.getElementById('temporada-ficha-wrap');
+  if (!cont) return;
+  if (!registro){
+    cont.innerHTML = `<div class="temporada-ficha"><div class="temporada-ficha-head"><div class="nombre">${nombre}</div></div><p class="section-note" style="margin:10px 0 0;">No encontramos datos de este equipo en la corrida actual.</p></div>`;
+    return;
+  }
+  EQUIPO_FICHA_ACTUAL = registro.nombre;
+
+  // Un equipo casi siempre tiene una sola entrada (su propia liga); si por
+  // algún motivo aparece en más de una se muestran todas apiladas.
+  cont.innerHTML = registro.entradas.map(e => {
+    const dg = e.dg > 0 ? `+${e.dg}` : e.dg;
+    const datos = [
+      datoFichaHTML(`📍 Posición${e.zona ? ' (' + e.zona + ')' : ''}`, `${e.posicion}°`),
+      datoFichaHTML('⬆ Ascendió directo', e.ascendioDirecto ? 'Sí' : 'No', e.ascendioDirecto ? 'si' : 'no'),
+      datoFichaHTML('🎟 Ascendió por Reducido', e.ascendioReducido ? 'Sí' : 'No', e.ascendioReducido ? 'si' : 'no'),
+      datoFichaHTML('⬇ Descendió', e.descendio ? 'Sí' : 'No', e.descendio ? 'rojo' : 'no'),
+      datoFichaHTML('🏆 Campeón', e.campeon ? 'Sí' : 'No', e.campeon ? 'oro' : 'no'),
+      datoFichaHTML('🎟 Clasificó al Reducido', (e.clasificoReducido && !e.ascendioDirecto) ? 'Sí' : 'No', (e.clasificoReducido && !e.ascendioDirecto) ? 'si' : 'no'),
+      datoFichaHTML('🇦🇷 Copa Argentina 2027', e.clasificaCopaArgentina ? 'Clasificado' : 'No clasificado', e.clasificaCopaArgentina ? 'si' : 'no'),
+    ];
+    if (e.slug === 'lpf'){
+      datos.push(datoFichaHTML('🌎 Copa Libertadores 2027', e.libertadores ? 'Clasificado' : 'No clasificado', e.libertadores ? 'oro' : 'no'));
+      datos.push(datoFichaHTML('🌎 Copa Sudamericana 2027', e.sudamericana ? 'Clasificado' : 'No clasificado', e.sudamericana ? 'si' : 'no'));
+    }
+    if (e.campeonCopaArgentinaTorneo){
+      datos.push(datoFichaHTML('🏆 Copa Argentina (esta corrida)', 'Campeón', 'oro'));
+    }
+    return `
+    <div class="temporada-ficha" style="--tc-color:${e.color};">
+      <div class="temporada-ficha-head">
+        ${escudoHTML(registro.nombre)}
+        <div>
+          <div class="nombre">${registro.nombre}</div>
+          <div class="comp">${e.logo ? `<img src="logos-torneos/${e.logo}.png" alt="" onerror="this.remove()">` : ''}${e.nombre}</div>
+        </div>
+        <button class="temporada-ficha-cerrar" onclick="cerrarFichaEquipoTemporada(); document.getElementById('temporada-buscador-input').value='';" aria-label="Cerrar ficha">✕</button>
+      </div>
+      <div class="temporada-ficha-stats">
+        <div class="temporada-ficha-stat"><div class="num">${e.puntos}</div><div class="lbl">Puntos</div></div>
+        <div class="temporada-ficha-stat"><div class="num">${e.gf}</div><div class="lbl">GF</div></div>
+        <div class="temporada-ficha-stat"><div class="num">${e.gc}</div><div class="lbl">GC</div></div>
+        <div class="temporada-ficha-stat"><div class="num">${dg}</div><div class="lbl">DG</div></div>
+      </div>
+      <div class="temporada-ficha-sep"></div>
+      <div class="temporada-ficha-datos">${datos.join('')}</div>
+      <button class="temporada-ficha-btn" onclick="irACompetenciaEquipoTemporada('${e.slug}', '${registro.nombre.replace(/'/g, "\\'")}')">→ Ir a la competencia</button>
+    </div>`;
+  }).join('<div style="height:14px;"></div>');
+}
+
+// Cambia a la pestaña de la competencia correspondiente, scrollea hasta
+// la tabla y resalta la fila del equipo un par de segundos para que se
+// encuentre de un vistazo (objetivo "Resaltado" del pedido).
+function irACompetenciaEquipoTemporada(slug, equipo){
+  setCompetenciaTemporada(slug);
+  const seccion = document.getElementById('sec-temporada-tablas');
+  if (seccion) seccion.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  setTimeout(() => resaltarFilaEquipoTemporada(equipo), 450);
+}
+
+function resaltarFilaEquipoTemporada(equipo){
+  const norm = normalizarTextoTemporada(equipo);
+  const filas = document.querySelectorAll('#temporada-detalle-competencia tbody tr');
+  for (const tr of filas){
+    const celda = tr.querySelector('td:nth-child(2)');
+    if (celda && normalizarTextoTemporada(celda.textContent) === norm){
+      tr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      tr.classList.add('temporada-fila-resaltada');
+      setTimeout(() => tr.classList.remove('temporada-fila-resaltada'), 2400);
+      break;
+    }
+  }
+}
+
+(function initBuscadorTemporada(){
+  const input = document.getElementById('temporada-buscador-input');
+  const sugerenciasCont = document.getElementById('temporada-buscador-sugerencias');
+  if (!input) return;
+
+  input.addEventListener('input', () => {
+    const q = input.value.trim();
+    if (!q){ cerrarSugerenciasTemporada(); return; }
+    renderSugerenciasTemporada(buscarEquiposTemporada(q), q);
+  });
+
+  input.addEventListener('keydown', (ev) => {
+    const items = sugerenciasCont ? sugerenciasCont.querySelectorAll('.temporada-sugerencia') : [];
+    if (!items.length) return;
+    if (ev.key === 'ArrowDown'){
+      ev.preventDefault();
+      SUGERENCIA_ACTIVA_TEMPORADA = Math.min(SUGERENCIA_ACTIVA_TEMPORADA + 1, items.length - 1);
+    } else if (ev.key === 'ArrowUp'){
+      ev.preventDefault();
+      SUGERENCIA_ACTIVA_TEMPORADA = Math.max(SUGERENCIA_ACTIVA_TEMPORADA - 1, 0);
+    } else if (ev.key === 'Enter'){
+      if (SUGERENCIA_ACTIVA_TEMPORADA >= 0 && items[SUGERENCIA_ACTIVA_TEMPORADA]){
+        ev.preventDefault();
+        items[SUGERENCIA_ACTIVA_TEMPORADA].click();
+      }
+      return;
+    } else if (ev.key === 'Escape'){
+      cerrarSugerenciasTemporada();
+      return;
+    } else {
+      return;
+    }
+    items.forEach((it, i) => it.classList.toggle('activa', i === SUGERENCIA_ACTIVA_TEMPORADA));
+  });
+
+  document.addEventListener('click', (ev) => {
+    if (!ev.target.closest('.temporada-buscador')) cerrarSugerenciasTemporada();
+  });
+})();
+
+function renderPalmares(){
+  const cont = document.getElementById('temporada-palmares-tabla');
+  if (!cont) return;
+  if (!PALMARES_TEMPORADA.length){
+    cont.innerHTML = '<p class="palmares-vacio">Todavía no hay ninguna ronda simulada.</p>';
+    return;
+  }
+
+  // Resumen de títulos: cuántas veces salió campeón cada club en toda
+  // la corrida en memoria, sumado entre las 6 competencias, para que no
+  // haga falta contar a mano bajando por la tabla ronda por ronda.
+  const conteoTitulos = new Map();
+  PALMARES_TEMPORADA.forEach(fila => {
+    ORDEN_COMPETENCIAS.forEach(slug => {
+      const campeon = fila.campeones[slug];
+      if (!campeon) return;
+      conteoTitulos.set(campeon, (conteoTitulos.get(campeon) || 0) + 1);
+    });
+  });
+  const rankingTitulos = [...conteoTitulos.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 6);
+
+  const resumenHTML = rankingTitulos.length ? `
+    <div class="palmares-resumen">
+      ${rankingTitulos.map(([equipo, cantidad]) => `
+        <div class="palmares-resumen-chip">
+          ${escudoHTML(equipo)}<span class="equipo">${equipo}</span>
+          <span class="cantidad">${cantidad}×</span>
+        </div>`).join('')}
+    </div>` : '';
+
+  // Ronda más reciente arriba (es la que más interesa después de cada
+  // simulación) y resaltada, en vez de tener que scrollear hasta abajo
+  // cada vez que se corre una ronda nueva.
+  const rondaMasReciente = PALMARES_TEMPORADA[PALMARES_TEMPORADA.length - 1].ronda;
+  const filasOrdenadas = [...PALMARES_TEMPORADA].reverse();
+
+  cont.innerHTML = `
+    ${resumenHTML}
+    <table class="palmares-tabla">
+      <thead>
+        <tr>
+          <th>Ronda</th>
+          ${ORDEN_COMPETENCIAS.map(slug => `
+            <th style="color:${COLOR_COMPETENCIA[slug] || 'inherit'};">
+              <span class="palmares-th-liga">
+                <img src="logos-torneos/${LOGO_COMPETENCIA[slug] || slug}.png" alt="" onerror="this.remove()">
+                ${NOMBRE_LINDO_COMPETENCIA[slug]}
+              </span>
+            </th>`).join('')}
+        </tr>
+      </thead>
+      <tbody>
+        ${filasOrdenadas.map(fila => `<tr class="${fila.ronda === rondaMasReciente ? 'palmares-ultima' : ''}">
+          <td class="ronda">R${fila.ronda}${fila.ronda === rondaMasReciente ? ' <span class="palmares-tag-nueva">última</span>' : ''}</td>
+          ${ORDEN_COMPETENCIAS.map(slug => {
+            const campeon = fila.campeones[slug];
+            return campeon
+              ? `<td><span class="campeon-celda">${escudoHTML(campeon)}${campeon}</span></td>`
+              : `<td class="vacio">—</td>`;
+          }).join('')}
+        </tr>`).join('')}
+      </tbody>
+    </table>`;
 }
 
 async function correrTemporada(){
@@ -7703,6 +8653,10 @@ async function correrTemporada(){
 function reiniciarTemporada(){
   ESTADO_TEMPORADA_LOCAL = null;
   NUMERO_RONDA_TEMPORADA = 1;
+  PALMARES_TEMPORADA = [];
+  renderPalmares();
+  TEMPORADA_META_CACHE = null;
+  aplicarMetaTemporada();
   document.getElementById('btn-simular-temporada').textContent = "▶ Simular la temporada completa";
   document.getElementById('btn-reiniciar-temporada').style.display = 'none';
   document.getElementById('temporada-ronda-info').style.display = 'none';
