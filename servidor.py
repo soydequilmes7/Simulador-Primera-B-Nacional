@@ -40,6 +40,7 @@ from main_bmetro import correr_simulacion_bmetro, simular_hasta_ascenso_bmetro
 from actualizar_resultados_bmetro import actualizar as actualizar_bmetro
 from main_federal import correr_simulacion_federal, simular_hasta_ascenso_federal
 from actualizar_resultados_federal import actualizar as actualizar_federal
+from main_libertadores import correr_simulacion_libertadores
 from db.client import DatabaseConfigError
 from db.repository import cup_csv_files, league_csv_files
 import rutas
@@ -66,6 +67,8 @@ PYSIM_SOURCE_FILES = [
     "fixture_generator.py",
     "main_primerac.py",
     "modelos/estadisticas_primerac.py",
+    "main_libertadores.py",
+    "modelos/estadisticas_libertadores.py",
 ]
 _pysim_source_cache = None
 
@@ -208,6 +211,8 @@ class Handler(SimpleHTTPRequestHandler):
             self._manejar_actualizar_federal()
         elif self.path == "/api/simular-campeon-federal":
             self._manejar_simular_campeon_federal()
+        elif self.path == "/api/simular-libertadores":
+            self._manejar_simular_libertadores()
         else:
             self._responder_json(404, {"error": "Ruta no encontrada"})
 
@@ -718,6 +723,24 @@ class Handler(SimpleHTTPRequestHandler):
 
     def log_message(self, formato, *args):
         print("[servidor]", formato % args)
+
+    def _manejar_simular_libertadores(self):
+        """Corre el cuadro completo de la Copa Libertadores (desde Octavos
+        de Final) pedido desde la web, con el n_sims del body."""
+        n_sims = self._leer_n_sims()
+        if not lock_simulacion.acquire(blocking=False):
+            self._responder_json(409, {"error": "Ya hay una simulación corriendo, esperá a que termine"})
+            return
+        try:
+            print(f"\n>>> Corriendo nueva simulación de Copa Libertadores pedida desde la web ({n_sims} corridas)...")
+            datos = correr_simulacion_libertadores(imprimir=True, n_sims=n_sims)
+            print(">>> Simulación de Copa Libertadores terminada y data_libertadores.json actualizado.\n")
+            self._responder_json(200, datos)
+        except Exception as e:
+            print(f">>> ERROR al simular Copa Libertadores: {e}")
+            self._responder_json(*_error_http(e))
+        finally:
+            lock_simulacion.release()
 
 
 def _hilo_auto_actualizacion():

@@ -596,6 +596,7 @@ class HistoryManager:
                 ratings_origen,
                 "nacional" if ratings_origen is not None else None,
                 "lpf",
+                club_nombre=club,
             )
         return ratings
 

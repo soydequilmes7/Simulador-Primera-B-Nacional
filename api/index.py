@@ -177,6 +177,7 @@ _lock_copa = ReadWriteLock()
 _lock_bmetro = ReadWriteLock()
 _lock_federal = ReadWriteLock()
 _lock_primerac = ReadWriteLock()
+_lock_libertadores = ReadWriteLock()
 
 
 class SimularBody(BaseModel):
@@ -206,6 +207,10 @@ class SimularPrimeraCBody(BaseModel):
 class SimularCampeonBody(BaseModel):
     equipo: str
     max_intentos: int = MAX_INTENTOS_CAMPEON_DEFAULT
+
+
+class SimularLibertadoresBody(BaseModel):
+    n_sims: int = N_SIMULACIONES
 
 
 def _clamp_n_sims(n_sims: int) -> int:
@@ -778,6 +783,53 @@ def simular_campeon_primerac_endpoint(body: SimularCampeonBody):
         return _error_response(e)
     finally:
         _lock_primerac.release_read()
+
+
+@app.post("/api/simular-libertadores")
+def simular_libertadores_endpoint(body: SimularLibertadoresBody = SimularLibertadoresBody()):
+    """Simula el cuadro de la Copa Libertadores (desde Octavos de Final,
+    ida y vuelta salvo la Final a partido único) + Monte Carlo de %
+    por ronda, y lo devuelve en la respuesta."""
+    n_sims = _clamp_n_sims(body.n_sims)
+
+    ocupado = _adquirir_lectura(
+        _lock_libertadores,
+        "Hay una actualización de Copa Libertadores en curso. Esperá unos segundos y probá de nuevo.",
+    )
+    if ocupado:
+        return ocupado
+    try:
+        return pysim_dispatch.simular_libertadores(n_sims)
+    except Exception as e:
+        return _error_response(e)
+    finally:
+        _lock_libertadores.release_read()
+
+
+@app.post("/api/simular-campeon-libertadores")
+def simular_campeon_libertadores_endpoint(body: SimularCampeonBody):
+    """Corre simular_hasta_campeon_libertadores() del equipo pedido y
+    devuelve esa corrida completa del cuadro."""
+    equipo_objetivo = body.equipo.strip()
+    if not equipo_objetivo:
+        return JSONResponse(status_code=400, content={"error": "Falta indicar el equipo"})
+
+    max_intentos = _clamp_max_intentos(body.max_intentos)
+
+    ocupado = _adquirir_lectura(
+        _lock_libertadores,
+        "Hay una actualización de Copa Libertadores en curso. Esperá unos segundos y probá de nuevo.",
+    )
+    if ocupado:
+        return ocupado
+    try:
+        return pysim_dispatch.simular_campeon_libertadores(equipo_objetivo, max_intentos)
+    except ValueError as e:
+        return JSONResponse(status_code=400, content={"error": str(e)})
+    except Exception as e:
+        return _error_response(e)
+    finally:
+        _lock_libertadores.release_read()
 
 
 @app.post("/api/actualizar")

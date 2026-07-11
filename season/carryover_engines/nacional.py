@@ -171,7 +171,9 @@ def armar_ratings_iniciales(club_registry, resultados_anterior: dict, roster_sig
             continue
 
         if club in ratings_bmetro:
-            ratings[club] = politica.rating_para_recien_llegado(ratings_bmetro[club], "bmetro", "nacional")
+            ratings[club] = politica.rating_para_recien_llegado(
+                ratings_bmetro[club], "bmetro", "nacional", club_nombre=club,
+            )
             continue
 
         ratings_origen = ratings_federal.get(club)
@@ -179,6 +181,7 @@ def armar_ratings_iniciales(club_registry, resultados_anterior: dict, roster_sig
             ratings_origen,
             "federal_a" if ratings_origen is not None else None,
             "nacional",
+            club_nombre=club,
         )
     return ratings
 

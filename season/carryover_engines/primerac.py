@@ -93,6 +93,7 @@ def armar_ratings_iniciales(club_registry, resultados_anterior: dict, roster_sig
             ratings_origen,
             "bmetro" if ratings_origen is not None else None,
             "primerac",
+            club_nombre=club,
         )
     return ratings
 

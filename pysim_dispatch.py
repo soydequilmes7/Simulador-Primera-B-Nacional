@@ -3,17 +3,21 @@
 pysim_dispatch.py
 
 Punto único de entrada a las simulaciones "livianas" (no escriben a
-disco) de las 4 ligas: correr_simulacion / simular_hasta_campeon
+disco) de las ligas y copas: correr_simulacion / simular_hasta_campeon
 (Nacional), correr_simulacion_lpf / simular_hasta_campeon_lpf (LPF),
-correr_simulacion_copa / simular_hasta_campeon_copa (Copa) y
-correr_simulacion_bmetro / simular_hasta_ascenso_bmetro (B Metro). Arma
-el mismo dict de respuesta que antes armaba cada endpoint de
-api/index.py, para que:
+correr_simulacion_copa / simular_hasta_campeon_copa (Copa Argentina),
+correr_simulacion_bmetro / simular_hasta_ascenso_bmetro (B Metro),
+correr_simulacion_federal / simular_hasta_ascenso_federal (Federal A),
+correr_simulacion_primerac / simular_hasta_ascenso_primerac (Primera C)
+y correr_simulacion_libertadores / simular_hasta_campeon_libertadores
+(Copa Libertadores). Arma el mismo dict de respuesta que antes armaba
+cada endpoint de api/index.py, para que:
 
 - api/index.py lo use en /api/simular, /api/simular-lpf,
   /api/simular-campeon, /api/simular-campeon-lpf, /api/simular-copa,
-  /api/simular-campeon-copa, /api/simular-bmetro y
-  /api/simular-campeon-bmetro.
+  /api/simular-campeon-copa, /api/simular-bmetro,
+  /api/simular-campeon-bmetro, /api/simular-libertadores y
+  /api/simular-campeon-libertadores.
 - El Web Worker con Pyodide (public/js/sim-worker.js) llame exactamente
   las mismas funciones dentro del navegador, sin reimplementar el
   wrapping en JS.
@@ -29,6 +33,7 @@ from main_copa import correr_simulacion_copa, simular_hasta_campeon_copa
 from main_bmetro import correr_simulacion_bmetro, simular_hasta_ascenso_bmetro
 from main_federal import correr_simulacion_federal, simular_hasta_ascenso_federal
 from main_primerac import correr_simulacion as correr_simulacion_primerac, simular_hasta_campeon as simular_hasta_ascenso_primerac
+from main_libertadores import correr_simulacion_libertadores, simular_hasta_campeon_libertadores
 
 
 def simular(n_sims):
@@ -91,6 +96,15 @@ def simular_campeon_primerac(equipo_objetivo, max_intentos):
     return _envolver_hasta_campeon(resultado, equipo_objetivo, max_intentos)
 
 
+def simular_libertadores(n_sims):
+    return correr_simulacion_libertadores(imprimir=False, guardar_json=False, n_sims=n_sims)
+
+
+def simular_campeon_libertadores(equipo_objetivo, max_intentos):
+    resultado = simular_hasta_campeon_libertadores(equipo_objetivo, max_intentos=max_intentos, imprimir=False)
+    return _envolver_hasta_campeon(resultado, equipo_objetivo, max_intentos)
+
+
 _TAREAS = {
     "simular": lambda kwargs: simular(kwargs["n_sims"]),
     "simular-lpf": lambda kwargs: simular_lpf(kwargs["n_sims"]),
@@ -104,6 +118,8 @@ _TAREAS = {
     "simular-campeon-federal": lambda kwargs: simular_campeon_federal(kwargs["equipo"], kwargs["max_intentos"]),
     "simular-primerac": lambda kwargs: simular_primerac(kwargs["n_sims"]),
     "simular-campeon-primerac": lambda kwargs: simular_campeon_primerac(kwargs["equipo"], kwargs["max_intentos"]),
+    "simular-libertadores": lambda kwargs: simular_libertadores(kwargs["n_sims"]),
+    "simular-campeon-libertadores": lambda kwargs: simular_campeon_libertadores(kwargs["equipo"], kwargs["max_intentos"]),
 }
 
 

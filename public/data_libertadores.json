@@ -1,0 +1,469 @@
+{
+  "liga": "Copa Libertadores",
+  "generado": "11/07/2026 19:26",
+  "n_simulaciones": 1000,
+  "rondas": {
+    "octavos": [
+      {
+        "ida": {
+          "local": "Universidad Católica",
+          "visitante": "Estudiantes de la Plata",
+          "golesLocal": 0,
+          "golesVisitante": 0
+        },
+        "vuelta": {
+          "local": "Estudiantes de la Plata",
+          "visitante": "Universidad Católica",
+          "golesLocal": 2,
+          "golesVisitante": 0
+        },
+        "agregado": {
+          "Universidad Católica": 0,
+          "Estudiantes de la Plata": 2
+        },
+        "penales": null,
+        "avanza": "Estudiantes de la Plata",
+        "jugado": false
+      },
+      {
+        "ida": {
+          "local": "Rosario Central",
+          "visitante": "Corinthians",
+          "golesLocal": 0,
+          "golesVisitante": 3
+        },
+        "vuelta": {
+          "local": "Corinthians",
+          "visitante": "Rosario Central",
+          "golesLocal": 4,
+          "golesVisitante": 1
+        },
+        "agregado": {
+          "Rosario Central": 1,
+          "Corinthians": 7
+        },
+        "penales": null,
+        "avanza": "Corinthians",
+        "jugado": false
+      },
+      {
+        "ida": {
+          "local": "Cruzeiro",
+          "visitante": "Flamengo",
+          "golesLocal": 2,
+          "golesVisitante": 0
+        },
+        "vuelta": {
+          "local": "Flamengo",
+          "visitante": "Cruzeiro",
+          "golesLocal": 0,
+          "golesVisitante": 2
+        },
+        "agregado": {
+          "Cruzeiro": 4,
+          "Flamengo": 0
+        },
+        "penales": null,
+        "avanza": "Cruzeiro",
+        "jugado": false
+      },
+      {
+        "ida": {
+          "local": "Independiente del Valle",
+          "visitante": "Deportes Tolima",
+          "golesLocal": 4,
+          "golesVisitante": 1
+        },
+        "vuelta": {
+          "local": "Deportes Tolima",
+          "visitante": "Independiente del Valle",
+          "golesLocal": 3,
+          "golesVisitante": 0
+        },
+        "agregado": {
+          "Independiente del Valle": 4,
+          "Deportes Tolima": 5
+        },
+        "penales": null,
+        "alargue": {
+          "local": "Deportes Tolima",
+          "visitante": "Independiente del Valle",
+          "golesLocal": 1,
+          "golesVisitante": 0
+        },
+        "avanza": "Deportes Tolima",
+        "jugado": false
+      },
+      {
+        "ida": {
+          "local": "Mirassol",
+          "visitante": "Liga de Quito",
+          "golesLocal": 0,
+          "golesVisitante": 3
+        },
+        "vuelta": {
+          "local": "Liga de Quito",
+          "visitante": "Mirassol",
+          "golesLocal": 3,
+          "golesVisitante": 0
+        },
+        "agregado": {
+          "Mirassol": 0,
+          "Liga de Quito": 6
+        },
+        "penales": null,
+        "avanza": "Liga de Quito",
+        "jugado": false
+      },
+      {
+        "ida": {
+          "local": "Palmeiras",
+          "visitante": "Cerro Porteño",
+          "golesLocal": 0,
+          "golesVisitante": 0
+        },
+        "vuelta": {
+          "local": "Cerro Porteño",
+          "visitante": "Palmeiras",
+          "golesLocal": 1,
+          "golesVisitante": 2
+        },
+        "agregado": {
+          "Palmeiras": 2,
+          "Cerro Porteño": 1
+        },
+        "penales": null,
+        "avanza": "Palmeiras",
+        "jugado": false
+      },
+      {
+        "ida": {
+          "local": "Platense",
+          "visitante": "Coquimbo Unido",
+          "golesLocal": 0,
+          "golesVisitante": 0
+        },
+        "vuelta": {
+          "local": "Coquimbo Unido",
+          "visitante": "Platense",
+          "golesLocal": 1,
+          "golesVisitante": 1
+        },
+        "agregado": {
+          "Platense": 2,
+          "Coquimbo Unido": 1
+        },
+        "penales": null,
+        "alargue": {
+          "local": "Coquimbo Unido",
+          "visitante": "Platense",
+          "golesLocal": 0,
+          "golesVisitante": 1
+        },
+        "avanza": "Platense",
+        "jugado": false
+      },
+      {
+        "ida": {
+          "local": "Fluminense",
+          "visitante": "Independiente Rivadavia",
+          "golesLocal": 0,
+          "golesVisitante": 3
+        },
+        "vuelta": {
+          "local": "Independiente Rivadavia",
+          "visitante": "Fluminense",
+          "golesLocal": 0,
+          "golesVisitante": 0
+        },
+        "agregado": {
+          "Fluminense": 0,
+          "Independiente Rivadavia": 3
+        },
+        "penales": null,
+        "avanza": "Independiente Rivadavia",
+        "jugado": false
+      }
+    ],
+    "cuartos": [
+      {
+        "ida": {
+          "local": "Estudiantes de la Plata",
+          "visitante": "Corinthians",
+          "golesLocal": 0,
+          "golesVisitante": 1
+        },
+        "vuelta": {
+          "local": "Corinthians",
+          "visitante": "Estudiantes de la Plata",
+          "golesLocal": 0,
+          "golesVisitante": 0
+        },
+        "agregado": {
+          "Estudiantes de la Plata": 0,
+          "Corinthians": 1
+        },
+        "penales": null,
+        "avanza": "Corinthians",
+        "jugado": false
+      },
+      {
+        "ida": {
+          "local": "Cruzeiro",
+          "visitante": "Deportes Tolima",
+          "golesLocal": 1,
+          "golesVisitante": 1
+        },
+        "vuelta": {
+          "local": "Deportes Tolima",
+          "visitante": "Cruzeiro",
+          "golesLocal": 3,
+          "golesVisitante": 1
+        },
+        "agregado": {
+          "Cruzeiro": 2,
+          "Deportes Tolima": 4
+        },
+        "penales": null,
+        "avanza": "Deportes Tolima",
+        "jugado": false
+      },
+      {
+        "ida": {
+          "local": "Liga de Quito",
+          "visitante": "Palmeiras",
+          "golesLocal": 0,
+          "golesVisitante": 0
+        },
+        "vuelta": {
+          "local": "Palmeiras",
+          "visitante": "Liga de Quito",
+          "golesLocal": 1,
+          "golesVisitante": 1
+        },
+        "agregado": {
+          "Liga de Quito": 1,
+          "Palmeiras": 1
+        },
+        "penales": true,
+        "alargue": {
+          "local": "Palmeiras",
+          "visitante": "Liga de Quito",
+          "golesLocal": 0,
+          "golesVisitante": 0
+        },
+        "avanza": "Liga de Quito",
+        "jugado": false
+      },
+      {
+        "ida": {
+          "local": "Platense",
+          "visitante": "Independiente Rivadavia",
+          "golesLocal": 3,
+          "golesVisitante": 0
+        },
+        "vuelta": {
+          "local": "Independiente Rivadavia",
+          "visitante": "Platense",
+          "golesLocal": 1,
+          "golesVisitante": 1
+        },
+        "agregado": {
+          "Platense": 4,
+          "Independiente Rivadavia": 1
+        },
+        "penales": null,
+        "avanza": "Platense",
+        "jugado": false
+      }
+    ],
+    "semis": [
+      {
+        "ida": {
+          "local": "Corinthians",
+          "visitante": "Deportes Tolima",
+          "golesLocal": 1,
+          "golesVisitante": 0
+        },
+        "vuelta": {
+          "local": "Deportes Tolima",
+          "visitante": "Corinthians",
+          "golesLocal": 2,
+          "golesVisitante": 2
+        },
+        "agregado": {
+          "Corinthians": 3,
+          "Deportes Tolima": 2
+        },
+        "penales": null,
+        "avanza": "Corinthians",
+        "jugado": false
+      },
+      {
+        "ida": {
+          "local": "Liga de Quito",
+          "visitante": "Platense",
+          "golesLocal": 2,
+          "golesVisitante": 1
+        },
+        "vuelta": {
+          "local": "Platense",
+          "visitante": "Liga de Quito",
+          "golesLocal": 0,
+          "golesVisitante": 1
+        },
+        "agregado": {
+          "Liga de Quito": 3,
+          "Platense": 1
+        },
+        "penales": null,
+        "avanza": "Liga de Quito",
+        "jugado": false
+      }
+    ],
+    "final": [
+      {
+        "local": "Corinthians",
+        "visitante": "Liga de Quito",
+        "golesLocal": 2,
+        "golesVisitante": 3,
+        "avanza": "Liga de Quito",
+        "jugado": false,
+        "penales": null
+      }
+    ]
+  },
+  "campeon": "Liga de Quito",
+  "monte_carlo": [
+    {
+      "equipo": "Flamengo",
+      "%cuartos": 57.8,
+      "%semis": 36.6,
+      "%final": 22.4,
+      "%campeon": 12.2
+    },
+    {
+      "equipo": "Palmeiras",
+      "%cuartos": 60.6,
+      "%semis": 34.1,
+      "%final": 21.3,
+      "%campeon": 11.2
+    },
+    {
+      "equipo": "Liga de Quito",
+      "%cuartos": 53.3,
+      "%semis": 27.3,
+      "%final": 14.2,
+      "%campeon": 7.7
+    },
+    {
+      "equipo": "Fluminense",
+      "%cuartos": 51.5,
+      "%semis": 32.4,
+      "%final": 16.5,
+      "%campeon": 7.4
+    },
+    {
+      "equipo": "Independiente del Valle",
+      "%cuartos": 59.2,
+      "%semis": 27.6,
+      "%final": 12.9,
+      "%campeon": 7.4
+    },
+    {
+      "equipo": "Independiente Rivadavia",
+      "%cuartos": 48.5,
+      "%semis": 27.2,
+      "%final": 13.1,
+      "%campeon": 7.0
+    },
+    {
+      "equipo": "Cruzeiro",
+      "%cuartos": 42.2,
+      "%semis": 21.9,
+      "%final": 11.9,
+      "%campeon": 7.0
+    },
+    {
+      "equipo": "Rosario Central",
+      "%cuartos": 50.8,
+      "%semis": 25.6,
+      "%final": 13.3,
+      "%campeon": 6.4
+    },
+    {
+      "equipo": "Estudiantes de la Plata",
+      "%cuartos": 53.5,
+      "%semis": 27.3,
+      "%final": 12.8,
+      "%campeon": 6.3
+    },
+    {
+      "equipo": "Corinthians",
+      "%cuartos": 49.2,
+      "%semis": 25.2,
+      "%final": 11.6,
+      "%campeon": 5.5
+    },
+    {
+      "equipo": "Universidad Católica",
+      "%cuartos": 46.5,
+      "%semis": 21.9,
+      "%final": 10.4,
+      "%campeon": 5.3
+    },
+    {
+      "equipo": "Mirassol",
+      "%cuartos": 46.7,
+      "%semis": 22.1,
+      "%final": 10.4,
+      "%campeon": 5.0
+    },
+    {
+      "equipo": "Coquimbo Unido",
+      "%cuartos": 49.5,
+      "%semis": 19.6,
+      "%final": 8.7,
+      "%campeon": 3.3
+    },
+    {
+      "equipo": "Cerro Porteño",
+      "%cuartos": 39.4,
+      "%semis": 16.5,
+      "%final": 6.9,
+      "%campeon": 3.3
+    },
+    {
+      "equipo": "Platense",
+      "%cuartos": 50.5,
+      "%semis": 20.8,
+      "%final": 8.9,
+      "%campeon": 2.7
+    },
+    {
+      "equipo": "Deportes Tolima",
+      "%cuartos": 40.8,
+      "%semis": 13.9,
+      "%final": 4.7,
+      "%campeon": 2.3
+    }
+  ],
+  "equipos_vivos": [
+    "Cerro Porteño",
+    "Coquimbo Unido",
+    "Corinthians",
+    "Cruzeiro",
+    "Deportes Tolima",
+    "Estudiantes de la Plata",
+    "Flamengo",
+    "Fluminense",
+    "Independiente Rivadavia",
+    "Independiente del Valle",
+    "Liga de Quito",
+    "Mirassol",
+    "Palmeiras",
+    "Platense",
+    "Rosario Central",
+    "Universidad Católica"
+  ]
+}

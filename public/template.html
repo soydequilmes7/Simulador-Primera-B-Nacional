@@ -2678,14 +2678,397 @@
      chicos en relación al resto de la interfaz, así que se agrandan un
      poco (misma proporción entre los 4 contextos: tabla/buscador, ficha
      de equipo, cuadros/partidos y marcador de ida-vuelta). */
-  body.liga-bmetro .escudo, body.liga-federal .escudo, body.liga-primerac .escudo{ width:29px; height:29px; }
-  body.liga-bmetro .tc-name .escudo, body.liga-federal .tc-name .escudo, body.liga-primerac .tc-name .escudo{ width:40px; height:40px; }
+  body.liga-bmetro .escudo, body.liga-federal .escudo, body.liga-primerac .escudo, body.liga-libertadores .escudo{ width:29px; height:29px; }
+  body.liga-bmetro .tc-name .escudo, body.liga-federal .tc-name .escudo, body.liga-primerac .tc-name .escudo, body.liga-libertadores .tc-name .escudo{ width:40px; height:40px; }
   body.liga-bmetro .match .row .escudo, body.liga-bmetro .copa-card li .escudo, body.liga-bmetro .descenso-card .escudo,
   body.liga-federal .match .row .escudo, body.liga-federal .copa-card li .escudo, body.liga-federal .descenso-card .escudo,
-  body.liga-primerac .match .row .escudo, body.liga-primerac .copa-card li .escudo, body.liga-primerac .descenso-card .escudo{ width:24px; height:24px; }
+  body.liga-primerac .match .row .escudo, body.liga-primerac .copa-card li .escudo, body.liga-primerac .descenso-card .escudo,
+  body.liga-libertadores .match .row .escudo{ width:24px; height:24px; }
   body.liga-bmetro .campeon .escudo, body.liga-bmetro .ascenso-score .team .escudo,
   body.liga-federal .campeon .escudo, body.liga-federal .ascenso-score .team .escudo,
   body.liga-primerac .campeon .escudo, body.liga-primerac .ascenso-score .team .escudo{ width:26px; height:26px; }
+
+  /* =====================================================================
+     COPA LIBERTADORES · identidad "torneo internacional" (premium/gala)
+     — Se separa por completo de las 6 categorías locales: fondo negro
+       profundo + azul noche, dorado metálico como único acento (nunca
+       superficie grande), tipografía Poppins, vidrio oscuro con brillo
+       sutil y cuadro con líneas de conexión doradas con glow.
+     — El esquema queda fijo en ambos estados del toggle claro/oscuro
+       (mismo criterio que Federal A): la identidad de una final
+       continental no debería "aclararse" al tocar el sol/luna.
+     — Todo se apoya en las mismas variables (--bg, --amber, --bracket-line,
+       etc.) y en los mismos selectores genéricos (.hero .meta, .match,
+       .mc-row, .campeon-anuncio) que ya usa el resto del sitio: ninguna
+       línea de la lógica del simulador se toca. Pensado para poder
+       reutilizarse el día de mañana con la Copa Sudamericana: alcanzaría
+       con un body.liga-sudamericana nuevo que redefina estas mismas
+       variables con otro acento de color.
+     ===================================================================== */
+  body.liga-libertadores,
+  body.dark.liga-libertadores{
+    --bg: #090909;
+    --bg-panel: rgba(255,255,255,0.04);
+    --bg-panel-2: rgba(255,255,255,0.065);
+    --line: rgba(212,175,55,0.22);
+    --ink: #F5F1E6;
+    --ink-dim: #C9BFA0;
+    --muted: #8C8368;
+
+    --amber: #D4AF37;
+    --amber-dim: rgba(212,175,55,0.14);
+    --zone-a: #D4AF37;
+    --zone-a-dim: rgba(212,175,55,0.14);
+    --zone-b: #8C8368;
+    --zone-b-dim: rgba(140,131,104,0.14);
+    --danger: #C0524A;
+    --danger-dim: rgba(192,82,74,0.14);
+    --azul: #D4AF37;
+    --azul-dim: rgba(212,175,55,0.16);
+
+    --leader-bg: rgba(212,175,55,0.14);
+    --leader-accent: #D4AF37;
+    --leader-text: #F3D77A;
+    --qualified-bg: rgba(212,175,55,0.10);
+    --qualified-accent: #D4AF37;
+    --qualified-text: #E8CE86;
+    --relegation-bg: rgba(192,82,74,0.12);
+    --relegation-accent: #C0524A;
+    --relegation-text: #E3A199;
+
+    --radius: 14px;
+    --radius-sm: 8px;
+    --card-shadow: 0 10px 34px rgba(0,0,0,0.55);
+    --card-shadow-hover: 0 18px 48px rgba(0,0,0,0.7);
+    --card-grad: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.015) 100%);
+    --hero-bg: linear-gradient(160deg, #090909 0%, #0E1525 55%, #161018 100%);
+    --hero-ink: #F5F1E6;
+    --hero-dim: #C9BFA0;
+    --hero-accent: #D4AF37;
+    --tabs-bg: rgba(9,9,9,0.92);
+    --btn-grad: linear-gradient(135deg, #E6C567 0%, #B8860B 100%);
+    --btn-ink: #14100A;
+    --table-head-bg: rgba(255,255,255,0.045);
+    --hover-lift: translateY(-3px);
+    --bracket-line: #D4AF37;
+    --bracket-line-glow: rgba(212,175,55,0.45);
+
+    font-family:'Poppins', sans-serif;
+    background: var(--bg);
+  }
+
+  /* Fondo exclusivo: negro profundo + resplandores dorados muy discretos +
+     un abanico de líneas doradas (conic-gradient) evocando el gráfico
+     oficial sin copiarlo, en la esquina superior derecha. */
+  body.liga-libertadores::before{
+    content:""; position:fixed; inset:0; z-index:-2; pointer-events:none;
+    background:
+      radial-gradient(1100px 620px at 82% -14%, rgba(212,175,55,0.14), transparent 60%),
+      radial-gradient(820px 560px at 4% 106%, rgba(14,21,37,0.9), transparent 62%),
+      radial-gradient(600px 500px at 50% 40%, rgba(212,175,55,0.05), transparent 70%);
+  }
+  body.liga-libertadores::after{
+    content:""; position:fixed; inset:0; z-index:-1; pointer-events:none; opacity:0.55;
+    background-image:
+      repeating-conic-gradient(from 0deg at 100% 0%, transparent 0deg 7deg, rgba(212,175,55,0.05) 7deg 7.4deg);
+    -webkit-mask-image: radial-gradient(900px 700px at 100% 0%, black, transparent 72%);
+    mask-image: radial-gradient(900px 700px at 100% 0%, black, transparent 72%);
+  }
+
+  body.liga-libertadores input,
+  body.liga-libertadores button,
+  body.liga-libertadores select{ font-family:'Poppins', sans-serif; }
+  body.liga-libertadores .display,
+  body.liga-libertadores .hero h1,
+  body.liga-libertadores .section-head h2{
+    font-family:'Poppins', sans-serif; font-weight:800; letter-spacing:0.005em;
+  }
+  body.liga-libertadores .mono,
+  body.liga-libertadores .eyebrow,
+  body.liga-libertadores tbody td,
+  body.liga-libertadores thead th,
+  body.liga-libertadores .hero .meta .num,
+  body.liga-libertadores .hero .meta .lbl,
+  body.liga-libertadores .section-head .idx,
+  body.liga-libertadores .round-title,
+  body.liga-libertadores .sim-status,
+  body.liga-libertadores .btn-simular,
+  body.liga-libertadores .mc-row .pos,
+  body.liga-libertadores .mc-row .name .pct{
+    font-family:'JetBrains Mono', monospace;
+  }
+
+  /* ---- HERO: logo protagonista + título/subtítulo/eyebrow con look de gala ---- */
+  body.liga-libertadores .hero{
+    border-bottom: 1px solid rgba(212,175,55,0.25);
+    padding-top:64px; padding-bottom:44px;
+    animation: liber-hero-in 0.7s cubic-bezier(0.22,1,0.36,1) backwards;
+  }
+  body.liga-libertadores .torneo-logo[data-liga="libertadores"]{
+    display:block; width:156px; height:156px; padding:22px;
+    box-shadow: 0 0 0 6px rgba(212,175,55,0.08), 0 10px 30px rgba(0,0,0,0.6), 0 0 46px rgba(212,175,55,0.35);
+  }
+  body.liga-libertadores .torneo-logo-wrap{ margin-bottom:26px; }
+  body.liga-libertadores .eyebrow{ color: var(--hero-accent); letter-spacing:0.42em; font-weight:600; }
+  body.liga-libertadores .hero h1{
+    font-size: clamp(38px, 7.6vw, 74px); line-height:0.98;
+    color:#EDE6D2; text-shadow: 0 2px 40px rgba(212,175,55,0.2);
+  }
+  body.liga-libertadores .hero h1 #hero-title-prefix{
+    color:#9A9384; font-weight:600; font-size:0.44em; display:block;
+    letter-spacing:0.3em; margin-bottom:8px;
+  }
+  body.liga-libertadores .hero h1 #hero-title-span{
+    background: linear-gradient(120deg, #F4E2A1 0%, #D4AF37 45%, #B8860B 100%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  body.liga-libertadores .hero p.sub{ color: var(--hero-dim); max-width:600px; }
+
+  /* ---- Cards de estadísticas: vidrio negro + borde dorado sutil ---- */
+  body.liga-libertadores .hero .meta{ gap:14px; margin-top:34px; }
+  body.liga-libertadores .hero .meta > div{
+    position:relative;
+    background: linear-gradient(160deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.015) 100%);
+    border:1px solid rgba(212,175,55,0.28); border-radius:12px; padding:16px 22px 14px; min-width:118px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 8px 20px rgba(0,0,0,0.45);
+    transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  body.liga-libertadores .hero .meta > div:hover{
+    border-color: rgba(212,175,55,0.65); transform: var(--hover-lift);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 12px 30px rgba(0,0,0,0.55), 0 0 22px rgba(212,175,55,0.18);
+  }
+  body.liga-libertadores .hero .meta .num,
+  body.liga-libertadores .hero .meta .lbl{ border:none; padding:0; background:none; box-shadow:none; }
+  body.liga-libertadores .hero .meta .num{ color:#F4E2A1; font-size:24px; font-weight:700; margin-bottom:4px; }
+  body.liga-libertadores #meta-descensos{ font-size:14px; letter-spacing:0.01em; }
+  body.liga-libertadores .hero .meta .lbl{
+    color: var(--hero-dim); letter-spacing:0.12em; text-transform:uppercase; font-size:10px;
+  }
+
+  /* ---- Botón "Nueva simulación": en esta pestaña recarga el último
+     cuadro generado por main_libertadores.py (ver comentario en JS junto
+     a recargarLibertadores) -- estéticamente el botón principal dorado. ---- */
+  body.liga-libertadores .sim-control{ margin-top:26px; display:flex; flex-direction:column; align-items:center; gap:10px; }
+  body.liga-libertadores .sim-select-row label,
+  body.liga-libertadores .sim-select-row .rango{ color: var(--hero-dim); }
+  body.liga-libertadores #sim-count-libertadores{
+    font-size:13px; font-weight:600; color:#F5F1E6;
+    background: rgba(255,255,255,0.05);
+    border:1px solid rgba(212,175,55,0.35); border-radius:8px;
+    padding:9px 10px; width:92px; text-align:center; outline:none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+  }
+  body.liga-libertadores #sim-count-libertadores:hover:not(:disabled){ border-color: rgba(212,175,55,0.6); }
+  body.liga-libertadores #sim-count-libertadores:focus{ border-color:#D4AF37; box-shadow:0 0 0 3px rgba(212,175,55,0.2); }
+  body.liga-libertadores #sim-count-libertadores:disabled{ cursor:wait; opacity:0.5; }
+  body.liga-libertadores #sim-count-libertadores::-webkit-inner-spin-button,
+  body.liga-libertadores #sim-count-libertadores::-webkit-outer-spin-button{ opacity:0.6; }
+  body.liga-libertadores .btn-simular{
+    background: var(--btn-grad); color: var(--btn-ink); border:none; border-radius:999px;
+    font-weight:700; letter-spacing:0.04em; padding:13px 30px; text-transform:uppercase; font-size:12px;
+    box-shadow: 0 8px 22px rgba(212,175,55,0.3);
+    transition: transform 0.15s ease, box-shadow 0.2s ease, filter 0.2s ease;
+  }
+  body.liga-libertadores .btn-simular:hover:not(:disabled){
+    transform: translateY(-2px); box-shadow: 0 12px 30px rgba(212,175,55,0.45); filter:brightness(1.05);
+  }
+  body.liga-libertadores .btn-simular:disabled{ opacity:0.6; cursor:wait; }
+  body.liga-libertadores .sim-status{ font-size:11px; color: var(--hero-dim); }
+  body.liga-libertadores .sim-status.ok{ color:#D4AF37; }
+  body.liga-libertadores .sim-status.error{ color:#E38E85; }
+
+  /* ---- Buscador: más ancho, borde dorado al foco ---- */
+  body.liga-libertadores .search-section{ max-width:760px; }
+  body.liga-libertadores .search-box input{
+    border-radius:999px; border-color: rgba(212,175,55,0.3); padding:16px 18px 16px 46px; font-size:15px;
+  }
+  body.liga-libertadores .search-box input:focus{
+    border-color:#D4AF37; box-shadow: 0 0 0 4px rgba(212,175,55,0.16);
+  }
+  body.liga-libertadores .search-box::before{ color: rgba(212,175,55,0.7); }
+  body.liga-libertadores .search-hint{ color: var(--muted); }
+
+  /* ---- Secciones: numeración y headers con look editorial ---- */
+  body.liga-libertadores .section-head .idx{ color:#D4AF37; }
+  body.liga-libertadores .section-head h2{ color:#F5F1E6; }
+  body.liga-libertadores .section-head .rule{ background: linear-gradient(90deg, rgba(212,175,55,0.5), transparent); }
+  body.liga-libertadores .section-note{ color: var(--muted); }
+
+  /* ---- Cuadro del torneo: look "transmisión" (EA Sports FC / Football
+     Manager / UEFA) — tarjetas de vidrio con más aire, ganador brillante
+     y en negrita, perdedor apagado, líneas finas con glow sutil y la
+     Final con protagonismo propio. Solo toca selectores ya scopeados a
+     body.liga-libertadores: no cambia estructura ni JS de otras pestañas. */
+  body.liga-libertadores .bracket{ gap: clamp(24px, 3.6vw, 60px); }
+  body.liga-libertadores .round-body{ gap:20px; }
+  body.liga-libertadores .round{ padding-top:2px; }
+  /* Tarjetas ~25% más anchas que el default genérico para que los
+     nombres largos (p.ej. "Club Atlético Peñarol") no se compriman con
+     ellipsis. El cuadro sigue scrolleando horizontalmente si no entra
+     entero -- lo único que cambia es que la scrollbar nativa queda
+     oculta (ver .bracket-scroll más abajo) y se puede arrastrar con el
+     mouse o mover con Shift + rueda (ver script drag-to-scroll). */
+  body.liga-libertadores .round:not(.final-col){ min-width: 248px; }
+  body.liga-libertadores .round.final-col{ flex:1.12 1 0; min-width: 300px; }
+  @media (max-width:760px){
+    body.liga-libertadores .round:not(.final-col),
+    body.liga-libertadores .round.final-col{ min-width:0; }
+  }
+  /* Scrollbar oculta pero scroll funcional: el contenido sigue siendo
+     desplazable (rueda, trackpad, drag, Shift+rueda), solo se esconde
+     la barra nativa para que no rompa el look premium. */
+  body.liga-libertadores .bracket-scroll{
+    scrollbar-width:none; -ms-overflow-style:none;
+  }
+  body.liga-libertadores .bracket-scroll::-webkit-scrollbar{ display:none; }
+  body.liga-libertadores .bracket-wrap.scrollable .bracket-scroll{ cursor:grab; }
+  body.liga-libertadores .bracket-wrap.scrollable .bracket-scroll.is-dragging{ cursor:grabbing; user-select:none; }
+
+  body.liga-libertadores .round-title{
+    position:relative; color:#EAD9A0; font-size:11px; font-weight:700;
+    letter-spacing:0.24em; padding-bottom:12px; margin-bottom:20px;
+    opacity:0.92;
+  }
+  body.liga-libertadores .round-title::after{
+    content:""; position:absolute; left:50%; bottom:0; transform:translateX(-50%);
+    width:26px; height:2px; border-radius:2px;
+    background:linear-gradient(90deg, transparent, #D4AF37, transparent);
+  }
+  body.liga-libertadores .final-col .round-title{
+    color:#F8E6AC; font-size:12.5px;
+  }
+  body.liga-libertadores .final-col .round-title::before{
+    content:"🏆"; display:block; font-size:15px; margin-bottom:6px;
+    filter: drop-shadow(0 0 6px rgba(212,175,55,0.5));
+  }
+
+  body.liga-libertadores .match{
+    background: linear-gradient(155deg, rgba(255,255,255,0.055) 0%, rgba(255,255,255,0.012) 60%), #0C0C0C;
+    border:1px solid rgba(212,175,55,0.16); border-radius:11px;
+    padding:13px 15px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 10px 26px rgba(0,0,0,0.5);
+    transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+    animation: liber-card-in 0.5s cubic-bezier(0.22,1,0.36,1) backwards;
+  }
+  body.liga-libertadores .match.sim{ border-style:dashed; }
+  body.liga-libertadores .match:hover{
+    border-color:#D4AF37; transform:translateY(-3px);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 18px 36px rgba(0,0,0,0.6), 0 0 22px rgba(212,175,55,0.2);
+  }
+  body.liga-libertadores .match .row{
+    padding:5px 0; opacity:0.5; align-items:center;
+    transition: opacity 0.25s ease, color 0.25s ease;
+  }
+  /* El nombre manda: tamaño y peso por encima del marcador, que queda
+     como dato secundario salvo en la fila ganadora. */
+  body.liga-libertadores .match .row span:first-child{
+    font-size:13.5px; font-weight:600; letter-spacing:0.005em;
+  }
+  body.liga-libertadores .match .row span:last-child{
+    font-family:'JetBrains Mono', monospace; font-weight:600; font-size:12px;
+    min-width:2.4ch; opacity:0.85;
+  }
+  body.liga-libertadores .match .row .escudo{ transition: transform 0.25s ease; }
+  /* Ganador: nombre en blanco brillante, marcador en dorado. Perdedor
+     (fila sin .winner) queda apagado por el opacity:0.5 heredado de arriba. */
+  body.liga-libertadores .match .row.winner{
+    opacity:1; color:#FFFFFF; font-weight:700;
+    text-shadow: 0 0 16px rgba(255,255,255,0.22);
+  }
+  body.liga-libertadores .match .row.winner span:last-child{
+    color:#D4AF37; font-weight:700; opacity:1; font-size:13px;
+    text-shadow: 0 0 14px rgba(212,175,55,0.5);
+  }
+  body.liga-libertadores .match .row.winner .escudo{ transform:scale(1.08); }
+  body.liga-libertadores .match .leg-detail{
+    margin-top:8px; padding-top:7px; border-top:1px dashed rgba(212,175,55,0.18);
+    font-size:9.5px; letter-spacing:0.05em; color:#6F6754; text-transform:uppercase;
+  }
+
+  /* La Final: la pieza central del cuadro -- tarjeta más grande, borde
+     dorado más marcado, fondo propio y un glow que respira. */
+  body.liga-libertadores .final-col .match{
+    padding:24px 26px; border:1.5px solid rgba(212,175,55,0.65); border-radius:14px;
+    background: linear-gradient(160deg, rgba(212,175,55,0.20) 0%, rgba(255,255,255,0.03) 65%), #0D0B06;
+    box-shadow: 0 0 0 1px rgba(212,175,55,0.3), 0 0 46px rgba(212,175,55,0.26), 0 24px 50px rgba(0,0,0,0.68);
+    animation: liber-card-in 0.5s cubic-bezier(0.22,1,0.36,1) backwards, liber-final-glow 3.6s ease-in-out infinite;
+  }
+  body.liga-libertadores .final-col .match:hover{
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 0 0 1px rgba(212,175,55,0.45), 0 0 60px rgba(212,175,55,0.35), 0 24px 50px rgba(0,0,0,0.7);
+  }
+  body.liga-libertadores .final-col .match .row{ font-size:16px; padding:8px 0; }
+  body.liga-libertadores .final-col .match .row span:first-child{ font-size:16px; font-weight:700; }
+  body.liga-libertadores .final-col .match .row span:last-child{ font-size:18px; }
+  body.liga-libertadores .final-col .match .row.winner span:last-child{ font-size:19px; }
+  body.liga-libertadores .final-col .match .row .escudo{ width:30px; height:30px; }
+  body.liga-libertadores .final-col .match .leg-detail{
+    font-size:10.5px; margin-top:10px; padding-top:9px;
+  }
+
+  /* Líneas del cuadro: finas, con un brillo discreto en vez del trazo grueso genérico */
+  body.liga-libertadores .bracket-lines path{
+    stroke-width:1.2; opacity:0.75; stroke-linecap:round;
+    filter: drop-shadow(0 0 3px rgba(212,175,55,0.3));
+    transition: opacity 0.25s ease;
+  }
+  body.liga-libertadores .bracket:hover .bracket-lines path{ opacity:0.9; }
+
+  @keyframes liber-card-in{ from{ opacity:0; transform:translateY(6px);} to{ opacity:1; transform:none; } }
+  @keyframes liber-final-glow{
+    0%, 100%{ box-shadow: 0 0 0 1px rgba(212,175,55,0.25), 0 0 40px rgba(212,175,55,0.22), 0 22px 46px rgba(0,0,0,0.65); }
+    50%{ box-shadow: 0 0 0 1px rgba(212,175,55,0.42), 0 0 58px rgba(212,175,55,0.36), 0 22px 46px rgba(0,0,0,0.65); }
+  }
+
+  /* ---- Campeón: cierre de gala, escudo grande y glow dorado ---- */
+  body.liga-libertadores #campeon-anuncio-libertadores .campeon-anuncio{
+    margin-top:32px; padding:28px 20px 8px; border-top:1px solid rgba(212,175,55,0.3);
+    font-family:'Poppins', sans-serif; font-weight:800; font-size:26px;
+    color:#F4E2A1; text-shadow: 0 0 30px rgba(212,175,55,0.4); letter-spacing:0.01em;
+  }
+  body.liga-libertadores #campeon-anuncio-libertadores .campeon-anuncio::before{
+    content:"🏆 CAMPEÓN DE AMÉRICA"; display:block; font-family:'JetBrains Mono', monospace;
+    font-size:11px; letter-spacing:0.3em; color:#9A9384; margin-bottom:14px; font-weight:400;
+  }
+  body.liga-libertadores #campeon-anuncio-libertadores .escudo{
+    width:56px; height:56px; vertical-align:-16px; margin-right:14px;
+    filter: drop-shadow(0 0 14px rgba(212,175,55,0.5));
+  }
+
+  /* ---- Monte Carlo: informe prolijo con acentos dorados ---- */
+  body.liga-libertadores #mc-list-libertadores{ border-color: rgba(212,175,55,0.2); }
+  body.liga-libertadores .mc-row .name .pct{ color:#D4AF37; }
+  body.liga-libertadores .mc-bar-fill{ background:#D4AF37 !important; }
+
+  /* ---- Pestaña propia: separada visualmente del resto del grupo con un
+     divisor sutil y acento dorado al estar activa ---- */
+  .liga-tab-internacional{ margin-left:10px; position:relative; }
+  .liga-tab-internacional::before{
+    content:""; position:absolute; left:-10px; top:50%; transform:translateY(-50%);
+    width:1px; height:60%; background: var(--line);
+  }
+  body.liga-libertadores .liga-tab.active{
+    background: linear-gradient(135deg, rgba(212,175,55,0.22), rgba(212,175,55,0.08));
+    color:#F4E2A1; box-shadow: inset 0 0 0 1px rgba(212,175,55,0.4);
+  }
+  body.liga-libertadores .liga-tab:not(.active){ color: var(--muted); }
+  body.liga-libertadores .liga-tabs .group{ border:1px solid rgba(212,175,55,0.18); background: rgba(255,255,255,0.02); }
+  body.liga-libertadores .liga-tabs{ border-bottom:1px solid rgba(212,175,55,0.15); }
+
+  /* ---- Animaciones propias (discretas) ---- */
+  @keyframes liber-hero-in{ from{ opacity:0; transform:translateY(-8px);} to{ opacity:1; transform:none; } }
+  @media (max-width:600px){
+    body.liga-libertadores .hero{ padding-top:48px; }
+    body.liga-libertadores .torneo-logo[data-liga="libertadores"]{ width:112px; height:112px; padding:16px; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    body.liga-libertadores .hero{ animation:none; }
+    body.liga-libertadores .hero .meta > div,
+    body.liga-libertadores .btn-simular,
+    body.liga-libertadores .match{ transition:none; }
+    body.liga-libertadores .match,
+    body.liga-libertadores .final-col .match{ animation:none; }
+  }
 </style>
 </head>
 <body>
@@ -2737,6 +3120,8 @@
       <img class="torneo-logo" data-liga="federal" src="logos-torneos/federal-a.png" alt=""
            onerror="this.remove()">
       <img class="torneo-logo" data-liga="primerac" src="logos-torneos/primera-c.png" alt=""
+           onerror="this.remove()">
+      <img class="torneo-logo" data-liga="libertadores" src="logos-torneos/copa-libertadores.png" alt=""
            onerror="this.remove()">
     </div>
     <div class="eyebrow" id="hero-eyebrow">SIMULACIÓN MONTE CARLO — <span id="hero-n">0</span> CORRIDAS</div>
@@ -2832,6 +3217,18 @@
       <div id="sim-status-primerac" class="sim-status"></div>
       <div id="last-update-primerac" class="last-update"></div>
     </div>
+
+    <div class="sim-control" id="sim-control-libertadores" style="display:none">
+      <div class="sim-select-row">
+        <label for="sim-count-libertadores">Cantidad de simulaciones</label>
+        <input type="number" id="sim-count-libertadores" value="1000" min="50" max="5000" step="1">
+        <span class="rango">(50–5000)</span>
+      </div>
+      <div class="btn-row">
+        <button id="btn-simular-libertadores" class="btn-simular">🔄 Nueva simulación</button>
+      </div>
+      <div id="sim-status-libertadores" class="sim-status"></div>
+    </div>
   </div>
 
   <div class="liga-tabs">
@@ -2842,6 +3239,7 @@
       <button class="liga-tab" data-liga="bmetro">B Metropolitana</button>
       <button class="liga-tab" data-liga="federal">Federal A</button>
       <button class="liga-tab" data-liga="primerac">Primera C</button>
+      <button class="liga-tab liga-tab-internacional" data-liga="libertadores">Copa Libertadores</button>
       <button class="liga-tab" data-liga="temporada">Modo Temporada</button>
     </div>
     <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Cambiar entre modo claro y oscuro">
@@ -3596,6 +3994,32 @@
 
   </div><!-- /vista-copa -->
 
+  <div id="vista-libertadores" style="display:none">
+
+  <div class="search-section">
+    <div class="search-box">
+      <input type="text" id="team-search-libertadores" list="team-list-libertadores" placeholder="Buscar club… (River, Flamengo, Palmeiras…)" autocomplete="off">
+      <datalist id="team-list-libertadores"></datalist>
+    </div>
+    <div class="search-hint">Escribí el nombre del equipo para ver sus chances en la Copa, ronda por ronda</div>
+    <div id="search-result-libertadores"></div>
+  </div>
+
+  <section id="sec-libertadores-cuadro">
+    <div class="section-head"><span class="idx">01</span><h2>El cuadro, desde Octavos de Final</h2><div class="rule"></div></div>
+    <p class="section-note">Ratings derivados del ranking Elo de clubes de CONMEBOL (no hay historial de goles en común entre ligas de 6 países distintos). Cada llave es a ida y vuelta, sin gol de visitante, con alargue y penales si hace falta; la final es a partido único en cancha neutral.</p>
+    <div class="bracket-scroll"><div class="bracket" id="bracket-libertadores"></div></div>
+    <div class="campeon-anuncio-wrap" id="campeon-anuncio-libertadores"></div>
+  </section>
+
+  <section id="sec-libertadores-mc">
+    <div class="section-head"><span class="idx">02</span><h2>Probabilidades — Monte Carlo</h2><div class="rule"></div></div>
+    <p class="section-note">De los 16 equipos que llegaron a Octavos: en qué porcentaje de las corridas llega a cada instancia y sale campeón.</p>
+    <div class="mc-list" id="mc-list-libertadores"></div>
+  </section>
+
+  </div><!-- /vista-libertadores -->
+
   <footer>
     <p>Generado a partir de <span id="foot-n">0</span> simulaciones — modelo Poisson (ataque/defensa local-visitante, decay por antigüedad, regresión a la media, corrección Dixon-Coles)</p>
     <p id="foot-date"></p>
@@ -3665,7 +4089,7 @@ function setApiActionsDisabled(disabled){
   document.querySelectorAll('.btn-simular, .btn-actualizar').forEach(btn => {
     btn.disabled = disabled;
   });
-  document.querySelectorAll('#sim-count, #sim-count-lpf, #sim-count-copa, #sim-count-bmetro, #sim-count-federal, #sim-count-primerac, #campeon-equipo, #campeon-equipo-lpf, #campeon-equipo-copa, #campeon-equipo-bmetro, #campeon-equipo-federal, #campeon-equipo-primerac').forEach(control => {
+  document.querySelectorAll('#sim-count, #sim-count-lpf, #sim-count-copa, #sim-count-bmetro, #sim-count-federal, #sim-count-primerac, #sim-count-libertadores, #campeon-equipo, #campeon-equipo-lpf, #campeon-equipo-copa, #campeon-equipo-bmetro, #campeon-equipo-federal, #campeon-equipo-primerac').forEach(control => {
     control.disabled = disabled;
   });
 }
@@ -4087,6 +4511,20 @@ const ESCUDOS = {
   'Atlas':'atlas', 'CA Atlas':'atlas',
   'Fénix':'fenix', 'CA Fenix':'fenix',
   'Central Córdoba':'centralcordoba', 'Central Cordoba':'centralcordoba',
+
+  // COPA LIBERTADORES (equipos extranjeros del cuadro, ver data_libertadores.json)
+  'Fluminense':'fluminense', 'Fluminense Football Club':'fluminense',
+  'Coquimbo Unido':'coquimbo',
+  'Cerro Porteño':'cerroporteno', 'Club Cerro Porteño':'cerroporteno',
+  'Palmeiras':'palmeiras', 'Sociedade Esportiva Palmeiras':'palmeiras',
+  'LDU de Quito':'ldu', 'LDU Quito':'ldu', 'Liga de Quito':'ldu',
+  'Mirasol':'mirasol', 'Mirasol FC':'mirasol',
+  'Deportes Tolima':'tolima', 'Tolima':'tolima',
+  'Independiente del Valle':'idv',
+  'Flamengo':'flamengo', 'Clube de Regatas do Flamengo':'flamengo',
+  'Cruzeiro':'cruzeiro', 'Cruzeiro Esporte Clube':'cruzeiro',
+  'Corinthians':'corinthians', 'SC Corinthians Paulista':'corinthians',
+  'Universidad Católica':'universidadcatolica', 'Universidad Catolica':'universidadcatolica',
 };
 
 // Sin acentos, sin espacios ni símbolos, todo en minúscula — para poder
@@ -6866,6 +7304,15 @@ const HERO_TEXTOS = {
     zonasLbl: "Zonas",
     ascensosLbl: "Ascensos por edición",
     descensosLbl: "Descensos por edición",
+  },
+  libertadores: {
+    eyebrow: () => `SIMULACIÓN MONTE CARLO — <span id="hero-n">${(DATA_LIBERTADORES && DATA_LIBERTADORES.n_simulaciones) || 0}</span> CORRIDAS`,
+    titulo: "COPA LIBERTADORES",
+    sub: "Desde Octavos de Final con los 16 clasificados: ratings derivados del ranking Elo de clubes de CONMEBOL, llaves a ida y vuelta con el mismo modelo Poisson (alargue y penales sin gol de visitante) y final a partido único en cancha neutral.",
+    equiposLbl: "Equipos",
+    zonasLbl: "Simulaciones",
+    ascensosLbl: "Rondas",
+    descensosLbl: "Modelo",
   }
 };
 
@@ -6897,6 +7344,11 @@ function actualizarHero(liga){
     document.getElementById('meta-zonas').textContent = '—';
     document.getElementById('meta-ascensos').textContent = 6;
     document.getElementById('meta-descensos').textContent = '—';
+  } else if (liga === 'libertadores'){
+    document.getElementById('meta-equipos').textContent = 16;
+    document.getElementById('meta-zonas').textContent = (DATA_LIBERTADORES && DATA_LIBERTADORES.n_simulaciones) || 1000;
+    document.getElementById('meta-ascensos').textContent = 4;
+    document.getElementById('meta-descensos').textContent = 'Poisson + Elo';
   } else if (liga === 'lpf'){
     document.getElementById('meta-equipos').textContent = 30;
     document.getElementById('meta-ascensos').textContent = 16;
@@ -6937,6 +7389,7 @@ function setLiga(liga){
   document.getElementById('vista-nacional').style.display = liga === 'nacional' ? '' : 'none';
   document.getElementById('vista-lpf').style.display = liga === 'lpf' ? '' : 'none';
   document.getElementById('vista-copa').style.display = liga === 'copa' ? '' : 'none';
+  document.getElementById('vista-libertadores').style.display = liga === 'libertadores' ? '' : 'none';
   document.getElementById('vista-bmetro').style.display = liga === 'bmetro' ? '' : 'none';
   document.getElementById('vista-federal').style.display = liga === 'federal' ? '' : 'none';
   document.getElementById('vista-primerac').style.display = liga === 'primerac' ? '' : 'none';
@@ -6947,9 +7400,11 @@ function setLiga(liga){
   document.getElementById('sim-control-bmetro').style.display = liga === 'bmetro' ? '' : 'none';
   document.getElementById('sim-control-federal').style.display = liga === 'federal' ? '' : 'none';
   document.getElementById('sim-control-primerac').style.display = liga === 'primerac' ? '' : 'none';
+  document.getElementById('sim-control-libertadores').style.display = liga === 'libertadores' ? '' : 'none';
   document.body.classList.toggle('liga-nacional', liga === 'nacional');
   document.body.classList.toggle('liga-lpf', liga === 'lpf');
   document.body.classList.toggle('liga-copa', liga === 'copa');
+  document.body.classList.toggle('liga-libertadores', liga === 'libertadores');
   document.body.classList.toggle('liga-bmetro', liga === 'bmetro');
   document.body.classList.toggle('liga-federal', liga === 'federal');
   document.body.classList.toggle('liga-primerac', liga === 'primerac');
@@ -7379,8 +7834,270 @@ document.getElementById('btn-simular-copa').addEventListener('click', correrSimu
 document.getElementById('btn-actualizar-copa').addEventListener('click', correrActualizacionCopa);
 document.getElementById('btn-campeon-copa').addEventListener('click', simularHastaCampeonCopa);
 
+/* ================= COPA LIBERTADORES (desde Octavos de Final) =================
+   Mismo patrón que Copa Argentina, pero cada llave es a ida y vuelta (no
+   partido único) salvo la final, y el cuadro se dibuja "enfrentado"
+   (4 Octavos + 2 Cuartos + 1 Semifinal de cada lado, Final en el medio
+   -- ver bracketLibertadoresHTML/buildBracketLinesLibertadores más
+   abajo) en vez de en columnas sueltas. El botón "🔄 Nueva simulación"
+   corre primero en el navegador (Pyodide, vía ejecutarSimulacion) y si
+   no está disponible cae a /api/simular-libertadores en servidor.py
+   (correr_simulacion_libertadores() de main_libertadores.py) -- ver
+   correrSimulacionLibertadores() más abajo. Al cargar la página se lee
+   el último data_libertadores.json ya generado (por el botón o por
+   correr `python main_libertadores.py` a mano). */
+let DATA_LIBERTADORES = null;
+
+async function cargarDatosLibertadores(){
+  try {
+    const respuesta = await fetch("./data_libertadores.json?t=" + Date.now());
+    if (!respuesta.ok) throw new Error("No se pudo cargar data_libertadores.json");
+    DATA_LIBERTADORES = await respuesta.json();
+    iniciarLibertadores();
+  } catch (e) {
+    const cont = document.getElementById('bracket-libertadores');
+    if (cont) cont.innerHTML = `<div class="no-result">No se pudo cargar data_libertadores.json todavía (${e.message}). Corré <code>python main_libertadores.py</code> una vez.</div>`;
+  }
+}
+
+function iniciarLibertadores(){
+  if (!DATA_LIBERTADORES) return;
+  document.getElementById('bracket-libertadores').innerHTML = bracketLibertadoresHTML(DATA_LIBERTADORES.rondas, DATA_LIBERTADORES.campeon);
+  const anuncio = document.getElementById('campeon-anuncio-libertadores');
+  if (anuncio) anuncio.innerHTML = campeonAnuncioHTML(DATA_LIBERTADORES.campeon, '🏆');
+  renderMCLibertadores();
+  TEAM_INDEX_LIBERTADORES = buildTeamIndexLibertadores();
+  poblarDatalistLibertadores(TEAM_INDEX_LIBERTADORES);
+  const busqueda = document.getElementById('team-search-libertadores');
+  if (busqueda && busqueda.value) buscarEquipoLibertadores(busqueda.value);
+  if (document.body.classList.contains('liga-libertadores')) actualizarHero('libertadores');
+}
+
+function leerNSimsLibertadores(){
+  const input = document.getElementById('sim-count-libertadores');
+  let n = parseInt(input.value, 10);
+  if (!Number.isFinite(n)) n = 1000;
+  n = Math.max(50, Math.min(5000, n));
+  input.value = n;
+  return n;
+}
+
+// Igual que Federal A / Primera C: primero intenta correr el cuadro
+// completo en el navegador (Pyodide, vía ejecutarSimulacion/pysim_dispatch
+// -- main_libertadores.py y modelos/estadisticas_libertadores.py ya están
+// sumados a PYSIM_SOURCE_FILES) y si el simulador local no está
+// disponible cae al backend (servidor.py, /api/simular-libertadores).
+async function correrSimulacionLibertadores(){
+  const btn = document.getElementById('btn-simular-libertadores');
+  const status = document.getElementById('sim-status-libertadores');
+  const input = document.getElementById('sim-count-libertadores');
+  const nSims = leerNSimsLibertadores();
+
+  if (!beginApiAction(status)) return;
+
+  btn.disabled = true;
+  input.disabled = true;
+  btn.textContent = "Simulando…";
+  status.classList.remove('error', 'ok');
+  status.textContent = `Corriendo el cuadro completo ${nSims} veces — puede tardar unos segundos.`;
+
+  try {
+    const cuerpo = await ejecutarSimulacion("simular-libertadores", { n_sims: Number(nSims) }, "/api/simular-libertadores", status);
+    DATA_LIBERTADORES = cuerpo;
+    iniciarLibertadores();
+    status.classList.add('ok');
+    status.textContent = "✓ Simulación actualizada (" + (DATA_LIBERTADORES.generado || "") + ")";
+  } catch (e) {
+    setApiErrorStatus(status, "No se pudo correr la simulación", e);
+  } finally {
+    btn.disabled = false;
+    input.disabled = false;
+    btn.textContent = "🔄 Nueva simulación";
+    endApiAction();
+  }
+}
+document.getElementById('btn-simular-libertadores').addEventListener('click', correrSimulacionLibertadores);
+
+function llaveLibertadoresHTML(ll, esFinal){
+  if (esFinal){
+    const winLocal = ll.avanza === ll.local;
+    let nota = ll.penales ? "definido por penales" : "";
+    return `<div class="match ${ll.jugado ? 'real' : 'sim'}" data-local="${ll.local}" data-visitante="${ll.visitante}" data-avanza="${ll.avanza || ''}">
+      <div class="row ${winLocal ? 'winner' : ''}"><span>${escudoHTML(ll.local)}${ll.local}</span><span>${ll.golesLocal ?? ''}</span></div>
+      <div class="row ${!winLocal ? 'winner' : ''}"><span>${escudoHTML(ll.visitante)}${ll.visitante}</span><span>${ll.golesVisitante ?? ''}</span></div>
+      ${nota ? `<div class="leg-detail">${nota}</div>` : ''}
+    </div>`;
+  }
+  const equipos = Object.keys(ll.agregado);
+  const [eqA, eqB] = equipos;
+  const winA = ll.avanza === eqA;
+  let nota = "";
+  if (ll.penales) nota = "definido por penales";
+  else if (ll.alargue) nota = "definido en el alargue";
+  return `<div class="match ${ll.jugado ? 'real' : 'sim'}" data-local="${eqA}" data-visitante="${eqB}" data-avanza="${ll.avanza || ''}">
+    <div class="row ${winA ? 'winner' : ''}"><span>${escudoHTML(eqA)}${eqA}</span><span>${ll.agregado[eqA]}</span></div>
+    <div class="row ${!winA ? 'winner' : ''}"><span>${escudoHTML(eqB)}${eqB}</span><span>${ll.agregado[eqB]}</span></div>
+    <div class="leg-detail">Ida ${ll.ida.golesLocal}-${ll.ida.golesVisitante} · Vuelta ${ll.vuelta.golesLocal}-${ll.vuelta.golesVisitante}${nota ? ` (${nota})` : ''}</div>
+  </div>`;
+}
+
+/* Cuadro "enfrentado": Octavos (4+4) y Cuartos (2+2) se reparten a ambos
+   lados, cada Semifinal queda pegada a su lado, y la Final -- única
+   columna que no se duplica -- queda en el medio. El criterio para el
+   reparto izquierda/derecha es simplemente la mitad del array tal cual
+   viene ordenado en rondas.octavos/cuartos/semis (mismo orden que ya
+   usaba el cuadro en una sola columna); las líneas que conectan un
+   partido con el siguiente no dependen de ese orden -- se arman por
+   nombre de equipo (data-avanza) en buildBracketLinesLibertadores, así
+   que quedan bien aunque el reparto izq/der no coincida 1 a 1 con el
+   cruce real. */
+function bracketLibertadoresHTML(rondas, campeon){
+  const mitad = (arr) => {
+    const corte = Math.ceil(arr.length / 2);
+    return [arr.slice(0, corte), arr.slice(corte)];
+  };
+  const [octavosIzq, octavosDer] = mitad(rondas.octavos || []);
+  const [cuartosIzq, cuartosDer] = mitad(rondas.cuartos || []);
+  const [semiIzq, semiDer] = mitad(rondas.semis || []);
+  const final = rondas.final || [];
+
+  const columna = (clave, titulo, llaves) => `<div class="round ${clave}">
+      <div class="round-title">${titulo}</div>
+      <div class="round-body">
+        ${llaves.map(ll => llaveLibertadoresHTML(ll, false)).join("")}
+      </div>
+    </div>`;
+
+  const columnaFinal = `<div class="round final-col">
+      <div class="round-title">Final</div>
+      <div class="round-body">
+        ${final.map(ll => llaveLibertadoresHTML(ll, true)).join("")}
+      </div>
+    </div>`;
+
+  return columna('oct-izq', 'Octavos', octavosIzq)
+    + columna('cua-izq', 'Cuartos', cuartosIzq)
+    + columna('semi-izq', 'Semifinal', semiIzq)
+    + columnaFinal
+    + columna('semi-der', 'Semifinal', semiDer)
+    + columna('cua-der', 'Cuartos', cuartosDer)
+    + columna('oct-der', 'Octavos', octavosDer);
+}
+
+function renderMCLibertadores(){
+  const list = document.getElementById('mc-list-libertadores');
+  if (!list || !DATA_LIBERTADORES.monte_carlo) return;
+  list.innerHTML = "";
+  const color = 'var(--azul)';
+  DATA_LIBERTADORES.monte_carlo.forEach((f, i) => {
+    const row = document.createElement('div');
+    row.className = 'mc-row';
+    row.innerHTML = `
+      <div class="pos">${i + 1}</div>
+      <div>
+        <div class="name"><span>${escudoHTML(f.equipo)}${f.equipo}</span><span class="pct" style="color:${color}">${f['%campeon']}% campeón</span></div>
+        <div class="mc-bar-track">
+          <div class="mc-bar-fill directo" style="width:${f['%campeon']}%; background:${color}"></div>
+        </div>
+        <div class="mc-sub">
+          <span><i class="dot" style="background:${color}"></i>${f['%final']}% llega a la final</span>
+          <span><i class="dot" style="background:${color}; opacity:0.5"></i>${f['%semis']}% semis</span>
+        </div>
+      </div>
+      <div class="mc-desc">
+        <div class="desc-pct">${f['%cuartos']}%</div>
+        <div class="desc-lbl">cuartos</div>
+        <div class="desc-bar-track"><div class="desc-bar-fill" style="width:${Math.min(f['%cuartos'], 100)}%"></div></div>
+      </div>
+    `;
+    list.appendChild(row);
+  });
+}
+
+let TEAM_INDEX_LIBERTADORES = {};
+
+function buildTeamIndexLibertadores(){
+  const index = {};
+  const vivos = new Set(DATA_LIBERTADORES.equipos_vivos || []);
+  const mc = DATA_LIBERTADORES.monte_carlo || [];
+  Object.entries(DATA_LIBERTADORES.rondas || {}).forEach(([ronda, llaves]) => {
+    llaves.forEach(ll => {
+      const equipos = ronda === 'final' ? [ll.local, ll.visitante] : Object.keys(ll.agregado);
+      equipos.forEach(nombre => {
+        if (!index[nombre]) index[nombre] = { equipo: nombre, vivo: vivos.has(nombre), llaves: [] };
+        index[nombre].llaves.push({ ronda, ...ll });
+      });
+    });
+  });
+  mc.forEach(f => { if (index[f.equipo]) Object.assign(index[f.equipo], f); });
+  return index;
+}
+
+function poblarDatalistLibertadores(index){
+  const dl = document.getElementById('team-list-libertadores');
+  if (!dl) return;
+  dl.innerHTML = Object.keys(index).sort().map(n => `<option value="${n}">`).join('');
+}
+
+const RONDA_LABEL_LIBERTADORES = { "octavos": "Octavos", "cuartos": "Cuartos", "semis": "Semifinal", "final": "Final" };
+
+function renderTeamCardLibertadores(t){
+  const azul = 'var(--azul)';
+  const cabecera = `
+    <div class="tc-head">
+      <div class="tc-name">${escudoHTML(t.equipo)}${t.equipo}</div>
+      <span class="tc-zone" style="background:${t.vivo ? 'var(--amber-dim)' : 'var(--danger-dim)'}; color:${t.vivo ? 'var(--amber)' : 'var(--danger)'}">${t.vivo ? 'EN CARRERA' : 'ELIMINADO'}</span>
+    </div>`;
+
+  if (!t.vivo){
+    const caida = [...t.llaves].reverse().find(ll => ll.jugado && ll.avanza && ll.avanza !== t.equipo);
+    const detalle = caida
+      ? `Eliminado por <b>${caida.avanza}</b> en ${RONDA_LABEL_LIBERTADORES[caida.ronda]}${caida.penales ? ' (por penales)' : ''}.`
+      : 'Ya quedó eliminado (dato real).';
+    return `<div class="team-card">${cabecera}<div class="tc-pos" style="margin-top:12px;">${detalle}</div></div>`;
+  }
+
+  const proximo = t.llaves.find(ll => !ll.jugado);
+  let proximoTxt = '';
+  if (proximo){
+    const rival = proximo.ronda === 'final'
+      ? (proximo.local === t.equipo ? proximo.visitante : proximo.local)
+      : Object.keys(proximo.agregado).find(n => n !== t.equipo);
+    proximoTxt = `Próximo cruce: <b>${rival}</b> en ${RONDA_LABEL_LIBERTADORES[proximo.ronda]} <span style="color:var(--muted)">(según esta corrida)</span>`;
+  }
+  return `<div class="team-card">${cabecera}
+    <div class="tc-pos" style="margin-top:12px;">${proximoTxt}</div>
+    <div class="tc-grid" style="margin-top:16px;">
+      <div class="tc-stat"><div class="v" style="color:${azul}">${fmtPct(t['%cuartos'] ?? 0)}</div><div class="l">Cuartos</div></div>
+      <div class="tc-stat"><div class="v" style="color:${azul}">${fmtPct(t['%semis'] ?? 0)}</div><div class="l">Semifinal</div></div>
+      <div class="tc-stat"><div class="v" style="color:${azul}">${fmtPct(t['%final'] ?? 0)}</div><div class="l">Final</div></div>
+      <div class="tc-stat"><div class="v" style="color:${azul}">${fmtPct(t['%campeon'] ?? 0)}</div><div class="l">Campeón</div></div>
+    </div>
+    <div class="tc-mc-title">Campeón de la Libertadores en <b style="color:var(--amber)">${fmtPct(t['%campeon'] ?? 0)}</b> de las simulaciones</div>
+    <div class="mc-bar-track" style="margin-bottom:14px;">
+      <div class="mc-bar-fill directo" style="width:${t['%campeon'] ?? 0}%;"></div>
+    </div>
+  </div>`;
+}
+
+function buscarEquipoLibertadores(nombre){
+  const resultDiv = document.getElementById('search-result-libertadores');
+  if (!resultDiv) return;
+  if (!nombre || !nombre.trim()){ resultDiv.innerHTML = ""; return; }
+  const exacto = TEAM_INDEX_LIBERTADORES[nombre];
+  if (exacto){ resultDiv.innerHTML = renderTeamCardLibertadores(exacto); return; }
+  const q = nombre.trim().toLowerCase();
+  const coincidencia = Object.values(TEAM_INDEX_LIBERTADORES).find(t => t.equipo.toLowerCase().includes(q));
+  resultDiv.innerHTML = coincidencia
+    ? renderTeamCardLibertadores(coincidencia)
+    : `<div class="no-result">No se encontró ningún equipo llamado "${nombre}"</div>`;
+}
+
+document.getElementById('team-search-libertadores').addEventListener('input', (e) => buscarEquipoLibertadores(e.target.value));
+
 cargarDatosLPF();
 cargarDatosCopa();
+cargarDatosLibertadores();
 cargarDatosBMetro();
 cargarDatosFederal();
 
@@ -7638,8 +8355,174 @@ function buildBracketLines(bracketEl){
   svg.setAttribute('height', bracketEl.scrollHeight);
 }
 
+/* Versión de buildBracketLines() para el cuadro "enfrentado" de Copa
+   Libertadores (ver bracketLibertadoresHTML): en vez de una sola cadena
+   de rondas que avanza de izquierda a derecha, acá hay DOS cadenas que
+   avanzan una hacia la otra (Octavos → Cuartos → Semifinal de cada
+   lado) y se juntan en la Final del medio. Por eso no puede reusar
+   buildBracketLines tal cual (esa asume que la ronda r-1 siempre queda
+   a la IZQUIERDA de la ronda r): acá el lado derecho corre en espejo,
+   así que sus líneas salen del borde IZQUIERDO de la ronda fuente hacia
+   el borde DERECHO de la ronda destino. El resto del criterio (centrar
+   cada partido en el promedio vertical de sus fuentes, evitando que se
+   superpongan entre sí) es el mismo que en buildBracketLines. */
+function buildBracketLinesLibertadores(bracketEl){
+  const ns = 'http://www.w3.org/2000/svg';
+  let svg = bracketEl.querySelector(':scope > svg.bracket-lines');
+
+  bracketEl.querySelectorAll('.js-positioned').forEach(el => {
+    el.classList.remove('js-positioned');
+    el.style.top = '';
+  });
+
+  if (window.matchMedia('(max-width: 760px)').matches || getComputedStyle(bracketEl).flexDirection === 'column'){
+    if (svg) svg.remove();
+    return;
+  }
+
+  const cuerpoDe = (clave) => bracketEl.querySelector(':scope > .round.' + clave + ' > .round-body');
+  const octI = cuerpoDe('oct-izq'), cuaI = cuerpoDe('cua-izq'), semiI = cuerpoDe('semi-izq');
+  const octD = cuerpoDe('oct-der'), cuaD = cuerpoDe('cua-der'), semiD = cuerpoDe('semi-der');
+  const finalBody = bracketEl.querySelector(':scope > .round.final-col > .round-body');
+  if (!octI || !cuaI || !semiI || !octD || !cuaD || !semiD || !finalBody){
+    if (svg) svg.remove();
+    return;
+  }
+
+  if (!svg){
+    svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('class', 'bracket-lines');
+    bracketEl.insertBefore(svg, bracketEl.firstChild);
+  }
+  svg.innerHTML = '';
+
+  const bracketRect = bracketEl.getBoundingClientRect();
+  const MIN_GAP = 20; // mismo valor que body.liga-libertadores .round-body{ gap:20px }
+  const yCenter = new Map();
+  const soloMatches = (body) => [...body.children].filter(el => el.classList.contains('match'));
+
+  const trazarLinea = (x1, y1, x2, y2) => {
+    const xMid = x1 + (x2 - x1) / 2;
+    const path = document.createElementNS(ns, 'path');
+    path.setAttribute('d', `M${x1},${y1} H${xMid} V${y2} H${x2}`);
+    svg.appendChild(path);
+  };
+
+  // Octavos (ambos lados): punto de partida, tal cual cayeron por CSS.
+  [octI, octD].forEach(body => {
+    soloMatches(body).forEach(m => {
+      const r = m.getBoundingClientRect();
+      yCenter.set(m, r.top - bracketRect.top + r.height / 2);
+    });
+  });
+
+  // Reposiciona una ronda a partir de la anterior (por nombre de equipo,
+  // vía data-avanza) y traza las líneas de conexión. mirror=true cuando
+  // la ronda fuente queda a la DERECHA de la ronda destino (lado derecho
+  // del cuadro, que corre en espejo hacia la izquierda).
+  function resolverRonda(prevBody, curBody, mirror){
+    const prevMatches = soloMatches(prevBody);
+    const curMatches = soloMatches(curBody);
+    const curBodyTop = curBody.getBoundingClientRect().top - bracketRect.top;
+
+    const info = curMatches.map(el => {
+      const rect = el.getBoundingClientRect();
+      const sources = [...new Set([el.dataset.local, el.dataset.visitante]
+        .map(nombre => nombre && prevMatches.find(pm => pm.dataset.avanza === nombre))
+        .filter(Boolean))];
+      return { el, rect, sources };
+    });
+
+    info.forEach(item => {
+      item.targetY = item.sources.length
+        ? item.sources.reduce((sum, s) => sum + yCenter.get(s), 0) / item.sources.length
+        : item.rect.top - bracketRect.top + item.rect.height / 2;
+    });
+
+    const bySpot = [...info].sort((a, b) => a.targetY - b.targetY);
+    bySpot.forEach(item => { item.rawTargetY = item.targetY; });
+    if (bySpot.length > 1){
+      const minDists = [];
+      for (let i = 1; i < bySpot.length; i++){
+        minDists.push(bySpot[i - 1].rect.height / 2 + MIN_GAP + bySpot[i].rect.height / 2);
+      }
+      const minSpan = minDists.reduce((a, b) => a + b, 0);
+      const rawSpan = bySpot[bySpot.length - 1].rawTargetY - bySpot[0].rawTargetY;
+      const extra = rawSpan > minSpan ? (rawSpan - minSpan) / (bySpot.length - 1) : 0;
+      let y = bySpot[0].rawTargetY;
+      bySpot[0].targetY = y;
+      for (let i = 1; i < bySpot.length; i++){
+        y += minDists[i - 1] + extra;
+        bySpot[i].targetY = y;
+      }
+      const last = bySpot[bySpot.length - 1];
+      const drift = last.targetY - last.rawTargetY;
+      if (drift > 0){
+        const shift = drift / 2;
+        bySpot.forEach(item => { item.targetY -= shift; });
+      }
+    }
+
+    info.forEach(({ el, rect, sources, targetY }) => {
+      el.classList.add('js-positioned');
+      el.style.top = (targetY - curBodyTop - rect.height / 2) + 'px';
+      yCenter.set(el, targetY);
+      if (!sources.length) return;
+      const xTarget = mirror ? (rect.right - bracketRect.left) : (rect.left - bracketRect.left);
+      sources.forEach(s => {
+        const y1 = yCenter.get(s);
+        const sRect = s.getBoundingClientRect();
+        const x1 = mirror ? (sRect.left - bracketRect.left) : (sRect.right - bracketRect.left);
+        trazarLinea(x1, y1, xTarget, targetY);
+      });
+    });
+  }
+
+  resolverRonda(octI, cuaI, false);
+  resolverRonda(cuaI, semiI, false);
+  resolverRonda(octD, cuaD, true);
+  resolverRonda(cuaD, semiD, true);
+
+  // La Final es un caso aparte: recibe de las DOS semifinales (una por
+  // izquierda, otra por derecha), no de una sola ronda previa.
+  const finalMatches = soloMatches(finalBody);
+  const finalBodyTop = finalBody.getBoundingClientRect().top - bracketRect.top;
+  finalMatches.forEach(el => {
+    const rect = el.getBoundingClientRect();
+    const buscarFuente = (body) => soloMatches(body).find(pm =>
+      pm.dataset.avanza === el.dataset.local || pm.dataset.avanza === el.dataset.visitante);
+    const fuenteIzq = buscarFuente(semiI);
+    const fuenteDer = buscarFuente(semiD);
+    const fuentes = [fuenteIzq, fuenteDer].filter(Boolean);
+    const targetY = fuentes.length
+      ? fuentes.reduce((sum, s) => sum + yCenter.get(s), 0) / fuentes.length
+      : rect.top - bracketRect.top + rect.height / 2;
+
+    el.classList.add('js-positioned');
+    el.style.top = (targetY - finalBodyTop - rect.height / 2) + 'px';
+    yCenter.set(el, targetY);
+
+    if (fuenteIzq){
+      const y1 = yCenter.get(fuenteIzq);
+      const x1 = fuenteIzq.getBoundingClientRect().right - bracketRect.left;
+      trazarLinea(x1, y1, rect.left - bracketRect.left, targetY);
+    }
+    if (fuenteDer){
+      const y1 = yCenter.get(fuenteDer);
+      const x1 = fuenteDer.getBoundingClientRect().left - bracketRect.left;
+      trazarLinea(x1, y1, rect.right - bracketRect.left, targetY);
+    }
+  });
+
+  svg.setAttribute('width', bracketEl.scrollWidth);
+  svg.setAttribute('height', bracketEl.scrollHeight);
+}
+
 function refreshAllBracketLines(){
-  document.querySelectorAll('.bracket').forEach(buildBracketLines);
+  document.querySelectorAll('.bracket').forEach(bracketEl => {
+    if (bracketEl.id === 'bracket-libertadores') buildBracketLinesLibertadores(bracketEl);
+    else buildBracketLines(bracketEl);
+  });
 }
 
 // El propio refresh reescribe el DOM (líneas, flechas), así que hay que
@@ -8799,4 +9682,60 @@ document.getElementById('btn-simular-temporada').addEventListener('click', corre
 document.getElementById('btn-reiniciar-temporada').addEventListener('click', reiniciarTemporada);
 
 /* ---------- FIN MODO TEMPORADA ---------- */
+
+/* ---------- DRAG-TO-SCROLL DEL CUADRO DE LIBERTADORES ----------
+   Solo estético/UX: la scrollbar nativa de este cuadro queda oculta por
+   CSS (ver body.liga-libertadores .bracket-scroll), así que agregamos
+   una forma de moverlo con el mouse (arrastrar) o con Shift + rueda,
+   además del scroll táctil/trackpad que ya funciona solo. No toca datos
+   ni el render del bracket -- solo escucha eventos sobre el contenedor
+   que ya existe en el HTML estático. */
+(function initDragScrollLibertadores(){
+  const bracketEl = document.getElementById('bracket-libertadores');
+  if (!bracketEl) return;
+  const scrollEl = bracketEl.closest('.bracket-scroll');
+  if (!scrollEl) return;
+
+  let arrastrando = false;
+  let startX = 0;
+  let startScroll = 0;
+  let movido = false;
+
+  scrollEl.addEventListener('mousedown', (ev) => {
+    arrastrando = true;
+    movido = false;
+    startX = ev.pageX;
+    startScroll = scrollEl.scrollLeft;
+    scrollEl.classList.add('is-dragging');
+  });
+
+  window.addEventListener('mousemove', (ev) => {
+    if (!arrastrando) return;
+    const delta = ev.pageX - startX;
+    if (Math.abs(delta) > 3) movido = true;
+    scrollEl.scrollLeft = startScroll - delta;
+  });
+
+  const soltar = () => {
+    if (!arrastrando) return;
+    arrastrando = false;
+    scrollEl.classList.remove('is-dragging');
+  };
+  window.addEventListener('mouseup', soltar);
+  scrollEl.addEventListener('mouseleave', soltar);
+
+  // Evita que un drag termine disparando un click sobre el escudo/carta debajo del mouse
+  scrollEl.addEventListener('click', (ev) => {
+    if (movido){ ev.preventDefault(); ev.stopPropagation(); }
+  }, true);
+
+  // Shift + rueda del mouse: traduce el scroll vertical a horizontal
+  scrollEl.addEventListener('wheel', (ev) => {
+    if (!ev.shiftKey) return;
+    if (ev.deltaY === 0) return;
+    ev.preventDefault();
+    scrollEl.scrollLeft += ev.deltaY;
+  }, { passive:false });
+})();
+
 </script>

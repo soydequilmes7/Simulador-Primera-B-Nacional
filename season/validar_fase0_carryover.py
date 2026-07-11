@@ -183,12 +183,33 @@ def validar_memoria_y_handicap_continuidad() -> list:
     # Club sin ninguna entrada de historial en la división -> memoria
     # None, combinar_con_memoria debe devolver el rating_actual
     # comprimido por el handicap de temporada 1 (factor 1/3), ya que
-    # temporadas_consecutivas_en_division da 0 en ese caso.
+    # temporadas_consecutivas_en_division da None en ese caso (BUG
+    # CORREGIDO -- ver su docstring: antes daba 0, que combinar_con_memoria()
+    # interpretaba como "recién llegado", aplastando el rating de
+    # cualquier club sin historial persistido -- reportado por el
+    # usuario como "River descendió a la cuarta ronda").
     club_sin_historial = Club(id=3, name="Sin Historial", division="Primera Nacional")
     memoria_vacia = memoria_ewma(club_sin_historial, "nacional")
     print(f"\n  Club sin historial: memoria_ewma = {memoria_vacia} (esperado None)")
     if memoria_vacia is not None:
         errores.append(f"[memoria_ewma sin historial] esperado None, dio {memoria_vacia}")
+
+    temporadas_sin_historial = temporadas_consecutivas_en_division(club_sin_historial, "nacional")
+    print(f"  Club sin historial: temporadas_consecutivas_en_division = {temporadas_sin_historial} (esperado None)")
+    if temporadas_sin_historial is not None:
+        errores.append(f"[temporadas_consecutivas sin historial] esperado None, dio {temporadas_sin_historial}")
+
+    # Y lo más importante: combinar_con_memoria() NO debe aplastar el
+    # rating de un club sin historial -- debe devolverlo tal cual (sin
+    # handicap, ver bug arriba).
+    rating_sin_tocar = _rating(1.30, 1.10, 0.80, 0.85)
+    resultado_sin_historial = combinar_con_memoria(rating_sin_tocar, club_sin_historial, "nacional")
+    print(f"  combinar_con_memoria SIN historial: {rating_sin_tocar} -> {resultado_sin_historial}")
+    if resultado_sin_historial != rating_sin_tocar:
+        errores.append(
+            f"[BUG] un club sin Club.history NO debería sufrir ningún handicap -- "
+            f"esperaba {rating_sin_tocar} sin cambios, dio {resultado_sin_historial}"
+        )
 
     return errores
 

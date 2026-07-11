@@ -152,6 +152,7 @@ from __future__ import annotations
 
 from modelos.club import Club
 from season.club_registry import DIVISIONES
+from season.prestigio import aplicar_piso_prestigio
 
 # --------------------------------------------------------------
 # Nivel relativo de cada división (ver docstring del módulo).
@@ -236,6 +237,7 @@ class RatingCarryoverPolicy:
         ratings_origen: dict | None,
         division_origen: str | None,
         division_destino: str,
+        club_nombre: str | None = None,
     ) -> dict:
         """
         ratings_origen: dict con las 4 claves de CAMPOS_RATING, los
@@ -247,6 +249,12 @@ class RatingCarryoverPolicy:
             None) si ratings_origen es None.
         division_destino: clave de NIVEL_DIVISION correspondiente a la
             división a la que el club se incorpora ahora.
+        club_nombre: opcional (default None = sin piso de prestigio,
+            comportamiento idéntico al de antes de este parámetro --
+            no rompe ninguna llamada existente). Si se pasa, aplica
+            aplicar_piso_prestigio() (season/prestigio.py) al final --
+            un club con historial de títulos que desciende no pierde
+            tanto terreno en la caída como uno sin ese historial.
 
         Devuelve un dict con las 4 claves de CAMPOS_RATING.
 
@@ -270,6 +278,9 @@ class RatingCarryoverPolicy:
 
         # Sin historial en ninguna división -> rating genérico fijo,
         # mismo criterio que _cosechar_ratings_ligas() de la Copa.
+        # (El piso de prestigio no se aplica acá: un club sin
+        # ratings_origen tampoco tiene forma de estar "rindiendo mal",
+        # está en el genérico neutro -- no hay nada que amortiguar.)
         if ratings_origen is None:
             return {
                 "ataque_local": ATAQUE_GENERICO,
@@ -305,6 +316,8 @@ class RatingCarryoverPolicy:
                 / (N_CARRYOVER + K_REGRESION),
                 3,
             )
+        if club_nombre is not None:
+            resultado = aplicar_piso_prestigio(resultado, club_nombre)
         return resultado
 
 
@@ -315,15 +328,33 @@ class RatingCarryoverPolicy:
 # completo.
 # --------------------------------------------------------------------
 
-def temporadas_consecutivas_en_division(club: Club, division_slug: str) -> int:
+def temporadas_consecutivas_en_division(club: Club, division_slug: str) -> int | None:
     """Cuenta cuántas entradas CONSECUTIVAS al final de club.history
     corresponden a `division_slug`, recorriendo de la más reciente
-    hacia atrás y cortando en la primera que sea de otra división (o
-    al llegar al principio de la lista). 0 si la entrada más reciente
-    ya es de otra división, o si el club no tiene ninguna entrada
-    todavía -- ese 0 es la señal de "recién llegado, temporada 1 en
-    destino" que usa combinar_con_memoria() para decidir cuánto
-    handicap aplicar.
+    hacia atrás y cortando en la primera que sea de otra división.
+
+    BUG ENCONTRADO Y CORREGIDO (reportado por el usuario: "River
+    descendió a la cuarta ronda" -- club.history vacío estaba
+    aplastando el rating de clubes establecidos como si acabaran de
+    ascender, TODAS las temporadas, porque Club.history hoy no
+    persiste entre llamadas reales -- ver HANDOFF_elo_persistente.md,
+    sección 3.1/3.4, mismo hueco). Antes, "0 temporadas consecutivas"
+    quería decir dos cosas MUY distintas con el mismo número:
+      a) el club genuinamente accaba de cambiar de división (la
+         entrada más reciente de su historial es de OTRA división --
+         evidencia real de un ascenso/descenso reciente), o
+      b) club.history está VACÍO -- no hay ningún dato, ni a favor ni
+         en contra de que sea un recién llegado.
+    (a) es la señal real que el handicap de adaptación necesita. (b)
+    es simplemente "no sabemos" -- y "no sabemos" NO debería
+    comportarse igual que "sabemos que acaba de llegar": aplicarle el
+    handicap fuerte a un club sin datos es asumir lo peor sin
+    evidencia, exactamente lo que este proyecto evita en todos los
+    demás casos (ver ATAQUE_GENERICO/DEFENSA_GENERICO: "sin
+    evidencia, rating neutro", no "sin evidencia, asumir que rinde
+    mal"). Ahora devuelve None para el caso (b) -- combinar_con_memoria()
+    lo interpreta como "sin handicap, confiar en el rating recién
+    calculado" en vez de aplicar la compresión más fuerte.
 
     division_slug: clave de NIVEL_DIVISION (ej. "lpf", "nacional").
     Lanza ValueError si no es una división válida.
@@ -333,6 +364,9 @@ def temporadas_consecutivas_en_division(club: Club, division_slug: str) -> int:
         raise ValueError(
             f"división inválida: {division_slug!r} (válidas: {sorted(DIVISIONES)})"
         )
+
+    if not club.history:
+        return None
 
     contador = 0
     for entrada in reversed(club.history):
@@ -411,6 +445,18 @@ def combinar_con_memoria(
          _factor_handicap() -- ver docstring del módulo. Un club
          asentado (temporadas_consecutivas_en_division() >=
          N_TEMPORADAS_HANDICAP) sale de acá sin ningún handicap.
+         BUG CORREGIDO (ver docstring de temporadas_consecutivas_en_division()):
+         si no hay NINGÚN dato de historial (club.history vacío --
+         hoy pasa siempre que no persiste entre llamadas reales,
+         ver HANDOFF_elo_persistente.md), tampoco se aplica handicap
+         -- "no sabemos si es reciente" ya NO se trata igual que
+         "sabemos que es reciente".
+      3. Piso de prestigio histórico (season/prestigio.py, ver su
+         docstring): DESPUÉS de la memoria y el handicap, amortigua
+         qué tan lejos del promedio puede quedar cada componente del
+         lado MALO, solo para clubes con historial de títulos. No
+         empuja a nadie hacia arriba -- un club sin historial pasa por
+         acá sin ningún cambio.
 
     rating_actual: dict con las 4 claves de CAMPOS_RATING.
     Devuelve un dict con las mismas 4 claves.
@@ -425,10 +471,17 @@ def combinar_con_memoria(
         }
 
     temporadas = temporadas_consecutivas_en_division(club, division_slug)
-    factor = _factor_handicap(temporadas)
-    if factor >= 1.0:
-        return base
-    return {
-        campo: round(1.0 + (base[campo] - 1.0) * factor, 3)
-        for campo in CAMPOS_RATING
-    }
+    if temporadas is None:
+        # Sin ningún dato de historial -- no hay evidencia de que sea
+        # un recién llegado, no se penaliza a ciegas (ver docstring).
+        resultado = base
+    else:
+        factor = _factor_handicap(temporadas)
+        if factor >= 1.0:
+            resultado = base
+        else:
+            resultado = {
+                campo: round(1.0 + (base[campo] - 1.0) * factor, 3)
+                for campo in CAMPOS_RATING
+            }
+    return aplicar_piso_prestigio(resultado, club.name)
