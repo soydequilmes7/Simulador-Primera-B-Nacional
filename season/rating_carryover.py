@@ -198,7 +198,18 @@ N_CARRYOVER = 12
 # NIVEL_DIVISION/ALPHA_MEMORIA): bastante más alto que N_CARRYOVER,
 # para que el rating amplificado por NIVEL_DIVISION se sostenga en
 # vez de diluirse casi a la mitad contra el promedio genérico.
-N_CARRYOVER_DESCENSO = 40
+#
+# AJUSTADO a pedido del usuario (después de confirmar que el
+# descendido ya no vuelve a descender tan seguido, pero "se queda sin
+# sacar muchos puntos" -- el envión de la llegada se diluye rápido
+# porque desde la temporada 2 el club pasa a combinar_con_memoria(),
+# que pesa 65% lo que rindió DE VERDAD esa temporada. Subir este
+# número no cambia esa dilución (es un problema de otra constante,
+# ALPHA_MEMORIA, que queda igual para no afectar a las otras 4
+# divisiones) -- pero sí hace que el punto de partida en la ronda de
+# la llegada sea más fuerte, dándole más margen antes de que la
+# dilución empiece a pesar.
+N_CARRYOVER_DESCENSO = 55
 
 # Mismo peso de regresión a la media que usa modelos/estadisticas.py
 # para equipos con pocos partidos (K_REGRESION=12 ahí). Se repite acá
@@ -236,11 +247,41 @@ CAMPOS_RATING = (
 # temporada actual / 35% memoria previa.
 ALPHA_MEMORIA = 0.65
 
+# BUG DE DISEÑO ENCONTRADO Y CORREGIDO -- reportado por el usuario:
+# "que el empuje al descender sea de más de una temporada, que sean 2
+# o 3". El motivo real: el envión de N_CARRYOVER_DESCENSO (ver más
+# abajo) solo actúa en rating_para_recien_llegado(), que por diseño
+# se llama UNA VEZ, en el instante de la llegada. Desde la temporada
+# SIGUIENTE el club pasa a combinar_con_memoria(), que mezcla con
+# ALPHA_MEMORIA de siempre (65% lo que rindió DE VERDAD esa
+# temporada) -- si esa temporada fue mediocre, el envión inicial se
+# diluye de un saque, no en 2-3 temporadas como se pidió.
+#
+# ALPHA_MEMORIA_DESCENSO_RECIENTE: alpha más BAJO (más peso a la
+# memoria, menos a lo que rindió esta temporada puntual) que se usa
+# EN VEZ de ALPHA_MEMORIA -- pero SOLO para un club que llegó a la
+# división por DESCENSO y todavía está dentro de sus primeras
+# N_TEMPORADAS_PROTECCION_DESCENSO temporadas ahí (ver
+# _ascenso_o_descenso_reciente() y combinar_con_memoria()). Un
+# ascendido NO se beneficia de esto -- sigue con ALPHA_MEMORIA de
+# siempre, ya tiene su propio handicap por separado (N_TEMPORADAS_HANDICAP).
+#
+# Valores de arranque razonables, documentados, NO calibrados con
+# datos reales todavía (mismo criterio que el resto de las
+# constantes de este módulo).
+ALPHA_MEMORIA_DESCENSO_RECIENTE = 0.40
+N_TEMPORADAS_PROTECCION_DESCENSO = 3  # protege la 2da Y la 3ra temporada en destino
+
 # Cuántas temporadas completas le toma a un recién ASCENDIDO dejar de
 # tener handicap de adaptación aplicado. Se disuelve linealmente:
-# temporada 1 en destino -> factor 1/3, temporada 2 -> 2/3, temporada 3
-# en adelante -> 1.0 (sin handicap).
-N_TEMPORADAS_HANDICAP = 2
+# temporada 1 en destino -> factor 1/4, temporada 2 -> 2/4, temporada
+# 3 -> 3/4, temporada 4 en adelante -> 1.0 (sin handicap).
+#
+# AJUSTADO a pedido del usuario: quería que a los ascendidos les
+# cueste MÁS mantenerse en la categoría nueva (antes eran solo 2
+# temporadas de handicap, ahora 3) -- un año más de adaptación antes
+# de confiar 100% en el rating.
+N_TEMPORADAS_HANDICAP = 3
 
 # BUG ENCONTRADO Y CORREGIDO -- reportado por el usuario: "el equipo
 # que desciende se le hace muy difícil volver a pelear... en el
@@ -372,14 +413,8 @@ class RatingCarryoverPolicy:
                 f"faltan: {faltantes}"
             )
 
-        factor = NIVEL_DIVISION[division_origen] / NIVEL_DIVISION[division_destino]
+        factor_nivel = NIVEL_DIVISION[division_origen] / NIVEL_DIVISION[division_destino]
         es_ascenso = _es_ascenso(division_origen, division_destino)
-        # Handicap de adaptación, SOLO si es ascenso (ver _es_ascenso()
-        # y el docstring de la sección de arriba -- un descenso no
-        # necesita "adaptarse a más exigencia", así que no se le
-        # aplasta la amplificación que ya le dio el factor de arriba).
-        if es_ascenso:
-            factor *= _factor_handicap(0)
 
         # N_CARRYOVER_DESCENSO en vez de N_CARRYOVER para un descenso
         # (ver su docstring más arriba -- bug de calibración
@@ -390,7 +425,47 @@ class RatingCarryoverPolicy:
         resultado = {}
         for campo in CAMPOS_RATING:
             valor_origen = ratings_origen[campo]
-            valor_ajustado = 1.0 + (valor_origen - 1.0) * factor
+            # BUG DE FONDO ENCONTRADO Y CORREGIDO -- reportado por el
+            # usuario en una vuelta posterior a los dos ajustes de
+            # arriba, con la misma pareja de clubes volviendo a
+            # descender casi siempre: la fórmula vieja
+            # ("1.0 + (valor_origen - 1.0) * factor_nivel") trata 1.0
+            # como un centro COMPARTIDO entre divisiones y solo
+            # amplifica la DISTANCIA a ese centro -- así que un club
+            # que ya rendía por DEBAJO del promedio en su división de
+            # origen (el perfil típico de quien realmente desciende:
+            # no es el candidato a puntero, es de los más débiles de
+            # ESA liga) terminaba prácticamente IGUAL en la división
+            # nueva, sin ninguna ventaja real -- ver el caso
+            # documentado en el HANDOFF: 0.85 en LPF -> apenas 0.864
+            # en Nacional.
+            #
+            # Fórmula nueva: escala MULTIPLICATIVA directa (no
+            # distancia-al-promedio) -- NIVEL_DIVISION representa la
+            # calidad "global" de cada división, así que un rating
+            # relativo a su propia liga (donde el promedio de CADA
+            # liga siempre da 1.0 por construcción) se traduce a la
+            # escala de la liga nueva multiplicando por factor_nivel
+            # (para ataque) o dividiendo (para defensa -- dirección
+            # inversa porque menor valor = mejor defensa).
+            #
+            # SEGUNDO BUG encontrado armando ESTE mismo fix (antes de
+            # mostrárselo al usuario): si el handicap de ascenso se
+            # mete DENTRO de factor_nivel antes de invertirlo para
+            # defensa, un handicap fuerte (ej. 1/3) se convierte en un
+            # multiplicador de defensa GIGANTE (3x) en vez de una
+            # compresión -- un ascendido terminaba con una defensa
+            # catastróficamente mala en vez de razonablemente peor.
+            # Por eso la conversión de nivel (multiplicativa, siempre
+            # correcta en las dos direcciones) y el handicap (mezcla
+            # hacia 1.0, solo para ascenso) se separan en DOS pasos en
+            # vez de multiplicarse juntos en un solo factor.
+            factor_campo = factor_nivel if "ataque" in campo else (1.0 / factor_nivel)
+            valor_convertido = valor_origen * factor_campo
+            if es_ascenso:
+                valor_ajustado = 1.0 + (valor_convertido - 1.0) * _factor_handicap(0)
+            else:
+                valor_ajustado = valor_convertido
             resultado[campo] = round(
                 (n_carryover * valor_ajustado + K_REGRESION * 1.0)
                 / (n_carryover + K_REGRESION),
@@ -556,7 +631,12 @@ def combinar_con_memoria(
          termina) con memoria_ewma() de temporadas previas en la
          misma división. Si no hay memoria todavía (primera vez que
          se registra este club con ratings acá), usa rating_actual
-         sin mezclar.
+         sin mezclar. Si el club llegó por DESCENSO y todavía está
+         dentro de sus primeras N_TEMPORADAS_PROTECCION_DESCENSO
+         temporadas en destino, la mezcla usa
+         ALPHA_MEMORIA_DESCENSO_RECIENTE en vez de ALPHA_MEMORIA (más
+         peso a la memoria heredada, ver su docstring -- así el
+         envión de la llegada dura varias temporadas, no una sola).
       2. Handicap de adaptación: si el club todavía está dentro de
          sus primeras N_TEMPORADAS_HANDICAP temporadas en destino
          (típicamente un recién ascendido/descendido jugando su
@@ -587,17 +667,31 @@ def combinar_con_memoria(
     rating_actual: dict con las 4 claves de CAMPOS_RATING.
     Devuelve un dict con las mismas 4 claves.
     """
-    memoria = memoria_ewma(club, division_slug, alpha=alpha)
+    temporadas = temporadas_consecutivas_en_division(club, division_slug)
+    fue_ascenso = _ascenso_o_descenso_reciente(club, division_slug)
+
+    # BUG DE DISEÑO CORREGIDO -- reportado por el usuario, ver
+    # docstring de ALPHA_MEMORIA_DESCENSO_RECIENTE: si el club llegó
+    # por DESCENSO y todavía está dentro de sus primeras
+    # N_TEMPORADAS_PROTECCION_DESCENSO temporadas en destino, se usa
+    # un alpha más bajo (más peso a la memoria heredada de la
+    # división de origen, menos a lo que rindió ESTA temporada
+    # puntual) -- así el envión de la llegada dura 2-3 temporadas en
+    # vez de diluirse de un saque en la primera temporada mediocre.
+    # Un ascendido NO entra acá (ya tiene su propio handicap aparte).
+    alpha_efectiva = alpha
+    if fue_ascenso is False and temporadas is not None and temporadas < N_TEMPORADAS_PROTECCION_DESCENSO:
+        alpha_efectiva = ALPHA_MEMORIA_DESCENSO_RECIENTE
+
+    memoria = memoria_ewma(club, division_slug, alpha=alpha_efectiva)
     if memoria is None:
         base = dict(rating_actual)
     else:
         base = {
-            campo: round(alpha * rating_actual[campo] + (1 - alpha) * memoria[campo], 3)
+            campo: round(alpha_efectiva * rating_actual[campo] + (1 - alpha_efectiva) * memoria[campo], 3)
             for campo in CAMPOS_RATING
         }
 
-    temporadas = temporadas_consecutivas_en_division(club, division_slug)
-    fue_ascenso = _ascenso_o_descenso_reciente(club, division_slug)
     if temporadas is None or fue_ascenso is False:
         # Sin ningún dato de historial (no hay evidencia de que sea un
         # recién llegado), O llegó por descenso (no necesita

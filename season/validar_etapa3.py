@@ -34,31 +34,40 @@ from season.rating_carryover import (
 # esta reimplementación manual se actualiza acá para seguir siendo un
 # chequeo independiente real, no una copia del código interno.
 #
-# ACTUALIZADO (reportado por el usuario: "al que desciende le cuesta
-# mucho volver a pelear, en la vida real no pasa así"): el handicap
-# ahora es ASIMÉTRICO -- solo se aplica en un ASCENSO real (subir de
-# NIVEL_DIVISION), NO en un descenso ni en un movimiento lateral (ver
-# _es_ascenso() en rating_carryover.py). Y ADEMÁS (segunda vuelta del
-# mismo reporte, con clubes DISTINTOS cada vez -- Riestra, Banfield,
-# San Lorenzo -- que confirmó que era un problema de calibración, no
-# de un club puntual): un descenso/lateral usa N_CARRYOVER_DESCENSO
-# (mucho más alto que N_CARRYOVER) para confiar más en el rating
-# heredado en vez de diluirlo casi a la mitad contra el promedio.
+# ACTUALIZADO tres veces, todas por el mismo reporte del usuario ("al
+# que desciende le cuesta mucho volver a pelear"):
+#   1. El handicap ahora es ASIMÉTRICO -- solo se aplica en un ASCENSO
+#      real (subir de NIVEL_DIVISION), NO en un descenso ni en un
+#      movimiento lateral (ver _es_ascenso()).
+#   2. Un descenso/lateral usa N_CARRYOVER_DESCENSO (mucho más alto
+#      que N_CARRYOVER) para confiar más en el rating heredado.
+#   3. LA MÁS IMPORTANTE (bug de fondo, no de calibración): la fórmula
+#      pasó de "distancia al promedio" (1.0 + (valor-1.0)*factor) a
+#      escala MULTIPLICATIVA directa (valor*factor para ataque,
+#      valor/factor para defensa -- dirección inversa porque menor
+#      valor = mejor defensa). La vieja fórmula no hacía nada por un
+#      club que ya rendía POR DEBAJO del promedio en su división de
+#      origen (el perfil típico real de un descendido) -- ver
+#      docstring de rating_para_recien_llegado() para el caso
+#      numérico completo.
 FACTOR_HANDICAP_TEMPORADA_1 = 1 / (N_TEMPORADAS_HANDICAP + 1)
 
 
 def _manual_carryover(ratings_origen: dict, division_origen: str, division_destino: str) -> dict:
     """Reimplementación independiente de la fórmula, para comparar
     contra RatingCarryoverPolicy sin depender de su código interno."""
-    factor = NIVEL_DIVISION[division_origen] / NIVEL_DIVISION[division_destino]
+    factor_nivel = NIVEL_DIVISION[division_origen] / NIVEL_DIVISION[division_destino]
     es_ascenso = NIVEL_DIVISION[division_destino] > NIVEL_DIVISION[division_origen]
-    if es_ascenso:
-        factor *= FACTOR_HANDICAP_TEMPORADA_1
     n_carryover = N_CARRYOVER if es_ascenso else N_CARRYOVER_DESCENSO
     resultado = {}
     for campo in CAMPOS_RATING:
         valor_origen = ratings_origen[campo]
-        valor_ajustado = 1.0 + (valor_origen - 1.0) * factor
+        factor_campo = factor_nivel if "ataque" in campo else (1.0 / factor_nivel)
+        valor_convertido = valor_origen * factor_campo
+        if es_ascenso:
+            valor_ajustado = 1.0 + (valor_convertido - 1.0) * FACTOR_HANDICAP_TEMPORADA_1
+        else:
+            valor_ajustado = valor_convertido
         resultado[campo] = round(
             (n_carryover * valor_ajustado + K_REGRESION * 1.0) / (n_carryover + K_REGRESION), 3
         )
@@ -166,8 +175,9 @@ def main():
     print(f"  obtenido:  {obtenido}")
     errores += _comparar("descenso a división más débil", esperado, obtenido)
     dist_original = abs(ratings_origen["ataque_local"] - 1.0)
-    dist_ajustada_pre_regresion = abs(1.0 + (ratings_origen["ataque_local"] - 1.0)
-                                       * (NIVEL_DIVISION["lpf"] / NIVEL_DIVISION["nacional"]) - 1.0)
+    dist_ajustada_pre_regresion = abs(
+        ratings_origen["ataque_local"] * (NIVEL_DIVISION["lpf"] / NIVEL_DIVISION["nacional"]) - 1.0
+    )
     if not (dist_ajustada_pre_regresion > dist_original):
         errores.append(
             "[descenso] se esperaba que la distancia a 1.0 se amplificara antes de la "

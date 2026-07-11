@@ -56,7 +56,9 @@ def _rating(a_l, a_v, d_l, d_v) -> dict:
 def validar_factor_handicap() -> list:
     print("\n[Parte A] _factor_handicap() -- decaimiento del handicap")
     errores = []
-    esperados = {0: 1 / 3, 1: 2 / 3, 2: 1.0, 3: 1.0, 10: 1.0}
+    # Calculado a partir de N_TEMPORADAS_HANDICAP (no hardcodeado) --
+    # así el test no se rompe cada vez que se ajusta esa constante.
+    esperados = {t: min(1.0, (t + 1) / (N_TEMPORADAS_HANDICAP + 1)) for t in (0, 1, 2, 3, N_TEMPORADAS_HANDICAP, 10)}
     for temporadas, esperado in esperados.items():
         obtenido = _factor_handicap(temporadas)
         print(f"  temporadas_consecutivas={temporadas} -> {obtenido:.4f} (esperado {esperado:.4f})")
@@ -73,16 +75,21 @@ def validar_recien_llegado_con_handicap() -> list:
     print("\n[Parte B] rating_para_recien_llegado() -- handicap asimétrico (SOLO ascenso)")
     errores = []
     politica = RatingCarryoverPolicy()
-    from season.rating_carryover import NIVEL_DIVISION, N_CARRYOVER, N_CARRYOVER_DESCENSO, K_REGRESION
+    from season.rating_carryover import NIVEL_DIVISION, N_CARRYOVER, N_CARRYOVER_DESCENSO, K_REGRESION, N_TEMPORADAS_HANDICAP
+
+    factor_handicap_temporada_1 = 1 / (N_TEMPORADAS_HANDICAP + 1)  # calculado, no hardcodeado
 
     def _manual(ratings_origen, division_origen, division_destino, con_handicap):
-        factor = NIVEL_DIVISION[division_origen] / NIVEL_DIVISION[division_destino]
-        if con_handicap:
-            factor *= (1 / 3)
+        factor_nivel = NIVEL_DIVISION[division_origen] / NIVEL_DIVISION[division_destino]
         n_carryover = N_CARRYOVER if con_handicap else N_CARRYOVER_DESCENSO
         esperado = {}
         for campo in CAMPOS_RATING:
-            valor_ajustado = 1.0 + (ratings_origen[campo] - 1.0) * factor
+            factor_campo = factor_nivel if "ataque" in campo else (1.0 / factor_nivel)
+            valor_convertido = ratings_origen[campo] * factor_campo
+            if con_handicap:
+                valor_ajustado = 1.0 + (valor_convertido - 1.0) * factor_handicap_temporada_1
+            else:
+                valor_ajustado = valor_convertido
             esperado[campo] = round((n_carryover * valor_ajustado + K_REGRESION * 1.0) / (n_carryover + K_REGRESION), 3)
         return esperado
 
@@ -134,33 +141,35 @@ def validar_memoria_y_handicap_continuidad() -> list:
     print("\n[Parte C] memoria EWMA + handicap para clubes que continúan")
     errores = []
 
-    # Club recién ascendido a Nacional hace 2 temporadas: una entrada
-    # de handicap (Primera C, sin ratings -- simula que antes de esta
-    # Fase 0 no se guardaban) + 2 temporadas ya jugadas EN Nacional
-    # con ratings reales.
+    # Club recién ascendido a Nacional hace 3 temporadas (N_TEMPORADAS_HANDICAP=3
+    # ahora, ver rating_carryover.py): una entrada de handicap (Primera
+    # C, sin ratings -- simula que antes de esta Fase 0 no se
+    # guardaban) + 3 temporadas ya jugadas EN Nacional con ratings reales.
     club = Club(id=1, name="Club Ejemplo", division="Primera Nacional")
     club.history = [
-        {"temporada": "2024", "division": "Primera C"},  # antes de ascender, sin ratings (pre-Fase 0)
-        {"temporada": "2025", "division": "Primera Nacional", "ratings": _rating(1.05, 0.95, 1.02, 0.98)},
+        {"temporada": "2023", "division": "Primera C"},  # antes de ascender, sin ratings (pre-Fase 0)
+        {"temporada": "2024", "division": "Primera Nacional", "ratings": _rating(1.05, 0.95, 1.02, 0.98)},
+        {"temporada": "2025", "division": "Primera Nacional", "ratings": _rating(1.08, 0.92, 1.03, 0.96)},
         {"temporada": "2026", "division": "Primera Nacional", "ratings": _rating(1.10, 0.90, 1.05, 0.95)},
     ]
 
     temporadas = temporadas_consecutivas_en_division(club, "nacional")
-    print(f"  temporadas_consecutivas_en_division(nacional) = {temporadas} (esperado 2)")
-    if temporadas != 2:
-        errores.append(f"[temporadas_consecutivas] esperado 2, dio {temporadas}")
+    print(f"  temporadas_consecutivas_en_division(nacional) = {temporadas} (esperado 3)")
+    if temporadas != 3:
+        errores.append(f"[temporadas_consecutivas] esperado 3, dio {temporadas}")
 
     memoria = memoria_ewma(club, "nacional")
     ewma_manual = dict(club.history[1]["ratings"])
-    for campo in CAMPOS_RATING:
-        ewma_manual[campo] = round(
-            ALPHA_MEMORIA * club.history[2]["ratings"][campo] + (1 - ALPHA_MEMORIA) * ewma_manual[campo], 3
-        )
+    for entrada in club.history[2:]:
+        for campo in CAMPOS_RATING:
+            ewma_manual[campo] = round(
+                ALPHA_MEMORIA * entrada["ratings"][campo] + (1 - ALPHA_MEMORIA) * ewma_manual[campo], 3
+            )
     print(f"  memoria_ewma(nacional) = {memoria}")
     print(f"  esperado (EWMA manual) = {ewma_manual}")
     errores += _comparar("memoria_ewma", ewma_manual, memoria)
 
-    # Con temporadas_consecutivas=2 (== N_TEMPORADAS_HANDICAP), el
+    # Con temporadas_consecutivas=3 (== N_TEMPORADAS_HANDICAP), el
     # handicap ya debería estar en factor 1.0 -- combinar_con_memoria
     # no debería comprimir nada extra, solo mezclar con la memoria.
     rating_actual = _rating(1.20, 0.80, 1.15, 0.90)
@@ -175,7 +184,7 @@ def validar_memoria_y_handicap_continuidad() -> list:
 
     # Ahora un club que ACABA de ascender la temporada pasada (1 sola
     # temporada en destino) -- combinar_con_memoria debe comprimir con
-    # factor_handicap(1) = 2/3.
+    # factor_handicap(1) = 2/4.
     club_nuevo = Club(id=2, name="Recién Ascendido", division="Primera Nacional")
     club_nuevo.history = [
         {"temporada": "2026", "division": "Primera Nacional", "ratings": _rating(0.75, 1.25, 0.80, 1.20)},
@@ -194,7 +203,7 @@ def validar_memoria_y_handicap_continuidad() -> list:
     factor_esperado = _factor_handicap(1)
     esperado_2 = {campo: round(1.0 + (base[campo] - 1.0) * factor_esperado, 3) for campo in CAMPOS_RATING}
     obtenido_2 = combinar_con_memoria(rating_actual_2, club_nuevo, "nacional")
-    print(f"  combinar_con_memoria (con handicap 2/3) = {obtenido_2}")
+    print(f"  combinar_con_memoria (con handicap {factor_esperado:.4f}) = {obtenido_2}")
     print(f"  esperado = {esperado_2}")
     errores += _comparar("combinar_con_memoria con handicap", esperado_2, obtenido_2)
 
