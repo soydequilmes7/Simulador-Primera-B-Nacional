@@ -69,6 +69,7 @@ from __future__ import annotations
 import pandas as pd
 
 from fixture_generator import generar_fixture_ida_vuelta
+from main_federal import _serie_a_dict
 from modelos.estadisticas_federal import EstadisticasFederal
 from season.rating_carryover import RatingCarryoverPolicy, combinar_con_memoria
 from season.tournament_adapter import ResultadoTorneo
@@ -266,9 +267,20 @@ def correr_temporada_desde_carryover(
         "primera_fase": {"tablas": {z: t.to_dict(orient="records") for z, t in tablas_pf.items()}},
         "segunda_fase": {"tablas": {z: t.to_dict(orient="records") for z, t in tablas_2f.items()}},
         "camino_principal": {
-            "tercera_fase": {k: v.detalle for k, v in resultados_3f.items()},
-            "cuarta_fase": {k: v.detalle for k, v in resultados_4f.items()},
-            "quinta_fase_final": resultado_5f.detalle,
+            # _serie_a_dict() traduce el shape interno de Federal A
+            # (local_ida/ida/vuelta/agregado para las series, marcador
+            # para el partido único) al shape que ya esperan
+            # matchHTML()/seriesHTML() del frontend -- exactamente lo
+            # mismo que hace main_federal.py::_armar_datos_web() para
+            # la pestaña normal de Federal A. Antes acá se mandaba
+            # resultado.detalle crudo, así que el frontend no
+            # encontraba equipo_x/equipo_y/campeon (ni local/visitante/
+            # golesLocal/golesVisitante) y terminaba imprimiendo
+            # "undefined" en las tarjetas de Tercera/Cuarta Fase y en
+            # el marcador de la Final.
+            "tercera_fase": {k: _serie_a_dict(v) for k, v in resultados_3f.items()},
+            "cuarta_fase": {k: _serie_a_dict(v) for k, v in resultados_4f.items()},
+            "quinta_fase_final": _serie_a_dict(resultado_5f),
             "ascenso_1": ascenso_1,
         },
         "revalida": {

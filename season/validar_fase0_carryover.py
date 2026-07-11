@@ -73,16 +73,17 @@ def validar_recien_llegado_con_handicap() -> list:
     print("\n[Parte B] rating_para_recien_llegado() -- handicap asimétrico (SOLO ascenso)")
     errores = []
     politica = RatingCarryoverPolicy()
-    from season.rating_carryover import NIVEL_DIVISION, N_CARRYOVER, K_REGRESION
+    from season.rating_carryover import NIVEL_DIVISION, N_CARRYOVER, N_CARRYOVER_DESCENSO, K_REGRESION
 
     def _manual(ratings_origen, division_origen, division_destino, con_handicap):
         factor = NIVEL_DIVISION[division_origen] / NIVEL_DIVISION[division_destino]
         if con_handicap:
             factor *= (1 / 3)
+        n_carryover = N_CARRYOVER if con_handicap else N_CARRYOVER_DESCENSO
         esperado = {}
         for campo in CAMPOS_RATING:
             valor_ajustado = 1.0 + (ratings_origen[campo] - 1.0) * factor
-            esperado[campo] = round((N_CARRYOVER * valor_ajustado + K_REGRESION * 1.0) / (N_CARRYOVER + K_REGRESION), 3)
+            esperado[campo] = round((n_carryover * valor_ajustado + K_REGRESION * 1.0) / (n_carryover + K_REGRESION), 3)
         return esperado
 
     # Caso 1: ASCENSO real (nacional 0.85 -> lpf 1.00) -- acá SÍ tiene

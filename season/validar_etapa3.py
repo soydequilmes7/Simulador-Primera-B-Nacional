@@ -20,6 +20,7 @@ from season.rating_carryover import (
     RatingCarryoverPolicy,
     NIVEL_DIVISION,
     N_CARRYOVER,
+    N_CARRYOVER_DESCENSO,
     K_REGRESION,
     ATAQUE_GENERICO,
     DEFENSA_GENERICO,
@@ -37,7 +38,12 @@ from season.rating_carryover import (
 # mucho volver a pelear, en la vida real no pasa así"): el handicap
 # ahora es ASIMÉTRICO -- solo se aplica en un ASCENSO real (subir de
 # NIVEL_DIVISION), NO en un descenso ni en un movimiento lateral (ver
-# _es_ascenso() en rating_carryover.py).
+# _es_ascenso() en rating_carryover.py). Y ADEMÁS (segunda vuelta del
+# mismo reporte, con clubes DISTINTOS cada vez -- Riestra, Banfield,
+# San Lorenzo -- que confirmó que era un problema de calibración, no
+# de un club puntual): un descenso/lateral usa N_CARRYOVER_DESCENSO
+# (mucho más alto que N_CARRYOVER) para confiar más en el rating
+# heredado en vez de diluirlo casi a la mitad contra el promedio.
 FACTOR_HANDICAP_TEMPORADA_1 = 1 / (N_TEMPORADAS_HANDICAP + 1)
 
 
@@ -48,12 +54,13 @@ def _manual_carryover(ratings_origen: dict, division_origen: str, division_desti
     es_ascenso = NIVEL_DIVISION[division_destino] > NIVEL_DIVISION[division_origen]
     if es_ascenso:
         factor *= FACTOR_HANDICAP_TEMPORADA_1
+    n_carryover = N_CARRYOVER if es_ascenso else N_CARRYOVER_DESCENSO
     resultado = {}
     for campo in CAMPOS_RATING:
         valor_origen = ratings_origen[campo]
         valor_ajustado = 1.0 + (valor_origen - 1.0) * factor
         resultado[campo] = round(
-            (N_CARRYOVER * valor_ajustado + K_REGRESION * 1.0) / (N_CARRYOVER + K_REGRESION), 3
+            (n_carryover * valor_ajustado + K_REGRESION * 1.0) / (n_carryover + K_REGRESION), 3
         )
     return resultado
 
@@ -106,16 +113,19 @@ def main():
     print(f"  esperado:  {esperado}")
     print(f"  obtenido:  {obtenido}")
     errores += _comparar("mismo nivel", esperado, obtenido)
-    # Chequeo adicional (Fase 0, ACTUALIZADO por la asimetría
-    # ascenso/descenso): un movimiento LATERAL (mismo NIVEL_DIVISION)
-    # no es un ascenso, así que YA NO lleva handicap -- vuelve a ser
-    # la mitad de camino simple entre el valor de origen y 1.0
-    # (regresión 50/50, N_CARRYOVER=K_REGRESION=12).
+    # Chequeo adicional (ACTUALIZADO dos veces -- primero por la
+    # asimetría ascenso/descenso, después por N_CARRYOVER_DESCENSO):
+    # un movimiento LATERAL (mismo NIVEL_DIVISION) no es un ascenso,
+    # así que no lleva handicap NI usa el N_CARRYOVER conservador de
+    # ascenso -- usa N_CARRYOVER_DESCENSO (peso más alto, más
+    # confianza en el rating heredado), no la mitad de camino simple.
     for campo in CAMPOS_RATING:
-        mitad = round((ratings_origen[campo] + 1.0) / 2, 3)
-        if abs(obtenido[campo] - mitad) > 1e-9:
+        valor_esperado = round(
+            (N_CARRYOVER_DESCENSO * ratings_origen[campo] + K_REGRESION * 1.0) / (N_CARRYOVER_DESCENSO + K_REGRESION), 3
+        )
+        if abs(obtenido[campo] - valor_esperado) > 1e-9:
             errores.append(
-                f"[mismo nivel, chequeo 50/50 sin handicap] {campo}: esperaba {mitad} (mitad de camino), "
+                f"[mismo nivel, chequeo N_CARRYOVER_DESCENSO] {campo}: esperaba {valor_esperado}, "
                 f"dio {obtenido[campo]}"
             )
 

@@ -167,8 +167,38 @@ NIVEL_DIVISION = {
 }
 
 # Peso (en "partidos virtuales") que se le da al rating heredado de
-# otra división frente a la regresión al promedio de la liga nueva.
+# otra división frente a la regresión al promedio de la liga nueva --
+# para un ASCENSO. Deliberadamente CONSERVADOR (peso bajo, mucha
+# regresión al promedio): no hay certeza de que un club recién
+# ascendido pueda sostener su nivel contra rivales más exigentes.
 N_CARRYOVER = 12
+
+# BUG DE CALIBRACIÓN ENCONTRADO Y CORREGIDO -- reportado por el
+# usuario (Riestra, Banfield, San Lorenzo -- un club DISTINTO cada
+# vez, lo que confirmó que no era un bug puntual de un club sino un
+# problema sistémico de calibración): incluso después de sacarle el
+# handicap a los descensos, el rating final seguía quedando MUY por
+# debajo de lo que un club realmente fuerte de LPF debería mantener
+# al bajar a Nacional -- ej. un candidato a puntero de LPF
+# (ataque_local~1.35) quedaba en apenas 1.206 en Nacional, cuando
+# debería dominar la categoría casi de entrada (en el fútbol
+# argentino real, los recién descendidos de Primera suelen pelear
+# arriba enseguida).
+#
+# La causa: N_CARRYOVER=12 trata el rating heredado como si solo
+# tuviera el peso de 12 partidos de evidencia -- razonable para un
+# ASCENSO (incertidumbre real de si aguanta el nivel), pero
+# demasiado poco para un DESCENSO, donde no hay ninguna duda de que
+# la calidad del plantel se mantiene (el club sigue siendo el mismo,
+# juega contra rivales más débiles). Un descenso necesita CONFIAR
+# mucho más en el rating heredado, no tratarlo como un dato dudoso.
+#
+# N_CARRYOVER_DESCENSO -- valor de arranque razonable, documentado,
+# NO calibrado con datos reales todavía (mismo criterio que
+# NIVEL_DIVISION/ALPHA_MEMORIA): bastante más alto que N_CARRYOVER,
+# para que el rating amplificado por NIVEL_DIVISION se sostenga en
+# vez de diluirse casi a la mitad contra el promedio genérico.
+N_CARRYOVER_DESCENSO = 40
 
 # Mismo peso de regresión a la media que usa modelos/estadisticas.py
 # para equipos con pocos partidos (K_REGRESION=12 ahí). Se repite acá
@@ -343,20 +373,27 @@ class RatingCarryoverPolicy:
             )
 
         factor = NIVEL_DIVISION[division_origen] / NIVEL_DIVISION[division_destino]
+        es_ascenso = _es_ascenso(division_origen, division_destino)
         # Handicap de adaptación, SOLO si es ascenso (ver _es_ascenso()
         # y el docstring de la sección de arriba -- un descenso no
         # necesita "adaptarse a más exigencia", así que no se le
         # aplasta la amplificación que ya le dio el factor de arriba).
-        if _es_ascenso(division_origen, division_destino):
+        if es_ascenso:
             factor *= _factor_handicap(0)
+
+        # N_CARRYOVER_DESCENSO en vez de N_CARRYOVER para un descenso
+        # (ver su docstring más arriba -- bug de calibración
+        # encontrado por el usuario): confiar mucho más en el rating
+        # heredado, no diluirlo casi a la mitad contra el promedio.
+        n_carryover = N_CARRYOVER if es_ascenso else N_CARRYOVER_DESCENSO
 
         resultado = {}
         for campo in CAMPOS_RATING:
             valor_origen = ratings_origen[campo]
             valor_ajustado = 1.0 + (valor_origen - 1.0) * factor
             resultado[campo] = round(
-                (N_CARRYOVER * valor_ajustado + K_REGRESION * 1.0)
-                / (N_CARRYOVER + K_REGRESION),
+                (n_carryover * valor_ajustado + K_REGRESION * 1.0)
+                / (n_carryover + K_REGRESION),
                 3,
             )
         if club_nombre is not None:
