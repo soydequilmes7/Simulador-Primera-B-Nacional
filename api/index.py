@@ -857,6 +857,7 @@ class SimularTemporadaBody(BaseModel):
     aplicar_promocion: bool = True
     estado_anterior: dict | None = None
     numero_ronda: int = 1
+    correr_libertadores: bool = True
 
 
 _lock_season = ReadWriteLock()
@@ -948,7 +949,8 @@ def _serializar_resultado_torneo(r) -> dict:
     }
 
 
-def _correr_temporada_desde_estado(estado_anterior: dict | None, numero_ronda: int, aplicar_promocion: bool):
+def _correr_temporada_desde_estado(estado_anterior: dict | None, numero_ronda: int, aplicar_promocion: bool,
+                                    correr_libertadores: bool = True):
     """Corre las 6 competencias, aplica promoción, y arma el
     `proximo_estado` (capturado en memoria, sin persistir) para poder
     seguir "avanzando" temporadas sin volver a tocar Supabase.
@@ -1123,6 +1125,19 @@ def _correr_temporada_desde_estado(estado_anterior: dict | None, numero_ronda: i
         resultado_copa=resultados["copa"],
     )
 
+    # Etapa 9: Copa Libertadores dentro de Modo Temporada -- mismo
+    # criterio que SeasonEngine.correr_temporada(correr_libertadores=...)
+    # (ver season_engine.py), corrido a mano acá por la misma razón que
+    # clasificacion/clasificacion_copa_argentina arriba: este endpoint
+    # llama _correr_competencias() directo, no correr_temporada().
+    resultado_libertadores = {}
+    if correr_libertadores:
+        from season.libertadores_grupos import simular_temporada_libertadores
+        try:
+            resultado_libertadores = simular_temporada_libertadores(clasificacion.get("libertadores", []))
+        except ValueError as e:
+            resultado_libertadores = {"error": str(e)}
+
     # Igual criterio que arriba (ver comentario de `clasificacion`):
     # CopaArgentinaManager.calcular() vive en season_engine.correr_
     # temporada(), que acá no llamamos directo -- así que se corre a
@@ -1257,7 +1272,7 @@ def _correr_temporada_desde_estado(estado_anterior: dict | None, numero_ronda: i
             },
         }
 
-    return resultados, promocion, proximo_estado, clasificacion, clasificacion_copa_argentina
+    return resultados, promocion, proximo_estado, clasificacion, clasificacion_copa_argentina, resultado_libertadores
 
 
 @app.post("/api/season/play")
@@ -1304,8 +1319,8 @@ def season_play_endpoint(body: SimularTemporadaBody = SimularTemporadaBody()):
     if ocupado:
         return ocupado
     try:
-        resultados, promocion, proximo_estado, clasificacion, clasificacion_copa_argentina = _correr_temporada_desde_estado(
-            body.estado_anterior, body.numero_ronda, body.aplicar_promocion,
+        resultados, promocion, proximo_estado, clasificacion, clasificacion_copa_argentina, resultado_libertadores = _correr_temporada_desde_estado(
+            body.estado_anterior, body.numero_ronda, body.aplicar_promocion, body.correr_libertadores,
         )
         return {
             "generado": datetime.now().isoformat(timespec="seconds"),
@@ -1314,6 +1329,7 @@ def season_play_endpoint(body: SimularTemporadaBody = SimularTemporadaBody()):
             "competencias": {slug: _serializar_resultado_torneo(r) for slug, r in resultados.items()},
             "clasificacion_copas": clasificacion,
             "clasificacion_copa_argentina": clasificacion_copa_argentina,
+            "libertadores": resultado_libertadores,
             "promocion": promocion,
             "proximo_estado": proximo_estado,
         }
@@ -1375,6 +1391,7 @@ def season_generate_next_endpoint(body: GenerarTemporadaBody):
             generar_temporada_siguiente=True,
             temporada_actual=body.temporada_actual,
             temporada_siguiente=body.temporada_siguiente,
+            correr_libertadores=True,
         )
 
         return {
@@ -1387,6 +1404,7 @@ def season_generate_next_endpoint(body: GenerarTemporadaBody):
             },
             "clasificacion_copas": resultado.clasificacion,
             "clasificacion_copa_argentina": resultado.clasificacion_copa_argentina,
+            "libertadores": resultado.resultado_libertadores,
             "promocion": resultado.promocion,
             "historia": resultado.historia,
             "elo_actualizados": resultado.elo_actualizados,

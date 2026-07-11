@@ -102,6 +102,13 @@ class ResultadoTemporada:
     # el cuadro real. Lista vacía si el sorteo no se pudo armar (avisos
     # de conteo en CopaArgentinaManager, ver armar_grupos_sorteo()).
     cuadro_copa_siguiente: list = field(default_factory=list)
+    # Etapa 9: Copa Libertadores dentro de Modo Temporada (fase de
+    # grupos + octavos/cuartos/semis/final), ver
+    # season/libertadores_grupos.py::simular_temporada_libertadores().
+    # Vacío si correr_libertadores=False (default, ver
+    # correr_temporada()) -- cero cambio de comportamiento para
+    # cualquier llamador existente.
+    resultado_libertadores: dict = field(default_factory=dict)
 
 
 class SeasonEngine:
@@ -193,11 +200,22 @@ class SeasonEngine:
                           temporada_actual: str | None = None,
                           temporada_siguiente: str | None = None,
                           history_manager: HistoryManager | None = None,
-                          cuadro_copa_override: list | None = None) -> ResultadoTemporada:
+                          cuadro_copa_override: list | None = None,
+                          correr_libertadores: bool = False) -> ResultadoTemporada:
         """
         cuadro_copa_override: ver _correr_competencias() -- cuadro de
             32avos ya sorteado para esta corrida de Copa Argentina, en
             vez del cuadro real de siempre.
+        correr_libertadores: Etapa 9 -- si es True, además de calcular
+            clasificacion (con clasificacion["libertadores"], los hasta
+            6 cupos argentinos de la temporada), corre el pipeline
+            completo de season/libertadores_grupos.py::simular_
+            temporada_libertadores() (32 clasificados con rotación
+            internacional, sorteo de 8 zonas, fase de grupos y
+            octavos/cuartos/semis/final) y lo deja en
+            ResultadoTemporada.resultado_libertadores. False (default):
+            cero cambio de comportamiento para cualquier llamador
+            existente.
         generar_temporada_siguiente: Etapa 7 -- si es True, además de
             correr las 6 competencias y (opcionalmente) promocionar,
             persiste la temporada N+1 vía HistoryManager.persist_season()
@@ -232,6 +250,20 @@ class SeasonEngine:
         # las 5 divisiones que alimentan invitados (Copa Argentina misma
         # queda afuera, ver docstring de CopaArgentinaManager).
         clasificacion_copa_argentina = CopaArgentinaManager().calcular(resultados)
+
+        resultado_libertadores = {}
+        if correr_libertadores:
+            from season.libertadores_grupos import simular_temporada_libertadores
+            try:
+                resultado_libertadores = simular_temporada_libertadores(
+                    clasificacion.get("libertadores", []),
+                )
+            except ValueError as e:
+                # No debería tumbar toda la temporada por un problema
+                # puntual de Libertadores (ej. pool internacional
+                # corrupto/incompleto) -- se deja constancia en el
+                # resultado y el resto de la temporada sigue normal.
+                resultado_libertadores = {"error": str(e)}
 
         elo_actualizados = {}
         if generar_temporada_siguiente:
@@ -297,6 +329,7 @@ class SeasonEngine:
             historia=historia,
             elo_actualizados=elo_actualizados,
             cuadro_copa_siguiente=cuadro_copa_siguiente,
+            resultado_libertadores=resultado_libertadores,
         )
 
 

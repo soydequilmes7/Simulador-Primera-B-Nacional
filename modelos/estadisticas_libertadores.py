@@ -82,27 +82,38 @@ class EstadisticasLibertadores(Estadisticas):
               f"{len(self.elo)} equipos con Elo.")
 
     def crear_equipos_libertadores(self):
-        """Crea un Equipo por participante y le asigna ataque/defensa
-        derivados de su Elo relativo al promedio de los clasificados."""
+        """Crea un Equipo por participante del cuadro de octavos y le
+        asigna ataque/defensa derivados de su Elo relativo al promedio
+        de los clasificados."""
         nombres = set()
         for cruce in self.cuadro:
             nombres.add(cruce["equipo_ida_local"])
             nombres.add(cruce["equipo_vuelta_local"])
+        self.crear_equipos_desde_elo(nombres, self.elo)
 
-        elos_participantes = [self.elo[n] for n in nombres if n in self.elo]
+    def crear_equipos_desde_elo(self, nombres, elo_por_equipo: dict):
+        """Helper compartido: crea un Equipo por cada nombre de
+        `nombres` con ataque/defensa derivados de su Elo relativo al
+        promedio del propio grupo de participantes (ver docstring del
+        módulo, sección "Conversión Elo -> ataque/defensa"). Usado
+        tanto por crear_equipos_libertadores() (16 del cuadro de
+        octavos) como por season/libertadores_grupos.py (32 de la
+        fase de grupos, con Elo que rota cada temporada)."""
+        nombres = sorted(set(nombres))
+        elos_participantes = [elo_por_equipo[n] for n in nombres if n in elo_por_equipo]
         if not elos_participantes:
-            raise ValueError("Ninguno de los equipos del cuadro tiene Elo cargado en libertadores_elo.csv")
+            raise ValueError("Ninguno de los equipos tiene Elo cargado.")
         elo_promedio = sum(elos_participantes) / len(elos_participantes)
 
         self.equipos = {}
         sin_elo = []
-        for nombre in sorted(nombres):
+        for nombre in nombres:
             equipo = Equipo(nombre)
-            elo_equipo = self.elo.get(nombre)
+            elo_equipo = elo_por_equipo.get(nombre)
             if elo_equipo is None:
                 # Sin dato: se lo trata como equipo de fuerza promedio del
                 # cuadro (ni favorito ni underdog) en vez de romper la
-                # simulación -- avisamos para que se complete el CSV.
+                # simulación -- avisamos para que se complete el CSV/pool.
                 sin_elo.append(nombre)
                 fuerza = 1.0
             else:
@@ -113,7 +124,7 @@ class EstadisticasLibertadores(Estadisticas):
 
         if sin_elo:
             print(f"  (aviso: sin Elo cargado, se usó fuerza neutra para: {', '.join(sin_elo)})")
-        print(f"Equipos de Libertadores: {len(self.equipos)} (Elo promedio del cuadro: {elo_promedio:.0f})")
+        print(f"Equipos: {len(self.equipos)} (Elo promedio: {elo_promedio:.0f})")
 
     # ------------------------------------------------------------------
     # Un partido de ida/vuelta (una llave completa)
