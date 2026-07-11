@@ -52,7 +52,7 @@ sin entrar: su "fixture" es un sorteo de cuadro con invitados de
 varias categorías, no una liga con zonas.
 
 --------------------------------------------------------------------
-ZONAS: SORTEO AL AZAR (decisión del usuario, Etapa 6)
+ZONAS: SORTEO AL AZAR (decisión del usuario, Etapa 6) -- EXCEPTO LPF
 --------------------------------------------------------------------
 A diferencia de geografia_clubes.py (que resuelve destino de DIVISIÓN
 por afiliación real), acá el usuario pidió explícitamente que el
@@ -67,6 +67,19 @@ cabezas de serie) pero a 4 zonas en vez de 2 -- ver _sortear_zonas_n()
 más abajo, generalización de _sortear_zonas() para N zonas parejas
 (con 37 clubes no repartidos exactos entre 4, el resto se lleva un
 club extra en las primeras zonas, "1", "2", ... en ese orden).
+
+EXCEPCIÓN, agregada después (pedido del usuario, "sistema de
+parejas"): LPF NO usa _sortear_zonas() sino
+_sortear_zonas_por_parejas(), más abajo. En vez de azar puro, respeta
+una lista de rivales por club (RIVALES_LPF) para que los clásicos
+("Boca Jrs."/"River", "Racing"/"Independiente", etc.) queden siempre
+en zonas distintas -- un integrante de cada pareja va a la zona A y el
+otro a la B, elegido al azar cuál. Los clubes sin rival disponible esa
+temporada (recién ascendido sin su clásico en Primera, o un club sin
+entrada en RIVALES_LPF) se reparten entre sí, también al azar, para
+no romper el reparto parejo de las zonas. nacional y primerac siguen
+con _sortear_zonas() (azar puro) sin cambios -- el pedido del usuario
+fue puntual para LPF.
 
 --------------------------------------------------------------------
 LO QUE ESTE MÓDULO *NO* HACE TODAVÍA
@@ -148,6 +161,126 @@ def _sortear_zonas_n(clubes: list[str], n: int, rng: random.Random) -> dict[str,
         for _ in range(tamanio_zona):
             zona_por_club[mezclados[idx]] = etiqueta
             idx += 1
+    return zona_por_club
+
+
+# Rivales de cada club de LPF, en orden de prioridad: el primero es
+# el clásico "de toda la vida"; los siguientes son alternativas para
+# cuando el rival principal no está jugando en Primera esa temporada
+# (recién descendido, o el club mismo recién ascendido sin su clásico
+# arriba todavía -- ver _sortear_zonas_por_parejas()). Los nombres
+# usan la MISMA grafía que datos/tablalpf.csv (columna "equipo"), no
+# el nombre largo real, para poder cruzar directo contra el roster de
+# la temporada sin necesitar una tabla de alias. Incluye entradas de
+# clubes que hoy juegan en Nacional (ej. "Colón", "Godoy Cruz") para
+# que la pareja se arme sola apenas asciendan, sin tocar este
+# diccionario cada temporada (pedido del usuario: "el código debe ser
+# totalmente reutilizable" / "soporte ascensos y descensos
+# automáticamente") -- _sortear_zonas_por_parejas() ignora cualquier
+# rival que no esté en el roster de esa temporada.
+RIVALES_LPF: dict[str, list[str]] = {
+    "Boca Jrs.": ["River"],
+    "River": ["Boca Jrs."],
+    "Racing": ["Independiente"],
+    "Independiente": ["Racing"],
+    "San Lorenzo": ["Huracán", "Vélez"],
+    "Huracán": ["San Lorenzo"],
+    "Central": ["Newell's"],
+    "Newell's": ["Central"],
+    "Estudiantes": ["Gimnasia"],
+    "Gimnasia": ["Estudiantes"],
+    "Talleres": ["Belgrano", "Instituto"],
+    "Belgrano": ["Talleres", "Instituto"],
+    "Instituto": ["Talleres", "Belgrano"],
+    "Vélez": ["Argentinos", "San Lorenzo"],
+    "Argentinos": ["Vélez", "Platense"],
+    "Platense": ["Tigre", "Argentinos"],
+    "Tigre": ["Platense"],
+    "Sarmiento": ["Defensa"],
+    "Defensa": ["Sarmiento"],
+    "Independiente Riv.": ["Gimnasia (M)", "Godoy Cruz"],
+    "Gimnasia (M)": ["Independiente Riv."],
+    "Godoy Cruz": ["Independiente Riv."],
+    "Lanús": ["Banfield"],
+    "Banfield": ["Lanús"],
+    "Barracas": ["Riestra"],
+    "Riestra": ["Barracas"],
+    "Unión": ["Colón"],
+    "Colón": ["Unión"],
+    "Atl. Tucumán": ["San Martín (T)"],
+    "San Martín (T)": ["Atl. Tucumán"],
+    "Aldosivi": ["Alvarado"],
+    "Alvarado": ["Aldosivi"],
+    "Central Córdoba SdE": ["Mitre"],
+    "Mitre": ["Central Córdoba SdE"],
+}
+
+
+def _sortear_zonas_por_parejas(
+    clubes: list[str], rivales: dict[str, list[str]], rng: random.Random,
+) -> dict[str, str]:
+    """Reparte `clubes` en zonas A/B por SISTEMA DE PAREJAS en vez de
+    azar puro (pedido del usuario -- reproducir el criterio de
+    "clásicos" que usa la AFA al armar zonas, en vez de un sorteo
+    100% aleatorio). Recorre `rivales` y arma una pareja por club con
+    su primer rival disponible en `clubes` (temporada actual); dentro
+    de cada pareja, uno de los dos va a la zona A y el otro a la B,
+    elegido al azar. Los clubes sin rival disponible (sin entrada en
+    `rivales`, o con todos sus rivales de la lista afuera de Primera
+    esa temporada -- típico de un recién ascendido/descendido) se
+    emparejan entre sí al azar, para no dejar ningún club sin zona.
+
+    Garantiza las mismas invariantes que _sortear_zonas(): misma
+    cantidad de clubes por zona (con impar, la zona A se lleva el que
+    sobra) y nunca dos integrantes de una misma pareja en la misma
+    zona.
+
+    Determinístico dado `rng`: se recorre `clubes` en orden alfabético
+    (no en el orden de iteración de un set, que no es estable) para
+    que la única fuente de azar sea `rng`, mismo criterio que
+    _sortear_zonas()."""
+    disponibles = set(clubes)
+    parejas: list[tuple[str, str]] = []
+
+    for club in sorted(clubes):
+        if club not in disponibles:
+            continue  # ya se emparejó como rival de otro club antes
+        rival_elegido = next(
+            (candidato for candidato in rivales.get(club, [])
+             if candidato in disponibles and candidato != club),
+            None,
+        )
+        if rival_elegido is not None:
+            disponibles.discard(club)
+            disponibles.discard(rival_elegido)
+            parejas.append((club, rival_elegido))
+        # si no hay rival libre todavía, `club` queda en `disponibles`
+        # para la segunda pasada de abajo (puede que otro club más
+        # adelante en el orden alfabético SÍ lo tenga a él como rival,
+        # o termine en el pool de "sueltos" emparejados al azar).
+
+    # Segunda pasada: lo que sigue en `disponibles` son clubes sin
+    # rival libre esta temporada. Se emparejan al azar entre ellos,
+    # mismo criterio de azar que usa _sortear_zonas() para el resto
+    # de las divisiones.
+    sueltos = sorted(disponibles)
+    rng.shuffle(sueltos)
+    for i in range(0, len(sueltos) - 1, 2):
+        parejas.append((sueltos[i], sueltos[i + 1]))
+    impar = sueltos[-1] if len(sueltos) % 2 == 1 else None
+
+    zona_por_club: dict[str, str] = {}
+    for a, b in parejas:
+        if rng.choice([True, False]):
+            zona_por_club[a], zona_por_club[b] = "A", "B"
+        else:
+            zona_por_club[a], zona_por_club[b] = "B", "A"
+
+    if impar is not None:
+        # mismo criterio que _sortear_zonas(): con cantidad impar de
+        # clubes, la zona A se lleva el que sobra.
+        zona_por_club[impar] = "A"
+
     return zona_por_club
 
 
@@ -309,6 +442,10 @@ class HistoryManager:
                 zona_por_club = {nombre: "Unica" for nombre in clubes}
             elif slug in DIVISIONES_CUATRO_ZONAS:
                 zona_por_club = _sortear_zonas_n(clubes, 4, self._rng)
+            elif slug == "lpf":
+                # sistema de parejas en vez de azar puro -- ver
+                # RIVALES_LPF y docstring del módulo.
+                zona_por_club = _sortear_zonas_por_parejas(clubes, RIVALES_LPF, self._rng)
             else:
                 zona_por_club = _sortear_zonas(clubes, self._rng)
 
