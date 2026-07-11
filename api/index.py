@@ -923,6 +923,7 @@ def _correr_temporada_desde_estado(estado_anterior: dict | None, numero_ronda: i
     from season.qualification_manager import QualificationManager
     from season.copa_argentina_manager import CopaArgentinaManager
     from season.copa_argentina_sorteo import sortear_32avos
+    from season.tournament_adapter import ResultadoTorneo
 
     if not estado_anterior:
         registry = ClubRegistry.build_from_current_data()
@@ -930,6 +931,23 @@ def _correr_temporada_desde_estado(estado_anterior: dict | None, numero_ronda: i
         registry = ClubRegistry()
         for nombre, division in estado_anterior["roster"].items():
             registry.agregar_club(nombre, division)
+        # Fases 2-5 de HANDOFF_carryover_ratings.md: restaurar
+        # Club.history (memoria EWMA multi-temporada, ver
+        # season/rating_carryover.py) -- agregar_club() siempre crea
+        # el Club con history=[] vacío (ver modelos/club.py), así que
+        # sin esto la memoria se perdía en cada request (cada HTTP
+        # call reconstruye el registro desde cero, no hay proceso vivo
+        # entre rondas). "history_por_club" viaja en estado_anterior/
+        # proximo_estado desde la ronda anterior de este mismo
+        # endpoint (ver más abajo, donde se arma proximo_estado). Un
+        # club sin entrada acá (roster viejo sin este campo, o recién
+        # agregado) se queda con history=[] -- degrada con gracia
+        # (mismo criterio que "recién llegado sin historial" en toda
+        # la Fase 0).
+        for nombre, entradas in (estado_anterior.get("history_por_club") or {}).items():
+            club = registry.get_by_name(nombre)
+            if club is not None:
+                club.history = entradas
 
     datos_por_liga = (estado_anterior or {}).get("datos_por_liga", {})
     original_league_data = data_access.league_data
@@ -951,6 +969,44 @@ def _correr_temporada_desde_estado(estado_anterior: dict | None, numero_ronda: i
         if "lpf" in datos_por_liga and "campeon_apertura" in datos_por_liga["lpf"]:
             return datos_por_liga["lpf"]["campeon_apertura"]
         return original_campeon_apertura()
+
+    # Fases 2-5 de HANDOFF_carryover_ratings.md: contexto para que
+    # SeasonEngine._correr_competencias() use los motores season-only
+    # (nacional/bmetro/federal_a/primerac -- LPF ya resuelve esto solo
+    # con el Apertura pre-simulado de HistoryManager, no lo necesita)
+    # en vez de main_X.correr_simulacion() para las divisiones que ya
+    # tienen standings-en-cero de una ronda anterior de Modo Temporada.
+    #
+    # zonas_por_liga sale de datos_por_liga[slug]["tabla"] -- son
+    # exactamente las filas que armó HistoryManager._armar_standings_
+    # en_cero() la ronda pasada (cada fila trae "equipo"/"zona"), o sea
+    # el sorteo de zonas YA HECHO que la Primera Fase/fase de zonas de
+    # esta ronda tiene que respetar (no se vuelve a sortear acá).
+    # BMetro es zona única -- no hace falta el mapeo, solo que la
+    # clave "bmetro" esté presente como señal de "hay datos de esta
+    # ronda para BMetro" (ver SeasonEngine._correr_competencias()).
+    #
+    # Si estado_anterior es None (primera ronda de una cadena, o
+    # /api/season/generate-next que no pasa por acá) datos_por_liga
+    # queda vacío y carryover_context también -- CopaAdapter y el
+    # resto siguen 100% el camino normal, cero cambio de
+    # comportamiento respecto de antes de esta Fase.
+    zonas_por_liga: dict[str, dict] = {}
+    for slug in ("nacional", "federal_a", "primerac"):
+        tabla = datos_por_liga.get(slug, {}).get("tabla")
+        if tabla:
+            zonas_por_liga[slug] = {fila["equipo"]: fila["zona"] for fila in tabla}
+    if "bmetro" in datos_por_liga and datos_por_liga["bmetro"].get("tabla"):
+        zonas_por_liga["bmetro"] = {}
+
+    resultados_anterior_carryover = {
+        slug: ResultadoTorneo(campeon=None, ratings_finales=ratings)
+        for slug, ratings in (estado_anterior or {}).get("ratings_finales_por_liga", {}).items()
+    }
+    carryover_context = (
+        {"resultados_anterior": resultados_anterior_carryover, "zonas_por_liga": zonas_por_liga}
+        if zonas_por_liga else None
+    )
 
     # Monkeypatch acotado a esta request: se restaura pase lo que pase
     # (try/finally), así ninguna otra request concurrente queda leyendo
@@ -979,6 +1035,7 @@ def _correr_temporada_desde_estado(estado_anterior: dict | None, numero_ronda: i
         resultados = engine._correr_competencias(
             n_sims=N_SIMS_TEMPORADA,
             cuadro_copa_override=(estado_anterior or {}).get("cuadro_copa_32avos"),
+            carryover=carryover_context,
         )
     finally:
         data_access.league_data = original_league_data
@@ -1082,6 +1139,30 @@ def _correr_temporada_desde_estado(estado_anterior: dict | None, numero_ronda: i
             "numero_ronda": numero_ronda + 1,
             "pool_regional_federal": promocion.get("pool_regional_restante", []),
             "cuadro_copa_32avos": cuadro_copa_siguiente,
+            # Fases 2-5 de HANDOFF_carryover_ratings.md -- ver el
+            # bloque de arriba donde se restauran ambos al principio
+            # de esta misma función. persist_season() (llamado un poco
+            # más arriba) ya le agregó la entrada de ESTA ronda a
+            # Club.history de cada club del registry -- solo hace
+            # falta serializarlo para que sobreviva al viaje ida y
+            # vuelta por HTTP (nada de esto se persiste en Supabase en
+            # el modo shadow, ver docstring de /api/season/play).
+            "history_por_club": {c.name: c.history for c in registry.all_clubs()},
+            # ratings_finales de ESTA ronda para las 4 divisiones con
+            # motor season-only -- la ronda SIGUIENTE los usa como
+            # "resultados_anterior" (tanto para los que continúan vía
+            # combinar_con_memoria() como para ascendidos cruzados,
+            # ej. Nacional necesita el ratings_finales de BMetro).
+            # .get() con default {} por si algún adapter (BMetro/
+            # PrimeraC vía su camino NORMAL, si esta ronda no usó
+            # carryover para esa división) todavía no lo llena -- ver
+            # el docstring corregido de ResultadoTorneo.ratings_finales
+            # en season/tournament_adapter.py.
+            "ratings_finales_por_liga": {
+                slug: resultados[slug].ratings_finales
+                for slug in ("nacional", "bmetro", "federal_a", "primerac")
+                if slug in resultados and resultados[slug].ratings_finales
+            },
         }
 
     return resultados, promocion, proximo_estado, clasificacion, clasificacion_copa_argentina

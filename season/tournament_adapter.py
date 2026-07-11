@@ -43,9 +43,7 @@ class ResultadoTorneo:
                          equipo.ataque_*/defensa_* DESPUÉS de
                          calcular_ratings()/calcular_ratings_lpf()).
                          Campo ADITIVO (PLAN_ADDENDUM_ETAPA6_APERTURA_LPF,
-                         punto 3): lo llenan los adaptadores que usan
-                         objetos Equipo real (Nacional, LPF, BMetro,
-                         PrimeraC); es la fuente para que un club
+                         punto 3): es la fuente para que un club
                          ascendido/descendido herede su rating real
                          vía RatingCarryoverPolicy en vez de arrancar
                          siempre en el rating genérico. Queda vacío
@@ -53,6 +51,26 @@ class ResultadoTorneo:
                          completan (comportamiento default seguro:
                          un club ausente de este dict se trata igual
                          que hoy, como recién llegado sin historial).
+                         BUG DE DOCUMENTACIÓN ENCONTRADO Y CORREGIDO
+                         ACÁ (Fase 2/3 de HANDOFF_carryover_ratings.md):
+                         esta lista antes decía "lo llenan los
+                         adaptadores que usan objetos Equipo real
+                         (Nacional, LPF, BMetro, PrimeraC)", pero
+                         BMetroAdapter.result() (vía main_bmetro.py) y
+                         PrimeraCAdapter.result() (vía main_primerac.py)
+                         NUNCA lo llenaron -- no se había notado porque
+                         nada lo consumía todavía. Estado real,
+                         confirmado leyendo cada adapter: LPFAdapter y
+                         NacionalAdapter SÍ lo llenan (vía su main_X.py
+                         normal). BMetroAdapter y PrimeraCAdapter NO lo
+                         llenan por su camino normal -- solo lo llenan
+                         sus motores season-only nuevos
+                         (season/carryover_engines/, método
+                         run_desde_carryover() de cada adapter), NO su
+                         run()/result() de siempre.
+                         Federal A (FederalAdapter) queda afuera a
+                         propósito -- motor vectorizado sin objetos
+                         Equipo.
                          Federal A (FederalAdapter) queda afuera a
                          propósito -- motor vectorizado sin objetos
                          Equipo.

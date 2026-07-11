@@ -24,13 +24,22 @@ from season.rating_carryover import (
     ATAQUE_GENERICO,
     DEFENSA_GENERICO,
     CAMPOS_RATING,
+    N_TEMPORADAS_HANDICAP,
 )
+
+# Fase 0 (HANDOFF_carryover_ratings.md): rating_para_recien_llegado()
+# ahora aplica también el handicap de adaptación de la temporada 1 en
+# destino (factor fijo, ver _factor_handicap(0) en rating_carryover.py)
+# -- esta reimplementación manual se actualiza acá para seguir siendo
+# un chequeo independiente real, no una copia del código interno.
+FACTOR_HANDICAP_TEMPORADA_1 = 1 / (N_TEMPORADAS_HANDICAP + 1)
 
 
 def _manual_carryover(ratings_origen: dict, division_origen: str, division_destino: str) -> dict:
     """Reimplementación independiente de la fórmula, para comparar
     contra RatingCarryoverPolicy sin depender de su código interno."""
     factor = NIVEL_DIVISION[division_origen] / NIVEL_DIVISION[division_destino]
+    factor *= FACTOR_HANDICAP_TEMPORADA_1
     resultado = {}
     for campo in CAMPOS_RATING:
         valor_origen = ratings_origen[campo]
@@ -89,14 +98,17 @@ def main():
     print(f"  esperado:  {esperado}")
     print(f"  obtenido:  {obtenido}")
     errores += _comparar("mismo nivel", esperado, obtenido)
-    # Chequeo adicional: con factor=1.0, cada campo tiene que quedar
-    # a mitad de camino entre el valor de origen y 1.0 (regresión
-    # simple N_CARRYOVER=K_REGRESION=12 -> promedio 50/50).
+    # Chequeo adicional (Fase 0): con factor de nivel=1.0 pero CON el
+    # handicap de temporada 1 (FACTOR_HANDICAP_TEMPORADA_1 = 1/3), la
+    # distancia a 1.0 del "valor_ajustado" queda comprimida a un
+    # tercio ANTES de la regresión 50/50 -- ya no es la mitad de
+    # camino simple entre el valor de origen y 1.0.
     for campo in CAMPOS_RATING:
-        mitad = round((ratings_origen[campo] + 1.0) / 2, 3)
-        if abs(obtenido[campo] - mitad) > 1e-9:
+        valor_ajustado = 1.0 + (ratings_origen[campo] - 1.0) * FACTOR_HANDICAP_TEMPORADA_1
+        esperado_campo = round((valor_ajustado + 1.0) / 2, 3)
+        if abs(obtenido[campo] - esperado_campo) > 1e-9:
             errores.append(
-                f"[mismo nivel, chequeo 50/50] {campo}: esperaba {mitad} (mitad de camino), "
+                f"[mismo nivel, chequeo 50/50 con handicap] {campo}: esperaba {esperado_campo}, "
                 f"dio {obtenido[campo]}"
             )
 

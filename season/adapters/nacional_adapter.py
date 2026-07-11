@@ -91,6 +91,44 @@ class NacionalAdapter(TournamentEngine):
             n_sims=n_sims, imprimir=False, guardar_json=False
         )
 
+    def run_desde_carryover(
+        self, roster: list, zona_por_club: dict, club_registry, resultados_anterior: dict,
+    ) -> ResultadoTorneo:
+        """Fase 2 de HANDOFF_carryover_ratings.md -- reemplaza a
+        run()+result() SOLO para una temporada de Modo Temporada recién
+        generada (standings en cero, sin partidos reales todavía). NO
+        usa main.correr_simulacion() (ver season/carryover_engines/nacional.py
+        para el porqué): arma los ratings iniciales combinando memoria
+        EWMA/handicap (Fase 0) con RatingCarryoverPolicy para los
+        ascendidos de BMetro/Federal A, y corre la temporada completa
+        con los métodos heredados de modelos/estadisticas.py sin tocar
+        una línea.
+
+        A diferencia de run(), este método devuelve el ResultadoTorneo
+        directo (no hay un result() separado -- no tiene sentido
+        cachear self._datos_web para un dict que ya viene armado).
+        setup()/run()/result() (el camino de siempre, vía main.py)
+        quedan sin ningún cambio -- ver docstring de la clase.
+
+        roster / zona_por_club: la temporada siguiente ya armada
+            (ver ClubRegistry.get_by_division("Primera Nacional") y el
+            mismo sorteo de zonas que usó HistoryManager para esta
+            temporada).
+        club_registry: para leer Club.history de los que continúan.
+        resultados_anterior: dict[str, ResultadoTorneo] de la
+            temporada QUE TERMINA (se leen "nacional"/"bmetro"/
+            "federal_a" si están -- ver
+            carryover_engines.nacional.armar_ratings_iniciales()).
+        """
+        from season.carryover_engines import nacional as motor_carryover
+
+        ratings_iniciales = motor_carryover.armar_ratings_iniciales(
+            club_registry, resultados_anterior, roster
+        )
+        return motor_carryover.correr_temporada_desde_carryover(
+            roster, zona_por_club, ratings_iniciales
+        )
+
     def result(self) -> ResultadoTorneo:
         if self._datos_web is None:
             raise RuntimeError("Llamá a run() antes de result().")

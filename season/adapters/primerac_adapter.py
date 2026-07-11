@@ -86,6 +86,26 @@ class PrimeraCAdapter(TournamentEngine):
             n_sims=n_sims, imprimir=False, guardar_json=False
         )
 
+    def run_desde_carryover(self, roster: list, zona_por_club: dict, club_registry, resultados_anterior: dict):
+        """Fase 4 de HANDOFF_carryover_ratings.md -- análogo a
+        NacionalAdapter.run_desde_carryover() (ver su docstring):
+        reemplaza a run()+result() SOLO para una temporada de Modo
+        Temporada recién generada, sin pasar por main_primerac.py. Ver
+        season/carryover_engines/primerac.py para el motor (y las
+        diferencias reales de Primera C confirmadas ahí: final a doble
+        partido, sin descensos).
+
+        setup()/run()/result() (el camino de siempre) quedan sin
+        ningún cambio."""
+        from season.carryover_engines import primerac as motor_carryover
+
+        ratings_iniciales = motor_carryover.armar_ratings_iniciales(
+            club_registry, resultados_anterior, roster
+        )
+        return motor_carryover.correr_temporada_desde_carryover(
+            roster, zona_por_club, ratings_iniciales
+        )
+
     def result(self):
         if self._datos_web is None:
             raise RuntimeError(

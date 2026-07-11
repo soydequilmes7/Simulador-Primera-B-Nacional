@@ -81,6 +81,32 @@ class FederalAdapter(TournamentEngine):
             n_sims=n_sims, imprimir=False, guardar_json=False
         )
 
+    def run_desde_carryover(
+        self, roster: list, zona_por_club: dict, club_registry, resultados_anterior: dict,
+    ) -> ResultadoTorneo:
+        """Fase 5 de HANDOFF_carryover_ratings.md -- análogo a
+        NacionalAdapter.run_desde_carryover() (ver su docstring):
+        reemplaza a run()+result() SOLO para una temporada de Modo
+        Temporada recién generada, sin pasar por main_federal.py. Ver
+        season/carryover_engines/federal.py para el motor (5 Fases +
+        Reválida de 6 Etapas, reproducidas sin tocar una línea de
+        modelos/estadisticas_federal.py).
+
+        setup()/run()/result() (el camino de siempre) quedan sin
+        ningún cambio.
+
+        roster: 37 clubes de Federal A (después de PromotionManager).
+        zona_por_club: {equipo: "1"|"2"|"3"|"4"} -- mismo sorteo de
+            4 zonas que usa HistoryManager (_sortear_zonas_n)."""
+        from season.carryover_engines import federal as motor_carryover
+
+        ratings_iniciales = motor_carryover.armar_ratings_iniciales(
+            club_registry, resultados_anterior, roster
+        )
+        return motor_carryover.correr_temporada_desde_carryover(
+            roster, zona_por_club, ratings_iniciales
+        )
+
     def result(self) -> ResultadoTorneo:
         if self._datos_web is None:
             raise RuntimeError("Llamá a run() antes de result().")

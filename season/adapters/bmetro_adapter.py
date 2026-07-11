@@ -61,6 +61,31 @@ class BMetroAdapter(TournamentEngine):
             n_sims=n_sims, imprimir=False, guardar_json=False
         )
 
+    def run_desde_carryover(self, roster: list, club_registry, resultados_anterior: dict) -> ResultadoTorneo:
+        """Fase 3 de HANDOFF_carryover_ratings.md -- análogo a
+        NacionalAdapter.run_desde_carryover() (ver su docstring):
+        reemplaza a run()+result() SOLO para una temporada de Modo
+        Temporada recién generada, sin pasar por main_bmetro.py. Ver
+        season/carryover_engines/bmetro.py para el motor.
+
+        setup()/run()/result() (el camino de siempre) quedan sin
+        ningún cambio.
+
+        roster: la temporada siguiente ya armada (ver
+            ClubRegistry.get_by_division("Primera B Metropolitana")).
+            B Metro es zona única -- no hace falta zona_por_club acá.
+        club_registry: para leer Club.history de los que continúan.
+        resultados_anterior: dict[str, ResultadoTorneo] de la
+            temporada QUE TERMINA (se leen "bmetro"/"nacional"/
+            "primerac" si están -- ver
+            carryover_engines.bmetro.armar_ratings_iniciales())."""
+        from season.carryover_engines import bmetro as motor_carryover
+
+        ratings_iniciales = motor_carryover.armar_ratings_iniciales(
+            club_registry, resultados_anterior, roster
+        )
+        return motor_carryover.correr_temporada_desde_carryover(roster, ratings_iniciales)
+
     def result(self) -> ResultadoTorneo:
         if self._datos_web is None:
             raise RuntimeError("Llamá a run() antes de result().")

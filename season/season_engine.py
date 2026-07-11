@@ -35,7 +35,7 @@ una sesión anterior con copa_argentina.csv real.
 from dataclasses import dataclass, field
 from typing import Dict
 
-from season.club_registry import ClubRegistry
+from season.club_registry import ClubRegistry, DIVISIONES
 from season.tournament_adapter import ResultadoTorneo
 from season.adapters.nacional_adapter import NacionalAdapter
 from season.adapters.lpf_adapter import LPFAdapter
@@ -53,6 +53,16 @@ from season.history_manager import HistoryManager
 # (DIVISIONES_PROMOTION) -- Copa queda afuera a propósito, no alimenta
 # ascensos/descensos.
 SLUGS_PROMOTION = ["lpf", "nacional", "bmetro", "federal_a", "primerac"]
+
+# Divisiones con motor season-only propio (Fases 2-5 de
+# HANDOFF_carryover_ratings.md, ver season/carryover_engines/) -- las
+# que NO tienen memoria propia entre temporadas de Modo Temporada
+# porque HistoryManager las arma en standings-en-cero sin ratings
+# iniciales (a diferencia de LPF, que ya resuelve esto con el
+# Apertura pre-simulado -- ver HistoryManager._simular_apertura_lpf(),
+# no necesita pasar por acá). Usado por _correr_competencias() cuando
+# se le pasa `carryover` -- ver su docstring.
+DIVISIONES_CARRYOVER = ("nacional", "bmetro", "federal_a", "primerac")
 
 # Un adaptador por competencia. Los 6 comparten la interfaz TournamentEngine
 # (setup/run/result), así que se orquestan todos igual sin código especial
@@ -111,16 +121,60 @@ class SeasonEngine:
     def __init__(self, club_registry: ClubRegistry):
         self.club_registry = club_registry
 
-    def _correr_competencias(self, n_sims: int, cuadro_copa_override: list | None = None) -> Dict[str, ResultadoTorneo]:
+    def _correr_competencias(
+        self, n_sims: int, cuadro_copa_override: list | None = None, carryover: dict | None = None,
+    ) -> Dict[str, ResultadoTorneo]:
         """cuadro_copa_override: cuadro de 32avos ya sorteado (ver
         season/copa_argentina_sorteo.py) para pasarle a CopaAdapter en
         vez de que lea el cuadro real -- pensado para encadenar rondas
         del Modo Temporada (ver api/index.py, _correr_temporada_desde_
         estado()). None (default) deja a CopaAdapter con su
-        comportamiento de siempre (cuadro real)."""
+        comportamiento de siempre (cuadro real).
+
+        carryover: contexto opcional para usar los motores season-only
+        de la Fase 2-5 de HANDOFF_carryover_ratings.md
+        (season/carryover_engines/) en vez del main_X.py normal, para
+        las divisiones en DIVISIONES_CARRYOVER. None (default): TODAS
+        las competencias corren por el camino de siempre -- cero
+        cambio de comportamiento para cualquier llamador existente
+        (validar_etapaX.py, /api/season/generate-next, etc.).
+
+        Shape esperado si se pasa:
+            {
+              "resultados_anterior": {slug: objeto con .ratings_finales
+                  (ej. ResultadoTorneo) de la temporada QUE TERMINA --
+                  falta o vacío degrada a rating genérico, no rompe},
+              "zonas_por_liga": {slug: {equipo: zona}} -- SOLO para
+                  "nacional"/"federal_a"/"primerac" (2 y 4 zonas resp.);
+                  "bmetro" es zona única, alcanza con que la clave
+                  "bmetro" esté presente (el valor no se usa) como
+                  señal de "esta división tiene datos de Modo Temporada
+                  para esta ronda, correla por el motor season-only".
+            }
+        Un slug de DIVISIONES_CARRYOVER que NO tenga entrada en
+        "zonas_por_liga" sigue el camino normal (adapter.run() de
+        siempre) para ESA división puntual -- degrada con gracia,
+        pensado para la primera ronda de una cadena (todavía no hay
+        standings-en-cero de Modo Temporada que traer)."""
         resultados = {}
+        zonas_por_liga = (carryover or {}).get("zonas_por_liga", {})
+        resultados_anterior = (carryover or {}).get("resultados_anterior", {})
+
         for slug, adapter_cls in ADAPTERS.items():
             adapter = adapter_cls()
+
+            if slug in DIVISIONES_CARRYOVER and slug in zonas_por_liga:
+                roster = [c.name for c in self.club_registry.get_by_division(DIVISIONES[slug])]
+                if slug == "bmetro":
+                    resultados[slug] = adapter.run_desde_carryover(
+                        roster, self.club_registry, resultados_anterior,
+                    )
+                else:
+                    resultados[slug] = adapter.run_desde_carryover(
+                        roster, zonas_por_liga[slug], self.club_registry, resultados_anterior,
+                    )
+                continue
+
             # Ningún adaptador necesita recibir nada externo hoy salvo
             # Copa (ver arriba). Los 5 motores de liga reales leen sus
             # propios CSV vía data_access.league_data(). El parámetro

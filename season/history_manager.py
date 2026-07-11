@@ -26,7 +26,10 @@ aplicar_promocion=True)) y:
      LPF, este fixture es el del CLAUSURA (el Apertura ya se simuló
      completo en el paso 2, no queda pendiente).
   4. Agrega una entrada a Club.history por cada club, con la temporada
-     ANTERIOR (de dónde viene) -- no la nueva, que todavía no jugó nada.
+     ANTERIOR (de dónde viene) -- no la nueva, que todavía no jugó
+     nada -- y, si está disponible, sus ratings finales ahí (Fase 0
+     de HANDOFF_carryover_ratings.md; ver _actualizar_history() más
+     abajo y season/rating_carryover.py).
   5. Para LPF, además persiste el campeón del Apertura recién simulado
      vía data_access.guardar_campeon_apertura_lpf() (key
      "lpf_campeon_apertura" en simulation_outputs) -- lo consume
@@ -90,7 +93,7 @@ import pandas as pd
 
 import data_access
 from season.club_registry import ClubRegistry, DIVISIONES
-from season.rating_carryover import RatingCarryoverPolicy
+from season.rating_carryover import RatingCarryoverPolicy, combinar_con_memoria
 from fixture_generator import generar_fixture_ida_vuelta, generar_fixture_una_rueda
 from modelos.estadisticas_lpf import EstadisticasLPF
 
@@ -318,7 +321,7 @@ class HistoryManager:
                         "siguiente -- ver PLAN_ADDENDUM_ETAPA6_APERTURA_LPF."
                     )
                 standings, campeon_apertura = self._simular_apertura_lpf(
-                    clubes, zona_por_club, resultados
+                    clubes, zona_por_club, resultados, club_registry
                 )
                 # el Clausura de esta misma temporada comparte zona con
                 # el Apertura recién simulado (decisión 1 del addendum).
@@ -355,19 +358,21 @@ class HistoryManager:
                 entrada_resumen["campeon_apertura"] = campeon_apertura
             resumen["divisiones"][slug] = entrada_resumen
 
-        self._actualizar_history(club_registry, temporada_actual)
+        self._actualizar_history(club_registry, temporada_actual, resultados)
 
         return resumen
 
     def _simular_apertura_lpf(
         self, roster: list[str], zona_por_club: dict[str, str], resultados: dict,
+        club_registry: ClubRegistry,
     ) -> tuple[list[dict], str]:
         """Arma los ratings iniciales del Apertura siguiente (decisión 2
-        del addendum) y corre EstadisticasLPF.simular_apertura_desde_carryover().
+        del addendum, + memoria EWMA/handicap de Fase 0 -- ver
+        _ratings_iniciales_lpf()) y corre EstadisticasLPF.simular_apertura_desde_carryover().
         Devuelve (standings_flat, campeon) -- standings_flat es una
         lista plana (zonas A+B juntas) en shape STANDING_COLUMNS, lista
         para repo.upsert_standings("lpf", ...)."""
-        ratings_iniciales = self._ratings_iniciales_lpf(resultados, roster)
+        ratings_iniciales = self._ratings_iniciales_lpf(resultados, roster, club_registry)
         tabla_por_zona, campeon = EstadisticasLPF().simular_apertura_desde_carryover(
             roster, zona_por_club, ratings_iniciales
         )
@@ -376,14 +381,27 @@ class HistoryManager:
             standings_flat.extend(filas_zona)
         return standings_flat, campeon
 
-    def _ratings_iniciales_lpf(self, resultados: dict, roster_siguiente: list[str]) -> dict:
+    def _ratings_iniciales_lpf(
+        self, resultados: dict, roster_siguiente: list[str], club_registry: ClubRegistry,
+    ) -> dict:
         """Combina las dos fuentes de ratings iniciales (decisión 2 del
-        PLAN_ADDENDUM_ETAPA6_APERTURA_LPF):
+        PLAN_ADDENDUM_ETAPA6_APERTURA_LPF), y ahora además la memoria
+        multi-temporada de la Fase 0 (HANDOFF_carryover_ratings.md):
           a) clubes que YA estaban en LPF: ratings_desde_tabla_anual()
              sobre la Tabla Anual + zona de la temporada que termina
              (resultados["lpf"].datos_crudos["tabla_anual"] / ["apertura"]
              -- claves confirmadas en la Etapa 2 del plan, validada
-             contra Supabase real).
+             contra Supabase real). ESE rating "crudo" de la temporada
+             que termina se combina con combinar_con_memoria()
+             (season/rating_carryover.py): mezcla EWMA con las
+             temporadas anteriores del club EN LPF (Club.history) y,
+             si el club todavía está en sus primeras
+             N_TEMPORADAS_HANDICAP temporadas ahí (un ascendido
+             reciente jugando su 2da/3ra temporada), aplica el
+             handicap de adaptación que se va disolviendo. Si el club
+             no está en club_registry (no debería pasar para el
+             roster de LPF, pero se degrada con gracia) se usa el
+             rating crudo sin combinar.
           b) clubes recién ascendidos desde Nacional:
              RatingCarryoverPolicy.rating_para_recien_llegado() usando
              resultados["nacional"].ratings_finales (si existe esa
@@ -391,7 +409,9 @@ class HistoryManager:
              club no está en su ratings_finales todavía porque
              main.py/nacional_adapter.py no llenan ese campo, se cae al
              rating GENÉRICO de la política, degradando con gracia en
-             vez de romper)."""
+             vez de romper). El handicap de la temporada 1 en destino
+             YA está adentro de rating_para_recien_llegado() (Fase 0),
+             no hace falta aplicarlo acá de nuevo."""
         resultado_lpf = resultados["lpf"]
         # BUG ENCONTRADO Y CORREGIDO acá (confirmado leyendo main_lpf.py
         # real): datos_crudos["tabla_anual"] y ["apertura"] NO son los
@@ -426,7 +446,13 @@ class HistoryManager:
         ratings: dict[str, dict] = {}
         for club in roster_siguiente:
             if club in ratings_continuan:
-                ratings[club] = ratings_continuan[club]
+                rating_crudo = ratings_continuan[club]
+                club_obj = club_registry.get_by_name(club)
+                ratings[club] = (
+                    combinar_con_memoria(rating_crudo, club_obj, "lpf")
+                    if club_obj is not None
+                    else rating_crudo
+                )
                 continue
             ratings_origen = ratings_finales_nacional.get(club)
             ratings[club] = politica.rating_para_recien_llegado(
@@ -436,15 +462,72 @@ class HistoryManager:
             )
         return ratings
 
-    def _actualizar_history(self, club_registry: ClubRegistry, temporada_actual: str) -> None:
+    def _resolver_temporada_saliente(
+        self, resultados: Optional[dict]
+    ) -> tuple[dict[str, dict], dict[str, str]]:
+        """A partir de `resultados` (dict slug->ResultadoTorneo de la
+        temporada QUE TERMINA), arma dos mapas name->valor: ratings
+        finales (de ResultadoTorneo.ratings_finales, campo aditivo que
+        hoy llenan lpf/nacional/bmetro/primerac -- ver
+        season/tournament_adapter.py) y división "linda" REALMENTE
+        jugada esa temporada (derivada del mismo slug, no de
+        club.division -- ver Fase 0 en _actualizar_history()).
+        Ninguno de los dos mapas incluye clubes de Federal A
+        (ratings_finales vacío ahí a propósito) ni nada si
+        `resultados` es None (llamada sin ese dato -- degrada con
+        gracia)."""
+        ratings_por_club: dict[str, dict] = {}
+        division_por_club: dict[str, str] = {}
+        if not resultados:
+            return ratings_por_club, division_por_club
+        for slug, nombre_division in SLUG_A_DIVISION.items():
+            resultado = resultados.get(slug)
+            if resultado is None:
+                continue
+            for nombre_club, ratings in (resultado.ratings_finales or {}).items():
+                ratings_por_club[nombre_club] = ratings
+                division_por_club[nombre_club] = nombre_division
+        return ratings_por_club, division_por_club
+
+    def _actualizar_history(
+        self,
+        club_registry: ClubRegistry,
+        temporada_actual: str,
+        resultados: Optional[dict] = None,
+    ) -> None:
         """Agrega una entrada por club con la división en la que jugó
-        la temporada que termina. No toca la DB -- Club.history vive
-        en memoria sobre el objeto Club (ver modelos/club.py); quien
-        llama a persist_season() decide si/cómo persistir el
-        ClubRegistry completo más adelante (fuera del alcance de esta
-        etapa, ver docstring del módulo)."""
+        la temporada que termina y, si está disponible, sus ratings
+        finales ahí (Fase 0 de HANDOFF_carryover_ratings.md -- ver
+        season/rating_carryover.py: memoria_ewma() y
+        temporadas_consecutivas_en_division() consumen esto). No toca
+        la DB -- Club.history vive en memoria sobre el objeto Club
+        (ver modelos/club.py).
+
+        BUG ENCONTRADO Y CORREGIDO acá: la versión anterior guardaba
+        club.division tal cual al momento de llamar a este método --
+        pero persist_season() recibe el club_registry YA MUTADO por
+        PromotionManager (ver docstring de la clase más arriba), o
+        sea que en ese punto club.division es la división de DESTINO
+        (temporada_siguiente), no la que el club jugó en
+        `temporada_actual`. El docstring de este método siempre dijo
+        la intención correcta ("la división en la que jugó la
+        temporada que termina"); el código no la cumplía. No se había
+        notado porque nada consumía Club.history todavía. Ahora se
+        resuelve la división REALMENTE jugada vía
+        _resolver_temporada_saliente() (misma fuente que los ratings:
+        ResultadoTorneo.ratings_finales por slug). Si no se puede
+        determinar (resultados=None, club sin ratings_finales en
+        ningún lado, o Federal A -- que no llena ese campo a
+        propósito) se cae a club.division actual, mismo comportamiento
+        que antes."""
+        ratings_por_club, division_por_club = self._resolver_temporada_saliente(resultados)
+
         for club in club_registry.all_clubs():
-            club.history.append({
+            entrada = {
                 "temporada": temporada_actual,
-                "division": club.division,
-            })
+                "division": division_por_club.get(club.name, club.division),
+            }
+            ratings = ratings_por_club.get(club.name)
+            if ratings is not None:
+                entrada["ratings"] = ratings
+            club.history.append(entrada)

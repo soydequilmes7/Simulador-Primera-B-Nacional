@@ -110,7 +110,48 @@ regresión original desde acá. Tratar el carryover con un N_CARRYOVER
 fijo de nivel de clase (en vez de uno por club derivado de partidos
 jugados) es la simplificación consciente que corresponde a este
 alcance.
+
+--------------------------------------------------------------------
+FASE 0 -- MEMORIA MULTI-TEMPORADA + HANDICAP DE ADAPTACIÓN
+(ver HANDOFF_carryover_ratings.md)
+--------------------------------------------------------------------
+Motivo: con solo la fórmula de arriba, un club recién ascendido/
+descendido arranca su primera temporada en destino ya "curado" (mezcla
+50/50 con el rating de origen ajustado por nivel), pero de ahí en
+adelante queda 100% a merced del rating de UNA sola temporada real
+(ratings_desde_tabla_anual() / equivalentes) -- eso permite que un
+campeón chico quede con un rating inflado por una racha corta, o que
+un grande golpeado por una mala temporada quede subvaluado, sin ningún
+amortiguador. Se agregan acá dos mecanismos, ambos alimentados por
+Club.history (ver modelos/club.py y HistoryManager._actualizar_history,
+que ahora guarda una clave "ratings" además de "temporada"/"division"):
+
+  1. Memoria EWMA (memoria_ewma() / combinar_con_memoria()): para
+     clubes que YA vienen jugando en una división (no pasan por
+     rating_para_recien_llegado()), el rating de la temporada que
+     recién terminó se mezcla con un promedio móvil exponencial de
+     las temporadas anteriores EN ESA MISMA división -- no se mezcla
+     memoria de otra división distinta si el club cambió de categoría.
+
+  2. Handicap de adaptación (_factor_handicap()): un club recién
+     llegado a una división arranca con su distancia al promedio de
+     liga (1.0) comprimida más de lo que ya hace el ajuste por
+     NIVEL_DIVISION, y esa compresión extra se disuelve en
+     N_TEMPORADAS_HANDICAP temporadas. Se aplica tanto en
+     rating_para_recien_llegado() (temporada 1 en destino, factor fijo
+     porque por definición esa función solo se llama en la llegada)
+     como en combinar_con_memoria() (temporadas 2..N para el mismo
+     club, vía temporadas_consecutivas_en_division()).
+
+Deliberadamente NO se hardcodea ninguna lista de equipos "históricos":
+el amortiguador sale entero de Club.history (cuántas temporadas lleva
+cada club en su división actual, y qué ratings tuvo), nunca del nombre
+del club.
 """
+from __future__ import annotations
+
+from modelos.club import Club
+from season.club_registry import DIVISIONES
 
 # --------------------------------------------------------------
 # Nivel relativo de cada división (ver docstring del módulo).
@@ -150,6 +191,36 @@ CAMPOS_RATING = (
     "defensa_visitante",
 )
 
+# --------------------------------------------------------------
+# Fase 0 (ver docstring del módulo): memoria multi-temporada +
+# handicap de adaptación. Valores de arranque documentados, mismo
+# criterio que NIVEL_DIVISION/N_CARRYOVER: no calibrados con datos
+# reales todavía, pensados para poder ajustarse sin tocar la forma
+# de las funciones.
+# --------------------------------------------------------------
+
+# Peso de la temporada que acaba de terminar frente a la memoria EWMA
+# acumulada de temporadas anteriores EN LA MISMA división (solo para
+# clubes que continúan -- ver combinar_con_memoria()). 0.65 = 65%
+# temporada actual / 35% memoria previa.
+ALPHA_MEMORIA = 0.65
+
+# Cuántas temporadas completas le toma a un recién llegado (por
+# ascenso o descenso) dejar de tener handicap de adaptación aplicado.
+# Se disuelve linealmente: temporada 1 en destino -> factor 1/3,
+# temporada 2 -> 2/3, temporada 3 en adelante -> 1.0 (sin handicap).
+N_TEMPORADAS_HANDICAP = 2
+
+
+def _factor_handicap(temporadas_consecutivas: int) -> float:
+    """temporadas_consecutivas: cuántas temporadas COMPLETAS ya jugó
+    el club en la división de destino antes de la que está por
+    arrancar (0 = está por jugar su primera temporada ahí -- el caso
+    de rating_para_recien_llegado()). Devuelve un factor en (0, 1]
+    que se multiplica sobre la distancia al promedio de liga (1.0);
+    1.0 significa "sin handicap, confiar 100% en el rating"."""
+    return min(1.0, (temporadas_consecutivas + 1) / (N_TEMPORADAS_HANDICAP + 1))
+
 
 class RatingCarryoverPolicy:
     """Calcula el rating de arranque de un club que cambia de
@@ -182,6 +253,14 @@ class RatingCarryoverPolicy:
         Lanza ValueError si division_destino no es una división
         válida, si division_origen no es válida (cuando corresponde
         chequearla), o si a ratings_origen le faltan claves.
+
+        Fase 0 (ver docstring del módulo): además del ajuste por
+        NIVEL_DIVISION, se aplica el handicap de adaptación de la
+        temporada 1 en destino (_factor_handicap(0), fijo -- esta
+        función por diseño solo se llama en el momento de la
+        llegada; las temporadas siguientes de handicap las aplica
+        combinar_con_memoria() para clubes que ya vienen jugando en
+        destino).
         """
         if division_destino not in NIVEL_DIVISION:
             raise ValueError(
@@ -213,6 +292,9 @@ class RatingCarryoverPolicy:
             )
 
         factor = NIVEL_DIVISION[division_origen] / NIVEL_DIVISION[division_destino]
+        # Handicap de adaptación, temporada 1 en destino (ver docstring
+        # de este método y del módulo).
+        factor *= _factor_handicap(0)
 
         resultado = {}
         for campo in CAMPOS_RATING:
@@ -224,3 +306,129 @@ class RatingCarryoverPolicy:
                 3,
             )
         return resultado
+
+
+# --------------------------------------------------------------------
+# Fase 0 -- funciones a nivel de módulo (no de la política, no hace
+# falta estado propio) que leen Club.history. Ver docstring del
+# módulo para el porqué y HANDOFF_carryover_ratings.md para el plan
+# completo.
+# --------------------------------------------------------------------
+
+def temporadas_consecutivas_en_division(club: Club, division_slug: str) -> int:
+    """Cuenta cuántas entradas CONSECUTIVAS al final de club.history
+    corresponden a `division_slug`, recorriendo de la más reciente
+    hacia atrás y cortando en la primera que sea de otra división (o
+    al llegar al principio de la lista). 0 si la entrada más reciente
+    ya es de otra división, o si el club no tiene ninguna entrada
+    todavía -- ese 0 es la señal de "recién llegado, temporada 1 en
+    destino" que usa combinar_con_memoria() para decidir cuánto
+    handicap aplicar.
+
+    division_slug: clave de NIVEL_DIVISION (ej. "lpf", "nacional").
+    Lanza ValueError si no es una división válida.
+    """
+    nombre_pretty = DIVISIONES.get(division_slug)
+    if nombre_pretty is None:
+        raise ValueError(
+            f"división inválida: {division_slug!r} (válidas: {sorted(DIVISIONES)})"
+        )
+
+    contador = 0
+    for entrada in reversed(club.history):
+        if entrada.get("division") != nombre_pretty:
+            break
+        contador += 1
+    return contador
+
+
+def memoria_ewma(club: Club, division_slug: str, alpha: float = ALPHA_MEMORIA) -> dict | None:
+    """Arma la memoria EWMA de ratings de `club` en `division_slug`,
+    a partir de la racha CONSECUTIVA de entradas de club.history en
+    esa misma división (se corta apenas aparece una entrada de otra
+    división -- no se mezcla memoria de una división distinta a la
+    actual, ni siquiera si el club jugó ahí en el pasado).
+
+    Entradas de la racha sin clave "ratings" (hoy, Federal A -- ver
+    docstring de HistoryManager._actualizar_history()) se saltean sin
+    cortar la racha: cuentan para temporadas_consecutivas_en_division()
+    pero no aportan dato a la EWMA.
+
+    Devuelve None si la racha está vacía o ninguna de sus entradas
+    tiene ratings todavía (primera temporada del club con datos en
+    esta división -- combinar_con_memoria() usa el rating_actual tal
+    cual en ese caso)."""
+    nombre_pretty = DIVISIONES.get(division_slug)
+    if nombre_pretty is None:
+        raise ValueError(
+            f"división inválida: {division_slug!r} (válidas: {sorted(DIVISIONES)})"
+        )
+
+    racha = []
+    for entrada in reversed(club.history):
+        if entrada.get("division") != nombre_pretty:
+            break
+        racha.append(entrada)
+    racha.reverse()  # orden cronológico: la más vieja de la racha primero
+
+    ewma: dict | None = None
+    for entrada in racha:
+        ratings = entrada.get("ratings")
+        if ratings is None:
+            continue
+        if ewma is None:
+            ewma = dict(ratings)
+        else:
+            ewma = {
+                campo: round(alpha * ratings[campo] + (1 - alpha) * ewma[campo], 3)
+                for campo in CAMPOS_RATING
+            }
+    return ewma
+
+
+def combinar_con_memoria(
+    rating_actual: dict,
+    club: Club,
+    division_slug: str,
+    alpha: float = ALPHA_MEMORIA,
+) -> dict:
+    """Punto de entrada para clubes que CONTINÚAN en la misma división
+    de una temporada a la siguiente (no pasan por
+    RatingCarryoverPolicy.rating_para_recien_llegado(), que es solo
+    para el instante de la llegada). Combina dos cosas:
+
+      1. Memoria EWMA: mezcla `rating_actual` (el rating recién
+         calculado con los partidos reales de la temporada que
+         termina) con memoria_ewma() de temporadas previas en la
+         misma división. Si no hay memoria todavía (primera vez que
+         se registra este club con ratings acá), usa rating_actual
+         sin mezclar.
+      2. Handicap de adaptación: si el club todavía está dentro de
+         sus primeras N_TEMPORADAS_HANDICAP temporadas en destino
+         (típicamente un recién ascendido/descendido jugando su
+         segunda o tercera temporada ahí), comprime el resultado
+         hacia el promedio de liga (1.0) con el mismo criterio que
+         _factor_handicap() -- ver docstring del módulo. Un club
+         asentado (temporadas_consecutivas_en_division() >=
+         N_TEMPORADAS_HANDICAP) sale de acá sin ningún handicap.
+
+    rating_actual: dict con las 4 claves de CAMPOS_RATING.
+    Devuelve un dict con las mismas 4 claves.
+    """
+    memoria = memoria_ewma(club, division_slug, alpha=alpha)
+    if memoria is None:
+        base = dict(rating_actual)
+    else:
+        base = {
+            campo: round(alpha * rating_actual[campo] + (1 - alpha) * memoria[campo], 3)
+            for campo in CAMPOS_RATING
+        }
+
+    temporadas = temporadas_consecutivas_en_division(club, division_slug)
+    factor = _factor_handicap(temporadas)
+    if factor >= 1.0:
+        return base
+    return {
+        campo: round(1.0 + (base[campo] - 1.0) * factor, 3)
+        for campo in CAMPOS_RATING
+    }
