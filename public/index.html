@@ -2899,30 +2899,41 @@
      y en negrita, perdedor apagado, líneas finas con glow sutil y la
      Final con protagonismo propio. Solo toca selectores ya scopeados a
      body.liga-libertadores: no cambia estructura ni JS de otras pestañas. */
-  body.liga-libertadores .bracket{ gap: clamp(24px, 3.6vw, 60px); }
-  body.liga-libertadores .round-body{ gap:20px; }
-  body.liga-libertadores .round{ padding-top:2px; }
+  body.liga-libertadores .bracket,
+  body.liga-sudamericana .bracket{ gap: clamp(24px, 3.6vw, 60px); }
+  body.liga-libertadores .round-body,
+  body.liga-sudamericana .round-body{ gap:20px; }
+  body.liga-libertadores .round,
+  body.liga-sudamericana .round{ padding-top:2px; }
   /* Tarjetas ~25% más anchas que el default genérico para que los
      nombres largos (p.ej. "Club Atlético Peñarol") no se compriman con
      ellipsis. El cuadro sigue scrolleando horizontalmente si no entra
      entero -- lo único que cambia es que la scrollbar nativa queda
      oculta (ver .bracket-scroll más abajo) y se puede arrastrar con el
      mouse o mover con Shift + rueda (ver script drag-to-scroll). */
-  body.liga-libertadores .round:not(.final-col){ min-width: 248px; }
-  body.liga-libertadores .round.final-col{ flex:1.12 1 0; min-width: 300px; }
+  body.liga-libertadores .round:not(.final-col),
+  body.liga-sudamericana .round:not(.final-col){ min-width: 248px; }
+  body.liga-libertadores .round.final-col,
+  body.liga-sudamericana .round.final-col{ flex:1.12 1 0; min-width: 300px; }
   @media (max-width:760px){
     body.liga-libertadores .round:not(.final-col),
-    body.liga-libertadores .round.final-col{ min-width:0; }
+    body.liga-libertadores .round.final-col,
+    body.liga-sudamericana .round:not(.final-col),
+    body.liga-sudamericana .round.final-col{ min-width:0; }
   }
   /* Scrollbar oculta pero scroll funcional: el contenido sigue siendo
      desplazable (rueda, trackpad, drag, Shift+rueda), solo se esconde
      la barra nativa para que no rompa el look premium. */
-  body.liga-libertadores .bracket-scroll{
+  body.liga-libertadores .bracket-scroll,
+  body.liga-sudamericana .bracket-scroll{
     scrollbar-width:none; -ms-overflow-style:none;
   }
-  body.liga-libertadores .bracket-scroll::-webkit-scrollbar{ display:none; }
-  body.liga-libertadores .bracket-wrap.scrollable .bracket-scroll{ cursor:grab; }
-  body.liga-libertadores .bracket-wrap.scrollable .bracket-scroll.is-dragging{ cursor:grabbing; user-select:none; }
+  body.liga-libertadores .bracket-scroll::-webkit-scrollbar,
+  body.liga-sudamericana .bracket-scroll::-webkit-scrollbar{ display:none; }
+  body.liga-libertadores .bracket-wrap.scrollable .bracket-scroll,
+  body.liga-sudamericana .bracket-wrap.scrollable .bracket-scroll{ cursor:grab; }
+  body.liga-libertadores .bracket-wrap.scrollable .bracket-scroll.is-dragging,
+  body.liga-sudamericana .bracket-wrap.scrollable .bracket-scroll.is-dragging{ cursor:grabbing; user-select:none; }
 
   body.liga-libertadores .round-title{
     position:relative; color:#EAD9A0; font-size:11px; font-weight:700;
@@ -3251,6 +3262,7 @@
       <button class="liga-tab" data-liga="federal">Federal A</button>
       <button class="liga-tab" data-liga="primerac">Primera C</button>
       <button class="liga-tab liga-tab-internacional" data-liga="libertadores">Copa Libertadores</button>
+      <button class="liga-tab liga-tab-internacional" data-liga="sudamericana">Copa Sudamericana</button>
       <button class="liga-tab" data-liga="temporada">Modo Temporada</button>
     </div>
     <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Cambiar entre modo claro y oscuro">
@@ -4048,6 +4060,17 @@
   </section>
 
   </div><!-- /vista-libertadores -->
+
+  <div id="vista-sudamericana" style="display:none">
+
+  <section id="sec-sudamericana-cuadro">
+    <div class="section-head"><span class="idx">01</span><h2>El cuadro, desde los Playoffs de Octavos</h2><div class="rule"></div></div>
+    <p class="section-note">Playoffs entre los 8 segundos de zona de la Sudamericana y los 8 terceros de zona de la Libertadores (ver la pestaña Copa Libertadores): sus ganadores completan los Octavos junto a los 8 primeros de zona, que ya tienen lugar asegurado. De ahí en más, mismo formato que la Libertadores: ida y vuelta sin gol de visitante hasta semis, final a partido único en cancha neutral.</p>
+    <div class="bracket-scroll"><div class="bracket" id="bracket-sudamericana"></div></div>
+    <div class="campeon-anuncio-wrap" id="campeon-anuncio-sudamericana"></div>
+  </section>
+
+  </div><!-- /vista-sudamericana -->
 
   <footer>
     <p>Generado a partir de <span id="foot-n">0</span> simulaciones — modelo Poisson (ataque/defensa local-visitante, decay por antigüedad, regresión a la media, corrección Dixon-Coles)</p>
@@ -7364,6 +7387,15 @@ const HERO_TEXTOS = {
     zonasLbl: "Simulaciones",
     ascensosLbl: "Rondas",
     descensosLbl: "Modelo",
+  },
+  sudamericana: {
+    eyebrow: () => `SIMULACIÓN — CUADRO REAL DE PLAYOFFS`,
+    titulo: "COPA SUDAMERICANA",
+    sub: "Desde los Playoffs de Octavos: 8 llaves entre los segundos de zona de la Sudamericana y los terceros de zona de la Libertadores, cuyos ganadores se suman a los 8 primeros de zona en Octavos. Ida y vuelta con el mismo modelo Poisson hasta semis, final a partido único en cancha neutral.",
+    equiposLbl: "Equipos",
+    zonasLbl: "Fase inicial",
+    ascensosLbl: "Rondas",
+    descensosLbl: "Modelo",
   }
 };
 
@@ -7399,6 +7431,11 @@ function actualizarHero(liga){
     document.getElementById('meta-equipos').textContent = 16;
     document.getElementById('meta-zonas').textContent = (DATA_LIBERTADORES && DATA_LIBERTADORES.n_simulaciones) || 1000;
     document.getElementById('meta-ascensos').textContent = 4;
+    document.getElementById('meta-descensos').textContent = 'Poisson + Elo';
+  } else if (liga === 'sudamericana'){
+    document.getElementById('meta-equipos').textContent = 24;
+    document.getElementById('meta-zonas').textContent = 'Playoffs';
+    document.getElementById('meta-ascensos').textContent = 5;
     document.getElementById('meta-descensos').textContent = 'Poisson + Elo';
   } else if (liga === 'lpf'){
     document.getElementById('meta-equipos').textContent = 30;
@@ -7441,6 +7478,7 @@ function setLiga(liga){
   document.getElementById('vista-lpf').style.display = liga === 'lpf' ? '' : 'none';
   document.getElementById('vista-copa').style.display = liga === 'copa' ? '' : 'none';
   document.getElementById('vista-libertadores').style.display = liga === 'libertadores' ? '' : 'none';
+  document.getElementById('vista-sudamericana').style.display = liga === 'sudamericana' ? '' : 'none';
   document.getElementById('vista-bmetro').style.display = liga === 'bmetro' ? '' : 'none';
   document.getElementById('vista-federal').style.display = liga === 'federal' ? '' : 'none';
   document.getElementById('vista-primerac').style.display = liga === 'primerac' ? '' : 'none';
@@ -7456,6 +7494,7 @@ function setLiga(liga){
   document.body.classList.toggle('liga-lpf', liga === 'lpf');
   document.body.classList.toggle('liga-copa', liga === 'copa');
   document.body.classList.toggle('liga-libertadores', liga === 'libertadores');
+  document.body.classList.toggle('liga-sudamericana', liga === 'sudamericana');
   document.body.classList.toggle('liga-bmetro', liga === 'bmetro');
   document.body.classList.toggle('liga-federal', liga === 'federal');
   document.body.classList.toggle('liga-primerac', liga === 'primerac');
@@ -7898,6 +7937,7 @@ document.getElementById('btn-campeon-copa').addEventListener('click', simularHas
    el último data_libertadores.json ya generado (por el botón o por
    correr `python main_libertadores.py` a mano). */
 let DATA_LIBERTADORES = null;
+let DATA_SUDAMERICANA = null;
 
 async function cargarDatosLibertadores(){
   try {
@@ -7923,6 +7963,29 @@ function iniciarLibertadores(){
   const busqueda = document.getElementById('team-search-libertadores');
   if (busqueda && busqueda.value) buscarEquipoLibertadores(busqueda.value);
   if (document.body.classList.contains('liga-libertadores')) actualizarHero('libertadores');
+}
+
+// Versión reducida de cargarDatosLibertadores()/iniciarLibertadores():
+// por ahora solo el cuadro (sin Monte Carlo ni búsqueda de equipo, ver
+// main_sudamericana.py -- se suman en una vuelta siguiente).
+async function cargarDatosSudamericana(){
+  try {
+    const respuesta = await fetch("./data_sudamericana.json?t=" + Date.now());
+    if (!respuesta.ok) throw new Error("No se pudo cargar data_sudamericana.json");
+    DATA_SUDAMERICANA = await respuesta.json();
+    iniciarSudamericana();
+  } catch (e) {
+    const cont = document.getElementById('bracket-sudamericana');
+    if (cont) cont.innerHTML = `<div class="no-result">No se pudo cargar data_sudamericana.json todavía (${e.message}). Corré <code>python main_sudamericana.py</code> una vez.</div>`;
+  }
+}
+
+function iniciarSudamericana(){
+  if (!DATA_SUDAMERICANA) return;
+  document.getElementById('bracket-sudamericana').innerHTML = bracketSudamericanaHTML(DATA_SUDAMERICANA.rondas, DATA_SUDAMERICANA.campeon);
+  const anuncio = document.getElementById('campeon-anuncio-sudamericana');
+  if (anuncio) anuncio.innerHTML = campeonAnuncioHTML(DATA_SUDAMERICANA.campeon, '🏆');
+  if (document.body.classList.contains('liga-sudamericana')) actualizarHero('sudamericana');
 }
 
 function poblarSelectEquiposLibertadores(){
@@ -8094,6 +8157,50 @@ function bracketLibertadoresHTML(rondas, campeon){
     + columna('oct-der', 'Octavos', octavosDer);
 }
 
+/* Mismo layout "enfrentado" que bracketLibertadoresHTML, con una
+   columna extra a cada lado (Playoffs) porque acá Octavos no es la
+   ronda inicial: la mitad de cada llave de Octavos sale de un
+   Playoff todavía sin jugar (ver season/estadisticas_sudamericana.py).
+   Marcadas con "po-izq"/"po-der" -- distintas de "oct-izq"/"oct-der"
+   a propósito, para que refreshAllBracketLines() (ver más abajo)
+   pueda elegir buildBracketLinesSudamericana() en vez de la versión
+   de Libertadores, que no sabe de esta ronda extra. */
+function bracketSudamericanaHTML(rondas, campeon){
+  const mitad = (arr) => {
+    const corte = Math.ceil(arr.length / 2);
+    return [arr.slice(0, corte), arr.slice(corte)];
+  };
+  const [playoffsIzq, playoffsDer] = mitad(rondas.playoffs || []);
+  const [octavosIzq, octavosDer] = mitad(rondas.octavos || []);
+  const [cuartosIzq, cuartosDer] = mitad(rondas.cuartos || []);
+  const [semiIzq, semiDer] = mitad(rondas.semis || []);
+  const final = rondas.final || [];
+
+  const columna = (clave, titulo, llaves) => `<div class="round ${clave}">
+      <div class="round-title">${titulo}</div>
+      <div class="round-body">
+        ${llaves.map(ll => llaveLibertadoresHTML(ll, false)).join("")}
+      </div>
+    </div>`;
+
+  const columnaFinal = `<div class="round final-col">
+      <div class="round-title">Final</div>
+      <div class="round-body">
+        ${final.map(ll => llaveLibertadoresHTML(ll, true)).join("")}
+      </div>
+    </div>`;
+
+  return columna('po-izq', 'Playoffs', playoffsIzq)
+    + columna('oct-izq', 'Octavos', octavosIzq)
+    + columna('cua-izq', 'Cuartos', cuartosIzq)
+    + columna('semi-izq', 'Semifinal', semiIzq)
+    + columnaFinal
+    + columna('semi-der', 'Semifinal', semiDer)
+    + columna('cua-der', 'Cuartos', cuartosDer)
+    + columna('oct-der', 'Octavos', octavosDer)
+    + columna('po-der', 'Playoffs', playoffsDer);
+}
+
 function renderMCLibertadores(){
   const list = document.getElementById('mc-list-libertadores');
   if (!list || !DATA_LIBERTADORES.monte_carlo) return;
@@ -8208,6 +8315,7 @@ document.getElementById('team-search-libertadores').addEventListener('input', (e
 cargarDatosLPF();
 cargarDatosCopa();
 cargarDatosLibertadores();
+cargarDatosSudamericana();
 cargarDatosBMetro();
 cargarDatosFederal();
 
@@ -8628,6 +8736,158 @@ function buildBracketLinesLibertadores(bracketEl){
   svg.setAttribute('height', bracketEl.scrollHeight);
 }
 
+/* Misma lógica que buildBracketLinesLibertadores(), pero la ronda
+   ancla (posiciones fijas por CSS, sin reposicionar) es Playoffs en
+   vez de Octavos -- acá Octavos ya no es la primera ronda, así que
+   también se reposiciona a partir de su fuente (ver resolverRonda). */
+function buildBracketLinesSudamericana(bracketEl){
+  const ns = 'http://www.w3.org/2000/svg';
+  let svg = bracketEl.querySelector(':scope > svg.bracket-lines');
+
+  bracketEl.querySelectorAll('.js-positioned').forEach(el => {
+    el.classList.remove('js-positioned');
+    el.style.top = '';
+  });
+
+  if (window.matchMedia('(max-width: 760px)').matches || getComputedStyle(bracketEl).flexDirection === 'column'){
+    if (svg) svg.remove();
+    return;
+  }
+
+  const cuerpoDe = (clave) => bracketEl.querySelector(':scope > .round.' + clave + ' > .round-body');
+  const poI = cuerpoDe('po-izq'), octI = cuerpoDe('oct-izq'), cuaI = cuerpoDe('cua-izq'), semiI = cuerpoDe('semi-izq');
+  const poD = cuerpoDe('po-der'), octD = cuerpoDe('oct-der'), cuaD = cuerpoDe('cua-der'), semiD = cuerpoDe('semi-der');
+  const finalBody = bracketEl.querySelector(':scope > .round.final-col > .round-body');
+  if (!poI || !octI || !cuaI || !semiI || !poD || !octD || !cuaD || !semiD || !finalBody){
+    if (svg) svg.remove();
+    return;
+  }
+
+  if (!svg){
+    svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('class', 'bracket-lines');
+    bracketEl.insertBefore(svg, bracketEl.firstChild);
+  }
+  svg.innerHTML = '';
+
+  const bracketRect = bracketEl.getBoundingClientRect();
+  const MIN_GAP = 20;
+  const yCenter = new Map();
+  const soloMatches = (body) => [...body.children].filter(el => el.classList.contains('match'));
+
+  const trazarLinea = (x1, y1, x2, y2) => {
+    const xMid = x1 + (x2 - x1) / 2;
+    const path = document.createElementNS(ns, 'path');
+    path.setAttribute('d', `M${x1},${y1} H${xMid} V${y2} H${x2}`);
+    svg.appendChild(path);
+  };
+
+  // Playoffs (ambos lados): punto de partida, tal cual cayeron por CSS.
+  [poI, poD].forEach(body => {
+    soloMatches(body).forEach(m => {
+      const r = m.getBoundingClientRect();
+      yCenter.set(m, r.top - bracketRect.top + r.height / 2);
+    });
+  });
+
+  function resolverRonda(prevBody, curBody, mirror){
+    const prevMatches = soloMatches(prevBody);
+    const curMatches = soloMatches(curBody);
+    const curBodyTop = curBody.getBoundingClientRect().top - bracketRect.top;
+
+    const info = curMatches.map(el => {
+      const rect = el.getBoundingClientRect();
+      const sources = [...new Set([el.dataset.local, el.dataset.visitante]
+        .map(nombre => nombre && prevMatches.find(pm => pm.dataset.avanza === nombre))
+        .filter(Boolean))];
+      return { el, rect, sources };
+    });
+
+    info.forEach(item => {
+      item.targetY = item.sources.length
+        ? item.sources.reduce((sum, s) => sum + yCenter.get(s), 0) / item.sources.length
+        : item.rect.top - bracketRect.top + item.rect.height / 2;
+    });
+
+    const bySpot = [...info].sort((a, b) => a.targetY - b.targetY);
+    bySpot.forEach(item => { item.rawTargetY = item.targetY; });
+    if (bySpot.length > 1){
+      const minDists = [];
+      for (let i = 1; i < bySpot.length; i++){
+        minDists.push(bySpot[i - 1].rect.height / 2 + MIN_GAP + bySpot[i].rect.height / 2);
+      }
+      const minSpan = minDists.reduce((a, b) => a + b, 0);
+      const rawSpan = bySpot[bySpot.length - 1].rawTargetY - bySpot[0].rawTargetY;
+      const extra = rawSpan > minSpan ? (rawSpan - minSpan) / (bySpot.length - 1) : 0;
+      let y = bySpot[0].rawTargetY;
+      bySpot[0].targetY = y;
+      for (let i = 1; i < bySpot.length; i++){
+        y += minDists[i - 1] + extra;
+        bySpot[i].targetY = y;
+      }
+      const last = bySpot[bySpot.length - 1];
+      const drift = last.targetY - last.rawTargetY;
+      if (drift > 0){
+        const shift = drift / 2;
+        bySpot.forEach(item => { item.targetY -= shift; });
+      }
+    }
+
+    info.forEach(({ el, rect, sources, targetY }) => {
+      el.classList.add('js-positioned');
+      el.style.top = (targetY - curBodyTop - rect.height / 2) + 'px';
+      yCenter.set(el, targetY);
+      if (!sources.length) return;
+      const xTarget = mirror ? (rect.right - bracketRect.left) : (rect.left - bracketRect.left);
+      sources.forEach(s => {
+        const y1 = yCenter.get(s);
+        const sRect = s.getBoundingClientRect();
+        const x1 = mirror ? (sRect.left - bracketRect.left) : (sRect.right - bracketRect.left);
+        trazarLinea(x1, y1, xTarget, targetY);
+      });
+    });
+  }
+
+  resolverRonda(poI, octI, false);
+  resolverRonda(octI, cuaI, false);
+  resolverRonda(cuaI, semiI, false);
+  resolverRonda(poD, octD, true);
+  resolverRonda(octD, cuaD, true);
+  resolverRonda(cuaD, semiD, true);
+
+  const finalMatches = soloMatches(finalBody);
+  const finalBodyTop = finalBody.getBoundingClientRect().top - bracketRect.top;
+  finalMatches.forEach(el => {
+    const rect = el.getBoundingClientRect();
+    const buscarFuente = (body) => soloMatches(body).find(pm =>
+      pm.dataset.avanza === el.dataset.local || pm.dataset.avanza === el.dataset.visitante);
+    const fuenteIzq = buscarFuente(semiI);
+    const fuenteDer = buscarFuente(semiD);
+    const fuentes = [fuenteIzq, fuenteDer].filter(Boolean);
+    const targetY = fuentes.length
+      ? fuentes.reduce((sum, s) => sum + yCenter.get(s), 0) / fuentes.length
+      : rect.top - bracketRect.top + rect.height / 2;
+
+    el.classList.add('js-positioned');
+    el.style.top = (targetY - finalBodyTop - rect.height / 2) + 'px';
+    yCenter.set(el, targetY);
+
+    if (fuenteIzq){
+      const y1 = yCenter.get(fuenteIzq);
+      const x1 = fuenteIzq.getBoundingClientRect().right - bracketRect.left;
+      trazarLinea(x1, y1, rect.left - bracketRect.left, targetY);
+    }
+    if (fuenteDer){
+      const y1 = yCenter.get(fuenteDer);
+      const x1 = fuenteDer.getBoundingClientRect().left - bracketRect.left;
+      trazarLinea(x1, y1, rect.right - bracketRect.left, targetY);
+    }
+  });
+
+  svg.setAttribute('width', bracketEl.scrollWidth);
+  svg.setAttribute('height', bracketEl.scrollHeight);
+}
+
 function refreshAllBracketLines(){
   document.querySelectorAll('.bracket').forEach(bracketEl => {
     // El cuadro de Libertadores usa un layout "enfrentado" (Octavos a
@@ -8636,8 +8896,10 @@ function refreshAllBracketLines(){
     // .semi-izq), no por id, para que también ande en el cuadro ad-hoc
     // que arma "Simular hasta el título" (mismo bracketLibertadoresHTML,
     // pero sin id="bracket-libertadores").
+    const esLayoutSudamericana = bracketEl.querySelector(':scope > .round.po-izq');
     const esLayoutLibertadores = bracketEl.querySelector(':scope > .round.oct-izq, :scope > .round.semi-izq');
-    if (esLayoutLibertadores) buildBracketLinesLibertadores(bracketEl);
+    if (esLayoutSudamericana) buildBracketLinesSudamericana(bracketEl);
+    else if (esLayoutLibertadores) buildBracketLinesLibertadores(bracketEl);
     else buildBracketLines(bracketEl);
   });
 }
@@ -9845,7 +10107,7 @@ document.getElementById('btn-reiniciar-temporada').addEventListener('click', rei
 
   document.addEventListener('mousedown', (ev) => {
     const candidato = ev.target.closest('.bracket-scroll');
-    if (!candidato || !document.body.classList.contains('liga-libertadores')) return;
+    if (!candidato || !document.body.classList.contains('liga-libertadores') && !document.body.classList.contains('liga-sudamericana')) return;
     scrollEl = candidato;
     arrastrando = true;
     movido = false;
@@ -9877,7 +10139,7 @@ document.getElementById('btn-reiniciar-temporada').addEventListener('click', rei
   // Shift + rueda del mouse: traduce el scroll vertical a horizontal
   document.addEventListener('wheel', (ev) => {
     const candidato = ev.target.closest('.bracket-scroll');
-    if (!candidato || !document.body.classList.contains('liga-libertadores')) return;
+    if (!candidato || !document.body.classList.contains('liga-libertadores') && !document.body.classList.contains('liga-sudamericana')) return;
     if (!ev.shiftKey) return;
     if (ev.deltaY === 0) return;
     ev.preventDefault();
@@ -9894,7 +10156,7 @@ document.getElementById('btn-reiniciar-temporada').addEventListener('click', rei
 
   document.addEventListener('touchstart', (ev) => {
     const candidato = ev.target.closest('.bracket-scroll');
-    if (!candidato || !document.body.classList.contains('liga-libertadores')) return;
+    if (!candidato || !document.body.classList.contains('liga-libertadores') && !document.body.classList.contains('liga-sudamericana')) return;
     if (ev.touches.length !== 1) return;
     touchScrollEl = candidato;
     touchStartX = ev.touches[0].pageX;

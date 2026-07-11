@@ -1,0 +1,509 @@
+{
+  "liga": "Copa Sudamericana",
+  "generado": "11/07/2026 22:37",
+  "rondas": {
+    "playoffs": [
+      {
+        "ida": {
+          "local": "Grêmio",
+          "visitante": "Bolívar",
+          "golesLocal": 1,
+          "golesVisitante": 3
+        },
+        "vuelta": {
+          "local": "Bolívar",
+          "visitante": "Grêmio",
+          "golesLocal": 1,
+          "golesVisitante": 3
+        },
+        "agregado": {
+          "Grêmio": 4,
+          "Bolívar": 4
+        },
+        "penales": true,
+        "alargue": {
+          "local": "Bolívar",
+          "visitante": "Grêmio",
+          "golesLocal": 0,
+          "golesVisitante": 0
+        },
+        "avanza": "Grêmio",
+        "jugado": false
+      },
+      {
+        "ida": {
+          "local": "Sporting Cristal",
+          "visitante": "Red Bull Bragantino",
+          "golesLocal": 3,
+          "golesVisitante": 0
+        },
+        "vuelta": {
+          "local": "Red Bull Bragantino",
+          "visitante": "Sporting Cristal",
+          "golesLocal": 2,
+          "golesVisitante": 0
+        },
+        "agregado": {
+          "Sporting Cristal": 3,
+          "Red Bull Bragantino": 2
+        },
+        "penales": null,
+        "avanza": "Sporting Cristal",
+        "jugado": false
+      },
+      {
+        "ida": {
+          "local": "Independiente Medellín",
+          "visitante": "Vasco da Gama",
+          "golesLocal": 1,
+          "golesVisitante": 4
+        },
+        "vuelta": {
+          "local": "Vasco da Gama",
+          "visitante": "Independiente Medellín",
+          "golesLocal": 4,
+          "golesVisitante": 0
+        },
+        "agregado": {
+          "Independiente Medellín": 1,
+          "Vasco da Gama": 8
+        },
+        "penales": null,
+        "avanza": "Vasco da Gama",
+        "jugado": false
+      },
+      {
+        "ida": {
+          "local": "Boca Juniors",
+          "visitante": "O'Higgins",
+          "golesLocal": 1,
+          "golesVisitante": 1
+        },
+        "vuelta": {
+          "local": "O'Higgins",
+          "visitante": "Boca Juniors",
+          "golesLocal": 0,
+          "golesVisitante": 2
+        },
+        "agregado": {
+          "Boca Juniors": 3,
+          "O'Higgins": 1
+        },
+        "penales": null,
+        "avanza": "Boca Juniors",
+        "jugado": false
+      },
+      {
+        "ida": {
+          "local": "Nacional (Uruguay)",
+          "visitante": "Tigre",
+          "golesLocal": 2,
+          "golesVisitante": 1
+        },
+        "vuelta": {
+          "local": "Tigre",
+          "visitante": "Nacional (Uruguay)",
+          "golesLocal": 6,
+          "golesVisitante": 1
+        },
+        "agregado": {
+          "Nacional (Uruguay)": 3,
+          "Tigre": 7
+        },
+        "penales": null,
+        "avanza": "Tigre",
+        "jugado": false
+      },
+      {
+        "ida": {
+          "local": "Independiente Santa Fe",
+          "visitante": "Caracas FC",
+          "golesLocal": 2,
+          "golesVisitante": 0
+        },
+        "vuelta": {
+          "local": "Caracas FC",
+          "visitante": "Independiente Santa Fe",
+          "golesLocal": 2,
+          "golesVisitante": 1
+        },
+        "agregado": {
+          "Independiente Santa Fe": 3,
+          "Caracas FC": 2
+        },
+        "penales": null,
+        "avanza": "Independiente Santa Fe",
+        "jugado": false
+      },
+      {
+        "ida": {
+          "local": "Lanús",
+          "visitante": "Cienciano",
+          "golesLocal": 2,
+          "golesVisitante": 2
+        },
+        "vuelta": {
+          "local": "Cienciano",
+          "visitante": "Lanús",
+          "golesLocal": 1,
+          "golesVisitante": 2
+        },
+        "agregado": {
+          "Lanús": 4,
+          "Cienciano": 3
+        },
+        "penales": null,
+        "avanza": "Lanús",
+        "jugado": false
+      },
+      {
+        "ida": {
+          "local": "Universidad Central de Venezuela",
+          "visitante": "Santos",
+          "golesLocal": 2,
+          "golesVisitante": 2
+        },
+        "vuelta": {
+          "local": "Santos",
+          "visitante": "Universidad Central de Venezuela",
+          "golesLocal": 5,
+          "golesVisitante": 0
+        },
+        "agregado": {
+          "Universidad Central de Venezuela": 2,
+          "Santos": 7
+        },
+        "penales": null,
+        "avanza": "Santos",
+        "jugado": false
+      }
+    ],
+    "octavos": [
+      {
+        "ida": {
+          "local": "São Paulo",
+          "visitante": "Grêmio",
+          "golesLocal": 0,
+          "golesVisitante": 0
+        },
+        "vuelta": {
+          "local": "Grêmio",
+          "visitante": "São Paulo",
+          "golesLocal": 2,
+          "golesVisitante": 0
+        },
+        "agregado": {
+          "São Paulo": 0,
+          "Grêmio": 2
+        },
+        "penales": null,
+        "avanza": "Grêmio",
+        "jugado": false
+      },
+      {
+        "ida": {
+          "local": "Atlético Mineiro",
+          "visitante": "Sporting Cristal",
+          "golesLocal": 2,
+          "golesVisitante": 1
+        },
+        "vuelta": {
+          "local": "Sporting Cristal",
+          "visitante": "Atlético Mineiro",
+          "golesLocal": 1,
+          "golesVisitante": 2
+        },
+        "agregado": {
+          "Atlético Mineiro": 4,
+          "Sporting Cristal": 2
+        },
+        "penales": null,
+        "avanza": "Atlético Mineiro",
+        "jugado": false
+      },
+      {
+        "ida": {
+          "local": "Olimpia",
+          "visitante": "Vasco da Gama",
+          "golesLocal": 1,
+          "golesVisitante": 1
+        },
+        "vuelta": {
+          "local": "Vasco da Gama",
+          "visitante": "Olimpia",
+          "golesLocal": 0,
+          "golesVisitante": 1
+        },
+        "agregado": {
+          "Olimpia": 2,
+          "Vasco da Gama": 1
+        },
+        "penales": null,
+        "avanza": "Olimpia",
+        "jugado": false
+      },
+      {
+        "ida": {
+          "local": "Recoleta FC",
+          "visitante": "Boca Juniors",
+          "golesLocal": 2,
+          "golesVisitante": 1
+        },
+        "vuelta": {
+          "local": "Boca Juniors",
+          "visitante": "Recoleta FC",
+          "golesLocal": 4,
+          "golesVisitante": 1
+        },
+        "agregado": {
+          "Recoleta FC": 3,
+          "Boca Juniors": 5
+        },
+        "penales": null,
+        "avanza": "Boca Juniors",
+        "jugado": false
+      },
+      {
+        "ida": {
+          "local": "Montevideo City Torque",
+          "visitante": "Tigre",
+          "golesLocal": 2,
+          "golesVisitante": 2
+        },
+        "vuelta": {
+          "local": "Tigre",
+          "visitante": "Montevideo City Torque",
+          "golesLocal": 2,
+          "golesVisitante": 0
+        },
+        "agregado": {
+          "Montevideo City Torque": 2,
+          "Tigre": 4
+        },
+        "penales": null,
+        "avanza": "Tigre",
+        "jugado": false
+      },
+      {
+        "ida": {
+          "local": "River Plate",
+          "visitante": "Independiente Santa Fe",
+          "golesLocal": 0,
+          "golesVisitante": 5
+        },
+        "vuelta": {
+          "local": "Independiente Santa Fe",
+          "visitante": "River Plate",
+          "golesLocal": 0,
+          "golesVisitante": 0
+        },
+        "agregado": {
+          "River Plate": 0,
+          "Independiente Santa Fe": 5
+        },
+        "penales": null,
+        "avanza": "Independiente Santa Fe",
+        "jugado": false
+      },
+      {
+        "ida": {
+          "local": "Botafogo",
+          "visitante": "Lanús",
+          "golesLocal": 3,
+          "golesVisitante": 0
+        },
+        "vuelta": {
+          "local": "Lanús",
+          "visitante": "Botafogo",
+          "golesLocal": 3,
+          "golesVisitante": 0
+        },
+        "agregado": {
+          "Botafogo": 3,
+          "Lanús": 6
+        },
+        "penales": null,
+        "alargue": {
+          "local": "Lanús",
+          "visitante": "Botafogo",
+          "golesLocal": 3,
+          "golesVisitante": 0
+        },
+        "avanza": "Lanús",
+        "jugado": false
+      },
+      {
+        "ida": {
+          "local": "Macará",
+          "visitante": "Santos",
+          "golesLocal": 2,
+          "golesVisitante": 0
+        },
+        "vuelta": {
+          "local": "Santos",
+          "visitante": "Macará",
+          "golesLocal": 1,
+          "golesVisitante": 0
+        },
+        "agregado": {
+          "Macará": 2,
+          "Santos": 1
+        },
+        "penales": null,
+        "avanza": "Macará",
+        "jugado": false
+      }
+    ],
+    "cuartos": [
+      {
+        "ida": {
+          "local": "Grêmio",
+          "visitante": "Atlético Mineiro",
+          "golesLocal": 2,
+          "golesVisitante": 1
+        },
+        "vuelta": {
+          "local": "Atlético Mineiro",
+          "visitante": "Grêmio",
+          "golesLocal": 2,
+          "golesVisitante": 1
+        },
+        "agregado": {
+          "Grêmio": 4,
+          "Atlético Mineiro": 3
+        },
+        "penales": null,
+        "alargue": {
+          "local": "Atlético Mineiro",
+          "visitante": "Grêmio",
+          "golesLocal": 0,
+          "golesVisitante": 1
+        },
+        "avanza": "Grêmio",
+        "jugado": false
+      },
+      {
+        "ida": {
+          "local": "Olimpia",
+          "visitante": "Boca Juniors",
+          "golesLocal": 1,
+          "golesVisitante": 0
+        },
+        "vuelta": {
+          "local": "Boca Juniors",
+          "visitante": "Olimpia",
+          "golesLocal": 2,
+          "golesVisitante": 0
+        },
+        "agregado": {
+          "Olimpia": 1,
+          "Boca Juniors": 2
+        },
+        "penales": null,
+        "avanza": "Boca Juniors",
+        "jugado": false
+      },
+      {
+        "ida": {
+          "local": "Tigre",
+          "visitante": "Independiente Santa Fe",
+          "golesLocal": 2,
+          "golesVisitante": 0
+        },
+        "vuelta": {
+          "local": "Independiente Santa Fe",
+          "visitante": "Tigre",
+          "golesLocal": 2,
+          "golesVisitante": 3
+        },
+        "agregado": {
+          "Tigre": 5,
+          "Independiente Santa Fe": 2
+        },
+        "penales": null,
+        "avanza": "Tigre",
+        "jugado": false
+      },
+      {
+        "ida": {
+          "local": "Lanús",
+          "visitante": "Macará",
+          "golesLocal": 1,
+          "golesVisitante": 3
+        },
+        "vuelta": {
+          "local": "Macará",
+          "visitante": "Lanús",
+          "golesLocal": 2,
+          "golesVisitante": 1
+        },
+        "agregado": {
+          "Lanús": 2,
+          "Macará": 5
+        },
+        "penales": null,
+        "avanza": "Macará",
+        "jugado": false
+      }
+    ],
+    "semis": [
+      {
+        "ida": {
+          "local": "Grêmio",
+          "visitante": "Boca Juniors",
+          "golesLocal": 0,
+          "golesVisitante": 1
+        },
+        "vuelta": {
+          "local": "Boca Juniors",
+          "visitante": "Grêmio",
+          "golesLocal": 4,
+          "golesVisitante": 0
+        },
+        "agregado": {
+          "Grêmio": 0,
+          "Boca Juniors": 5
+        },
+        "penales": null,
+        "avanza": "Boca Juniors",
+        "jugado": false
+      },
+      {
+        "ida": {
+          "local": "Tigre",
+          "visitante": "Macará",
+          "golesLocal": 4,
+          "golesVisitante": 0
+        },
+        "vuelta": {
+          "local": "Macará",
+          "visitante": "Tigre",
+          "golesLocal": 5,
+          "golesVisitante": 0
+        },
+        "agregado": {
+          "Tigre": 4,
+          "Macará": 5
+        },
+        "penales": null,
+        "avanza": "Macará",
+        "jugado": false
+      }
+    ],
+    "final": [
+      {
+        "local": "Boca Juniors",
+        "visitante": "Macará",
+        "golesLocal": 3,
+        "golesVisitante": 1,
+        "avanza": "Boca Juniors",
+        "jugado": false,
+        "penales": null
+      }
+    ]
+  },
+  "campeon": "Boca Juniors",
+  "equipos_vivos": [
+    "Boca Juniors"
+  ]
+}
