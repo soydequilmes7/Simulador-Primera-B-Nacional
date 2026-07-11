@@ -92,6 +92,7 @@ class ResultadoTemporada:
     # Etapa 7: output de HistoryManager.persist_season() (vacío si
     # generar_temporada_siguiente=False, ver correr_temporada()).
     historia: dict = field(default_factory=dict)
+    elo_actualizados: dict = field(default_factory=dict)
     # Cuadro de 32avos YA SORTEADO para la PRÓXIMA Copa Argentina (ver
     # season/copa_argentina_sorteo.py), armado con los 64 clasificados
     # de esta misma corrida (`clasificacion_copa_argentina` de arriba).
@@ -232,19 +233,7 @@ class SeasonEngine:
         # queda afuera, ver docstring de CopaArgentinaManager).
         clasificacion_copa_argentina = CopaArgentinaManager().calcular(resultados)
 
-        promocion = {}
-        if aplicar_promocion:
-            resultados_promotion = {slug: resultados[slug] for slug in SLUGS_PROMOTION}
-            # PromotionManager().aplicar(resultados, club_registry,
-            # temporada_destino) -- confirmado contra
-            # season/promotion_manager.py real, y probado con los 5 CSV
-            # reales del repo: 20 movimientos, cero avisos de "club no
-            # encontrado" (ver header del módulo).
-            promocion = PromotionManager().aplicar(
-                resultados_promotion, self.club_registry, temporada_destino="N+1",
-            )
-
-        historia = {}
+        elo_actualizados = {}
         if generar_temporada_siguiente:
             if not aplicar_promocion:
                 raise ValueError(
@@ -259,6 +248,22 @@ class SeasonEngine:
                     "generar_temporada_siguiente=True necesita temporada_actual y "
                     "temporada_siguiente (ej. '2026' / '2027')."
                 )
+            elo_actualizados = _aplicar_elo_temporada_generada(resultados, temporada_actual)
+
+        promocion = {}
+        if aplicar_promocion:
+            resultados_promotion = {slug: resultados[slug] for slug in SLUGS_PROMOTION}
+            # PromotionManager().aplicar(resultados, club_registry,
+            # temporada_destino) -- confirmado contra
+            # season/promotion_manager.py real, y probado con los 5 CSV
+            # reales del repo: 20 movimientos, cero avisos de "club no
+            # encontrado" (ver header del módulo).
+            promocion = PromotionManager().aplicar(
+                resultados_promotion, self.club_registry, temporada_destino="N+1",
+            )
+
+        historia = {}
+        if generar_temporada_siguiente:
             hm = history_manager or HistoryManager()
             # persist_season(club_registry, temporada_actual,
             # temporada_siguiente, resultados) -- confirmado contra
@@ -290,5 +295,34 @@ class SeasonEngine:
             clasificacion_copa_argentina=clasificacion_copa_argentina,
             promocion=promocion,
             historia=historia,
+            elo_actualizados=elo_actualizados,
             cuadro_copa_siguiente=cuadro_copa_siguiente,
         )
+
+
+def _aplicar_elo_temporada_generada(resultados: dict, temporada_actual: str) -> dict:
+    """Persiste ELO solo para /api/season/generate-next, nunca para shadow."""
+    from db.repository import transaction
+
+    resumen = {}
+    slugs = ("lpf", "nacional", "bmetro", "federal_a", "primerac")
+    with transaction() as repo:
+        for slug in slugs:
+            resultado = resultados.get(slug)
+            partidos = []
+            if resultado is not None:
+                partidos = list((resultado.datos_crudos or {}).get("partidos_simulados") or [])
+            if not partidos:
+                continue
+            partidos_evento = []
+            for index, partido in enumerate(partidos, start=1):
+                fila = dict(partido)
+                fila["event_key"] = f"{slug}:{temporada_actual}:{index}:{fila.get('event_key', '')}"
+                partidos_evento.append(fila)
+            resumen[slug] = repo.apply_club_rating_events(
+                slug,
+                partidos_evento,
+                source="season_generate_next",
+                metadata={"temporada_actual": temporada_actual},
+            )
+    return resumen

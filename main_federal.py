@@ -131,7 +131,13 @@ def _correr_torneo_completo(e: EstadisticasFederal) -> dict:
     }
 
 
-def _armar_datos_web(corrida: dict, monte_carlo: list[dict], n_sims: int, equipos: dict | None = None) -> dict:
+def _armar_datos_web(
+    corrida: dict,
+    monte_carlo: list[dict],
+    n_sims: int,
+    equipos: dict | None = None,
+    partidos_simulados: list[dict] | None = None,
+) -> dict:
     return {
         "liga": "federal_a",
         "generado": datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
@@ -170,6 +176,7 @@ def _armar_datos_web(corrida: dict, monte_carlo: list[dict], n_sims: int, equipo
             "ascenso_2": corrida["ascenso_2"],
         },
         "monte_carlo": monte_carlo,
+        "partidos_simulados": partidos_simulados or [],
         "rachas": {
             nombre: equipo.ultimos10[-5:]
             for nombre, equipo in (equipos or {}).items()
@@ -250,6 +257,8 @@ def correr_simulacion_federal(n_sims: int = 500, imprimir: bool = True, guardar_
         print("=" * 50)
 
     e = _preparar_motor()
+    e.registrar_partidos_simulados_oficiales = True
+    e.partidos_simulados_oficiales = []
     corrida = _correr_torneo_completo(e)
 
     if imprimir:
@@ -308,7 +317,13 @@ def correr_simulacion_federal(n_sims: int = 500, imprimir: bool = True, guardar_
         })
     monte_carlo.sort(key=lambda f: (-f["%asciende"], -f["%ascenso_directo"], f["equipo"]))
 
-    datos_web = _armar_datos_web(corrida, monte_carlo, n_sims, equipos=e.equipos)
+    datos_web = _armar_datos_web(
+        corrida,
+        monte_carlo,
+        n_sims,
+        equipos=e.equipos,
+        partidos_simulados=e.partidos_simulados_oficiales,
+    )
 
     if guardar_json:
         data_access.save_simulation_output("federal_a", "federal_a", datos_web, n_sims)

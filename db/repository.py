@@ -251,6 +251,31 @@ class SimulatorRepository:
             df["goles"] = pd.to_numeric(df["goles"], errors="coerce").astype("int64")
         return df
 
+    def club_ratings_by_names(self, names: list[str]) -> dict[str, dict]:
+        nombres_unicos = list(dict.fromkeys(names))
+        if not nombres_unicos:
+            return {}
+        rows = self._execute(
+            """
+            select t.name, cr.ataque_local, cr.ataque_visitante,
+                   cr.defensa_local, cr.defensa_visitante, cr.partidos_computados
+            from club_ratings cr
+            join teams t on t.id = cr.team_id
+            where t.name = any(%s)
+            """,
+            (nombres_unicos,),
+        )
+        return {
+            row["name"]: {
+                "ataque_local": float(row["ataque_local"]),
+                "ataque_visitante": float(row["ataque_visitante"]),
+                "defensa_local": float(row["defensa_local"]),
+                "defensa_visitante": float(row["defensa_visitante"]),
+                "partidos_computados": int(row["partidos_computados"]),
+            }
+            for row in rows
+        }
+
     def lpf_average_history_df(self) -> pd.DataFrame:
         season_id = self.season_id("lpf")
         rows = self._execute(
@@ -417,6 +442,143 @@ class SimulatorRepository:
                 updated_at = now()
             """,
             parametros,
+        )
+
+    def apply_club_rating_events(
+        self,
+        competition_slug: str,
+        matches: list[dict],
+        source: str,
+        metadata: dict | None = None,
+    ) -> int:
+        """Aplica ELO persistente a partidos oficiales, deduplicando por evento.
+
+        No se llama desde simular_partido(): ese método también corre Monte Carlo.
+        Los callers deben pasar solo resultados reales o temporadas aceptadas.
+        """
+        if not matches:
+            return 0
+
+        from season.elo_ratings import PROMEDIOS_COMPETITION, actualizar_por_partido, rating_default
+
+        season_id = self.season_id(competition_slug)
+        nombres = []
+        for match in matches:
+            nombres.append(match["equipo_local"])
+            nombres.append(match["equipo_visitante"])
+        team_id = self._ensure_teams_bulk(nombres)
+
+        team_ids_unicos = list(dict.fromkeys(team_id.values()))
+        placeholders = ", ".join(["(%s)"] * len(team_ids_unicos))
+        self._execute(
+            f"""
+            insert into club_ratings (team_id)
+            values {placeholders}
+            on conflict (team_id) do nothing
+            """,
+            team_ids_unicos,
+        )
+
+        applied = 0
+        for index, match in enumerate(matches, start=1):
+            local_id = team_id[match["equipo_local"]]
+            visitante_id = team_id[match["equipo_visitante"]]
+            jornada = _nullable_int(match.get("jornada"))
+            event_key = match.get("event_key")
+            if not event_key:
+                event_key = (
+                    f"{competition_slug}:{season_id}:{jornada or 0}:"
+                    f"{local_id}:{visitante_id}:{match.get('goles_local')}:{match.get('goles_visitante')}"
+                )
+
+            self._execute("select pg_advisory_xact_lock(hashtext(%s))", (f"{source}:{event_key}",))
+            existing = self._execute_one(
+                """
+                select id
+                from club_rating_events
+                where source = %s and event_key = %s
+                """,
+                (source, event_key),
+            )
+            if existing is not None:
+                continue
+
+            rating_rows = self._execute(
+                """
+                select team_id, ataque_local, ataque_visitante,
+                       defensa_local, defensa_visitante, partidos_computados
+                from club_ratings
+                where team_id in (%s, %s)
+                for update
+                """,
+                (local_id, visitante_id),
+            )
+            ratings = {int(row["team_id"]): dict(row) for row in rating_rows}
+            local_rating = ratings.get(local_id, rating_default())
+            visitante_rating = ratings.get(visitante_id, rating_default())
+
+            promedio_default = PROMEDIOS_COMPETITION.get(competition_slug, (1.35, 1.05))
+            promedio_local = float(match.get("promedio_local") or promedio_default[0])
+            promedio_visitante = float(match.get("promedio_visitante") or promedio_default[1])
+            update = actualizar_por_partido(
+                local_rating,
+                visitante_rating,
+                int(match["goles_local"]),
+                int(match["goles_visitante"]),
+                promedio_local,
+                promedio_visitante,
+            )
+
+            self._upsert_club_rating(local_id, update.local_post)
+            self._upsert_club_rating(visitante_id, update.visitante_post)
+            self._execute(
+                """
+                insert into club_rating_events (
+                    competition_slug, season_id, event_key, source, jornada,
+                    equipo_local_id, equipo_visitante_id, goles_local, goles_visitante,
+                    expected_local, expected_visitante,
+                    rating_local_pre, rating_visitante_pre,
+                    rating_local_post, rating_visitante_post, metadata
+                )
+                values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                on conflict (source, event_key) do nothing
+                """,
+                (
+                    competition_slug, season_id, event_key, source, jornada,
+                    local_id, visitante_id, int(match["goles_local"]), int(match["goles_visitante"]),
+                    update.expected_local, update.expected_visitante,
+                    Jsonb(update.local_pre), Jsonb(update.visitante_pre),
+                    Jsonb(update.local_post), Jsonb(update.visitante_post),
+                    Jsonb({**(metadata or {}), **(match.get("metadata") or {}), "orden": index}),
+                ),
+            )
+            applied += 1
+        return applied
+
+    def _upsert_club_rating(self, team_id: int, rating: dict) -> None:
+        self._execute(
+            """
+            insert into club_ratings (
+                team_id, ataque_local, ataque_visitante,
+                defensa_local, defensa_visitante, partidos_computados, updated_at
+            )
+            values (%s, %s, %s, %s, %s, %s, now())
+            on conflict (team_id) do update set
+                ataque_local = excluded.ataque_local,
+                ataque_visitante = excluded.ataque_visitante,
+                defensa_local = excluded.defensa_local,
+                defensa_visitante = excluded.defensa_visitante,
+                partidos_computados = excluded.partidos_computados,
+                updated_at = now()
+            """,
+            (
+                team_id,
+                float(rating["ataque_local"]),
+                float(rating["ataque_visitante"]),
+                float(rating["defensa_local"]),
+                float(rating["defensa_visitante"]),
+                int(rating["partidos_computados"]),
+            ),
         )
 
     def upsert_match(self, competition_slug: str, row: dict, status: str) -> None:

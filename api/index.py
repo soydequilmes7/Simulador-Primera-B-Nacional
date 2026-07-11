@@ -1297,6 +1297,7 @@ def season_generate_next_endpoint(body: GenerarTemporadaBody):
             "clasificacion_copa_argentina": resultado.clasificacion_copa_argentina,
             "promocion": resultado.promocion,
             "historia": resultado.historia,
+            "elo_actualizados": resultado.elo_actualizados,
         }
     except Exception as e:
         return _error_response(e)

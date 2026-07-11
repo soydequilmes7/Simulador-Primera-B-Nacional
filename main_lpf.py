@@ -161,6 +161,7 @@ def armar_datos_web_lpf(e, tablas_clausura, campeon_clausura, detalle_playoffs,
         "tabla_actual": _tabla_actual_clausura(e),
         "rachas": _rachas_lpf(e),
         "ratings_finales": _ratings_finales_lpf(e),
+        "partidos_simulados": getattr(e, "partidos_simulados_oficiales", []),
         "descensos": descensos,
         "copas": copas,
         "trofeo": trofeo,
@@ -186,6 +187,8 @@ def correr_simulacion_lpf(imprimir=True, guardar_json=True, n_sims=300):
         # no aporta nada, así que se saltea.
         e.calcular_estadisticas()
     e.calcular_ratings_lpf()
+    e.registrar_partidos_simulados_oficiales = True
+    e.partidos_simulados_oficiales = []
 
     if imprimir:
         print("\n--- Tabla del Clausura simulada (fase de zonas) ---")
