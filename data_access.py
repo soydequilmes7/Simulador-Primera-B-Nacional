@@ -48,6 +48,15 @@ def scorer_totals_df(competition_slug: str = "nacional") -> pd.DataFrame:
     return repository().scorer_totals_df(competition_slug)
 
 
+def club_ratings_by_names(names: list[str]) -> dict[str, dict]:
+    if usando_pyodide():
+        return {}
+
+    from db.repository import repository
+
+    return repository().club_ratings_by_names(names)
+
+
 def lpf_average_history_df() -> pd.DataFrame:
     if usando_pyodide():
         return pd.read_csv(_csv_path("promedios_lpf.csv"))

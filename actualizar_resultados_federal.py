@@ -179,7 +179,7 @@ def _clasificar_partidos_jugados(
     partidos_jugados: list[dict],
     fixture: list[dict],
     resultados: list[dict],
-) -> tuple[list[dict], list[dict], list[dict], list[dict]]:
+) -> tuple[list[dict], list[dict], list[dict], list[dict], list[dict]]:
     indice_fixture = {}
     for i, fila in enumerate(fixture):
         indice_fixture[_clave_partido(fila)] = i
@@ -188,6 +188,7 @@ def _clasificar_partidos_jugados(
     resultados_actualizados = list(resultados)
     sin_matchear = []
     cargados = []
+    elo_cargados = []
     indices_a_borrar = []
 
     for p in partidos_jugados:
@@ -197,22 +198,24 @@ def _clasificar_partidos_jugados(
         if clave in indice_fixture:
             idx = indice_fixture[clave]
             fila_fixture = fixture[idx]
-            resultados_actualizados.append({
+            resultado_cargado = {
                 "fecha": fila_fixture.get("fecha", ""),
                 "jornada": fila_fixture.get("jornada", ""),
                 "equipo_local": p["equipo_local"],
                 "equipo_visitante": p["equipo_visitante"],
                 "goles_local": p["goles_local"],
                 "goles_visitante": p["goles_visitante"],
-            })
+            }
+            resultados_actualizados.append(resultado_cargado)
             indices_a_borrar.append(idx)
             cargados.append(p)
+            elo_cargados.append(resultado_cargado)
             resultados_ya_cargados.add(clave)
         else:
             sin_matchear.append(p)
 
     fixture_restante = [f for i, f in enumerate(fixture) if i not in indices_a_borrar]
-    return fixture_restante, resultados_actualizados, cargados, sin_matchear
+    return fixture_restante, resultados_actualizados, cargados, elo_cargados, sin_matchear
 
 
 def actualizar(n_sims: int = 500, correr_simulacion_fn=None, imprimir: bool = True) -> dict:
@@ -247,6 +250,7 @@ def actualizar(n_sims: int = 500, correr_simulacion_fn=None, imprimir: bool = Tr
         fixture_promiedos = sync["fixture"]
         resultados_promiedos = sync["resultados"]
         cargados = sync["cargados"]
+        elo_cargados = [_fila_resultado_desde_promiedos(p) for p in cargados]
         sin_matchear = sync["sin_matchear"]
         fixture_reparado = sync["fixture_reparado"]
         resultados_reparados = sync["resultados_reparados"]
@@ -271,6 +275,14 @@ def actualizar(n_sims: int = 500, correr_simulacion_fn=None, imprimir: bool = Tr
                             int(p["goles_local"]), int(p["goles_visitante"]),
                         )
                     repo.upsert_standings("federal_a", _reordenar_posiciones(filas))
+                elo_actualizados = repo.apply_club_rating_events(
+                    "federal_a",
+                    elo_cargados,
+                    source="real_results",
+                    metadata={"origen": "actualizar_resultados_federal.py", "modo": "sync_promiedos_completo"},
+                )
+                if imprimir and elo_cargados:
+                    print(f"  ELO persistente actualizado con {elo_actualizados} partido(s).")
 
         if not backfill_historico_sin_tabla:
             datos = None
@@ -328,7 +340,7 @@ def actualizar(n_sims: int = 500, correr_simulacion_fn=None, imprimir: bool = Tr
     if imprimir:
         print(f"  {len(partidos_jugados)} partidos jugados vistos en Promiedos (con zona resuelta)")
 
-    fixture_restante, resultados, cargados, sin_matchear = _clasificar_partidos_jugados(
+    fixture_restante, resultados, cargados, elo_cargados, sin_matchear = _clasificar_partidos_jugados(
         partidos_jugados, fixture, resultados,
     )
 
@@ -363,6 +375,14 @@ def actualizar(n_sims: int = 500, correr_simulacion_fn=None, imprimir: bool = Tr
                 int(p["goles_local"]), int(p["goles_visitante"]),
             )
         repo.upsert_standings("federal_a", _reordenar_posiciones(filas))
+        elo_actualizados = repo.apply_club_rating_events(
+            "federal_a",
+            elo_cargados,
+            source="real_results",
+            metadata={"origen": "actualizar_resultados_federal.py", "modo": "incremental"},
+        )
+        if imprimir:
+            print(f"  ELO persistente actualizado con {elo_actualizados} partido(s).")
 
     datos = None
     simulacion_corrida = False

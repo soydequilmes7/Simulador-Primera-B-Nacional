@@ -110,6 +110,7 @@ def actualizar(n_sims=1000, imprimir=True):
         indice_fixture[clave] = i
 
     cargados = []
+    elo_cargados = []
     indices_a_borrar = []
 
     for p in traducidos:
@@ -117,16 +118,18 @@ def actualizar(n_sims=1000, imprimir=True):
         if clave in indice_fixture:
             idx = indice_fixture[clave]
             fila_fixture = fixture[idx]
-            resultados.append({
+            resultado_cargado = {
                 "fecha": fila_fixture.get("fecha", ""),
                 "jornada": fila_fixture.get("jornada", ""),
                 "equipo_local": p["equipo_local"],
                 "equipo_visitante": p["equipo_visitante"],
                 "goles_local": p["goles_local"],
                 "goles_visitante": p["goles_visitante"],
-            })
+            }
+            resultados.append(resultado_cargado)
             indices_a_borrar.append(idx)
             cargados.append(p)
+            elo_cargados.append(resultado_cargado)
 
     if not cargados:
         if imprimir:
@@ -156,9 +159,13 @@ def actualizar(n_sims=1000, imprimir=True):
         goles_sumados = repo.add_scorer_goals(cargados, "nacional")
         tabla_nueva = aplicar_partidos(repo.standing_records("nacional"), cargados)
         repo.upsert_standings("nacional", tabla_nueva)
+        elo_actualizados = repo.apply_club_rating_events(
+            "nacional", elo_cargados, source="real_results", metadata={"origen": "actualizar_resultados.py"}
+        )
         if imprimir:
             print(f"  {goles_sumados} goles de jugador sumados a goleadores.csv.")
             print(f"  tabla.csv actualizada con {len(cargados)} partido(s) nuevo(s).")
+            print(f"  ELO persistente actualizado con {elo_actualizados} partido(s).")
 
     if imprimir:
         print(f"  Cargados {len(cargados)} partidos nuevos. Re-simulando...")

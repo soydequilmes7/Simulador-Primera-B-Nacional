@@ -61,6 +61,7 @@ def actualizar(n_sims=1000, correr_simulacion_fn=None, imprimir=True):
 
     sin_matchear = []
     cargados = []
+    elo_cargados = []
     indices_a_borrar = []
 
     for p in partidos_jugados:
@@ -70,16 +71,18 @@ def actualizar(n_sims=1000, correr_simulacion_fn=None, imprimir=True):
         if clave in indice_fixture:
             idx = indice_fixture[clave]
             fila_fixture = fixture[idx]
-            resultados.append({
+            resultado_cargado = {
                 "fecha": fila_fixture.get("fecha", ""),
                 "jornada": fila_fixture.get("jornada", ""),
                 "equipo_local": p["equipo_local"],
                 "equipo_visitante": p["equipo_visitante"],
                 "goles_local": p["goles_local"],
                 "goles_visitante": p["goles_visitante"],
-            })
+            }
+            resultados.append(resultado_cargado)
             indices_a_borrar.append(idx)
             cargados.append(p)
+            elo_cargados.append(resultado_cargado)
             resultados_ya_cargados.add(clave)
         else:
             sin_matchear.append(p)
@@ -117,6 +120,11 @@ def actualizar(n_sims=1000, correr_simulacion_fn=None, imprimir=True):
                 int(p["goles_local"]), int(p["goles_visitante"]),
             )
         repo.upsert_standings("bmetro", _reordenar_posiciones(filas))
+        elo_actualizados = repo.apply_club_rating_events(
+            "bmetro", elo_cargados, source="real_results", metadata={"origen": "actualizar_resultados_bmetro.py"}
+        )
+        if imprimir:
+            print(f"  ELO persistente actualizado con {elo_actualizados} partido(s).")
 
     datos = None
     simulacion_corrida = False

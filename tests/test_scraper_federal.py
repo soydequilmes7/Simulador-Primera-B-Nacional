@@ -220,13 +220,14 @@ class ActualizarFederalTests(unittest.TestCase):
             },
         ]
 
-        fixture_restante, resultados_actualizados, cargados, sin_matchear = _clasificar_partidos_jugados(
+        fixture_restante, resultados_actualizados, cargados, elo_cargados, sin_matchear = _clasificar_partidos_jugados(
             partidos_promiedos, fixture, resultados,
         )
 
         self.assertEqual(sin_matchear, [])
         self.assertEqual(len(cargados), 1)
         self.assertEqual(cargados[0]["jornada"], 16)
+        self.assertEqual(elo_cargados[0]["jornada"], "16")
         self.assertEqual(fixture_restante, [])
         self.assertEqual(len(resultados_actualizados), 2)
 

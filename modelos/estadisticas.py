@@ -108,7 +108,26 @@ class Estadisticas:
 
             self.equipos[fila["equipo"]] = equipo
 
+        self._aplicar_ratings_persistentes()
         print(f"Equipos creados: {len(self.equipos)}")
+
+    def _aplicar_ratings_persistentes(self):
+        """Usa el rating vivo por club como prior inicial si existe."""
+        try:
+            ratings = data_access.club_ratings_by_names(list(self.equipos.keys()))
+        except Exception as exc:
+            print(f"Ratings persistentes no disponibles, se usan defaults: {exc}")
+            return
+        for nombre, rating in ratings.items():
+            equipo_obj = self.equipos.get(nombre)
+            if equipo_obj is None:
+                continue
+            equipo_obj.ataque_local = float(rating["ataque_local"])
+            equipo_obj.ataque_visitante = float(rating["ataque_visitante"])
+            equipo_obj.defensa_local = float(rating["defensa_local"])
+            equipo_obj.defensa_visitante = float(rating["defensa_visitante"])
+        if ratings:
+            print(f"Ratings persistentes aplicados a {len(ratings)} equipos.")
 
     def calcular_estadisticas(self):
         """Calcula estadísticas de los últimos 10 partidos (general, local, visitante) para cada equipo."""
@@ -176,8 +195,8 @@ class Estadisticas:
                 defensa_local_bruto = gc_local / promedio_gc_local_liga
 
                 n = len(partidos_local)
-                equipo.ataque_local = round((n * ataque_local_bruto + K_REGRESION * 1.0) / (n + K_REGRESION), 3)
-                equipo.defensa_local = round((n * defensa_local_bruto + K_REGRESION * 1.0) / (n + K_REGRESION), 3)
+                equipo.ataque_local = round((n * ataque_local_bruto + K_REGRESION * equipo.ataque_local) / (n + K_REGRESION), 3)
+                equipo.defensa_local = round((n * defensa_local_bruto + K_REGRESION * equipo.defensa_local) / (n + K_REGRESION), 3)
 
             if len(partidos_visitante) > 0:
                 pesos = DECAY ** (jornada_actual - partidos_visitante["jornada"])
@@ -188,8 +207,8 @@ class Estadisticas:
                 defensa_visitante_bruto = gc_visitante / promedio_gc_visitante_liga
 
                 n = len(partidos_visitante)
-                equipo.ataque_visitante = round((n * ataque_visitante_bruto + K_REGRESION * 1.0) / (n + K_REGRESION), 3)
-                equipo.defensa_visitante = round((n * defensa_visitante_bruto + K_REGRESION * 1.0) / (n + K_REGRESION), 3)
+                equipo.ataque_visitante = round((n * ataque_visitante_bruto + K_REGRESION * equipo.ataque_visitante) / (n + K_REGRESION), 3)
+                equipo.defensa_visitante = round((n * defensa_visitante_bruto + K_REGRESION * equipo.defensa_visitante) / (n + K_REGRESION), 3)
 
         print(f"Ratings calculados para {len(self.equipos)} equipos.")
 
@@ -289,8 +308,29 @@ class Estadisticas:
             for nombre, equipo in self.equipos.items()
         }
 
-        for local, visitante in self._pares_fixture():
+        registrar = bool(getattr(self, "registrar_partidos_simulados_oficiales", False))
+        if registrar:
+            iterable_fixture = self.fixture[["fecha", "jornada", "equipo_local", "equipo_visitante"]].to_dict("records")
+        else:
+            iterable_fixture = [
+                {"equipo_local": local, "equipo_visitante": visitante}
+                for local, visitante in self._pares_fixture()
+            ]
+        for orden, fila_fixture in enumerate(iterable_fixture, start=1):
+            local = fila_fixture["equipo_local"]
+            visitante = fila_fixture["equipo_visitante"]
             gl, gv = self.simular_partido(local, visitante)
+            if registrar:
+                self.partidos_simulados_oficiales = getattr(self, "partidos_simulados_oficiales", [])
+                self.partidos_simulados_oficiales.append({
+                    "fecha": fila_fixture.get("fecha", ""),
+                    "jornada": int(fila_fixture.get("jornada") or orden),
+                    "equipo_local": local,
+                    "equipo_visitante": visitante,
+                    "goles_local": gl,
+                    "goles_visitante": gv,
+                    "event_key": f"{orden}:{local}:{visitante}",
+                })
 
             totales[local]["gf"] += gl
             totales[local]["gc"] += gv

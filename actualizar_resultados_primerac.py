@@ -62,6 +62,7 @@ def actualizar(n_sims=1000, correr_simulacion_fn=None, imprimir=True):
 
     sin_matchear = []
     cargados = []
+    elo_cargados = []
     indices_a_borrar = []
 
     for p in partidos_jugados:
@@ -71,16 +72,18 @@ def actualizar(n_sims=1000, correr_simulacion_fn=None, imprimir=True):
         if clave in indice_fixture:
             idx = indice_fixture[clave]
             fila_fixture = fixture[idx]
-            resultados.append({
+            resultado_cargado = {
                 "fecha": fila_fixture.get("fecha", ""),
                 "jornada": fila_fixture.get("jornada", ""),
                 "equipo_local": p["equipo_local"],
                 "equipo_visitante": p["equipo_visitante"],
                 "goles_local": p["goles_local"],
                 "goles_visitante": p["goles_visitante"],
-            })
+            }
+            resultados.append(resultado_cargado)
             indices_a_borrar.append(idx)
             cargados.append(p)
+            elo_cargados.append(resultado_cargado)
             resultados_ya_cargados.add(clave)
         else:
             sin_matchear.append(p)
@@ -110,8 +113,12 @@ def actualizar(n_sims=1000, correr_simulacion_fn=None, imprimir=True):
         repo.replace_matches("primerac", fixture_restante, resultados)
         tabla_nueva = aplicar_partidos(repo.standing_records("primerac"), cargados)
         repo.upsert_standings("primerac", tabla_nueva)
+        elo_actualizados = repo.apply_club_rating_events(
+            "primerac", elo_cargados, source="real_results", metadata={"origen": "actualizar_resultados_primerac.py"}
+        )
         if imprimir:
             print(f"  tabla_primerac.csv actualizada con {len(cargados)} partido(s) nuevo(s).")
+            print(f"  ELO persistente actualizado con {elo_actualizados} partido(s).")
 
     datos = None
     simulacion_corrida = False

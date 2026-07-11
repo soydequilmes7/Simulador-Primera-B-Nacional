@@ -41,6 +41,8 @@ def correr_simulacion(n_sims=1000, imprimir=True, guardar_json=True):
     estadisticas_obj.crear_equipos()
     estadisticas_obj.calcular_estadisticas()
     estadisticas_obj.calcular_ratings()
+    estadisticas_obj.registrar_partidos_simulados_oficiales = True
+    estadisticas_obj.partidos_simulados_oficiales = []
 
     if imprimir:
         print("\n--- Tabla final simulada (fase regular) ---")
@@ -131,6 +133,7 @@ def correr_simulacion(n_sims=1000, imprimir=True, guardar_json=True):
         },
         "reducido": detalle_reducido, 
         "ratings_finales": _ratings_finales_nacional(estadisticas_obj),
+        "partidos_simulados": estadisticas_obj.partidos_simulados_oficiales,
         "monte_carlo": {
             "A": mc_A,
             "B": mc_B

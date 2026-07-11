@@ -243,10 +243,10 @@ class EstadisticasLPF(Estadisticas):
             ataque_general = (fila["gf"] / n) / gf_prom_liga
             defensa_general = (fila["gc"] / n) / gc_prom_liga
 
-            equipo.ataque_local = round((n * ataque_general * factor_local + K_REGRESION) / (n + K_REGRESION), 3)
-            equipo.ataque_visitante = round((n * ataque_general * factor_visitante + K_REGRESION) / (n + K_REGRESION), 3)
-            equipo.defensa_local = round((n * defensa_general * factor_local + K_REGRESION) / (n + K_REGRESION), 3)
-            equipo.defensa_visitante = round((n * defensa_general * factor_visitante + K_REGRESION) / (n + K_REGRESION), 3)
+            equipo.ataque_local = round((n * ataque_general * factor_local + K_REGRESION * equipo.ataque_local) / (n + K_REGRESION), 3)
+            equipo.ataque_visitante = round((n * ataque_general * factor_visitante + K_REGRESION * equipo.ataque_visitante) / (n + K_REGRESION), 3)
+            equipo.defensa_local = round((n * defensa_general * factor_local + K_REGRESION * equipo.defensa_local) / (n + K_REGRESION), 3)
+            equipo.defensa_visitante = round((n * defensa_general * factor_visitante + K_REGRESION * equipo.defensa_visitante) / (n + K_REGRESION), 3)
 
         print(f"Ratings iniciales (desde Apertura) calculados para {len(self.equipos)} equipos.")
 

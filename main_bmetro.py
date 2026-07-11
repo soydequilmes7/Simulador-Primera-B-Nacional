@@ -24,6 +24,8 @@ def correr_simulacion_bmetro(n_sims=1000, imprimir=True, guardar_json=True):
     e.crear_equipos_bmetro()
     e.calcular_estadisticas()
     e.calcular_ratings()
+    e.registrar_partidos_simulados_oficiales = True
+    e.partidos_simulados_oficiales = []
 
     if imprimir:
         print("\n--- Tabla final simulada (temporada regular) ---")
@@ -72,6 +74,7 @@ def correr_simulacion_bmetro(n_sims=1000, imprimir=True, guardar_json=True):
         "reducido": detalle_reducido,
         "campeon_reducido": campeon_reducido,
         "descensos": descendidos,
+        "partidos_simulados": e.partidos_simulados_oficiales,
         "monte_carlo": resumen_mc.to_dict(orient="records"),
         "tabla_esperada": tabla_esperada_mc.to_dict(orient="records"),
         "rachas": {
