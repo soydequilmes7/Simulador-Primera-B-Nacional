@@ -8,8 +8,9 @@
 // main_primerac.py, modelos/, pysim_dispatch.py): lo pide vía
 // /api/pysim-source y lo escribe en el filesystem virtual de Pyodide,
 // junto con los CSV actuales (/api/datos-nacional, /api/datos-lpf,
-// /api/datos-copa, /api/datos-bmetro, /api/datos-federal y
-// /api/datos-primerac). No reimplementa ninguna lógica de simulación en JS.
+// /api/datos-copa, /api/datos-bmetro, /api/datos-federal,
+// /api/datos-primerac y /api/datos-libertadores). No reimplementa ninguna
+// lógica de simulación en JS.
 //
 // Protocolo de mensajes (postMessage):
 //   main -> worker: { type: "init", apiBase: string }
@@ -74,7 +75,7 @@ async function inicializar() {
 }
 
 async function cargarCodigoYDatos() {
-  const [fuente, datosNacional, datosLpf, datosCopa, datosBmetro, datosFederal, datosPrimeraC] = await Promise.all([
+  const [fuente, datosNacional, datosLpf, datosCopa, datosBmetro, datosFederal, datosPrimeraC, datosLibertadores] = await Promise.all([
     fetchJson(`${apiBase}/api/pysim-source`),
     fetchJson(`${apiBase}/api/datos-nacional`),
     fetchJson(`${apiBase}/api/datos-lpf`),
@@ -82,6 +83,7 @@ async function cargarCodigoYDatos() {
     fetchJson(`${apiBase}/api/datos-bmetro`),
     fetchJson(`${apiBase}/api/datos-federal`),
     fetchJson(`${apiBase}/api/datos-primerac`),
+    fetchJson(`${apiBase}/api/datos-libertadores`),
   ]);
 
   escribirArchivos(fuente.files, "");
@@ -91,6 +93,7 @@ async function cargarCodigoYDatos() {
   escribirArchivos(datosBmetro.files, "datos");
   escribirArchivos(datosFederal.files, "datos");
   escribirArchivos(datosPrimeraC.files, "datos");
+  escribirArchivos(datosLibertadores.files, "datos");
 
   pyodide.runPython(
     "import sys\n" +

@@ -71,6 +71,8 @@ PYSIM_SOURCE_FILES = [
     "fixture_generator.py",
     "main_primerac.py",
     "modelos/estadisticas_primerac.py",
+    "main_libertadores.py",
+    "modelos/estadisticas_libertadores.py",
 ]
 # El código fuente no cambia mientras el proceso está corriendo, así que se
 # lee y cachea una sola vez.
@@ -382,6 +384,26 @@ def datos_primerac():
         return _error_response(e)
     finally:
         _lock_primerac.release_read()
+
+
+@app.get("/api/datos-libertadores")
+def datos_libertadores():
+    """Devuelve el cuadro y los Elo de Libertadores para el Worker local.
+
+    Estos dos CSV todavía son datos estáticos del repositorio (no forman
+    parte de la persistencia de ligas en Supabase), por eso se exponen de
+    forma explícita en vez de pasar por ``league_csv_files``.
+    """
+    try:
+        nombres = ("libertadores_cuadro.csv", "libertadores_elo.csv")
+        return {
+            "files": {
+                nombre: (rutas.datos_dir() / nombre).read_text(encoding="utf-8")
+                for nombre in nombres
+            }
+        }
+    except Exception as e:
+        return _error_response(e)
 
 
 @app.get("/")
