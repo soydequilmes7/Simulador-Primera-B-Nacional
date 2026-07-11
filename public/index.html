@@ -1226,14 +1226,14 @@
   #campeon-section .sim-status, #campeon-section-lpf .sim-status, #campeon-section-copa .sim-status, #campeon-section-bmetro .sim-status, #campeon-section-federal .sim-status{ color: var(--ink-dim); }
   #campeon-section .sim-status.error, #campeon-section-lpf .sim-status.error, #campeon-section-copa .sim-status.error, #campeon-section-bmetro .sim-status.error, #campeon-section-federal .sim-status.error{ color: var(--danger); }
   #campeon-section .sim-status.ok, #campeon-section-lpf .sim-status.ok, #campeon-section-copa .sim-status.ok, #campeon-section-bmetro .sim-status.ok, #campeon-section-federal .sim-status.ok{ color: var(--zone-a); }
-  #campeon-equipo-lpf, #campeon-equipo-copa, #campeon-equipo-bmetro, #campeon-equipo-federal{
+  #campeon-equipo-lpf, #campeon-equipo-copa, #campeon-equipo-bmetro, #campeon-equipo-federal, #campeon-equipo-libertadores{
     font-family:'JetBrains Mono'; font-size:13px; font-weight:600; color: var(--ink);
     background: var(--bg-panel); border:1px solid var(--line); border-radius: var(--radius-sm);
     padding: 10px 12px; outline:none; transition: border-color 0.15s, opacity 0.15s; min-width:220px;
   }
-  #campeon-equipo-lpf:hover:not(:disabled), #campeon-equipo-copa:hover:not(:disabled), #campeon-equipo-bmetro:hover:not(:disabled), #campeon-equipo-federal:hover:not(:disabled){ border-color: var(--azul); }
-  #campeon-equipo-lpf:focus, #campeon-equipo-copa:focus, #campeon-equipo-bmetro:focus, #campeon-equipo-federal:focus{ border-color: var(--azul); }
-  #campeon-equipo-lpf:disabled, #campeon-equipo-copa:disabled, #campeon-equipo-bmetro:disabled, #campeon-equipo-federal:disabled{ cursor:wait; opacity:0.5; }
+  #campeon-equipo-lpf:hover:not(:disabled), #campeon-equipo-copa:hover:not(:disabled), #campeon-equipo-bmetro:hover:not(:disabled), #campeon-equipo-federal:hover:not(:disabled), #campeon-equipo-libertadores:hover:not(:disabled){ border-color: var(--azul); }
+  #campeon-equipo-lpf:focus, #campeon-equipo-copa:focus, #campeon-equipo-bmetro:focus, #campeon-equipo-federal:focus, #campeon-equipo-libertadores:focus{ border-color: var(--azul); }
+  #campeon-equipo-lpf:disabled, #campeon-equipo-copa:disabled, #campeon-equipo-bmetro:disabled, #campeon-equipo-federal:disabled, #campeon-equipo-libertadores:disabled{ cursor:wait; opacity:0.5; }
   /* Opciones del desplegable: el navegador no hereda var(--bg-panel) en
      <option>, así que hay que fijar el color a mano en ambos modos —
      misma lógica que ya usan Copa y B Metro para este mismo select. */
@@ -3020,6 +3020,17 @@
     50%{ box-shadow: 0 0 0 1px rgba(212,175,55,0.42), 0 0 58px rgba(212,175,55,0.36), 0 22px 46px rgba(0,0,0,0.65); }
   }
 
+  /* ---- Select "Elegí un equipo" del buscador de campeón: mismo look
+     dorado/vidrio que el resto de los controles de esta liga ---- */
+  body.liga-libertadores #campeon-equipo-libertadores{
+    font-family:'Poppins', sans-serif; font-weight:500; color: var(--ink);
+    background: rgba(255,255,255,0.05); border:1px solid rgba(212,175,55,0.3);
+    border-radius:999px; padding:10px 18px;
+  }
+  body.liga-libertadores #campeon-equipo-libertadores:hover:not(:disabled),
+  body.liga-libertadores #campeon-equipo-libertadores:focus{ border-color:#D4AF37; }
+  body.liga-libertadores #campeon-equipo-libertadores option{ background:#0C0C0C; color:#F5F1E6; }
+
   /* ---- Campeón: cierre de gala, escudo grande y glow dorado ---- */
   body.liga-libertadores #campeon-anuncio-libertadores .campeon-anuncio{
     margin-top:32px; padding:28px 20px 8px; border-top:1px solid rgba(212,175,55,0.3);
@@ -4005,12 +4016,30 @@
     <div id="search-result-libertadores"></div>
   </div>
 
+  <div class="search-section" id="campeon-section-libertadores">
+    <div class="section-head" style="margin-bottom:14px;">
+      <span class="idx">🏆</span><h2 style="font-size:18px;">Simulá hasta que tu equipo salga campeón de América</h2><div class="rule"></div>
+    </div>
+    <p class="section-note" style="margin:0 0 16px; text-align:center; max-width:none;">
+      Elegí un equipo de los 16 que llegaron a Octavos: repetimos el cuadro completo una y otra vez
+      hasta encontrar la primera corrida en la que se consagra campeón, y te mostramos ese camino
+      llave por llave.
+    </p>
+    <div class="campeon-controls">
+      <select id="campeon-equipo-libertadores"><option value="">Elegí un equipo…</option></select>
+      <button id="btn-campeon-libertadores" class="btn-simular">🏆 Simular hasta el título</button>
+    </div>
+    <div id="campeon-status-libertadores" class="sim-status"></div>
+    <div id="campeon-resultado-libertadores"></div>
+  </div>
+
   <section id="sec-libertadores-cuadro">
     <div class="section-head"><span class="idx">01</span><h2>El cuadro, desde Octavos de Final</h2><div class="rule"></div></div>
     <p class="section-note">Ratings derivados del ranking Elo de clubes de CONMEBOL (no hay historial de goles en común entre ligas de 6 países distintos). Cada llave es a ida y vuelta, sin gol de visitante, con alargue y penales si hace falta; la final es a partido único en cancha neutral.</p>
     <div class="bracket-scroll"><div class="bracket" id="bracket-libertadores"></div></div>
     <div class="campeon-anuncio-wrap" id="campeon-anuncio-libertadores"></div>
   </section>
+
 
   <section id="sec-libertadores-mc">
     <div class="section-head"><span class="idx">02</span><h2>Probabilidades — Monte Carlo</h2><div class="rule"></div></div>
@@ -4089,7 +4118,7 @@ function setApiActionsDisabled(disabled){
   document.querySelectorAll('.btn-simular, .btn-actualizar').forEach(btn => {
     btn.disabled = disabled;
   });
-  document.querySelectorAll('#sim-count, #sim-count-lpf, #sim-count-copa, #sim-count-bmetro, #sim-count-federal, #sim-count-primerac, #sim-count-libertadores, #campeon-equipo, #campeon-equipo-lpf, #campeon-equipo-copa, #campeon-equipo-bmetro, #campeon-equipo-federal, #campeon-equipo-primerac').forEach(control => {
+  document.querySelectorAll('#sim-count, #sim-count-lpf, #sim-count-copa, #sim-count-bmetro, #sim-count-federal, #sim-count-primerac, #sim-count-libertadores, #campeon-equipo, #campeon-equipo-lpf, #campeon-equipo-copa, #campeon-equipo-bmetro, #campeon-equipo-federal, #campeon-equipo-primerac, #campeon-equipo-libertadores').forEach(control => {
     control.disabled = disabled;
   });
 }
@@ -4612,11 +4641,27 @@ function renderAscenso(){
 
 }
 
+// Devuelve el primer valor "real" (no undefined/null/"") entre varias
+// alternativas. Se usa para tolerar que el backend nombre los campos de
+// forma distinta según el endpoint (p.ej. Modo Temporada vs las páginas
+// propias de cada competencia) sin que la UI llegue a imprimir la
+// palabra "undefined" si algún campo esperado no vino en la respuesta.
+function primerCampo(...vals){
+  for (const v of vals){ if (v !== undefined && v !== null && v !== '') return v; }
+  return null;
+}
+
 function matchHTML(m, roundLabel){
-  const winnerIsLocal = m.avanza === m.local;
-  return `<div class="match" data-local="${m.local}" data-visitante="${m.visitante}" data-avanza="${m.avanza || ''}">
-    <div class="row ${winnerIsLocal ? 'winner':''}"><span>${escudoHTML(m.local)}${m.local}</span><span>${m.golesLocal}</span></div>
-    <div class="row ${!winnerIsLocal ? 'winner':''}"><span>${escudoHTML(m.visitante)}${m.visitante}</span><span>${m.golesVisitante}</span></div>
+  m = m || {};
+  const local = primerCampo(m.local, m.equipo_x, m.equipoLocal, m.equipo_local, m.home, m.equipo1);
+  const visitante = primerCampo(m.visitante, m.equipo_y, m.equipoVisitante, m.equipo_visitante, m.away, m.equipo2);
+  const golesLocal = primerCampo(m.golesLocal, m.goles_local, m.goles_x, m.golLocal);
+  const golesVisitante = primerCampo(m.golesVisitante, m.goles_visitante, m.goles_y, m.golVisitante);
+  const avanza = primerCampo(m.avanza, m.campeon, m.ganador);
+  const winnerIsLocal = avanza !== null && avanza === local;
+  return `<div class="match" data-local="${local || ''}" data-visitante="${visitante || ''}" data-avanza="${avanza || ''}">
+    <div class="row ${winnerIsLocal ? 'winner':''}"><span>${local ? escudoHTML(local) : ''}${local || 'A definir'}</span><span>${golesLocal ?? ''}</span></div>
+    <div class="row ${(avanza !== null && !winnerIsLocal) ? 'winner':''}"><span>${visitante ? escudoHTML(visitante) : ''}${visitante || 'A definir'}</span><span>${golesVisitante ?? ''}</span></div>
   </div>`;
 }
 
@@ -4625,15 +4670,21 @@ function matchHTML(m, roundLabel){
 // + detalle/campeon, tal como los devuelve jugar_serie_ida_vuelta() en el
 // backend. A diferencia de matchHTML() (partido único), acá no hay goles
 // por fila individual: se muestra el resultado agregado en "detalle".
+// Igual que matchHTML(), tolera nombres de campo alternativos y nunca
+// imprime "undefined" si al equipo le falta algún dato: en ese caso
+// muestra "A definir" en vez del nombre.
 function seriesHTML(m){
-  const equipoX = m.equipo_x ?? m.local;
-  const equipoY = m.equipo_y ?? m.visitante;
-  const campeon = m.campeon ?? m.avanza;
-  const detalle = m.detalle ?? `${m.golesLocal ?? m.goles_x ?? ''}-${m.golesVisitante ?? m.goles_y ?? ''}`;
-  const xGana = campeon === equipoX;
-  return `<div class="match" data-local="${equipoX}" data-visitante="${equipoY}" data-avanza="${campeon || ''}">
-    <div class="row ${xGana ? 'winner':''}"><span>${escudoHTML(equipoX)}${equipoX}</span></div>
-    <div class="row ${!xGana ? 'winner':''}"><span>${escudoHTML(equipoY)}${equipoY}</span></div>
+  m = m || {};
+  const equipoX = primerCampo(m.equipo_x, m.local, m.equipoX, m.equipo1, m.home);
+  const equipoY = primerCampo(m.equipo_y, m.visitante, m.equipoY, m.equipo2, m.away);
+  const campeon = primerCampo(m.campeon, m.avanza, m.ganador);
+  const golesX = primerCampo(m.golesLocal, m.goles_x, m.goles_local);
+  const golesY = primerCampo(m.golesVisitante, m.goles_y, m.goles_visitante);
+  const detalle = primerCampo(m.detalle, (golesX !== null || golesY !== null) ? `${golesX ?? '?'}-${golesY ?? '?'}` : null) || '';
+  const xGana = campeon !== null && campeon === equipoX;
+  return `<div class="match" data-local="${equipoX || ''}" data-visitante="${equipoY || ''}" data-avanza="${campeon || ''}">
+    <div class="row ${xGana ? 'winner':''}"><span>${equipoX ? escudoHTML(equipoX) : ''}${equipoX || 'A definir'}</span></div>
+    <div class="row ${(campeon !== null && !xGana) ? 'winner':''}"><span>${equipoY ? escudoHTML(equipoY) : ''}${equipoY || 'A definir'}</span></div>
     <div class="leg-detail">${detalle}</div>
   </div>`;
 }
@@ -7866,11 +7917,21 @@ function iniciarLibertadores(){
   const anuncio = document.getElementById('campeon-anuncio-libertadores');
   if (anuncio) anuncio.innerHTML = campeonAnuncioHTML(DATA_LIBERTADORES.campeon, '🏆');
   renderMCLibertadores();
+  poblarSelectEquiposLibertadores();
   TEAM_INDEX_LIBERTADORES = buildTeamIndexLibertadores();
   poblarDatalistLibertadores(TEAM_INDEX_LIBERTADORES);
   const busqueda = document.getElementById('team-search-libertadores');
   if (busqueda && busqueda.value) buscarEquipoLibertadores(busqueda.value);
   if (document.body.classList.contains('liga-libertadores')) actualizarHero('libertadores');
+}
+
+function poblarSelectEquiposLibertadores(){
+  const sel = document.getElementById('campeon-equipo-libertadores');
+  if (!sel || !DATA_LIBERTADORES.equipos_vivos) return;
+  const valorPrevio = sel.value;
+  sel.innerHTML = '<option value="">Elegí un equipo…</option>' +
+    DATA_LIBERTADORES.equipos_vivos.map(n => `<option value="${n}">${n}</option>`).join('');
+  if (valorPrevio && DATA_LIBERTADORES.equipos_vivos.includes(valorPrevio)) sel.value = valorPrevio;
 }
 
 function leerNSimsLibertadores(){
@@ -7917,6 +7978,55 @@ async function correrSimulacionLibertadores(){
   }
 }
 document.getElementById('btn-simular-libertadores').addEventListener('click', correrSimulacionLibertadores);
+
+async function simularHastaCampeonLibertadores(){
+  const sel = document.getElementById('campeon-equipo-libertadores');
+  const btn = document.getElementById('btn-campeon-libertadores');
+  const status = document.getElementById('campeon-status-libertadores');
+  const cont = document.getElementById('campeon-resultado-libertadores');
+  const equipo = sel.value;
+
+  if (!equipo){
+    status.classList.add('error');
+    status.textContent = "Elegí un equipo primero.";
+    return;
+  }
+  if (!beginApiAction(status)) return;
+
+  btn.disabled = true;
+  sel.disabled = true;
+  btn.textContent = "Simulando…";
+  status.classList.remove('error', 'ok');
+  status.textContent = `Repitiendo la Copa hasta que ${equipo} salga campeón — puede tardar unos segundos.`;
+  cont.innerHTML = "";
+
+  try {
+    const cuerpo = await ejecutarSimulacion("simular-campeon-libertadores", { equipo }, "/api/simular-campeon-libertadores", status);
+
+    if (!cuerpo.logrado){
+      status.classList.add('error');
+      status.textContent = `No salió campeón en ${cuerpo.max_intentos} corridas — probá de nuevo.`;
+      return;
+    }
+    status.classList.add('ok');
+    status.textContent = `✓ Campeón en el intento N° ${cuerpo.intentos}`;
+    const campeonCorrida = cuerpo.rondas.final[0].avanza;
+    cont.innerHTML = `
+      <div class="campeon-summary">🏆 <b>${cuerpo.equipo}</b> se consagra campeón de América en esta corrida simulada
+        (intento N° ${cuerpo.intentos} de una búsqueda al azar entre distintos cuadros posibles)</div>
+      <div class="bracket-scroll" style="margin-top:14px;"><div class="bracket">${bracketLibertadoresHTML(cuerpo.rondas, campeonCorrida)}</div></div>
+      <div class="campeon-anuncio-wrap">${campeonAnuncioHTML(campeonCorrida, '🏆')}</div>
+    `;
+  } catch (e) {
+    setApiErrorStatus(status, "No se pudo simular", e);
+  } finally {
+    btn.disabled = false;
+    sel.disabled = false;
+    btn.textContent = "🏆 Simular hasta el título";
+    endApiAction();
+  }
+}
+document.getElementById('btn-campeon-libertadores').addEventListener('click', simularHastaCampeonLibertadores);
 
 function llaveLibertadoresHTML(ll, esFinal){
   if (esFinal){
@@ -8520,7 +8630,14 @@ function buildBracketLinesLibertadores(bracketEl){
 
 function refreshAllBracketLines(){
   document.querySelectorAll('.bracket').forEach(bracketEl => {
-    if (bracketEl.id === 'bracket-libertadores') buildBracketLinesLibertadores(bracketEl);
+    // El cuadro de Libertadores usa un layout "enfrentado" (Octavos a
+    // ambos lados, Final en el medio) que necesita su propia función de
+    // trazado -- se detecta por estructura (presencia de .oct-izq/
+    // .semi-izq), no por id, para que también ande en el cuadro ad-hoc
+    // que arma "Simular hasta el título" (mismo bracketLibertadoresHTML,
+    // pero sin id="bracket-libertadores").
+    const esLayoutLibertadores = bracketEl.querySelector(':scope > .round.oct-izq, :scope > .round.semi-izq');
+    if (esLayoutLibertadores) buildBracketLinesLibertadores(bracketEl);
     else buildBracketLines(bracketEl);
   });
 }
@@ -9683,25 +9800,31 @@ document.getElementById('btn-reiniciar-temporada').addEventListener('click', rei
 
 /* ---------- FIN MODO TEMPORADA ---------- */
 
-/* ---------- DRAG-TO-SCROLL DEL CUADRO DE LIBERTADORES ----------
-   Solo estético/UX: la scrollbar nativa de este cuadro queda oculta por
+/* ---------- DRAG-TO-SCROLL DE LOS CUADROS DE LIBERTADORES ----------
+   Solo estético/UX: la scrollbar nativa de estos cuadros queda oculta por
    CSS (ver body.liga-libertadores .bracket-scroll), así que agregamos
-   una forma de moverlo con el mouse (arrastrar) o con Shift + rueda,
-   además del scroll táctil/trackpad que ya funciona solo. No toca datos
-   ni el render del bracket -- solo escucha eventos sobre el contenedor
-   que ya existe en el HTML estático. */
+   una forma de moverlos con el mouse (arrastrar) o con Shift + rueda,
+   además del scroll táctil/trackpad. No toca datos ni el render del
+   bracket.
+   Usa delegación de eventos sobre todo el documento (en vez de atarse a
+   un único elemento fijo) porque en esta pestaña hay más de un
+   ".bracket-scroll": el cuadro real (id="bracket-libertadores", ya
+   presente en el HTML estático) y el cuadro ad-hoc que arma "Simular
+   hasta el título" (se crea recién al hacer click, dentro de
+   #campeon-resultado-libertadores). Así el arrastre funciona en
+   cualquiera de los dos, incluidos los que todavía no existen al cargar
+   la página. */
 (function initDragScrollLibertadores(){
-  const bracketEl = document.getElementById('bracket-libertadores');
-  if (!bracketEl) return;
-  const scrollEl = bracketEl.closest('.bracket-scroll');
-  if (!scrollEl) return;
-
+  let scrollEl = null;
   let arrastrando = false;
   let startX = 0;
   let startScroll = 0;
   let movido = false;
 
-  scrollEl.addEventListener('mousedown', (ev) => {
+  document.addEventListener('mousedown', (ev) => {
+    const candidato = ev.target.closest('.bracket-scroll');
+    if (!candidato || !document.body.classList.contains('liga-libertadores')) return;
+    scrollEl = candidato;
     arrastrando = true;
     movido = false;
     startX = ev.pageX;
@@ -9710,32 +9833,61 @@ document.getElementById('btn-reiniciar-temporada').addEventListener('click', rei
   });
 
   window.addEventListener('mousemove', (ev) => {
-    if (!arrastrando) return;
+    if (!arrastrando || !scrollEl) return;
     const delta = ev.pageX - startX;
     if (Math.abs(delta) > 3) movido = true;
     scrollEl.scrollLeft = startScroll - delta;
   });
 
   const soltar = () => {
-    if (!arrastrando) return;
+    if (!arrastrando || !scrollEl) return;
     arrastrando = false;
     scrollEl.classList.remove('is-dragging');
   };
   window.addEventListener('mouseup', soltar);
-  scrollEl.addEventListener('mouseleave', soltar);
+  document.addEventListener('mouseleave', soltar);
 
   // Evita que un drag termine disparando un click sobre el escudo/carta debajo del mouse
-  scrollEl.addEventListener('click', (ev) => {
-    if (movido){ ev.preventDefault(); ev.stopPropagation(); }
+  document.addEventListener('click', (ev) => {
+    if (movido && ev.target.closest('.bracket-scroll')){ ev.preventDefault(); ev.stopPropagation(); }
   }, true);
 
   // Shift + rueda del mouse: traduce el scroll vertical a horizontal
-  scrollEl.addEventListener('wheel', (ev) => {
+  document.addEventListener('wheel', (ev) => {
+    const candidato = ev.target.closest('.bracket-scroll');
+    if (!candidato || !document.body.classList.contains('liga-libertadores')) return;
     if (!ev.shiftKey) return;
     if (ev.deltaY === 0) return;
     ev.preventDefault();
-    scrollEl.scrollLeft += ev.deltaY;
+    candidato.scrollLeft += ev.deltaY;
   }, { passive:false });
+
+  // Scroll táctil (touch): overflow-x:auto ya permite deslizar con el dedo
+  // de forma nativa, pero agregamos el mismo manejo por arrastre que el
+  // mouse para que el gesto se sienta igual en cualquiera de los cuadros
+  // (el estático y el que arma "Simular hasta el título").
+  let touchScrollEl = null;
+  let touchStartX = 0;
+  let touchStartScroll = 0;
+
+  document.addEventListener('touchstart', (ev) => {
+    const candidato = ev.target.closest('.bracket-scroll');
+    if (!candidato || !document.body.classList.contains('liga-libertadores')) return;
+    if (ev.touches.length !== 1) return;
+    touchScrollEl = candidato;
+    touchStartX = ev.touches[0].pageX;
+    touchStartScroll = touchScrollEl.scrollLeft;
+  }, { passive:true });
+
+  document.addEventListener('touchmove', (ev) => {
+    if (!touchScrollEl) return;
+    const delta = ev.touches[0].pageX - touchStartX;
+    touchScrollEl.scrollLeft = touchStartScroll - delta;
+  }, { passive:true });
+
+  const soltarTouch = () => { touchScrollEl = null; };
+  document.addEventListener('touchend', soltarTouch);
+  document.addEventListener('touchcancel', soltarTouch);
 })();
 
 </script>

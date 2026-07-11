@@ -181,7 +181,7 @@ CLUB_ZONA_GEOGRAFICA = {
     "Atlético Tucumán": "interior",
     "Bartolomé Mitre": "interior",
     "Belgrano": "interior",
-    "Boca Unidos": "interior",
+    "Boca Unidos de Corrientes": "interior",
     "Central Córdoba (Santiago del Estero)": "interior",
     "Central Norte": "interior",
     "Chaco For Ever": "interior",

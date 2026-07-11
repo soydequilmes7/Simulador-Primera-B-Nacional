@@ -206,11 +206,43 @@ CAMPOS_RATING = (
 # temporada actual / 35% memoria previa.
 ALPHA_MEMORIA = 0.65
 
-# Cuántas temporadas completas le toma a un recién llegado (por
-# ascenso o descenso) dejar de tener handicap de adaptación aplicado.
-# Se disuelve linealmente: temporada 1 en destino -> factor 1/3,
-# temporada 2 -> 2/3, temporada 3 en adelante -> 1.0 (sin handicap).
+# Cuántas temporadas completas le toma a un recién ASCENDIDO dejar de
+# tener handicap de adaptación aplicado. Se disuelve linealmente:
+# temporada 1 en destino -> factor 1/3, temporada 2 -> 2/3, temporada 3
+# en adelante -> 1.0 (sin handicap).
 N_TEMPORADAS_HANDICAP = 2
+
+# BUG ENCONTRADO Y CORREGIDO -- reportado por el usuario: "el equipo
+# que desciende se le hace muy difícil volver a pelear... en el
+# fútbol argentino real esto no pasa, los que descienden de Primera
+# suelen tener mejor plantel/presupuesto que los que ya están arriba
+# en la categoría de abajo, y suelen pelear el ascenso casi enseguida".
+#
+# La causa: el factor de NIVEL_DIVISION YA amplifica correctamente la
+# distancia al promedio para un club que desciende (viene de una
+# división más fuerte -> factor > 1, ver rating_para_recien_llegado()
+# más abajo) -- pero el handicap de adaptación se multiplicaba SIEMPRE
+# encima de eso, sin importar la dirección, aplastando esa
+# amplificación de vuelta hacia 1.0 exactamente igual que a un club
+# CHICO recién ascendido. Un club que baja de categoría no necesita
+# "adaptarse" al mismo ritmo que uno que sube -- su plantel sigue
+# siendo el mismo, juega contra rivales más débiles. Por eso el
+# handicap de ADAPTACIÓN (pensado para "¿puede competir a este nivel
+# más exigente?") no tiene sentido aplicado a un descenso.
+#
+# Fix: el handicap de ascenso (arriba) sigue igual para cuando el
+# club sube de nivel. Para cuando BAJA de nivel, no se aplica ningún
+# handicap -- se confía de entrada en el rating amplificado por
+# NIVEL_DIVISION. Ver _es_ascenso() más abajo.
+def _es_ascenso(division_origen: str, division_destino: str) -> bool:
+    """True si mover de division_origen a division_destino es subir de
+    nivel (NIVEL_DIVISION más alto en destino) -- el único caso que
+    amerita el handicap de adaptación. False para descenso O para un
+    movimiento lateral (mismo NIVEL_DIVISION, ej. bmetro<->federal_a
+    si algún día se diera -- un lateral tampoco necesita adaptarse a
+    "más exigencia", así que se trata igual que un descenso: sin
+    handicap)."""
+    return NIVEL_DIVISION[division_destino] > NIVEL_DIVISION[division_origen]
 
 
 def _factor_handicap(temporadas_consecutivas: int) -> float:
@@ -219,7 +251,9 @@ def _factor_handicap(temporadas_consecutivas: int) -> float:
     arrancar (0 = está por jugar su primera temporada ahí -- el caso
     de rating_para_recien_llegado()). Devuelve un factor en (0, 1]
     que se multiplica sobre la distancia al promedio de liga (1.0);
-    1.0 significa "sin handicap, confiar 100% en el rating"."""
+    1.0 significa "sin handicap, confiar 100% en el rating". Este
+    handicap es SOLO para ascensos -- ver _es_ascenso() y el docstring
+    de arriba sobre por qué un descenso no lo necesita."""
     return min(1.0, (temporadas_consecutivas + 1) / (N_TEMPORADAS_HANDICAP + 1))
 
 
@@ -268,7 +302,13 @@ class RatingCarryoverPolicy:
         función por diseño solo se llama en el momento de la
         llegada; las temporadas siguientes de handicap las aplica
         combinar_con_memoria() para clubes que ya vienen jugando en
-        destino).
+        destino) -- SOLO cuando es un ASCENSO (ver _es_ascenso()). Un
+        descenso confía de entrada en el rating ya amplificado por
+        NIVEL_DIVISION, sin handicap adicional (ver el bloque de
+        comentarios sobre N_TEMPORADAS_HANDICAP más arriba en el
+        módulo: reportado por el usuario, un club que baja de
+        categoría no necesita "adaptarse", su plantel sigue siendo el
+        mismo).
         """
         if division_destino not in NIVEL_DIVISION:
             raise ValueError(
@@ -303,9 +343,12 @@ class RatingCarryoverPolicy:
             )
 
         factor = NIVEL_DIVISION[division_origen] / NIVEL_DIVISION[division_destino]
-        # Handicap de adaptación, temporada 1 en destino (ver docstring
-        # de este método y del módulo).
-        factor *= _factor_handicap(0)
+        # Handicap de adaptación, SOLO si es ascenso (ver _es_ascenso()
+        # y el docstring de la sección de arriba -- un descenso no
+        # necesita "adaptarse a más exigencia", así que no se le
+        # aplasta la amplificación que ya le dio el factor de arriba).
+        if _es_ascenso(division_origen, division_destino):
+            factor *= _factor_handicap(0)
 
         resultado = {}
         for campo in CAMPOS_RATING:
@@ -374,6 +417,46 @@ def temporadas_consecutivas_en_division(club: Club, division_slug: str) -> int |
             break
         contador += 1
     return contador
+
+
+# Reverso de DIVISIONES (slug -> nombre lindo) para poder traducir la
+# división ANTERIOR de una entrada de Club.history (que guarda el
+# nombre lindo) de vuelta a un slug de NIVEL_DIVISION -- ver
+# _ascenso_o_descenso_reciente() más abajo.
+_SLUG_DESDE_PRETTY = {pretty: slug for slug, pretty in DIVISIONES.items()}
+
+
+def _ascenso_o_descenso_reciente(club: Club, division_slug: str) -> bool | None:
+    """Mira la entrada de club.history INMEDIATAMENTE ANTERIOR a la
+    racha actual en `division_slug` (la división distinta más reciente
+    antes de esa racha) y determina si el club LLEGÓ a esta división
+    por ascenso o por descenso -- ver _es_ascenso() y el bloque de
+    comentarios sobre N_TEMPORADAS_HANDICAP más arriba en el módulo
+    (reportado por el usuario: un descenso no debería sufrir el mismo
+    handicap que un ascenso).
+
+    Devuelve True si fue ascenso, False si fue descenso, None si no
+    hay forma de saberlo (sin historial suficiente, o la división
+    anterior no se pudo traducir de vuelta a un slug -- degrada a
+    "tratar como ascenso" en combinar_con_memoria(), el criterio más
+    conservador, ya que ese era el comportamiento de siempre)."""
+    nombre_pretty = DIVISIONES.get(division_slug)
+    if nombre_pretty is None or not club.history:
+        return None
+
+    entradas = list(reversed(club.history))
+    i = 0
+    while i < len(entradas) and entradas[i].get("division") == nombre_pretty:
+        i += 1
+    if i >= len(entradas):
+        return None  # toda la historia es de esta misma división -- no hay "llegada" que mirar
+
+    division_anterior_pretty = entradas[i].get("division")
+    division_anterior_slug = _SLUG_DESDE_PRETTY.get(division_anterior_pretty)
+    if division_anterior_slug is None or division_anterior_slug not in NIVEL_DIVISION:
+        return None
+
+    return _es_ascenso(division_anterior_slug, division_slug)
 
 
 def memoria_ewma(club: Club, division_slug: str, alpha: float = ALPHA_MEMORIA) -> dict | None:
@@ -451,6 +534,12 @@ def combinar_con_memoria(
          ver HANDOFF_elo_persistente.md), tampoco se aplica handicap
          -- "no sabemos si es reciente" ya NO se trata igual que
          "sabemos que es reciente".
+         SEGUNDO BUG CORREGIDO (mismo reporte del usuario que el de
+         arriba, "al equipo que desciende le cuesta mucho volver a
+         pelear"): el handicap ahora SOLO se aplica si la llegada a
+         esta división fue por ASCENSO (ver _ascenso_o_descenso_reciente()
+         y _es_ascenso()) -- un club que llegó por DESCENSO no lo
+         sufre, en ninguna de sus primeras temporadas ahí.
       3. Piso de prestigio histórico (season/prestigio.py, ver su
          docstring): DESPUÉS de la memoria y el handicap, amortigua
          qué tan lejos del promedio puede quedar cada componente del
@@ -471,9 +560,11 @@ def combinar_con_memoria(
         }
 
     temporadas = temporadas_consecutivas_en_division(club, division_slug)
-    if temporadas is None:
-        # Sin ningún dato de historial -- no hay evidencia de que sea
-        # un recién llegado, no se penaliza a ciegas (ver docstring).
+    fue_ascenso = _ascenso_o_descenso_reciente(club, division_slug)
+    if temporadas is None or fue_ascenso is False:
+        # Sin ningún dato de historial (no hay evidencia de que sea un
+        # recién llegado), O llegó por descenso (no necesita
+        # handicap, ver docstring) -- no se penaliza.
         resultado = base
     else:
         factor = _factor_handicap(temporadas)

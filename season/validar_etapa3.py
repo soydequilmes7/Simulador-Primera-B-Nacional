@@ -28,10 +28,16 @@ from season.rating_carryover import (
 )
 
 # Fase 0 (HANDOFF_carryover_ratings.md): rating_para_recien_llegado()
-# ahora aplica también el handicap de adaptación de la temporada 1 en
-# destino (factor fijo, ver _factor_handicap(0) en rating_carryover.py)
-# -- esta reimplementación manual se actualiza acá para seguir siendo
-# un chequeo independiente real, no una copia del código interno.
+# aplica el handicap de adaptación de la temporada 1 en destino
+# (factor fijo, ver _factor_handicap(0) en rating_carryover.py) --
+# esta reimplementación manual se actualiza acá para seguir siendo un
+# chequeo independiente real, no una copia del código interno.
+#
+# ACTUALIZADO (reportado por el usuario: "al que desciende le cuesta
+# mucho volver a pelear, en la vida real no pasa así"): el handicap
+# ahora es ASIMÉTRICO -- solo se aplica en un ASCENSO real (subir de
+# NIVEL_DIVISION), NO en un descenso ni en un movimiento lateral (ver
+# _es_ascenso() en rating_carryover.py).
 FACTOR_HANDICAP_TEMPORADA_1 = 1 / (N_TEMPORADAS_HANDICAP + 1)
 
 
@@ -39,7 +45,9 @@ def _manual_carryover(ratings_origen: dict, division_origen: str, division_desti
     """Reimplementación independiente de la fórmula, para comparar
     contra RatingCarryoverPolicy sin depender de su código interno."""
     factor = NIVEL_DIVISION[division_origen] / NIVEL_DIVISION[division_destino]
-    factor *= FACTOR_HANDICAP_TEMPORADA_1
+    es_ascenso = NIVEL_DIVISION[division_destino] > NIVEL_DIVISION[division_origen]
+    if es_ascenso:
+        factor *= FACTOR_HANDICAP_TEMPORADA_1
     resultado = {}
     for campo in CAMPOS_RATING:
         valor_origen = ratings_origen[campo]
@@ -98,17 +106,16 @@ def main():
     print(f"  esperado:  {esperado}")
     print(f"  obtenido:  {obtenido}")
     errores += _comparar("mismo nivel", esperado, obtenido)
-    # Chequeo adicional (Fase 0): con factor de nivel=1.0 pero CON el
-    # handicap de temporada 1 (FACTOR_HANDICAP_TEMPORADA_1 = 1/3), la
-    # distancia a 1.0 del "valor_ajustado" queda comprimida a un
-    # tercio ANTES de la regresión 50/50 -- ya no es la mitad de
-    # camino simple entre el valor de origen y 1.0.
+    # Chequeo adicional (Fase 0, ACTUALIZADO por la asimetría
+    # ascenso/descenso): un movimiento LATERAL (mismo NIVEL_DIVISION)
+    # no es un ascenso, así que YA NO lleva handicap -- vuelve a ser
+    # la mitad de camino simple entre el valor de origen y 1.0
+    # (regresión 50/50, N_CARRYOVER=K_REGRESION=12).
     for campo in CAMPOS_RATING:
-        valor_ajustado = 1.0 + (ratings_origen[campo] - 1.0) * FACTOR_HANDICAP_TEMPORADA_1
-        esperado_campo = round((valor_ajustado + 1.0) / 2, 3)
-        if abs(obtenido[campo] - esperado_campo) > 1e-9:
+        mitad = round((ratings_origen[campo] + 1.0) / 2, 3)
+        if abs(obtenido[campo] - mitad) > 1e-9:
             errores.append(
-                f"[mismo nivel, chequeo 50/50 con handicap] {campo}: esperaba {esperado_campo}, "
+                f"[mismo nivel, chequeo 50/50 sin handicap] {campo}: esperaba {mitad} (mitad de camino), "
                 f"dio {obtenido[campo]}"
             )
 

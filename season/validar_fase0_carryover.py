@@ -70,40 +70,57 @@ def validar_factor_handicap() -> list:
 # la temporada 1 (factor 1/3 adicional sobre el ajuste de nivel).
 # ----------------------------------------------------------------
 def validar_recien_llegado_con_handicap() -> list:
-    print("\n[Parte B] rating_para_recien_llegado() con handicap de temporada 1")
+    print("\n[Parte B] rating_para_recien_llegado() -- handicap asimétrico (SOLO ascenso)")
     errores = []
     politica = RatingCarryoverPolicy()
-
-    ratings_origen = _rating(1.30, 0.85, 1.10, 0.95)
-    obtenido = politica.rating_para_recien_llegado(ratings_origen, "federal_a", "bmetro")
-
-    # Reimplementación manual CON handicap (mismo nivel federal_a/bmetro
-    # -> factor de nivel = 1.0, factor_handicap(0) = 1/3).
     from season.rating_carryover import NIVEL_DIVISION, N_CARRYOVER, K_REGRESION
-    factor = (NIVEL_DIVISION["federal_a"] / NIVEL_DIVISION["bmetro"]) * (1 / 3)
-    esperado = {}
-    for campo in CAMPOS_RATING:
-        valor_ajustado = 1.0 + (ratings_origen[campo] - 1.0) * factor
-        esperado[campo] = round((N_CARRYOVER * valor_ajustado + K_REGRESION * 1.0) / (N_CARRYOVER + K_REGRESION), 3)
 
-    print(f"  ratings_origen: {ratings_origen}")
-    print(f"  esperado (con handicap 1/3): {esperado}")
-    print(f"  obtenido: {obtenido}")
-    errores += _comparar("recien_llegado con handicap", esperado, obtenido)
+    def _manual(ratings_origen, division_origen, division_destino, con_handicap):
+        factor = NIVEL_DIVISION[division_origen] / NIVEL_DIVISION[division_destino]
+        if con_handicap:
+            factor *= (1 / 3)
+        esperado = {}
+        for campo in CAMPOS_RATING:
+            valor_ajustado = 1.0 + (ratings_origen[campo] - 1.0) * factor
+            esperado[campo] = round((N_CARRYOVER * valor_ajustado + K_REGRESION * 1.0) / (N_CARRYOVER + K_REGRESION), 3)
+        return esperado
 
-    # Chequeo cualitativo: el resultado con handicap debe estar MÁS
-    # cerca de 1.0 (promedio de liga) que el que daría la fórmula
-    # vieja (sin el factor 1/3) -- confirma que el handicap comprime.
-    factor_sin_handicap = NIVEL_DIVISION["federal_a"] / NIVEL_DIVISION["bmetro"]
+    # Caso 1: ASCENSO real (nacional 0.85 -> lpf 1.00) -- acá SÍ tiene
+    # que aplicarse el handicap de temporada 1 (factor 1/3 extra).
+    ratings_origen = _rating(1.30, 0.85, 1.10, 0.95)
+    obtenido_ascenso = politica.rating_para_recien_llegado(ratings_origen, "nacional", "lpf")
+    esperado_ascenso = _manual(ratings_origen, "nacional", "lpf", con_handicap=True)
+    print(f"  ASCENSO (nacional->lpf): esperado {esperado_ascenso}, obtenido {obtenido_ascenso}")
+    errores += _comparar("recien_llegado ASCENSO con handicap", esperado_ascenso, obtenido_ascenso)
+
+    # Caso 2: DESCENSO real (lpf 1.00 -> nacional 0.85) -- BUG
+    # CORREGIDO (reportado por el usuario: "al que desciende le cuesta
+    # mucho volver a pelear, en la vida real no pasa así"): NO se
+    # aplica ningún handicap, se confía en el rating ya amplificado
+    # por NIVEL_DIVISION de entrada.
+    obtenido_descenso = politica.rating_para_recien_llegado(ratings_origen, "lpf", "nacional")
+    esperado_descenso = _manual(ratings_origen, "lpf", "nacional", con_handicap=False)
+    print(f"  DESCENSO (lpf->nacional): esperado {esperado_descenso}, obtenido {obtenido_descenso}")
+    errores += _comparar("recien_llegado DESCENSO sin handicap", esperado_descenso, obtenido_descenso)
+
+    # Caso 3: LATERAL (federal_a 0.65 -> bmetro 0.65, mismo nivel) --
+    # tampoco es "subir de exigencia", tampoco lleva handicap.
+    obtenido_lateral = politica.rating_para_recien_llegado(ratings_origen, "federal_a", "bmetro")
+    esperado_lateral = _manual(ratings_origen, "federal_a", "bmetro", con_handicap=False)
+    print(f"  LATERAL (federal_a->bmetro): esperado {esperado_lateral}, obtenido {obtenido_lateral}")
+    errores += _comparar("recien_llegado LATERAL sin handicap", esperado_lateral, obtenido_lateral)
+
+    # Chequeo cualitativo: el ASCENSO con handicap tiene que quedar
+    # MÁS cerca de 1.0 que el mismo movimiento sin handicap (confirma
+    # que el handicap efectivamente comprime cuando corresponde).
+    sin_handicap_nacional_lpf = _manual(ratings_origen, "nacional", "lpf", con_handicap=False)
     for campo in CAMPOS_RATING:
-        valor_ajustado_viejo = 1.0 + (ratings_origen[campo] - 1.0) * factor_sin_handicap
-        viejo = round((N_CARRYOVER * valor_ajustado_viejo + K_REGRESION * 1.0) / (N_CARRYOVER + K_REGRESION), 3)
-        distancia_nueva = abs(obtenido[campo] - 1.0)
-        distancia_vieja = abs(viejo - 1.0)
-        if not (distancia_nueva <= distancia_vieja):
+        distancia_con = abs(obtenido_ascenso[campo] - 1.0)
+        distancia_sin = abs(sin_handicap_nacional_lpf[campo] - 1.0)
+        if not (distancia_con <= distancia_sin):
             errores.append(
-                f"[recien_llegado, chequeo compresión] {campo}: con handicap ({obtenido[campo]}) "
-                f"no quedó más cerca de 1.0 que sin handicap ({viejo})"
+                f"[ascenso, chequeo compresión] {campo}: con handicap ({obtenido_ascenso[campo]}) "
+                f"no quedó más cerca de 1.0 que sin handicap ({sin_handicap_nacional_lpf[campo]})"
             )
     return errores
 
