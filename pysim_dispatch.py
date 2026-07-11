@@ -26,6 +26,7 @@ No hace I/O propio: delega todo a main.py / main_lpf.py / main_copa.py /
 main_bmetro.py, que ya leen los CSV vía rutas.datos_dir().
 """
 import json
+import math
 
 from main import correr_simulacion, simular_hasta_campeon
 from main_lpf import correr_simulacion_lpf, simular_hasta_campeon_lpf
@@ -147,4 +148,21 @@ def ejecutar_tarea_json(tarea, kwargs_json):
     un PyProxy con los kwargs."""
     kwargs = json.loads(kwargs_json) if kwargs_json else {}
     resultado = ejecutar_tarea(tarea, **kwargs)
-    return json.dumps(resultado, ensure_ascii=False)
+    return json.dumps(_normalizar_json(resultado), ensure_ascii=False)
+
+
+def _normalizar_json(valor):
+    """Convierte valores no válidos en JSON estándar antes de cruzar a JS.
+
+    Python serializa ``float('nan')`` como ``NaN`` por defecto, pero
+    ``JSON.parse`` (usado por el Web Worker) lo rechaza. Las simulaciones
+    pueden incluir esos valores en campos aún no definidos, por ejemplo la
+    fecha de un partido pendiente. En JSON se representan como ``null``.
+    """
+    if isinstance(valor, float):
+        return valor if math.isfinite(valor) else None
+    if isinstance(valor, dict):
+        return {clave: _normalizar_json(item) for clave, item in valor.items()}
+    if isinstance(valor, (list, tuple)):
+        return [_normalizar_json(item) for item in valor]
+    return valor
