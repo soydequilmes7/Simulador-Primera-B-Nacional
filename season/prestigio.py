@@ -26,24 +26,43 @@ amortiguador -- una mala temporada le pega entero, como en la vida
 real (donde clubes chicos sí pueden desplomarse).
 
 TABLA DE TÍTULOS -- IMPORTANTE, LEER ANTES DE CONFIAR EN ESTO: los
-nombres de club de acá están escritos EXACTAMENTE como aparecen HOY en
-los CSV del proyecto (datos/tablalpf.csv, datos/tabla.csv,
-datos/tabla_bmetro.csv, datos/tabla_federal_a.csv,
-datos/tabla_primerac.csv) -- confirmados uno por uno el 11/07/2026,
-grepeando cada CSV por separado, para evitar el mismo tipo de bug que
-ya existió en este proyecto (nombres ambiguos compartidos entre
-divisiones -- ver memoria del proyecto: Estudiantes de La Plata /
-Estudiantes de Caseros, Central Córdoba Rosario / SdE, y acá mismo se
-encontró un caso nuevo: "Racing" en LPF es Racing Club de Avellaneda,
-"Racing (Cba)" en Nacional es un club DISTINTO, Racing Club de
-Córdoba -- con eso hay que tener cuidado en cualquier tabla nueva
-que use nombres de club como clave).
+nombres de club de acá tienen que ser el nombre REAL que usa
+Club.name a través de todo el sistema -- que NO siempre es el que
+aparece en el CSV crudo.
 
-Algunas entradas de la tabla original NO se incluyeron a propósito por
-ambigüedad real, sin forma de confirmar con certeza a qué club del
-roster actual corresponden -- ver _ENTRADAS_EXCLUIDAS_POR_AMBIGUEDAD
-más abajo. Si alguna resulta importante, confirmarla a mano antes de
-agregarla -- no adivinar.
+BUG ENCONTRADO Y CORREGIDO (segunda vuelta, reportado por el usuario:
+"los equipos que descienden de Primera a la B casi por sentado
+descienden de nuevo" seguía pasando después de corregir el motor de
+Nacional -- la traza llevó hasta acá): `modelos/estadisticas_lpf.py`
+tiene un diccionario `NORMALIZACION_NOMBRES` que traduce nombres
+cortos del CSV a nombres largos ANTES de que el club llegue a
+`Club.name` (ej. "Boca Jrs." -> "Boca Juniors", "River" -> "River
+Plate", "Racing" -> "Racing Club", "Newell's" -> "Newell's Old
+Boys"). La primera versión de esta tabla se armó grepeando el CSV
+crudo directamente -- coincidía con lo que Devuelve pandas al leer
+el archivo, pero NO con el nombre real que circula por
+ClubRegistry/Club.history una vez pasado por `normalizar()`. Resultado:
+~11 de los ~29 clubes de la tabla original (incluidos Boca, River,
+Racing, Vélez, Estudiantes, Newell's, Rosario Central, Argentinos,
+Talleres, Gimnasia, Independiente Rivadavia) NUNCA hacían match, el
+piso de prestigio les daba 0 resistencia en la práctica aunque
+estuvieran "en la tabla". Ahora los nombres de acá son los YA
+NORMALIZADOS (el valor de destino del diccionario de arriba, no la
+clave). Esta normalización SOLO existe en LPF -- confirmado
+grepeando estadisticas.py/estadisticas_bmetro.py/
+estadisticas_primerac.py/estadisticas_federal.py, ninguno tiene un
+mecanismo equivalente -- así que los clubes de las otras 4 divisiones
+de esta tabla no tenían este problema.
+
+De paso, esto resolvió DOS de las ambigüedades que había dejado
+afuera en la primera versión (ver
+_ENTRADAS_EXCLUIDAS_POR_AMBIGUEDAD más abajo, ahora más corta):
+"Barracas" normaliza a "Barracas Central" (confirma que el título de
+Sportivo Barracas en la fuente original en realidad corresponde al
+club de LPF, no al de Primera C) y "Defensa" normaliza a "Defensa y
+Justicia" (ya no es una hipótesis). También apareció "Atl. Tucumán"
+-> "Atlético Tucumán" en el diccionario, que antes no había podido
+encontrar en ningún CSV con la búsqueda que usé.
 """
 from __future__ import annotations
 
@@ -56,95 +75,92 @@ CAMPOS_RATING = (
     "defensa_visitante",
 )
 
-# títulos oficiales -- ver docstring del módulo. Nombre de club =
-# EXACTAMENTE como aparece en los CSV del proyecto.
+# títulos oficiales -- ver docstring del módulo. Nombre de club = el
+# nombre REAL que usa Club.name (para LPF, ya pasado por
+# modelos.estadisticas_lpf.normalizar() -- ver el bug corregido
+# arriba), no necesariamente el que aparece crudo en el CSV.
 TITULOS_HISTORICOS: dict[str, int] = {
-    "Boca Jrs.": 74,
-    "River": 72,
+    "Boca Juniors": 74,
+    "River Plate": 72,
     "Independiente": 45,
-    "Racing": 41,                    # Racing Club (Avellaneda) -- LPF.
+    "Racing Club": 41,                # Racing Club (Avellaneda) -- LPF.
                                       # NO confundir con "Racing (Cba)"
                                       # (Nacional), club distinto, sin
-                                      # título en la fuente.
+                                      # título en la fuente (ESE sí
+                                      # queda tal cual del CSV, Nacional
+                                      # no normaliza nombres).
     "San Lorenzo": 22,
-    "Vélez": 19,
-    "Estudiantes": 19,                # Estudiantes de LA PLATA -- LPF.
-                                      # NO confundir con "Estudiantes
-                                      # (Caseros)" (Nacional) ni
-                                      # "Estudiantes RC" (LPF, seguramente
-                                      # Río Cuarto), ninguno de esos dos
-                                      # tiene título en la fuente.
-    "Central": 13,                    # Rosario Central -- LPF.
-    "Huracán": 13,
-    "Newell's": 9,
-    "Lanús": 9,
-    "Arsenal de Sarandí": 5,
-    "Argentinos": 5,
-    "Quilmes": 3,
-    "Ferro": 2,
-    "Talleres": 2,                    # Talleres de CÓRDOBA -- LPF.
-                                      # "Talleres RE" (BMetro) es un
-                                      # club distinto, sin título.
-    "Banfield": 2,
-    "Gimnasia": 2,                    # Gimnasia y Esgrima LA PLATA --
-                                      # LPF. NO confundir con
-                                      # "Gimnasia (M)" (Mendoza, LPF),
-                                      # "Gimnasia (J)" (Jujuy, Nacional)
-                                      # ni "Gimnasia y Tiro" (Salta,
-                                      # Nacional) -- ninguno tiene
+    "Vélez Sarsfield": 19,
+    "Estudiantes de La Plata": 19,    # LPF. NO confundir con
+                                      # "Estudiantes (Caseros)" (Nacional)
+                                      # ni "Estudiantes RC" (LPF,
+                                      # seguramente Río Cuarto -- no se
+                                      # normaliza a ningún nombre largo,
+                                      # se queda "Estudiantes RC" tal
+                                      # cual), ninguno de esos dos tiene
                                       # título en la fuente.
-    "Central Córdoba (Rosario)": 1,   # NO confundir con "Central
-                                      # Córdoba SdE" (Santiago del
-                                      # Estero, LPF), que también está
-                                      # en esta tabla pero con su
-                                      # propia entrada (1 título cada
-                                      # uno, son dos clubes distintos).
-    "Central Córdoba SdE": 1,
-    "Atlanta": 1,
-    "Chacarita": 1,
-    "San Martín (T)": 1,              # San Martín de TUCUMÁN -- Nacional.
-                                      # NO confundir con "San Martín" a
+    "Rosario Central": 13,            # LPF (normaliza desde "Central").
+    "Huracán": 13,
+    "Newell's Old Boys": 9,           # LPF (normaliza desde "Newell's").
+    "Lanús": 9,
+    "Arsenal de Sarandí": 5,          # BMetro.
+    "Argentinos Juniors": 5,          # LPF (normaliza desde "Argentinos").
+    "Quilmes": 3,                     # Nacional.
+    "Ferro": 2,                       # Nacional.
+    "Talleres de Córdoba": 2,         # LPF (normaliza desde "Talleres").
+    "Banfield": 2,
+    "Gimnasia La Plata": 2,           # LPF (normaliza desde "Gimnasia").
+                                      # NO confundir con "Gimnasia (M)"
+                                      # (normaliza a "Gimnasia de
+                                      # Mendoza", LPF), "Gimnasia (J)"
+                                      # (Jujuy, Nacional) ni "Gimnasia y
+                                      # Tiro" (Salta, Nacional) --
+                                      # ninguno tiene título en la fuente.
+    "Barracas Central": 2,            # LPF (normaliza desde "Barracas").
+                                      # Confirmado por la normalización:
+                                      # es el club de LPF, NO "Sportivo
+                                      # Barracas" (Primera C).
+    "Defensa y Justicia": 2,          # LPF (normaliza desde "Defensa").
+    "Central Córdoba (Rosario)": 1,   # Primera C. NO confundir con
+                                      # "Central Córdoba SdE" (Santiago
+                                      # del Estero, LPF), entrada aparte.
+    "Central Córdoba SdE": 1,         # LPF (normaliza desde "Central
+                                      # Córdoba" a secas).
+    "Atlanta": 1,                     # Nacional.
+    "Chacarita": 1,                   # Nacional.
+    "San Martín (T)": 1,              # San Martín de TUCUMÁN -- Nacional
+                                      # (no tiene normalización propia,
+                                      # se queda con este nombre). NO
+                                      # confundir con "San Martín" a
                                       # secas (Nacional), "San Martín
                                       # Burzaco" (BMetro), "San Martín
                                       # de Formosa" ni "San Martín de
-                                      # Mendoza" (Federal A) -- ninguno
-                                      # tiene título en la fuente.
-    "Tigre": 1,
-    "Colón": 1,
-    "Patronato": 1,
-    "Platense": 1,
-    "Independiente Riv.": 1,          # Independiente Rivadavia -- LPF.
+                                      # Mendoza" (Federal A).
+    "Tigre": 1,                       # LPF.
+    "Colón": 1,                       # Nacional.
+    "Patronato": 1,                   # Nacional.
+    "Atlético Tucumán": 1,            # LPF (normaliza desde "Atl. Tucumán").
+    "Platense": 1,                    # LPF.
+    "Independiente Rivadavia": 1,     # LPF (normaliza desde
+                                      # "Independiente Riv.").
     "Sportivo Dock Sud": 1,           # BMetro.
     "Belgrano": 1,                    # Belgrano de Córdoba -- LPF.
 }
 
 # Entradas de la fuente original (elgrafico.com.ar) que NO se
-# incluyeron arriba, a propósito -- ambigüedad real entre variantes de
-# nombre en los CSV del proyecto, sin forma de confirmar con certeza
-# cuál es cuál. Antes de agregar cualquiera de estas a
-# TITULOS_HISTORICOS, confirmar a mano el nombre exacto:
+# incluyeron, a propósito -- ambigüedad real sin forma de confirmar
+# con certeza a qué club del roster actual corresponden. Antes de
+# agregar cualquiera de estas, confirmar a mano el nombre exacto:
 #
-#   - "Defensa y Justicia" (2 títulos): en LPF hay un club "Defensa" a
-#     secas -- razonablemente sería este, pero no está confirmado 1:1
-#     (no se encontró ningún otro "Defensa*" en los 5 CSV que generara
-#     duda, así que es la hipótesis más probable -- pero se prefirió
-#     no adivinar).
-#   - "Sportivo Barracas" (2 títulos): hay DOS clubes de nombre
-#     parecido en el roster actual -- "Barracas" (LPF) y "Sportivo
-#     Barracas" (Primera C). La fuente dice "Sportivo Barracas"
-#     textual, pero es MUY posible que el club realmente ganador
-#     (Barracas Central, Copa Argentina) sea el de LPF, no el de
-#     Primera C -- exactamente el tipo de ambigüedad que este módulo
-#     quiere evitar. CONFIRMAR antes de incluir cualquiera de las dos.
 #   - "Estudiantes de Buenos Aires" (1 título): en el roster hay
-#     "Estudiantes RC" (LPF) -- "RC" probablemente sea "Río Cuarto",
+#     "Estudiantes RC" (LPF, sin normalización propia en
+#     NORMALIZACION_NOMBRES) -- "RC" probablemente sea "Río Cuarto",
 #     no "Buenos Aires". No incluido por esa duda.
-#   - "Atlético Tucumán" (1 título), "Nueva Chicago" (1 título),
-#     "Tiro Federal de Rosario" (1 título): no se encontró ningún club
-#     con esos nombres (ni similares) en ninguno de los 5 CSV al
-#     armar esta tabla (11/07/2026) -- puede que hoy no estén en
-#     ningún roster activo, o que tengan otro nombre en los datos. No
-#     incluidos.
+#   - "Nueva Chicago" (1 título), "Tiro Federal de Rosario" (1
+#     título): no se encontró ningún club con esos nombres (ni
+#     similares, ni en el CSV crudo ni en NORMALIZACION_NOMBRES) en
+#     ninguno de los 5 CSV al armar esta tabla -- puede que hoy no
+#     estén en ningún roster activo. No incluidos.
 
 # Resistencia MÁXIMA (para el club con más títulos de la tabla, hoy
 # Boca) -- valor de arranque razonable, documentado, NO calibrado con

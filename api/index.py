@@ -1203,8 +1203,22 @@ def _correr_temporada_desde_estado(estado_anterior: dict | None, numero_ronda: i
             # ratings_finales de ESTA ronda para las 4 divisiones con
             # motor season-only -- la ronda SIGUIENTE los usa como
             # "resultados_anterior" (tanto para los que continúan vía
-            # combinar_con_memoria() como para ascendidos cruzados,
-            # ej. Nacional necesita el ratings_finales de BMetro).
+            # combinar_con_memoria() como para ascendidos/descendidos
+            # cruzados, ej. Nacional necesita el ratings_finales de
+            # LPF -- BUG ENCONTRADO Y CORREGIDO ACÁ, reportado por el
+            # usuario: "los equipos que descienden de Primera a la B
+            # casi por sentado vuelven a descender". La causa real:
+            # season/carryover_engines/nacional.py YA revisaba
+            # correctamente resultados_anterior["lpf"] (arreglado en
+            # una vuelta anterior), pero ACÁ nunca se guardaba "lpf"
+            # en ratings_finales_por_liga -- la tupla de abajo tenía
+            # ("nacional", "bmetro", "federal_a", "primerac") y se
+            # había olvidado "lpf" por completo. El fix de
+            # armar_ratings_iniciales() de Nacional era correcto pero
+            # nunca le llegaba ningún dato real: resultados_anterior.get("lpf")
+            # daba siempre None, y CUALQUIER club recién descendido de
+            # LPF caía al rating genérico en cada ronda, sin
+            # excepción -- de ahí el patrón "casi por sentado".
             # .get() con default {} por si algún adapter (BMetro/
             # PrimeraC vía su camino NORMAL, si esta ronda no usó
             # carryover para esa división) todavía no lo llena -- ver
@@ -1212,7 +1226,7 @@ def _correr_temporada_desde_estado(estado_anterior: dict | None, numero_ronda: i
             # en season/tournament_adapter.py.
             "ratings_finales_por_liga": {
                 slug: resultados[slug].ratings_finales
-                for slug in ("nacional", "bmetro", "federal_a", "primerac")
+                for slug in ("lpf", "nacional", "bmetro", "federal_a", "primerac")
                 if slug in resultados and resultados[slug].ratings_finales
             },
         }
