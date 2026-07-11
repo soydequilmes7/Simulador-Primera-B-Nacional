@@ -3,13 +3,11 @@
 main_sudamericana.py
 
 Orquestador de la Copa Sudamericana (Playoffs de Octavos en adelante):
-corre una simulación del cuadro real (datos/sudamericana_cuadro.csv) y
-arma public/data_sudamericana.json, que consume la pestaña "Copa
-Sudamericana" de la web -- mismo patrón que main_libertadores.py, pero
-sin Monte Carlo todavía (EstadisticasLibertadores.monte_carlo_
-libertadores() solo cuenta participantes de self.cuadro, que acá
-arranca en Octavos -- no contempla los 16 de Playoffs; se deja para
-una vuelta siguiente en vez de dar un % incompleto/engañoso).
+corre una simulación del cuadro real (datos/sudamericana_cuadro.csv),
+el Monte Carlo de % por ronda (arranca en Playoffs, no en Octavos como
+Libertadores -- ver EstadisticasSudamericana.monte_carlo_sudamericana())
+y arma public/data_sudamericana.json, que consume la pestaña "Copa
+Sudamericana" de la web -- mismo patrón que main_libertadores.py.
 """
 import json
 from datetime import datetime
@@ -27,13 +25,15 @@ def _preparar_motor():
     return e
 
 
-def armar_datos_web_sudamericana(e, rondas_detalle, campeon):
+def armar_datos_web_sudamericana(e, rondas_detalle, campeon, mc, n_sims):
     equipos_vivos = _equipos_vivos(rondas_detalle)
     return {
         "liga": "Copa Sudamericana",
         "generado": datetime.now().strftime("%d/%m/%Y %H:%M"),
+        "n_simulaciones": n_sims,
         "rondas": rondas_detalle,
         "campeon": campeon,
+        "monte_carlo": mc,
         "equipos_vivos": equipos_vivos,
     }
 
@@ -62,10 +62,13 @@ def guardar_json_sudamericana(datos_web, ruta=None):
     return str(ruta)
 
 
-def correr_simulacion_sudamericana(imprimir=True, guardar_json=True):
+def correr_simulacion_sudamericana(imprimir=True, guardar_json=True, n_sims=1000):
     e = _preparar_motor()
+
     rondas_detalle, campeon = e.simular_sudamericana()
-    datos = armar_datos_web_sudamericana(e, rondas_detalle, campeon)
+    mc = e.monte_carlo_sudamericana(n_simulaciones=n_sims)
+
+    datos = armar_datos_web_sudamericana(e, rondas_detalle, campeon, mc, n_sims)
 
     if imprimir:
         print(f"\nCampeón de la Copa Sudamericana en esta corrida: {campeon}")

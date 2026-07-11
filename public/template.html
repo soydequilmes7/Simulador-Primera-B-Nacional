@@ -4063,11 +4063,26 @@
 
   <div id="vista-sudamericana" style="display:none">
 
+  <div class="search-section">
+    <div class="search-box">
+      <input type="text" id="team-search-sudamericana" list="team-list-sudamericana" placeholder="Buscar club… (River, Botafogo, Olimpia…)" autocomplete="off">
+      <datalist id="team-list-sudamericana"></datalist>
+    </div>
+    <div class="search-hint">Escribí el nombre del equipo para ver sus chances en la Copa, ronda por ronda</div>
+    <div id="search-result-sudamericana"></div>
+  </div>
+
   <section id="sec-sudamericana-cuadro">
     <div class="section-head"><span class="idx">01</span><h2>El cuadro, desde los Playoffs de Octavos</h2><div class="rule"></div></div>
     <p class="section-note">Playoffs entre los 8 segundos de zona de la Sudamericana y los 8 terceros de zona de la Libertadores (ver la pestaña Copa Libertadores): sus ganadores completan los Octavos junto a los 8 primeros de zona, que ya tienen lugar asegurado. De ahí en más, mismo formato que la Libertadores: ida y vuelta sin gol de visitante hasta semis, final a partido único en cancha neutral.</p>
     <div class="bracket-scroll"><div class="bracket" id="bracket-sudamericana"></div></div>
     <div class="campeon-anuncio-wrap" id="campeon-anuncio-sudamericana"></div>
+  </section>
+
+  <section id="sec-sudamericana-mc">
+    <div class="section-head"><span class="idx">02</span><h2>Probabilidades — Monte Carlo</h2><div class="rule"></div></div>
+    <p class="section-note">De los 24 equipos (16 de Playoffs + 8 directos a Octavos): en qué porcentaje de las corridas llega a cada instancia y sale campeón. Los 8 directos dan 100% en Octavos porque ya tienen el lugar asegurado; para los 16 de Playoffs, llegar ahí no está garantizado.</p>
+    <div class="mc-list" id="mc-list-sudamericana"></div>
   </section>
 
   </div><!-- /vista-sudamericana -->
@@ -7985,6 +8000,11 @@ function iniciarSudamericana(){
   document.getElementById('bracket-sudamericana').innerHTML = bracketSudamericanaHTML(DATA_SUDAMERICANA.rondas, DATA_SUDAMERICANA.campeon);
   const anuncio = document.getElementById('campeon-anuncio-sudamericana');
   if (anuncio) anuncio.innerHTML = campeonAnuncioHTML(DATA_SUDAMERICANA.campeon, '🏆');
+  renderMCSudamericana();
+  TEAM_INDEX_SUDAMERICANA = buildTeamIndexSudamericana();
+  poblarDatalistSudamericana(TEAM_INDEX_SUDAMERICANA);
+  const busqueda = document.getElementById('team-search-sudamericana');
+  if (busqueda && busqueda.value) buscarEquipoSudamericana(busqueda.value);
   if (document.body.classList.contains('liga-sudamericana')) actualizarHero('sudamericana');
 }
 
@@ -8311,6 +8331,126 @@ function buscarEquipoLibertadores(nombre){
 }
 
 document.getElementById('team-search-libertadores').addEventListener('input', (e) => buscarEquipoLibertadores(e.target.value));
+
+// Versiones adaptadas de renderMCLibertadores/buildTeamIndexLibertadores/
+// poblarDatalistLibertadores/renderTeamCardLibertadores/buscarEquipoLibertadores
+// para la Copa Sudamericana. Única diferencia real: acá también existe
+// la ronda "playoffs" (RONDA_LABEL_SUDAMERICANA) y la tarjeta de equipo
+// suma el stat "%octavos" -- no está garantizado para los 16 que vienen
+// de Playoffs, a diferencia de Libertadores donde Octavos ya es la
+// ronda inicial (ver monte_carlo_sudamericana() en
+// modelos/estadisticas_sudamericana.py).
+function renderMCSudamericana(){
+  const list = document.getElementById('mc-list-sudamericana');
+  if (!list || !DATA_SUDAMERICANA.monte_carlo) return;
+  list.innerHTML = "";
+  const color = 'var(--azul)';
+  DATA_SUDAMERICANA.monte_carlo.forEach((f, i) => {
+    const row = document.createElement('div');
+    row.className = 'mc-row';
+    row.innerHTML = `
+      <div class="pos">${i + 1}</div>
+      <div>
+        <div class="name"><span>${escudoHTML(f.equipo)}${f.equipo}</span><span class="pct" style="color:${color}">${f['%campeon']}% campeón</span></div>
+        <div class="mc-bar-track">
+          <div class="mc-bar-fill directo" style="width:${f['%campeon']}%; background:${color}"></div>
+        </div>
+        <div class="mc-sub">
+          <span><i class="dot" style="background:${color}"></i>${f['%final']}% llega a la final</span>
+          <span><i class="dot" style="background:${color}; opacity:0.5"></i>${f['%semis']}% semis</span>
+        </div>
+      </div>
+      <div class="mc-desc">
+        <div class="desc-pct">${f['%octavos']}%</div>
+        <div class="desc-lbl">octavos</div>
+        <div class="desc-bar-track"><div class="desc-bar-fill" style="width:${Math.min(f['%octavos'], 100)}%"></div></div>
+      </div>
+    `;
+    list.appendChild(row);
+  });
+}
+
+let TEAM_INDEX_SUDAMERICANA = {};
+
+function buildTeamIndexSudamericana(){
+  const index = {};
+  const vivos = new Set(DATA_SUDAMERICANA.equipos_vivos || []);
+  const mc = DATA_SUDAMERICANA.monte_carlo || [];
+  Object.entries(DATA_SUDAMERICANA.rondas || {}).forEach(([ronda, llaves]) => {
+    llaves.forEach(ll => {
+      const equipos = ronda === 'final' ? [ll.local, ll.visitante] : Object.keys(ll.agregado);
+      equipos.forEach(nombre => {
+        if (!index[nombre]) index[nombre] = { equipo: nombre, vivo: vivos.has(nombre), llaves: [] };
+        index[nombre].llaves.push({ ronda, ...ll });
+      });
+    });
+  });
+  mc.forEach(f => { if (index[f.equipo]) Object.assign(index[f.equipo], f); });
+  return index;
+}
+
+function poblarDatalistSudamericana(index){
+  const dl = document.getElementById('team-list-sudamericana');
+  if (!dl) return;
+  dl.innerHTML = Object.keys(index).sort().map(n => `<option value="${n}">`).join('');
+}
+
+const RONDA_LABEL_SUDAMERICANA = { "playoffs": "Playoffs", "octavos": "Octavos", "cuartos": "Cuartos", "semis": "Semifinal", "final": "Final" };
+
+function renderTeamCardSudamericana(t){
+  const azul = 'var(--azul)';
+  const cabecera = `
+    <div class="tc-head">
+      <div class="tc-name">${escudoHTML(t.equipo)}${t.equipo}</div>
+      <span class="tc-zone" style="background:${t.vivo ? 'var(--amber-dim)' : 'var(--danger-dim)'}; color:${t.vivo ? 'var(--amber)' : 'var(--danger)'}">${t.vivo ? 'EN CARRERA' : 'ELIMINADO'}</span>
+    </div>`;
+
+  if (!t.vivo){
+    const caida = [...t.llaves].reverse().find(ll => ll.jugado && ll.avanza && ll.avanza !== t.equipo);
+    const detalle = caida
+      ? `Eliminado por <b>${caida.avanza}</b> en ${RONDA_LABEL_SUDAMERICANA[caida.ronda]}${caida.penales ? ' (por penales)' : ''}.`
+      : 'Ya quedó eliminado (dato real).';
+    return `<div class="team-card">${cabecera}<div class="tc-pos" style="margin-top:12px;">${detalle}</div></div>`;
+  }
+
+  const proximo = t.llaves.find(ll => !ll.jugado);
+  let proximoTxt = '';
+  if (proximo){
+    const rival = proximo.ronda === 'final'
+      ? (proximo.local === t.equipo ? proximo.visitante : proximo.local)
+      : Object.keys(proximo.agregado).find(n => n !== t.equipo);
+    proximoTxt = `Próximo cruce: <b>${rival}</b> en ${RONDA_LABEL_SUDAMERICANA[proximo.ronda]} <span style="color:var(--muted)">(según esta corrida)</span>`;
+  }
+  return `<div class="team-card">${cabecera}
+    <div class="tc-pos" style="margin-top:12px;">${proximoTxt}</div>
+    <div class="tc-grid" style="margin-top:16px;">
+      <div class="tc-stat"><div class="v" style="color:${azul}">${fmtPct(t['%octavos'] ?? 0)}</div><div class="l">Octavos</div></div>
+      <div class="tc-stat"><div class="v" style="color:${azul}">${fmtPct(t['%cuartos'] ?? 0)}</div><div class="l">Cuartos</div></div>
+      <div class="tc-stat"><div class="v" style="color:${azul}">${fmtPct(t['%semis'] ?? 0)}</div><div class="l">Semifinal</div></div>
+      <div class="tc-stat"><div class="v" style="color:${azul}">${fmtPct(t['%final'] ?? 0)}</div><div class="l">Final</div></div>
+      <div class="tc-stat"><div class="v" style="color:${azul}">${fmtPct(t['%campeon'] ?? 0)}</div><div class="l">Campeón</div></div>
+    </div>
+    <div class="tc-mc-title">Campeón de la Sudamericana en <b style="color:var(--amber)">${fmtPct(t['%campeon'] ?? 0)}</b> de las simulaciones</div>
+    <div class="mc-bar-track" style="margin-bottom:14px;">
+      <div class="mc-bar-fill directo" style="width:${t['%campeon'] ?? 0}%;"></div>
+    </div>
+  </div>`;
+}
+
+function buscarEquipoSudamericana(nombre){
+  const resultDiv = document.getElementById('search-result-sudamericana');
+  if (!resultDiv) return;
+  if (!nombre || !nombre.trim()){ resultDiv.innerHTML = ""; return; }
+  const exacto = TEAM_INDEX_SUDAMERICANA[nombre];
+  if (exacto){ resultDiv.innerHTML = renderTeamCardSudamericana(exacto); return; }
+  const q = nombre.trim().toLowerCase();
+  const coincidencia = Object.values(TEAM_INDEX_SUDAMERICANA).find(t => t.equipo.toLowerCase().includes(q));
+  resultDiv.innerHTML = coincidencia
+    ? renderTeamCardSudamericana(coincidencia)
+    : `<div class="no-result">No se encontró ningún equipo llamado "${nombre}"</div>`;
+}
+
+document.getElementById('team-search-sudamericana').addEventListener('input', (e) => buscarEquipoSudamericana(e.target.value));
 
 cargarDatosLPF();
 cargarDatosCopa();
