@@ -53,18 +53,22 @@ class _FakeClubRegistry:
 
 
 def validar_armar_ratings_iniciales() -> list:
-    print("\n[Parte A] armar_ratings_iniciales() -- continuidad + ascendidos de BMetro/Federal A")
+    print("\n[Parte A] armar_ratings_iniciales() -- continuidad + descendidos de LPF + ascendidos de BMetro/Federal A")
     errores = []
 
     club_continua = Club(id=1, name="Club Continúa", division="Primera Nacional")
     club_continua.history = [
         {"temporada": "2025", "division": "Primera Nacional", "ratings": _rating(1.05, 0.95, 1.02, 0.98)},
     ]
+    club_de_lpf = Club(id=4, name="Club Desciende de LPF", division="Primera Nacional")  # BUG reportado por el usuario
     club_de_bmetro = Club(id=2, name="Club Asciende BMetro", division="Primera Nacional")  # ya promocionado
     club_de_federal = Club(id=3, name="Club Asciende Federal", division="Primera Nacional")
-    registry = _FakeClubRegistry([club_continua, club_de_bmetro, club_de_federal])
+    registry = _FakeClubRegistry([club_continua, club_de_lpf, club_de_bmetro, club_de_federal])
 
     resultados_anterior = {
+        "lpf": _FakeResultadoTorneo(ratings_finales={
+            "Club Desciende de LPF": _rating(1.30, 1.15, 0.80, 0.85),  # rating fuerte, tipo San Lorenzo
+        }),
         "nacional": _FakeResultadoTorneo(ratings_finales={
             "Club Continúa": _rating(1.10, 0.90, 1.00, 1.00),
         }),
@@ -73,7 +77,7 @@ def validar_armar_ratings_iniciales() -> list:
         }),
         "federal_a": _FakeResultadoTorneo(ratings_finales={}),  # vacío a propósito
     }
-    roster = ["Club Continúa", "Club Asciende BMetro", "Club Asciende Federal"]
+    roster = ["Club Continúa", "Club Desciende de LPF", "Club Asciende BMetro", "Club Asciende Federal"]
 
     obtenido = armar_ratings_iniciales(registry, resultados_anterior, roster)
     print(f"  obtenido: {obtenido}")
@@ -84,8 +88,25 @@ def validar_armar_ratings_iniciales() -> list:
     )
     errores += _comparar("Club Continúa", esperado_continua, obtenido["Club Continúa"])
 
-    # Club Asciende BMetro: rating_para_recien_llegado(origen=bmetro)
+    # BUG CORREGIDO: Club Desciende de LPF tiene que heredar su rating
+    # real de LPF (amplificado por NIVEL_DIVISION, SIN handicap por
+    # ser descenso -- ver season/rating_carryover.py::_es_ascenso()),
+    # NO caer al genérico. Antes de este fix, "lpf" ni se consultaba.
     politica = RatingCarryoverPolicy()
+    esperado_lpf = politica.rating_para_recien_llegado(
+        resultados_anterior["lpf"].ratings_finales["Club Desciende de LPF"], "lpf", "nacional",
+    )
+    errores += _comparar("Club Desciende de LPF", esperado_lpf, obtenido["Club Desciende de LPF"])
+    # Chequeo cualitativo directo del bug reportado: un descendido de
+    # LPF con buen rating tiene que quedar CLARAMENTE por encima del
+    # promedio de liga (1.0) en ataque, no cerca del genérico (0.70).
+    if not (obtenido["Club Desciende de LPF"]["ataque_local"] > 1.05):
+        errores.append(
+            f"[BUG] Club Desciende de LPF debería arrancar claramente por encima del promedio "
+            f"en Nacional, dio ataque_local={obtenido['Club Desciende de LPF']['ataque_local']}"
+        )
+
+    # Club Asciende BMetro: rating_para_recien_llegado(origen=bmetro)
     esperado_bmetro = politica.rating_para_recien_llegado(
         resultados_anterior["bmetro"].ratings_finales["Club Asciende BMetro"], "bmetro", "nacional"
     )

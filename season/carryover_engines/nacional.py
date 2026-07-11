@@ -120,10 +120,28 @@ def _ratings_desde_tabla_simulada(tablas: dict, zona_por_club: dict[str, str]) -
 def armar_ratings_iniciales(club_registry, resultados_anterior: dict, roster_siguiente: list[str]) -> dict:
     """Arma ratings_iniciales para correr_temporada_desde_carryover(),
     combinando Fase 0 (memoria EWMA + handicap) con RatingCarryoverPolicy
-    para los ascendidos -- mismo espíritu que
+    para los que llegan -- mismo espíritu que
     HistoryManager._ratings_iniciales_lpf(), adaptado a que Nacional
-    recibe ascensos de DOS divisiones (BMetro y Federal A, ver
+    recibe movimientos desde TRES divisiones (ver
     season/promotion_manager.py):
+
+    BUG ENCONTRADO Y CORREGIDO (reportado por el usuario: "San Lorenzo
+    y Banfield descendieron en la ronda 4 y en la ronda 5 descendieron
+    los dos [de nuevo]" -- doble descenso consecutivo, síntoma de que
+    un club recién bajado de LPF arrancaba su temporada en Nacional
+    SIN NINGÚN carryover real). La docstring original de este módulo
+    decía "Nacional recibe ascensos de DOS divisiones (BMetro y
+    Federal A)" -- afirmación FALSA, contradicha por
+    season/promotion_manager.py real (línea 184-185:
+    `resultados["lpf"].descensos -> nacional`, la fuente MÁS
+    importante de arrivals a Nacional, ni más ni menos que los
+    descendidos de Primera). Esta función nunca revisaba
+    resultados_anterior["lpf"] -- un club recién descendido de LPF
+    caía derecho a ratings_origen=None -> rating GENÉRICO
+    (ATAQUE_GENERICO=0.70, bastante malo), en vez de heredar su rating
+    real de LPF amplificado por NIVEL_DIVISION. Con eso, un
+    ex-candidato a LPF arrancaba en Nacional peor que la mayoría de
+    los equipos que ya estaban ahí -- de ahí el doble descenso.
 
       a) clubes que YA jugaban Nacional la temporada anterior: su
          rating final de esa temporada
@@ -133,21 +151,24 @@ def armar_ratings_iniciales(club_registry, resultados_anterior: dict, roster_sig
          Si el club no está en club_registry (no debería pasar) se
          usa el rating de la temporada anterior sin combinar --
          degrada con gracia.
-      b) clubes recién ascendidos: se busca primero en
-         resultados_anterior["bmetro"].ratings_finales y, si no está
-         ahí, en resultados_anterior["federal_a"].ratings_finales
+      b) clubes recién DESCENDIDOS de LPF (el caso que faltaba): se
+         busca en resultados_anterior["lpf"].ratings_finales.
+      c) clubes recién ASCENDIDOS de BMetro o Federal A: se busca
+         primero en resultados_anterior["bmetro"].ratings_finales y,
+         si no está ahí, en resultados_anterior["federal_a"].ratings_finales
          (que hoy queda vacío a propósito -- ver ResultadoTorneo --
          así que en la práctica un ascendido de Federal A cae al
          rating GENÉRICO de RatingCarryoverPolicy, degradando con
-         gracia en vez de romper, igual que ya pasa con LPF/Nacional
-         en HistoryManager).
+         gracia en vez de romper).
 
     club_registry: puede ser None (degrada a "sin memoria" para
         todos, útil para tests que no arman un ClubRegistry completo).
     resultados_anterior: dict[str, ResultadoTorneo] de la temporada
-        QUE TERMINA -- se leen las claves "nacional"/"bmetro"/
+        QUE TERMINA -- se leen las claves "lpf"/"nacional"/"bmetro"/
         "federal_a" si están, ninguna es obligatoria (todas ausentes
         degrada a "todos recién llegados sin historial")."""
+    resultado_lpf = resultados_anterior.get("lpf") if resultados_anterior else None
+    ratings_lpf = resultado_lpf.ratings_finales if resultado_lpf is not None else {}
     resultado_nacional_anterior = resultados_anterior.get("nacional") if resultados_anterior else None
     ratings_nacional_anterior = (
         resultado_nacional_anterior.ratings_finales if resultado_nacional_anterior is not None else {}
@@ -167,6 +188,12 @@ def armar_ratings_iniciales(club_registry, resultados_anterior: dict, roster_sig
                 combinar_con_memoria(rating_crudo, club_obj, "nacional")
                 if club_obj is not None
                 else rating_crudo
+            )
+            continue
+
+        if club in ratings_lpf:
+            ratings[club] = politica.rating_para_recien_llegado(
+                ratings_lpf[club], "lpf", "nacional", club_nombre=club,
             )
             continue
 
