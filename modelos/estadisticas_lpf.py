@@ -871,6 +871,14 @@ class EstadisticasLPF(Estadisticas):
             dg/puntos), listo para repo.upsert_standings("lpf", ...).
           campeon: nombre del campeón de los playoffs -- el
             CAMPEON_APERTURA dinámico de la temporada siguiente.
+          detalle_playoffs: dict con el cuadro REAL de esos playoffs
+            (mismo shape que jugar_playoffs(): octavos/cuartos/semis/
+            final), el que de verdad definió `campeon`. Antes se
+            tiraba con un `_` (BUG REPORTADO: "no se muestra el
+            bracket del Apertura en Modo Temporada, o lo muestra al
+            revés") -- ver HistoryManager._simular_apertura_lpf() y
+            data_access.guardar_playoffs_apertura_lpf() para dónde
+            viaja este dato ahora.
         """
         faltantes = [nombre for nombre in roster if nombre not in ratings_iniciales]
         if faltantes:
@@ -970,6 +978,6 @@ class EstadisticasLPF(Estadisticas):
                 for f in filas
             ])
 
-        campeon, _ = self.jugar_playoffs(tablas_livianas)
+        campeon, detalle_playoffs = self.jugar_playoffs(tablas_livianas)
 
-        return tabla_standing_por_zona, campeon
+        return tabla_standing_por_zona, campeon, detalle_playoffs

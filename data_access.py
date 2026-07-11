@@ -134,3 +134,51 @@ def campeon_apertura_lpf() -> str | None:
 
     payload = repository().simulation_output(_CLAVE_CAMPEON_APERTURA_LPF)
     return payload.get("campeon") if payload else None
+
+
+# ---------------------------------------------------------------------
+# Bracket REAL de los playoffs del Apertura simulado (mismo patrón que
+# CAMPEON_APERTURA arriba). Antes este dato se descartaba adentro de
+# EstadisticasLPF.simular_apertura_desde_carryover() (un `_` se comía
+# el detalle completo), así que Modo Temporada nunca tenía forma de
+# mostrar el cuadro real que definió el campeón del Apertura para las
+# temporadas hipotéticas (ronda 2 en adelante) -- BUG REPORTADO: "no
+# muestra el bracket del Apertura, solo el del Clausura". No confundir
+# con EstadisticasLPF.simular_playoffs_apertura(), que arma un cuadro
+# FICTICIO/ilustrativo aparte (ese sigue existiendo, para la ronda 1 /
+# temporada real 2026, donde no hay bracket real que guardar).
+# ---------------------------------------------------------------------
+_CLAVE_PLAYOFFS_APERTURA_LPF = "lpf_playoffs_apertura"
+
+
+def guardar_playoffs_apertura_lpf(detalle_playoffs: dict) -> None:
+    """Persiste el cuadro REAL de playoffs que definió el campeón del
+    Apertura simulado de LPF (octavos/cuartos/semis/final, mismo shape
+    que jugar_playoffs()). En Pyodide no hace nada, mismo criterio que
+    guardar_campeon_apertura_lpf()."""
+    if usando_pyodide():
+        return
+
+    from db.repository import repository
+
+    repository().save_simulation_output(_CLAVE_PLAYOFFS_APERTURA_LPF, "lpf", detalle_playoffs)
+
+
+def playoffs_apertura_lpf() -> dict | None:
+    """Lee el cuadro REAL de playoffs del Apertura simulado, si hay
+    uno guardado. Devuelve None si no hay nada (temporada legacy, o
+    todavía no se corrió ningún avance de temporada que lo haya
+    guardado) -- el caller (main_lpf.py) cae de vuelta al cuadro
+    FICTICIO de simular_playoffs_apertura(), mismo comportamiento de
+    siempre para ese caso."""
+    if usando_pyodide():
+        path = _csv_path("playoffs_apertura_lpf.json")
+        if not path.exists():
+            return None
+        import json
+        with open(path, encoding="utf-8") as f:
+            return json.load(f)
+
+    from db.repository import repository
+
+    return repository().simulation_output(_CLAVE_PLAYOFFS_APERTURA_LPF)

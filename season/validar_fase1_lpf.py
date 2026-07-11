@@ -190,7 +190,7 @@ def validar_simulacion_apertura_end_to_end() -> list:
     }
 
     hm = HistoryManager(repo=object())
-    standings, campeon = hm._simular_apertura_lpf(roster, zona_por_club, resultados, club_registry)
+    standings, campeon, _detalle_playoffs = hm._simular_apertura_lpf(roster, zona_por_club, resultados, club_registry)
 
     equipos_en_standings = {fila["equipo"] for fila in standings}
     print(f"  {len(equipos_en_standings)} equipos en standings (roster: {len(roster)})")

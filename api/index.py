@@ -71,8 +71,6 @@ PYSIM_SOURCE_FILES = [
     "fixture_generator.py",
     "main_primerac.py",
     "modelos/estadisticas_primerac.py",
-    "main_libertadores.py",
-    "modelos/estadisticas_libertadores.py",
 ]
 # El código fuente no cambia mientras el proceso está corriendo, así que se
 # lee y cachea una sola vez.
@@ -384,26 +382,6 @@ def datos_primerac():
         return _error_response(e)
     finally:
         _lock_primerac.release_read()
-
-
-@app.get("/api/datos-libertadores")
-def datos_libertadores():
-    """Devuelve el cuadro y los Elo de Libertadores para el Worker local.
-
-    Estos dos CSV todavía son datos estáticos del repositorio (no forman
-    parte de la persistencia de ligas en Supabase), por eso se exponen de
-    forma explícita en vez de pasar por ``league_csv_files``.
-    """
-    try:
-        nombres = ("libertadores_cuadro.csv", "libertadores_elo.csv")
-        return {
-            "files": {
-                nombre: (rutas.datos_dir() / nombre).read_text(encoding="utf-8")
-                for nombre in nombres
-            }
-        }
-    except Exception as e:
-        return _error_response(e)
 
 
 @app.get("/")
@@ -1027,6 +1005,7 @@ def _correr_temporada_desde_estado(estado_anterior: dict | None, numero_ronda: i
     original_league_data = data_access.league_data
     original_promedios = data_access.lpf_average_history_df
     original_campeon_apertura = data_access.campeon_apertura_lpf
+    original_playoffs_apertura = data_access.playoffs_apertura_lpf
 
     def _local_league_data(slug):
         if slug in datos_por_liga:
@@ -1043,6 +1022,19 @@ def _correr_temporada_desde_estado(estado_anterior: dict | None, numero_ronda: i
         if "lpf" in datos_por_liga and "campeon_apertura" in datos_por_liga["lpf"]:
             return datos_por_liga["lpf"]["campeon_apertura"]
         return original_campeon_apertura()
+
+    def _local_playoffs_apertura():
+        # Cuadro REAL de playoffs que definió el campeón capturado
+        # arriba (ver "guardar_playoffs_apertura" más abajo, donde se
+        # guarda como "playoffs_apertura_real" para la ronda
+        # siguiente). Mismo criterio que _local_campeon_apertura: si
+        # esta ronda no tiene un bracket real capturado (ronda 1, la
+        # temporada real 2026, donde el Apertura no tuvo playoffs de
+        # verdad), cae al comportamiento original (None salvo que se
+        # haya persistido en una corrida real fuera de Modo Temporada).
+        if "lpf" in datos_por_liga and "playoffs_apertura_real" in datos_por_liga["lpf"]:
+            return datos_por_liga["lpf"]["playoffs_apertura_real"]
+        return original_playoffs_apertura()
 
     # Fases 2-5 de HANDOFF_carryover_ratings.md: contexto para que
     # SeasonEngine._correr_competencias() use los motores season-only
@@ -1094,6 +1086,7 @@ def _correr_temporada_desde_estado(estado_anterior: dict | None, numero_ronda: i
     data_access.league_data = _local_league_data
     data_access.lpf_average_history_df = _local_promedios
     data_access.campeon_apertura_lpf = _local_campeon_apertura
+    data_access.playoffs_apertura_lpf = _local_playoffs_apertura
     try:
         engine = SeasonEngine(registry)
         # cuadro_copa_override: el sorteo de 32avos ya armado en la ronda
@@ -1115,6 +1108,7 @@ def _correr_temporada_desde_estado(estado_anterior: dict | None, numero_ronda: i
         data_access.league_data = original_league_data
         data_access.lpf_average_history_df = original_promedios
         data_access.campeon_apertura_lpf = original_campeon_apertura
+        data_access.playoffs_apertura_lpf = original_playoffs_apertura
 
     # Clasificación a copas internacionales (Libertadores/Sudamericana):
     # engine.correr_temporada() la calcula solo vía QualificationManager
@@ -1173,9 +1167,17 @@ def _correr_temporada_desde_estado(estado_anterior: dict | None, numero_ronda: i
 
         repo_falso = _RepoCapturadorEnMemoria()
         campeon_apertura_capturado = {}
+        playoffs_apertura_capturado = {}
         HistoryManager(
             repo=repo_falso,
             guardar_campeon_apertura=lambda campeon: campeon_apertura_capturado.__setitem__("valor", campeon),
+            # Cuadro REAL de playoffs que definió ese campeón (mismo
+            # patrón que la línea de arriba) -- sin esto, la ronda
+            # siguiente no tiene forma de mostrar el bracket del
+            # Apertura y main_lpf.py cae siempre al cuadro FICTICIO de
+            # simular_playoffs_apertura() (bug real, reportado: "no
+            # muestra el bracket del Apertura, solo el del Clausura").
+            guardar_playoffs_apertura=lambda detalle: playoffs_apertura_capturado.__setitem__("valor", detalle),
         ).persist_season(
             registry, f"R{numero_ronda}", f"R{numero_ronda + 1}", resultados,
         )
@@ -1188,6 +1190,8 @@ def _correr_temporada_desde_estado(estado_anterior: dict | None, numero_ronda: i
             # hardcodeado de la clase, sin importar quién ganó de
             # verdad en la simulación (bug real, reportado).
             capturado["lpf"]["campeon_apertura"] = campeon_apertura_capturado["valor"]
+        if "lpf" in capturado and "valor" in playoffs_apertura_capturado:
+            capturado["lpf"]["playoffs_apertura_real"] = playoffs_apertura_capturado["valor"]
 
         if "lpf" in capturado:
             # promedios_lpf.csv también tiene que "avanzar": los que ya

@@ -348,7 +348,7 @@ class HistoryManager:
     exacto (no cubre Copa Argentina)."""
 
     def __init__(self, repo=None, rng: Optional[random.Random] = None,
-                 guardar_campeon_apertura=None):
+                 guardar_campeon_apertura=None, guardar_playoffs_apertura=None):
         # repo inyectable para poder testear con un mock/fake en vez de
         # la DB real (mismo patrón que rng en PromotionManager).
         self._repo = repo
@@ -376,6 +376,14 @@ class HistoryManager:
         # instancia HistoryManager, no un bug escondido.
         self._guardar_campeon_apertura = (
             guardar_campeon_apertura or data_access.guardar_campeon_apertura_lpf
+        )
+        # BUG REPORTADO ("no muestra el bracket del Apertura en Modo
+        # Temporada"): antes _simular_apertura_lpf() descartaba el
+        # cuadro real de playoffs que define campeon_apertura, así que
+        # nunca había nada que mostrar para ronda 2 en adelante. Mismo
+        # patrón inyectable que guardar_campeon_apertura de arriba.
+        self._guardar_playoffs_apertura = (
+            guardar_playoffs_apertura or data_access.guardar_playoffs_apertura_lpf
         )
 
     def _get_repo(self):
@@ -457,7 +465,7 @@ class HistoryManager:
                         "de LPF de la temporada que termina) para simular el Apertura "
                         "siguiente -- ver PLAN_ADDENDUM_ETAPA6_APERTURA_LPF."
                     )
-                standings, campeon_apertura = self._simular_apertura_lpf(
+                standings, campeon_apertura, detalle_playoffs_apertura = self._simular_apertura_lpf(
                     clubes, zona_por_club, resultados, club_registry
                 )
                 # el Clausura de esta misma temporada comparte zona con
@@ -479,6 +487,10 @@ class HistoryManager:
                 # directo, bypasseando self._repo -- ver ADDENDUM v13
                 # en __init__.
                 self._guardar_campeon_apertura(campeon_apertura)
+                # Cuadro REAL de playoffs que definió campeon_apertura
+                # (ver docstring de _guardar_playoffs_apertura en
+                # __init__) -- antes no se guardaba en ningún lado.
+                self._guardar_playoffs_apertura(detalle_playoffs_apertura)
 
             zonas_resumen: dict[str, list[str]] = {}
             for nombre, zona in zona_por_club.items():
@@ -502,21 +514,24 @@ class HistoryManager:
     def _simular_apertura_lpf(
         self, roster: list[str], zona_por_club: dict[str, str], resultados: dict,
         club_registry: ClubRegistry,
-    ) -> tuple[list[dict], str]:
+    ) -> tuple[list[dict], str, dict]:
         """Arma los ratings iniciales del Apertura siguiente (decisión 2
         del addendum, + memoria EWMA/handicap de Fase 0 -- ver
         _ratings_iniciales_lpf()) y corre EstadisticasLPF.simular_apertura_desde_carryover().
-        Devuelve (standings_flat, campeon) -- standings_flat es una
-        lista plana (zonas A+B juntas) en shape STANDING_COLUMNS, lista
-        para repo.upsert_standings("lpf", ...)."""
+        Devuelve (standings_flat, campeon, detalle_playoffs) --
+        standings_flat es una lista plana (zonas A+B juntas) en shape
+        STANDING_COLUMNS, lista para repo.upsert_standings("lpf", ...).
+        detalle_playoffs es el cuadro REAL (octavos/cuartos/semis/
+        final) que definió `campeon` -- antes se descartaba acá mismo
+        (ver docstring de simular_apertura_desde_carryover())."""
         ratings_iniciales = self._ratings_iniciales_lpf(resultados, roster, club_registry)
-        tabla_por_zona, campeon = EstadisticasLPF().simular_apertura_desde_carryover(
+        tabla_por_zona, campeon, detalle_playoffs = EstadisticasLPF().simular_apertura_desde_carryover(
             roster, zona_por_club, ratings_iniciales
         )
         standings_flat: list[dict] = []
         for filas_zona in tabla_por_zona.values():
             standings_flat.extend(filas_zona)
-        return standings_flat, campeon
+        return standings_flat, campeon, detalle_playoffs
 
     def _ratings_iniciales_lpf(
         self, resultados: dict, roster_siguiente: list[str], club_registry: ClubRegistry,
