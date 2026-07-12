@@ -116,6 +116,15 @@ class ResultadoTemporada:
     # correr_libertadores=True (ver correr_temporada(), levanta
     # ValueError si no). Vacío si correr_sudamericana=False (default).
     resultado_sudamericana: dict = field(default_factory=dict)
+    # Etapa 11: Recopa Sudamericana (campeón Libertadores vs campeón
+    # Sudamericana de ESTA MISMA temporada, partido único a cancha
+    # neutral), ver season/recopa_sudamericana.py::simular_recopa().
+    # Necesita resultado_libertadores/resultado_sudamericana de la misma
+    # corrida -- por eso correr_recopa=True exige correr_sudamericana
+    # =True (ver correr_temporada(), levanta ValueError si no). None si
+    # correr_recopa=False (default) o si algún campeón/Elo no está
+    # disponible (temporada con error en alguna de las dos copas).
+    resultado_recopa: dict | None = None
 
 
 class SeasonEngine:
@@ -209,7 +218,8 @@ class SeasonEngine:
                           history_manager: HistoryManager | None = None,
                           cuadro_copa_override: list | None = None,
                           correr_libertadores: bool = False,
-                          correr_sudamericana: bool = False) -> ResultadoTemporada:
+                          correr_sudamericana: bool = False,
+                          correr_recopa: bool = False) -> ResultadoTemporada:
         """
         cuadro_copa_override: ver _correr_competencias() -- cuadro de
             32avos ya sorteado para esta corrida de Copa Argentina, en
@@ -233,6 +243,15 @@ class SeasonEngine:
             si se pide correr_sudamericana=True sin correr_libertadores
             =True, en vez de correr con datos de Libertadores vacíos o
             de una temporada anterior.
+        correr_recopa: Etapa 11 -- si es True, además de las dos copas
+            de arriba, juega la Recopa Sudamericana (campeón
+            Libertadores vs campeón Sudamericana, partido único a
+            cancha neutral, ver season/recopa_sudamericana.py) y la
+            deja en ResultadoTemporada.resultado_recopa. Exige
+            correr_sudamericana=True (que a su vez exige
+            correr_libertadores=True) -- levanta ValueError si no.
+            False (default): cero cambio de comportamiento para
+            cualquier llamador existente.
         generar_temporada_siguiente: Etapa 7 -- si es True, además de
             correr las 6 competencias y (opcionalmente) promocionar,
             persiste la temporada N+1 vía HistoryManager.persist_season()
@@ -307,6 +326,21 @@ class SeasonEngine:
                 # constancia sin intentar correr con datos a medias.
                 resultado_sudamericana = {"error": f"Libertadores falló esta temporada: {resultado_libertadores['error']}"}
 
+        resultado_recopa = None
+        if correr_recopa:
+            if not correr_sudamericana:
+                raise ValueError(
+                    "correr_recopa=True necesita correr_sudamericana=True -- la Recopa "
+                    "enfrenta a los campeones de Libertadores y Sudamericana de esta misma "
+                    "temporada, no puede correr sin esos dos resultados."
+                )
+            if "error" not in resultado_libertadores and "error" not in resultado_sudamericana:
+                from season.recopa_sudamericana import simular_recopa
+                resultado_recopa = simular_recopa(resultado_libertadores, resultado_sudamericana)
+            # Si alguna de las dos copas falló, resultado_recopa queda en
+            # None -- mismo criterio no bloqueante que Libertadores/
+            # Sudamericana arriba, sin levantar excepción por esto.
+
         elo_actualizados = {}
         if generar_temporada_siguiente:
             if not aplicar_promocion:
@@ -373,6 +407,7 @@ class SeasonEngine:
             cuadro_copa_siguiente=cuadro_copa_siguiente,
             resultado_libertadores=resultado_libertadores,
             resultado_sudamericana=resultado_sudamericana,
+            resultado_recopa=resultado_recopa,
         )
 
 

@@ -154,6 +154,12 @@ def simular_temporada_sudamericana(
         "cuadro_octavos": cuadro_octavos,
         "rondas": rondas_detalle,
         "campeon": campeon,
+        # Elo de los participantes de ESTA Sudamericana (equipos propios +
+        # los terceros de zona "prestados" de Libertadores) -- lo necesita
+        # season/recopa_sudamericana.py para simular la Recopa contra el
+        # campeón de la Libertadores de la misma temporada, mismo criterio
+        # que ya expone simular_temporada_libertadores().
+        "elo_por_equipo": elo_por_equipo_completo,
     }
 
 

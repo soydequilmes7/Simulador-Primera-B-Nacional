@@ -1045,6 +1045,10 @@
   }
   .temporada-metric-card .val img.escudo{ width:20px; height:20px; }
   .temporada-metric-card .val.num{ font-family:'JetBrains Mono'; font-size:25px; color: var(--hero-accent); }
+  .temporada-metric-card .sub{
+    margin-top:6px; font-family:'JetBrains Mono'; font-size:10.5px;
+    color: var(--hero-dim); text-align:center;
+  }
   @keyframes temporada-dash-glow{
     0%, 100%{ box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 18px 44px rgba(20,10,50,0.32); }
     50%{ box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 18px 44px rgba(20,10,50,0.32), 0 0 34px rgba(155,110,255,0.16); }
@@ -11073,6 +11077,7 @@ function renderDashboardTemporada(datos){
   const compCopa = datos.competencias.copa;
   const compLibertadores = datos.libertadores && !datos.libertadores.error ? datos.libertadores : null;
   const compSudamericana = datos.sudamericana && !datos.sudamericana.error ? datos.sudamericana : null;
+  const compRecopa = datos.recopa || null;
   let totalAscensos = 0, totalDescensos = 0, totalCompetencias = 0;
   ORDEN_COMPETENCIAS.forEach(slug => {
     const c = datos.competencias[slug];
@@ -11122,6 +11127,18 @@ function renderDashboardTemporada(datos){
       val: compSudamericana && compSudamericana.campeon ? `${escudoHTML(compSudamericana.campeon)}${compSudamericana.campeon}` : 'Sin definir',
       clase: compSudamericana && compSudamericana.campeon ? '' : 'num',
     },
+    {
+      lbl: '🏆 Recopa Sudamericana',
+      val: compRecopa && compRecopa.avanza ? `${escudoHTML(compRecopa.avanza)}${compRecopa.avanza}` : 'Sin definir',
+      clase: compRecopa && compRecopa.avanza ? '' : 'num',
+      // Campeón Libertadores vs campeón Sudamericana, partido único a
+      // cancha neutral -- ver season/recopa_sudamericana.py. "Sin definir"
+      // si alguna de las dos copas falló esta temporada (criterio no
+      // bloqueante, mismo que Libertadores/Sudamericana arriba).
+      sub: compRecopa
+        ? `${compRecopa.local} ${compRecopa.golesLocal} - ${compRecopa.golesVisitante} ${compRecopa.visitante}${compRecopa.penales ? ' (por penales)' : ''}`
+        : '',
+    },
   ];
 
   const cont = document.getElementById('temporada-dashboard-metrics');
@@ -11130,6 +11147,7 @@ function renderDashboardTemporada(datos){
       <div class="temporada-metric-card">
         <div class="lbl">${m.lbl}</div>
         <div class="val ${m.clase}">${m.val}</div>
+        ${m.sub ? `<div class="sub">${m.sub}</div>` : ''}
       </div>`).join('');
   }
 }

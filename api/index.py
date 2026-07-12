@@ -1256,6 +1256,18 @@ def _correr_temporada_desde_estado(estado_anterior: dict | None, numero_ronda: i
             except ValueError as e:
                 resultado_sudamericana = {"error": str(e)}
 
+    # Etapa 11: Recopa Sudamericana (campeón Libertadores vs campeón
+    # Sudamericana de ESTA MISMA corrida, partido único a cancha
+    # neutral) -- mismo criterio no bloqueante que arriba, corrida a
+    # mano por la misma razón (este endpoint no pasa por
+    # SeasonEngine.correr_temporada()). None si alguna de las dos copas
+    # falló o si algún campeón/Elo no está disponible.
+    resultado_recopa = None
+    if correr_sudamericana and correr_libertadores and \
+            "error" not in resultado_libertadores and "error" not in resultado_sudamericana:
+        from season.recopa_sudamericana import simular_recopa
+        resultado_recopa = simular_recopa(resultado_libertadores, resultado_sudamericana)
+
     # Igual criterio que arriba (ver comentario de `clasificacion`):
     # CopaArgentinaManager.calcular() vive en season_engine.correr_
     # temporada(), que acá no llamamos directo -- así que se corre a
@@ -1390,7 +1402,7 @@ def _correr_temporada_desde_estado(estado_anterior: dict | None, numero_ronda: i
             },
         }
 
-    return resultados, promocion, proximo_estado, clasificacion, clasificacion_copa_argentina, resultado_libertadores, resultado_sudamericana
+    return resultados, promocion, proximo_estado, clasificacion, clasificacion_copa_argentina, resultado_libertadores, resultado_sudamericana, resultado_recopa
 
 
 @app.post("/api/season/play")
@@ -1437,7 +1449,7 @@ def season_play_endpoint(body: SimularTemporadaBody = SimularTemporadaBody()):
     if ocupado:
         return ocupado
     try:
-        resultados, promocion, proximo_estado, clasificacion, clasificacion_copa_argentina, resultado_libertadores, resultado_sudamericana = _correr_temporada_desde_estado(
+        resultados, promocion, proximo_estado, clasificacion, clasificacion_copa_argentina, resultado_libertadores, resultado_sudamericana, resultado_recopa = _correr_temporada_desde_estado(
             body.estado_anterior, body.numero_ronda, body.aplicar_promocion, body.correr_libertadores, body.correr_sudamericana,
         )
         return {
@@ -1449,6 +1461,7 @@ def season_play_endpoint(body: SimularTemporadaBody = SimularTemporadaBody()):
             "clasificacion_copa_argentina": clasificacion_copa_argentina,
             "libertadores": resultado_libertadores,
             "sudamericana": resultado_sudamericana,
+            "recopa": resultado_recopa,
             "promocion": promocion,
             "proximo_estado": proximo_estado,
         }
@@ -1512,6 +1525,7 @@ def season_generate_next_endpoint(body: GenerarTemporadaBody):
             temporada_siguiente=body.temporada_siguiente,
             correr_libertadores=True,
             correr_sudamericana=True,
+            correr_recopa=True,
         )
 
         return {
@@ -1526,6 +1540,7 @@ def season_generate_next_endpoint(body: GenerarTemporadaBody):
             "clasificacion_copa_argentina": resultado.clasificacion_copa_argentina,
             "libertadores": resultado.resultado_libertadores,
             "sudamericana": resultado.resultado_sudamericana,
+            "recopa": resultado.resultado_recopa,
             "promocion": resultado.promocion,
             "historia": resultado.historia,
             "elo_actualizados": resultado.elo_actualizados,
