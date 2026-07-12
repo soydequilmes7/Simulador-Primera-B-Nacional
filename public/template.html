@@ -689,7 +689,69 @@
     box-shadow: 0 8px 24px rgba(124,77,255,0.4), 0 0 0 1px rgba(255,255,255,0.08) inset;
   }
   body.liga-temporada .btn-simular:hover:not(:disabled){ box-shadow: 0 10px 30px rgba(124,77,255,0.55), 0 0 0 1px rgba(255,255,255,0.1) inset; }
-  body.liga-temporada .btn-actualizar{ padding:15px 30px; border-radius:999px; }
+  body.liga-temporada .btn-actualizar{
+    padding:15px 30px; border-radius:999px; border-color: rgba(180,140,255,0.5); color:#D8C6FF;
+  }
+  body.liga-temporada .btn-actualizar:hover:not(:disabled){ background: rgba(180,140,255,0.12); border-color:#fff; }
+
+  /* ---- HERO violeta: degradados + efectos de luz, mismo lenguaje que
+     usan Libertadores/Sudamericana (glow radial + trama sutil) pero en
+     violeta propio. Solo toca ::before/::after (pseudo-elementos), no
+     agrega ni saca ningún nodo del DOM. ---- */
+  body.liga-temporada .hero{
+    padding-top:68px; padding-bottom:48px;
+    animation: temporada-hero-in 0.7s cubic-bezier(0.22,1,0.36,1) backwards;
+  }
+  body.liga-temporada .hero::before{
+    content:"";
+    position:absolute; inset:0; pointer-events:none;
+    background:
+      radial-gradient(760px 380px at 18% -120px, rgba(155,110,255,0.32), transparent 62%),
+      radial-gradient(680px 360px at 86% 0%, rgba(90,60,200,0.26), transparent 60%),
+      repeating-linear-gradient(transparent, transparent 3px, rgba(255,255,255,0.014) 4px);
+  }
+  body.liga-temporada .hero::after{
+    height:4px;
+    background: linear-gradient(90deg, transparent, #B48CFF 20%, #7C4DFF 50%, #B48CFF 80%, transparent);
+  }
+  body.liga-temporada .hero .eyebrow{ color:#C9B4FF; letter-spacing:0.36em; font-weight:600; }
+  body.liga-temporada .hero h1{ text-shadow: 0 2px 36px rgba(155,110,255,0.28); }
+  body.liga-temporada .hero h1 #hero-title-span{
+    background: linear-gradient(120deg, #E4D6FF 0%, #B48CFF 45%, #8B5CF6 100%);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:#B48CFF;
+  }
+  body.liga-temporada .hero p.sub{ max-width:620px; }
+
+  /* Cards de estadísticas del hero (Equipos/Competencias/Ascensos/Descensos
+     por temporada): mismo tratamiento vidrio + glow que las copas
+     internacionales, en violeta. */
+  body.liga-temporada .hero .meta{ gap:14px; margin-top:32px; }
+  body.liga-temporada .hero .meta > div{
+    position:relative;
+    background: linear-gradient(160deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.02) 100%);
+    border:1px solid rgba(180,140,255,0.32); border-radius:14px; padding:16px 22px 14px; min-width:120px;
+    backdrop-filter: blur(6px);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 8px 20px rgba(20,10,50,0.35);
+    transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  body.liga-temporada .hero .meta > div:hover{
+    border-color: rgba(180,140,255,0.7); transform: translateY(-2px);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 12px 28px rgba(20,10,50,0.4), 0 0 22px rgba(155,110,255,0.22);
+  }
+  body.liga-temporada .hero .meta .num{ color:#D8C6FF; font-size:23px; }
+  body.liga-temporada .hero .meta .lbl{ color:#C9B4FF; opacity:0.85; }
+
+  /* Estado de arranque (antes de simular): la intro + el botón principal
+     pasan a sentirse como un panel propio dentro del hero, prolijo, en
+     vez de texto suelto flotando sobre el degradado. */
+  body.liga-temporada #vista-temporada > .search-section{
+    max-width:640px; padding-top:8px;
+  }
+  body.liga-temporada #vista-temporada > .search-section > p{
+    font-size:15.5px; line-height:1.65;
+  }
+  body.liga-temporada #temporada-status.ok{ color:#C9B4FF; }
+  body.liga-temporada #temporada-ronda-info{ letter-spacing:0.05em; }
 
   /* Títulos de sección con más presencia dentro de Modo Temporada. */
   body.liga-temporada .section-head{ margin-bottom:26px; }
@@ -702,6 +764,12 @@
   body.liga-temporada .section-head .rule{ background: linear-gradient(90deg, rgba(124,77,255,0.45), transparent); }
   body.liga-temporada section{ margin-bottom:52px; }
 
+  @keyframes temporada-hero-in{ from{ opacity:0; transform:translateY(-8px);} to{ opacity:1; transform:none; } }
+  @media (prefers-reduced-motion: reduce){
+    body.liga-temporada .hero{ animation:none; }
+    body.liga-temporada .hero .meta > div{ transition:none; }
+  }
+
   /* ---------- MODO TEMPORADA ---------- */
   .temporada-grid{
     display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr));
@@ -709,17 +777,21 @@
   }
   .temporada-card{
     border:1px solid var(--line); border-top:4px solid var(--tc-color, var(--amber));
-    border-radius:var(--radius); padding:20px 22px;
+    border-radius:calc(var(--radius) + 4px); padding:24px 24px 22px;
     background: var(--card-grad, var(--bg-panel)); background-color:var(--bg-panel);
-    box-shadow:var(--card-shadow); transition:box-shadow 0.25s ease, transform 0.25s ease;
+    box-shadow:var(--card-shadow);
+    transition:box-shadow 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
   }
-  .temporada-card:hover{ box-shadow:var(--card-shadow-hover); transform:var(--hover-lift); }
+  .temporada-card:hover{
+    box-shadow:var(--card-shadow-hover), 0 0 0 1px var(--tc-color, var(--amber)), 0 14px 30px -12px var(--tc-color, transparent);
+    transform:translateY(-4px);
+  }
   .temporada-card .liga-nombre{
     font-family:'JetBrains Mono'; font-size:11px; color:var(--tc-color, var(--muted));
-    letter-spacing:0.08em; text-transform:uppercase; margin-bottom:10px;
-    display:flex; align-items:center; gap:8px;
+    letter-spacing:0.1em; text-transform:uppercase; margin-bottom:12px;
+    display:flex; align-items:center; gap:9px;
   }
-  .temporada-card .liga-nombre img{ height:18px; width:auto; }
+  .temporada-card .liga-nombre img{ height:20px; width:auto; }
   .temporada-card .campeon-nombre{ font-size:19px; font-weight:700; color:var(--ink); margin-bottom:14px; }
   .temporada-card .campeon-nombre .trofeo{ margin-right:6px; }
   .temporada-mov-fila{ display:flex; flex-direction:column; gap:6px; font-size:14px; margin-bottom:10px; }
@@ -750,17 +822,34 @@
   .temporada-copas-lista{ display:flex; flex-wrap:wrap; gap:10px; }
   .temporada-copa-chip{
     display:flex; align-items:center; gap:8px;
-    border:1px solid var(--line); border-left:3px solid var(--qualified-accent); border-radius:999px; padding:8px 16px 8px 14px;
+    border:1px solid var(--line); border-left:3px solid var(--qualified-accent); border-radius:999px; padding:9px 17px 9px 14px;
     background:var(--bg-panel); font-size:13px; color:var(--ink-dim);
+    box-shadow:var(--card-shadow); transition:box-shadow 0.2s ease, transform 0.2s ease;
   }
+  .temporada-copa-chip:hover{ box-shadow:var(--card-shadow-hover); transform:translateY(-2px); }
   .temporada-copa-chip img.copa-logo{ height:16px; width:auto; flex-shrink:0; }
-  .temporada-copa-argentina-grupos{ display:flex; flex-direction:column; gap:22px; }
+  .temporada-copa-argentina-grupos{
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(320px,1fr)); gap:18px; align-items:start;
+  }
+  .temporada-copa-argentina-grupo{
+    border:1px solid var(--line); border-left:4px solid var(--tc-color, var(--amber));
+    border-radius:var(--radius); padding:18px 20px;
+    background: var(--card-grad, var(--bg-panel)); background-color:var(--bg-panel);
+    box-shadow:var(--card-shadow); transition:box-shadow 0.25s ease, transform 0.25s ease;
+    animation: fade-in 0.4s ease forwards;
+  }
+  .temporada-copa-argentina-grupo:hover{
+    box-shadow:var(--card-shadow-hover), 0 10px 24px -12px var(--tc-color, transparent); transform:translateY(-3px);
+  }
   .temporada-copa-argentina-grupo .grupo-titulo{
-    display:flex; align-items:center; gap:8px; font-family:'JetBrains Mono'; font-size:11px;
-    color:var(--tc-color, var(--muted)); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:10px;
+    display:flex; align-items:center; gap:8px; font-family:'JetBrains Mono'; font-size:11.5px;
+    color:var(--tc-color, var(--muted)); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:14px;
   }
   .temporada-copa-argentina-grupo .grupo-titulo .cantidad{ color:var(--muted); text-transform:none; letter-spacing:0; }
   .temporada-copa-argentina-grupo .temporada-copas-lista .temporada-copa-chip{ border-left-color:var(--tc-color, var(--qualified-accent)); }
+  @media (max-width: 620px){
+    .temporada-copa-argentina-grupos{ grid-template-columns:1fr; }
+  }
   .temporada-avisos{ margin-top:14px; font-size:12px; color:var(--muted); font-family:'JetBrains Mono'; }
   .palmares-tabla{ width:100%; border-collapse:collapse; font-size:13px; }
   .palmares-tabla th, .palmares-tabla td{ padding:10px 14px; border-bottom:1px solid var(--line); text-align:left; white-space:nowrap; }
@@ -858,14 +947,22 @@
   /* Pestañas de competencia del Modo Temporada: cada una con el color de
      su torneo (mismo criterio que .liga-tab.active en las páginas
      individuales), en vez de quedar todas iguales sin identidad. */
-  #temporada-competencia-tabs-group .zone-tab::before{
+  .temporada-competencia-tabs-group .zone-tab::before{
     content:''; display:inline-block; width:8px; height:8px; border-radius:50%;
     background:var(--tc-color, var(--muted)); margin-right:7px; vertical-align:middle;
   }
-  #temporada-competencia-tabs-group .zone-tab.active{
+  .temporada-competencia-tabs-group .zone-tab.active{
     background:var(--tc-color, var(--amber-dim)); color:#fff; border-color:var(--tc-color, var(--amber));
   }
-  #temporada-competencia-tabs-group .zone-tab.active::before{ background:#fff; }
+  .temporada-competencia-tabs-group .zone-tab.active::before{ background:#fff; }
+
+  /* Modo Temporada: la barra de pestañas de competencias pasa a ser de tres
+     filas (Liga Profesional/Primera Nacional · B Metropolitana/Federal A/
+     Primera C · Copa Argentina/Libertadores/Sudamericana), mismo esquema
+     2/3/3 que las tarjetas de "Resumen de la temporada", en vez de una
+     sola fila de 8 que se salía del viewport sin scroll y dejaba Copa
+     Libertadores cortada y Copa Sudamericana directamente invisible. */
+  .zone-tabs-temporada{ flex-direction:column; gap:10px; }
 
   /* ---------- MODO TEMPORADA · dashboard superior ----------
      Convierte el arranque de la pestaña en un mini-dashboard (mismo
@@ -874,34 +971,49 @@
      dentro de #vista-temporada, no dentro de .hero (.hero es compartido
      por las 7 pestañas y su contenido/JS no se toca). */
   .temporada-dashboard{
-    background: var(--hero-bg); border-radius: var(--radius);
-    padding: 34px 28px 30px; margin: 28px 0 40px; text-align:center;
-    position:relative; overflow:hidden; box-shadow: var(--card-shadow);
-    animation: fade-in 0.5s ease forwards;
+    background: var(--hero-bg); border-radius: calc(var(--radius) + 6px);
+    padding: 40px 32px 36px; margin: 30px 0 44px; text-align:center;
+    position:relative; overflow:hidden;
+    border: 1px solid rgba(180,140,255,0.28);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 18px 44px rgba(20,10,50,0.32);
+    animation: fade-in 0.5s ease forwards, temporada-dash-glow 5s ease-in-out infinite;
+  }
+  .temporada-dashboard::before{
+    content:""; position:absolute; inset:0; pointer-events:none;
+    background:
+      radial-gradient(560px 280px at 12% -60px, rgba(155,110,255,0.28), transparent 65%),
+      radial-gradient(520px 260px at 92% 110%, rgba(90,60,200,0.22), transparent 60%);
   }
   .temporada-dashboard::after{
     content:""; position:absolute; left:0; right:0; bottom:0; height:3px;
-    background: var(--hero-accent); opacity:0.9;
+    background: linear-gradient(90deg, transparent, var(--hero-accent) 30%, var(--hero-accent) 70%, transparent);
+    opacity:0.9;
   }
   .temporada-dashboard-eyebrow{
-    display:inline-block; font-family:'JetBrains Mono'; font-size:11px;
-    letter-spacing:0.3em; color: var(--hero-dim); margin-bottom:10px;
+    position:relative; display:inline-block; font-family:'JetBrains Mono'; font-size:11px;
+    letter-spacing:0.34em; color: #C9B4FF; margin-bottom:12px;
   }
   .temporada-dashboard-title{
+    position:relative;
     font-family:'Oswald'; text-transform:uppercase; letter-spacing:0.02em;
-    font-size:clamp(22px,4vw,30px); font-weight:600; color: var(--hero-ink);
+    font-size:clamp(24px,4.4vw,34px); font-weight:600; color: var(--hero-ink);
+    text-shadow: 0 2px 30px rgba(155,110,255,0.3);
   }
-  .temporada-dashboard-sub{ margin-top:8px; color: var(--hero-dim); font-size:13px; font-family:'JetBrains Mono'; }
+  .temporada-dashboard-sub{ position:relative; margin-top:9px; color: var(--hero-dim); font-size:13px; font-family:'JetBrains Mono'; }
   .temporada-dashboard-metrics{
-    margin-top:26px; display:grid; grid-template-columns:repeat(auto-fit, minmax(180px,1fr));
-    gap:14px; max-width:460px; margin-left:auto; margin-right:auto;
+    position:relative;
+    margin-top:28px; display:grid; grid-template-columns:repeat(auto-fit, minmax(180px,1fr));
+    gap:14px; max-width:480px; margin-left:auto; margin-right:auto;
   }
   .temporada-metric-card{
     background: rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.16);
-    border-radius: var(--radius-sm); padding:16px 14px; backdrop-filter: blur(6px);
-    transition: background 0.2s ease, transform 0.2s ease;
+    border-radius: var(--radius-sm); padding:18px 14px; backdrop-filter: blur(8px);
+    transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
   }
-  .temporada-metric-card:hover{ background: rgba(255,255,255,0.11); transform: translateY(-2px); }
+  .temporada-metric-card:hover{
+    background: rgba(255,255,255,0.11); transform: translateY(-3px);
+    border-color: rgba(180,140,255,0.55); box-shadow: 0 10px 24px rgba(20,10,50,0.35), 0 0 18px rgba(155,110,255,0.2);
+  }
   .temporada-metric-card .lbl{
     font-family:'JetBrains Mono'; font-size:10.5px; letter-spacing:0.06em; text-transform:uppercase;
     color: var(--hero-dim); margin-bottom:8px; display:flex; align-items:center; justify-content:center; gap:6px;
@@ -911,9 +1023,16 @@
     display:flex; align-items:center; justify-content:center; gap:7px; line-height:1.25;
   }
   .temporada-metric-card .val img.escudo{ width:20px; height:20px; }
-  .temporada-metric-card .val.num{ font-family:'JetBrains Mono'; font-size:24px; color: var(--hero-accent); }
+  .temporada-metric-card .val.num{ font-family:'JetBrains Mono'; font-size:25px; color: var(--hero-accent); }
+  @keyframes temporada-dash-glow{
+    0%, 100%{ box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 18px 44px rgba(20,10,50,0.32); }
+    50%{ box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 18px 44px rgba(20,10,50,0.32), 0 0 34px rgba(155,110,255,0.16); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .temporada-dashboard{ animation: fade-in 0.5s ease forwards; }
+  }
   @media (max-width: 640px){
-    .temporada-dashboard{ padding:28px 18px 24px; }
+    .temporada-dashboard{ padding:30px 20px 26px; }
   }
 
   /* ---------- MODO TEMPORADA · tarjetas de resumen mejoradas ----------
@@ -923,16 +1042,43 @@
   .temporada-grid{ grid-template-columns:repeat(3, minmax(0,1fr)); gap:20px; }
   @media (max-width: 980px){ .temporada-grid{ grid-template-columns:repeat(2, minmax(0,1fr)); } }
   @media (max-width: 620px){ .temporada-grid{ grid-template-columns:1fr; } }
+
+  /* Resumen de la temporada: separado en 2 filas -- 5 ligas domésticas
+     arriba y las 3 copas (Argentina/Libertadores/Sudamericana) abajo, en
+     vez de una sola grilla de 3 columnas que las mezclaba todas sin
+     distinción. */
+  /* Fila 1 (Liga Profesional + Primera Nacional): 2 columnas.
+     Fila 2 (B Metropolitana + Federal A + Primera C): 3 columnas.
+     Fila 3, .temporada-grid-copas más abajo (Copa Argentina + Copa
+     Libertadores + Copa Sudamericana): 3 columnas. */
+  .temporada-grid-ligas-fila1{ grid-template-columns:repeat(2, minmax(0,1fr)); gap:18px; }
+  .temporada-grid-ligas-fila2{ grid-template-columns:repeat(3, minmax(0,1fr)); gap:18px; margin-top:18px; }
+  .temporada-grid-copas{ grid-template-columns:repeat(3, minmax(0,1fr)); gap:18px; margin-top:24px; }
+  .temporada-grid .temporada-card:nth-child(1){ animation-delay:0.02s; }
+  .temporada-grid .temporada-card:nth-child(2){ animation-delay:0.06s; }
+  .temporada-grid .temporada-card:nth-child(3){ animation-delay:0.10s; }
+  .temporada-grid .temporada-card:nth-child(4){ animation-delay:0.14s; }
+  .temporada-grid .temporada-card:nth-child(5){ animation-delay:0.18s; }
+  @media (max-width: 980px){
+    .temporada-grid-ligas-fila1{ grid-template-columns:repeat(2, minmax(0,1fr)); }
+    .temporada-grid-ligas-fila2{ grid-template-columns:repeat(2, minmax(0,1fr)); }
+    .temporada-grid-copas{ grid-template-columns:repeat(2, minmax(0,1fr)); }
+  }
+  @media (max-width: 620px){
+    .temporada-grid-ligas-fila1{ grid-template-columns:1fr; }
+    .temporada-grid-ligas-fila2{ grid-template-columns:1fr; }
+    .temporada-grid-copas{ grid-template-columns:1fr; }
+  }
   .temporada-card{
-    padding:22px 22px 20px; display:flex; flex-direction:column; height:100%;
+    padding:26px 24px 22px; display:flex; flex-direction:column; height:100%;
     animation: fade-in 0.4s ease forwards;
   }
   .temporada-card .campeon-nombre{
-    display:flex; align-items:center; gap:10px; font-size:20px; margin-bottom:0;
+    display:flex; align-items:center; gap:11px; font-size:20px; margin-bottom:0;
   }
-  .temporada-card .campeon-nombre img.escudo{ width:34px; height:34px; }
-  .temporada-card .campeon-nombre .trofeo{ font-size:17px; }
-  .temporada-card-sep{ height:1px; background:var(--line); margin:16px 0 14px; }
+  .temporada-card .campeon-nombre img.escudo{ width:38px; height:38px; }
+  .temporada-card .campeon-nombre .trofeo{ font-size:18px; filter: drop-shadow(0 0 6px var(--tc-color, transparent)); }
+  .temporada-card-sep{ height:1px; background:linear-gradient(90deg, var(--tc-color, var(--line)) 0%, var(--line) 40%); opacity:0.5; margin:18px 0 16px; }
   .temporada-card .temporada-mov-fila{ margin-bottom:8px; }
   .temporada-card .temporada-mov-fila:last-child{ margin-bottom:0; }
   .temporada-card-foot{ margin-top:auto; }
@@ -1039,6 +1185,226 @@
     box-shadow: inset 3px 0 0 var(--amber) !important;
   }
   tbody tr.temporada-fila-resaltada td:nth-child(2){ color: var(--ink); font-weight:700; }
+
+  /* ---------- MODO TEMPORADA · Copa Libertadores / Copa Sudamericana ----------
+     El cuadro de eliminación de estas dos copas, dentro de Modo Temporada,
+     reusa exactamente los mismos componentes (.bracket/.round/.match, ver
+     bracketLibertadoresHTML/bracketSudamericanaHTML) que sus pestañas
+     propias -- lo único que faltaba era el mismo tratamiento visual, que
+     en esas pestañas está scopeado a body.liga-libertadores/body.liga-
+     sudamericana (no aplica acá, donde el body queda en liga-temporada).
+     Se replica apuntando directamente a los ids reales que ya arma el JS
+     (#bracket-temporada-libertadores / #bracket-temporada-sudamericana) y,
+     para lo que vive fuera del cuadro (anuncio de campeón, fase de grupos),
+     con :has() sobre el contenedor #temporada-detalle-competencia -- sin
+     tocar una línea de JS ni agregar clases nuevas. */
+  #temporada-detalle-competencia .bracket{ gap: clamp(24px, 3.6vw, 60px); }
+  #temporada-detalle-competencia .round-body{ gap:20px; }
+  #temporada-detalle-competencia .round{ padding-top:2px; }
+  #temporada-detalle-competencia .round:not(.final-col){ min-width:248px; }
+  #temporada-detalle-competencia .round.final-col{ flex:1.12 1 0; min-width:300px; }
+  @media (max-width:760px){
+    #temporada-detalle-competencia .round:not(.final-col),
+    #temporada-detalle-competencia .round.final-col{ min-width:0; }
+  }
+  #temporada-detalle-competencia .bracket-scroll{ scrollbar-width:none; -ms-overflow-style:none; }
+  #temporada-detalle-competencia .bracket-scroll::-webkit-scrollbar{ display:none; }
+
+  /* -- Copa Libertadores: dorado, igual que en su propia pestaña -- */
+  #bracket-temporada-libertadores .round-title{
+    position:relative; color:#EAD9A0; font-size:11px; font-weight:700;
+    letter-spacing:0.24em; padding-bottom:12px; margin-bottom:20px; opacity:0.92;
+  }
+  #bracket-temporada-libertadores .round-title::after{
+    content:""; position:absolute; left:50%; bottom:0; transform:translateX(-50%);
+    width:26px; height:2px; border-radius:2px;
+    background:linear-gradient(90deg, transparent, #D4AF37, transparent);
+  }
+  #bracket-temporada-libertadores .final-col .round-title{ color:#F8E6AC; font-size:12.5px; }
+  #bracket-temporada-libertadores .final-col .round-title::before{
+    content:"🏆"; display:block; font-size:15px; margin-bottom:6px;
+    filter: drop-shadow(0 0 6px rgba(212,175,55,0.5));
+  }
+  #bracket-temporada-libertadores .match{
+    background: linear-gradient(155deg, rgba(255,255,255,0.055) 0%, rgba(255,255,255,0.012) 60%), #0C0C0C;
+    border:1px solid rgba(212,175,55,0.16); border-radius:11px; padding:13px 15px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 10px 26px rgba(0,0,0,0.5);
+    transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+    animation: liber-card-in 0.5s cubic-bezier(0.22,1,0.36,1) backwards;
+  }
+  #bracket-temporada-libertadores .match.sim{ border-style:dashed; }
+  #bracket-temporada-libertadores .match:hover{
+    border-color:#D4AF37; transform:translateY(-3px);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 18px 36px rgba(0,0,0,0.6), 0 0 22px rgba(212,175,55,0.2);
+  }
+  #bracket-temporada-libertadores .match .row{ padding:5px 0; opacity:0.5; align-items:center; transition: opacity 0.25s ease, color 0.25s ease; }
+  #bracket-temporada-libertadores .match .row span:first-child{ font-size:13.5px; font-weight:600; letter-spacing:0.005em; }
+  #bracket-temporada-libertadores .match .row span:last-child{ font-family:'JetBrains Mono', monospace; font-weight:600; font-size:12px; min-width:2.4ch; opacity:0.85; }
+  #bracket-temporada-libertadores .match .row .escudo{ transition: transform 0.25s ease; }
+  #bracket-temporada-libertadores .match .row.winner{ opacity:1; color:#FFFFFF; font-weight:700; text-shadow: 0 0 16px rgba(255,255,255,0.22); }
+  #bracket-temporada-libertadores .match .row.winner span:last-child{ color:#D4AF37; font-weight:700; opacity:1; font-size:13px; text-shadow: 0 0 14px rgba(212,175,55,0.5); }
+  #bracket-temporada-libertadores .match .row.winner .escudo{ transform:scale(1.08); }
+  #bracket-temporada-libertadores .match .leg-detail{ margin-top:8px; padding-top:7px; border-top:1px dashed rgba(212,175,55,0.18); font-size:9.5px; letter-spacing:0.05em; color:#6F6754; text-transform:uppercase; }
+  #bracket-temporada-libertadores .final-col .match{
+    padding:24px 26px; border:1.5px solid rgba(212,175,55,0.65); border-radius:14px;
+    background: linear-gradient(160deg, rgba(212,175,55,0.20) 0%, rgba(255,255,255,0.03) 65%), #0D0B06;
+    box-shadow: 0 0 0 1px rgba(212,175,55,0.3), 0 0 46px rgba(212,175,55,0.26), 0 24px 50px rgba(0,0,0,0.68);
+    animation: liber-card-in 0.5s cubic-bezier(0.22,1,0.36,1) backwards, liber-final-glow 3.6s ease-in-out infinite;
+  }
+  #bracket-temporada-libertadores .final-col .match:hover{
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 0 0 1px rgba(212,175,55,0.45), 0 0 60px rgba(212,175,55,0.35), 0 24px 50px rgba(0,0,0,0.7);
+  }
+  #bracket-temporada-libertadores .final-col .match .row{ font-size:16px; padding:8px 0; }
+  #bracket-temporada-libertadores .final-col .match .row span:first-child{ font-size:16px; font-weight:700; }
+  #bracket-temporada-libertadores .final-col .match .row span:last-child{ font-size:18px; }
+  #bracket-temporada-libertadores .final-col .match .row.winner span:last-child{ font-size:19px; }
+  #bracket-temporada-libertadores .final-col .match .row .escudo{ width:30px; height:30px; }
+  #bracket-temporada-libertadores .final-col .match .leg-detail{ font-size:10.5px; margin-top:10px; padding-top:9px; }
+  #bracket-temporada-libertadores .bracket-lines path{ stroke-width:1.2; opacity:0.75; stroke-linecap:round; filter: drop-shadow(0 0 3px rgba(212,175,55,0.3)); transition: opacity 0.25s ease; }
+  #bracket-temporada-libertadores:hover .bracket-lines path{ opacity:0.9; }
+  #temporada-detalle-competencia:has(#bracket-temporada-libertadores) .section-note{ color:var(--muted); }
+  #temporada-detalle-competencia:has(#bracket-temporada-libertadores) .campeon-anuncio{
+    margin-top:32px; padding:28px 20px 8px; border-top:1px solid rgba(212,175,55,0.3);
+    font-family:'Poppins', sans-serif; font-weight:800; font-size:26px;
+    color:#C9A227; text-shadow: 0 0 30px rgba(212,175,55,0.35); letter-spacing:0.01em; text-align:center;
+  }
+  #temporada-detalle-competencia:has(#bracket-temporada-libertadores) .campeon-anuncio .escudo{
+    width:48px; height:48px; vertical-align:-14px; margin-right:12px;
+    filter: drop-shadow(0 0 14px rgba(212,175,55,0.5));
+  }
+
+  /* -- Copa Sudamericana: azul eléctrico, igual que en su propia pestaña -- */
+  #bracket-temporada-sudamericana .round-title{
+    position:relative; color:#BFD6FF; font-size:11px; font-weight:700;
+    letter-spacing:0.24em; padding-bottom:12px; margin-bottom:20px; opacity:0.92;
+  }
+  #bracket-temporada-sudamericana .round-title::after{
+    content:""; position:absolute; left:50%; bottom:0; transform:translateX(-50%);
+    width:26px; height:2px; border-radius:2px;
+    background:linear-gradient(90deg, transparent, #1F5EFF, transparent);
+  }
+  #bracket-temporada-sudamericana .final-col .round-title{ color:#F3D9A0; font-size:12.5px; }
+  #bracket-temporada-sudamericana .final-col .round-title::before{
+    content:"🏆"; display:block; font-size:15px; margin-bottom:6px;
+    filter: drop-shadow(0 0 6px rgba(216,160,40,0.55));
+  }
+  #bracket-temporada-sudamericana .match{
+    background: linear-gradient(155deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.012) 60%), #081A32;
+    border:1px solid rgba(31,94,255,0.22); border-radius:11px; padding:13px 15px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 10px 26px rgba(2,8,20,0.55);
+    transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+    animation: suda-card-in 0.5s cubic-bezier(0.22,1,0.36,1) backwards;
+  }
+  #bracket-temporada-sudamericana .match.sim{ border-style:dashed; }
+  #bracket-temporada-sudamericana .match:hover{
+    border-color:#1F5EFF; transform:translateY(-3px);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 18px 36px rgba(2,8,20,0.65), 0 0 22px rgba(31,94,255,0.26);
+  }
+  #bracket-temporada-sudamericana .match .row{ padding:5px 0; opacity:0.5; align-items:center; transition: opacity 0.25s ease, color 0.25s ease; }
+  #bracket-temporada-sudamericana .match .row span:first-child{ font-size:13.5px; font-weight:600; letter-spacing:0.005em; }
+  #bracket-temporada-sudamericana .match .row span:last-child{ font-family:'JetBrains Mono', monospace; font-weight:600; font-size:12px; min-width:2.4ch; opacity:0.85; }
+  #bracket-temporada-sudamericana .match .row .escudo{ transition: transform 0.25s ease; }
+  #bracket-temporada-sudamericana .match .row.winner{ opacity:1; color:#FFFFFF; font-weight:700; text-shadow: 0 0 16px rgba(255,255,255,0.22); }
+  #bracket-temporada-sudamericana .match .row.winner span:last-child{ color:#3E7BFF; font-weight:700; opacity:1; font-size:13px; text-shadow: 0 0 14px rgba(31,94,255,0.5); }
+  #bracket-temporada-sudamericana .match .row.winner .escudo{ transform:scale(1.08); }
+  #bracket-temporada-sudamericana .match .leg-detail{ margin-top:8px; padding-top:7px; border-top:1px dashed rgba(31,94,255,0.2); font-size:9.5px; letter-spacing:0.05em; color:#5E7099; text-transform:uppercase; }
+  #bracket-temporada-sudamericana .final-col .match{
+    padding:24px 26px; border:1.5px solid rgba(216,160,40,0.55); border-radius:14px;
+    background: linear-gradient(160deg, rgba(31,94,255,0.20) 0%, rgba(255,255,255,0.03) 65%), #081226;
+    box-shadow: 0 0 0 1px rgba(31,94,255,0.3), 0 0 46px rgba(31,94,255,0.24), 0 24px 50px rgba(0,0,0,0.68);
+    animation: suda-card-in 0.5s cubic-bezier(0.22,1,0.36,1) backwards, suda-final-glow 3.6s ease-in-out infinite;
+  }
+  #bracket-temporada-sudamericana .final-col .match:hover{
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 0 0 1px rgba(31,94,255,0.45), 0 0 60px rgba(31,94,255,0.32), 0 24px 50px rgba(0,0,0,0.7);
+  }
+  #bracket-temporada-sudamericana .final-col .match .row{ font-size:16px; padding:8px 0; }
+  #bracket-temporada-sudamericana .final-col .match .row span:first-child{ font-size:16px; font-weight:700; }
+  #bracket-temporada-sudamericana .final-col .match .row span:last-child{ font-size:18px; }
+  #bracket-temporada-sudamericana .final-col .match .row.winner span:last-child{ font-size:19px; }
+  #bracket-temporada-sudamericana .final-col .match .row .escudo{ width:30px; height:30px; }
+  #bracket-temporada-sudamericana .final-col .match .leg-detail{ font-size:10.5px; margin-top:10px; padding-top:9px; }
+  #bracket-temporada-sudamericana .bracket-lines path{ stroke-width:1.2; opacity:0.75; stroke-linecap:round; filter: drop-shadow(0 0 3px rgba(31,94,255,0.32)); transition: opacity 0.25s ease; }
+  #bracket-temporada-sudamericana:hover .bracket-lines path{ opacity:0.9; }
+  #temporada-detalle-competencia:has(#bracket-temporada-sudamericana) .section-note{ color:var(--muted); }
+  #temporada-detalle-competencia:has(#bracket-temporada-sudamericana) .campeon-anuncio{
+    margin-top:32px; padding:28px 20px 8px; border-top:1px solid rgba(31,94,255,0.32);
+    font-family:'Poppins', sans-serif; font-weight:800; font-size:26px;
+    color:#3E7BFF; text-shadow: 0 0 30px rgba(31,94,255,0.3); letter-spacing:0.01em; text-align:center;
+  }
+  #temporada-detalle-competencia:has(#bracket-temporada-sudamericana) .campeon-anuncio .escudo{
+    width:48px; height:48px; vertical-align:-14px; margin-right:12px;
+    filter: drop-shadow(0 0 14px rgba(31,94,255,0.5));
+  }
+  @media (prefers-reduced-motion: reduce){
+    #bracket-temporada-libertadores .match, #bracket-temporada-libertadores .final-col .match,
+    #bracket-temporada-sudamericana .match, #bracket-temporada-sudamericana .final-col .match{ animation:none; }
+  }
+
+  /* -- Fase de grupos de ambas copas dentro de Modo Temporada: cada zona
+     es una tarjeta con la misma identidad visual (colores, bordes,
+     acentos y brillos) que el cuadro de su propia copa -- dorado/ámbar
+     para Libertadores (mismos tokens que #bracket-temporada-libertadores
+     .match más abajo) y azul para Sudamericana (mismos tokens que
+     #bracket-temporada-sudamericana .match), en vez de un genérico
+     compartido entre ambas. -- */
+  .temporada-copa-grupos{
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(230px,1fr)); gap:18px;
+    align-items:start; margin-bottom:24px;
+  }
+  .temporada-copa-zona{
+    border-radius:11px; padding:14px 15px 8px;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+  }
+  .temporada-copa-zona-titulo{
+    font-family:'JetBrains Mono'; font-weight:700; font-size:11.5px; letter-spacing:0.14em;
+    text-transform:uppercase; padding-bottom:8px; margin-bottom:10px; border-bottom:2px solid;
+  }
+  .temporada-copa-zona .table-wrap{
+    border-radius:var(--radius-sm); box-shadow:var(--card-shadow);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+  }
+
+  /* Libertadores: dorado/ámbar, igual que el cuadro de su propia copa */
+  .temporada-copa-grupos-libertadores .temporada-copa-zona{
+    background: linear-gradient(155deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 60%), #0C0C0C;
+    border:1px solid rgba(212,175,55,0.22);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 10px 24px rgba(0,0,0,0.45);
+  }
+  .temporada-copa-grupos-libertadores .temporada-copa-zona:hover{
+    border-color:#D4AF37; transform:translateY(-2px);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 16px 32px rgba(0,0,0,0.55), 0 0 20px rgba(212,175,55,0.2);
+  }
+  .temporada-copa-grupos-libertadores .temporada-copa-zona-titulo{ color:#EAD9A0; border-bottom-color:rgba(212,175,55,0.3); }
+  .temporada-copa-grupos-libertadores .temporada-copa-zona .table-wrap:hover{
+    box-shadow:var(--card-shadow-hover), 0 0 0 1px rgba(212,175,55,0.35);
+  }
+  .temporada-copa-grupos-libertadores tbody tr.reducido{ background: rgba(212,175,55,0.1); box-shadow: inset 3px 0 0 #D4AF37; }
+  .temporada-copa-grupos-libertadores tbody tr.reducido:hover{ background: rgba(212,175,55,0.15); }
+  .temporada-copa-grupos-libertadores tbody tr.reducido td:nth-child(2){ color:#EAD9A0; font-weight:700; }
+
+  /* Sudamericana: azul eléctrico, igual que el cuadro de su propia copa */
+  .temporada-copa-grupos-sudamericana .temporada-copa-zona{
+    background: linear-gradient(155deg, rgba(255,255,255,0.055) 0%, rgba(255,255,255,0.012) 60%), #081A32;
+    border:1px solid rgba(31,94,255,0.28);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 10px 24px rgba(2,8,20,0.5);
+  }
+  .temporada-copa-grupos-sudamericana .temporada-copa-zona:hover{
+    border-color:#1F5EFF; transform:translateY(-2px);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 16px 32px rgba(2,8,20,0.6), 0 0 20px rgba(31,94,255,0.24);
+  }
+  .temporada-copa-grupos-sudamericana .temporada-copa-zona-titulo{ color:#BFD6FF; border-bottom-color:rgba(31,94,255,0.28); }
+  .temporada-copa-grupos-sudamericana .temporada-copa-zona .table-wrap:hover{
+    box-shadow:var(--card-shadow-hover), 0 0 0 1px rgba(31,94,255,0.32);
+  }
+  .temporada-copa-grupos-sudamericana tbody tr.reducido{ background: rgba(31,94,255,0.12); box-shadow: inset 3px 0 0 #1F5EFF; }
+  .temporada-copa-grupos-sudamericana tbody tr.reducido:hover{ background: rgba(31,94,255,0.16); }
+  .temporada-copa-grupos-sudamericana tbody tr.reducido td:nth-child(2){ color:#3E7BFF; font-weight:700; }
+
+  /* Bandera de país junto al escudo, en el cuadro y en los grupos de
+     ambas copas (ver banderaHTML()). */
+  .bandera-club{ margin-right:5px; font-size:0.95em; vertical-align:-1px; }
 
   /* ---------- BRACKET ---------- */
   .bracket-wrap{ position:relative; }
@@ -3091,6 +3457,350 @@
     body.liga-libertadores .match,
     body.liga-libertadores .final-col .match{ animation:none; }
   }
+
+  /* =====================================================================
+     COPA SUDAMERICANA · misma familia de diseño que Copa Libertadores
+     (mismo hero, mismas tarjetas de estadísticas, mismo cuadro/bracket,
+     mismos botones y animaciones -- ver el bloque body.liga-libertadores
+     de arriba, del que este es la variante "hermana" anunciada en su
+     comentario). Lo único que cambia es la identidad: paleta CONMEBOL
+     Sudamericana (azul noche + azul eléctrico + blanco), con el dorado
+     reservado como acento puntual (banda/estrella de la Final) en vez de
+     protagonista como en Libertadores. Mismas variables y selectores
+     genéricos (--bg, --azul, .hero .meta, .match, .mc-row,
+     .campeon-anuncio) que ya redefine cada liga: ninguna línea de la
+     lógica del simulador se toca. */
+  body.liga-sudamericana,
+  body.dark.liga-sudamericana{
+    --bg: #071426;
+    --bg-panel: rgba(255,255,255,0.045);
+    --bg-panel-2: rgba(255,255,255,0.07);
+    --line: rgba(31,94,255,0.28);
+    --ink: #EAF1FF;
+    --ink-dim: #9FB8E0;
+    --muted: #5D7AA8;
+
+    --amber: #1F5EFF;
+    --amber-dim: rgba(31,94,255,0.16);
+    --zone-a: #1F5EFF;
+    --zone-a-dim: rgba(31,94,255,0.16);
+    --zone-b: #5D7AA8;
+    --zone-b-dim: rgba(93,122,168,0.14);
+    --danger: #E0554A;
+    --danger-dim: rgba(224,85,74,0.14);
+    --azul: #1F5EFF;
+    --azul-dim: rgba(31,94,255,0.18);
+
+    --leader-bg: rgba(31,94,255,0.16);
+    --leader-accent: #1F5EFF;
+    --leader-text: #8FB4FF;
+    --qualified-bg: rgba(31,94,255,0.10);
+    --qualified-accent: #1F5EFF;
+    --qualified-text: #A9C8FF;
+    --relegation-bg: rgba(224,85,74,0.12);
+    --relegation-accent: #E0554A;
+    --relegation-text: #E8A69F;
+
+    --radius: 14px;
+    --radius-sm: 8px;
+    --card-shadow: 0 10px 34px rgba(2,8,20,0.6);
+    --card-shadow-hover: 0 18px 48px rgba(2,8,20,0.78);
+    --card-grad: linear-gradient(180deg, rgba(255,255,255,0.055) 0%, rgba(255,255,255,0.015) 100%);
+    --hero-bg: linear-gradient(160deg, #071426 0%, #0D2D6C 55%, #071633 100%);
+    --hero-ink: #EAF1FF;
+    --hero-dim: #9FB8E0;
+    --hero-accent: #3E7BFF;
+    --tabs-bg: rgba(7,20,38,0.92);
+    --btn-grad: linear-gradient(135deg, #3E7BFF 0%, #0D2D6C 100%);
+    --btn-ink: #FFFFFF;
+    --table-head-bg: rgba(255,255,255,0.05);
+    --hover-lift: translateY(-3px);
+    --bracket-line: #1F5EFF;
+    --bracket-line-glow: rgba(31,94,255,0.5);
+
+    font-family:'Poppins', sans-serif;
+    background: var(--bg);
+  }
+
+  /* Fondo exclusivo: azul noche profundo + resplandores azul eléctrico +
+     polígonos facetados (conic-gradient) y un campo de partículas finas,
+     evocando el gráfico oficial "estrellas + facetas" de la Sudamericana
+     sin reproducirlo -- mismo recurso que usa Libertadores con su abanico
+     dorado (ver body.liga-libertadores::before/::after), en clave azul. */
+  body.liga-sudamericana::before{
+    content:""; position:fixed; inset:0; z-index:-2; pointer-events:none;
+    background:
+      radial-gradient(1200px 680px at 84% -12%, rgba(31,94,255,0.22), transparent 60%),
+      radial-gradient(900px 620px at 0% 108%, rgba(13,45,108,0.88), transparent 62%),
+      radial-gradient(650px 520px at 50% 38%, rgba(31,94,255,0.07), transparent 70%),
+      radial-gradient(360px 360px at 90% 22%, rgba(216,160,40,0.06), transparent 72%);
+  }
+  body.liga-sudamericana::after{
+    content:""; position:fixed; inset:0; z-index:-1; pointer-events:none; opacity:0.6;
+    background-image:
+      repeating-conic-gradient(from 18deg at 96% 2%, transparent 0deg 9deg, rgba(31,94,255,0.10) 9deg 9.6deg),
+      radial-gradient(1.6px 1.6px at 12% 20%, rgba(255,255,255,0.55) 50%, transparent 52%),
+      radial-gradient(1.4px 1.4px at 76% 12%, rgba(255,255,255,0.4) 50%, transparent 52%),
+      radial-gradient(1.8px 1.8px at 32% 64%, rgba(255,255,255,0.48) 50%, transparent 52%),
+      radial-gradient(1.3px 1.3px at 60% 76%, rgba(255,255,255,0.34) 50%, transparent 52%),
+      radial-gradient(1.5px 1.5px at 88% 52%, rgba(255,255,255,0.4) 50%, transparent 52%),
+      radial-gradient(1.7px 1.7px at 6% 80%, rgba(255,255,255,0.4) 50%, transparent 52%),
+      radial-gradient(1.4px 1.4px at 46% 30%, rgba(255,255,255,0.32) 50%, transparent 52%),
+      radial-gradient(1.6px 1.6px at 20% 92%, rgba(255,255,255,0.3) 50%, transparent 52%);
+    -webkit-mask-image: radial-gradient(1050px 800px at 88% 0%, black, transparent 78%);
+    mask-image: radial-gradient(1050px 800px at 88% 0%, black, transparent 78%);
+  }
+
+  body.liga-sudamericana input,
+  body.liga-sudamericana button,
+  body.liga-sudamericana select{ font-family:'Poppins', sans-serif; }
+  body.liga-sudamericana .display,
+  body.liga-sudamericana .hero h1,
+  body.liga-sudamericana .section-head h2{
+    font-family:'Poppins', sans-serif; font-weight:800; letter-spacing:0.005em;
+  }
+  body.liga-sudamericana .mono,
+  body.liga-sudamericana .eyebrow,
+  body.liga-sudamericana tbody td,
+  body.liga-sudamericana thead th,
+  body.liga-sudamericana .hero .meta .num,
+  body.liga-sudamericana .hero .meta .lbl,
+  body.liga-sudamericana .section-head .idx,
+  body.liga-sudamericana .round-title,
+  body.liga-sudamericana .sim-status,
+  body.liga-sudamericana .btn-simular,
+  body.liga-sudamericana .mc-row .pos,
+  body.liga-sudamericana .mc-row .name .pct{
+    font-family:'JetBrains Mono', monospace;
+  }
+
+  /* ---- HERO: mismo layout que Libertadores (logo protagonista + título/
+     subtítulo/eyebrow con look de gala), en paleta azul eléctrico sobre
+     noche profunda en vez de dorado sobre negro. ---- */
+  body.liga-sudamericana .hero{
+    border-bottom: 1px solid rgba(31,94,255,0.3);
+    padding-top:64px; padding-bottom:44px;
+    animation: suda-hero-in 0.7s cubic-bezier(0.22,1,0.36,1) backwards;
+  }
+  body.liga-sudamericana .torneo-logo[data-liga="sudamericana"]{
+    display:block; width:156px; height:156px; padding:22px;
+    box-shadow: 0 0 0 6px rgba(31,94,255,0.10), 0 10px 30px rgba(0,0,0,0.6), 0 0 46px rgba(31,94,255,0.4);
+  }
+  body.liga-sudamericana .torneo-logo-wrap{ margin-bottom:26px; }
+  body.liga-sudamericana .eyebrow{ color: var(--hero-accent); letter-spacing:0.42em; font-weight:600; }
+  body.liga-sudamericana .hero h1{
+    font-size: clamp(38px, 7.6vw, 74px); line-height:0.98;
+    color:#EAF1FF; text-shadow: 0 2px 40px rgba(31,94,255,0.28);
+  }
+  body.liga-sudamericana .hero h1 #hero-title-prefix{
+    color:#8CA3C9; font-weight:600; font-size:0.44em; display:block;
+    letter-spacing:0.3em; margin-bottom:8px;
+  }
+  body.liga-sudamericana .hero h1 #hero-title-span{
+    background: linear-gradient(120deg, #FFFFFF 0%, #6E9BFF 45%, #1F5EFF 100%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  body.liga-sudamericana .hero p.sub{ color: var(--hero-dim); max-width:600px; }
+
+  /* ---- Cards de estadísticas: vidrio azul noche + borde azul eléctrico ---- */
+  body.liga-sudamericana .hero .meta{ gap:14px; margin-top:34px; }
+  body.liga-sudamericana .hero .meta > div{
+    position:relative;
+    background: linear-gradient(160deg, rgba(255,255,255,0.065) 0%, rgba(255,255,255,0.015) 100%);
+    border:1px solid rgba(31,94,255,0.32); border-radius:12px; padding:16px 22px 14px; min-width:118px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 8px 20px rgba(2,8,20,0.5);
+    transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  body.liga-sudamericana .hero .meta > div:hover{
+    border-color: rgba(31,94,255,0.7); transform: var(--hover-lift);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 12px 30px rgba(2,8,20,0.6), 0 0 22px rgba(31,94,255,0.22);
+  }
+  body.liga-sudamericana .hero .meta .num,
+  body.liga-sudamericana .hero .meta .lbl{ border:none; padding:0; background:none; box-shadow:none; }
+  body.liga-sudamericana .hero .meta .num{ color:#8CB4FF; font-size:24px; font-weight:700; margin-bottom:4px; }
+  body.liga-sudamericana #meta-descensos{ font-size:14px; letter-spacing:0.01em; }
+  body.liga-sudamericana .hero .meta .lbl{
+    color: var(--hero-dim); letter-spacing:0.12em; text-transform:uppercase; font-size:10px;
+  }
+
+  /* ---- Botón/buscador: mismo tratamiento que Libertadores en azul eléctrico ---- */
+  body.liga-sudamericana .sim-control{ margin-top:26px; display:flex; flex-direction:column; align-items:center; gap:10px; }
+  body.liga-sudamericana .sim-select-row label,
+  body.liga-sudamericana .sim-select-row .rango{ color: var(--hero-dim); }
+  body.liga-sudamericana .btn-simular{
+    background: var(--btn-grad); color: var(--btn-ink); border:none; border-radius:999px;
+    font-weight:700; letter-spacing:0.04em; padding:13px 30px; text-transform:uppercase; font-size:12px;
+    box-shadow: 0 8px 22px rgba(31,94,255,0.35);
+    transition: transform 0.15s ease, box-shadow 0.2s ease, filter 0.2s ease;
+  }
+  body.liga-sudamericana .btn-simular:hover:not(:disabled){
+    transform: translateY(-2px); box-shadow: 0 12px 30px rgba(31,94,255,0.5); filter:brightness(1.08);
+  }
+  body.liga-sudamericana .btn-simular:disabled{ opacity:0.6; cursor:wait; }
+  body.liga-sudamericana .sim-status{ font-size:11px; color: var(--hero-dim); }
+  body.liga-sudamericana .sim-status.ok{ color:#3E7BFF; }
+  body.liga-sudamericana .sim-status.error{ color:#E38E85; }
+
+  body.liga-sudamericana .search-section{ max-width:760px; }
+  body.liga-sudamericana .search-box input{
+    border-radius:999px; border-color: rgba(31,94,255,0.35); padding:16px 18px 16px 46px; font-size:15px;
+  }
+  body.liga-sudamericana .search-box input:focus{
+    border-color:#1F5EFF; box-shadow: 0 0 0 4px rgba(31,94,255,0.18);
+  }
+  body.liga-sudamericana .search-box::before{ color: rgba(31,94,255,0.8); }
+  body.liga-sudamericana .search-hint{ color: var(--muted); }
+
+  /* ---- Secciones: numeración y headers con el mismo look editorial ---- */
+  body.liga-sudamericana .section-head .idx{ color:#1F5EFF; }
+  body.liga-sudamericana .section-head h2{ color:#EAF1FF; }
+  body.liga-sudamericana .section-head .rule{ background: linear-gradient(90deg, rgba(31,94,255,0.55), transparent); }
+  body.liga-sudamericana .section-note{ color: var(--muted); }
+
+  /* ---- Cuadro del torneo: mismo look "transmisión" que Libertadores --
+     tarjetas de vidrio azul noche, ganador en blanco brillante y marcador
+     en azul eléctrico. El dorado queda reservado solo a la Final, como
+     acento puntual (igual que la banda/estrella del trofeo real), no
+     como color protagonista en todo el cuadro. ---- */
+  body.liga-sudamericana .round-title{
+    position:relative; color:#BFD6FF; font-size:11px; font-weight:700;
+    letter-spacing:0.24em; padding-bottom:12px; margin-bottom:20px;
+    opacity:0.92;
+  }
+  body.liga-sudamericana .round-title::after{
+    content:""; position:absolute; left:50%; bottom:0; transform:translateX(-50%);
+    width:26px; height:2px; border-radius:2px;
+    background:linear-gradient(90deg, transparent, #1F5EFF, transparent);
+  }
+  body.liga-sudamericana .final-col .round-title{
+    color:#F3D9A0; font-size:12.5px;
+  }
+  body.liga-sudamericana .final-col .round-title::before{
+    content:"🏆"; display:block; font-size:15px; margin-bottom:6px;
+    filter: drop-shadow(0 0 6px rgba(216,160,40,0.55));
+  }
+
+  body.liga-sudamericana .match{
+    background: linear-gradient(155deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.012) 60%), #081A32;
+    border:1px solid rgba(31,94,255,0.22); border-radius:11px;
+    padding:13px 15px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 10px 26px rgba(2,8,20,0.55);
+    transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+    animation: suda-card-in 0.5s cubic-bezier(0.22,1,0.36,1) backwards;
+  }
+  body.liga-sudamericana .match.sim{ border-style:dashed; }
+  body.liga-sudamericana .match:hover{
+    border-color:#1F5EFF; transform:translateY(-3px);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 18px 36px rgba(2,8,20,0.65), 0 0 22px rgba(31,94,255,0.26);
+  }
+  body.liga-sudamericana .match .row{
+    padding:5px 0; opacity:0.5; align-items:center;
+    transition: opacity 0.25s ease, color 0.25s ease;
+  }
+  body.liga-sudamericana .match .row span:first-child{
+    font-size:13.5px; font-weight:600; letter-spacing:0.005em;
+  }
+  body.liga-sudamericana .match .row span:last-child{
+    font-family:'JetBrains Mono', monospace; font-weight:600; font-size:12px;
+    min-width:2.4ch; opacity:0.85;
+  }
+  body.liga-sudamericana .match .row .escudo{ transition: transform 0.25s ease; }
+  body.liga-sudamericana .match .row.winner{
+    opacity:1; color:#FFFFFF; font-weight:700;
+    text-shadow: 0 0 16px rgba(255,255,255,0.24);
+  }
+  body.liga-sudamericana .match .row.winner span:last-child{
+    color:#5B93FF; font-weight:700; opacity:1; font-size:13px;
+    text-shadow: 0 0 14px rgba(31,94,255,0.55);
+  }
+  body.liga-sudamericana .match .row.winner .escudo{ transform:scale(1.08); }
+  body.liga-sudamericana .match .leg-detail{
+    margin-top:8px; padding-top:7px; border-top:1px dashed rgba(31,94,255,0.24);
+    font-size:9.5px; letter-spacing:0.05em; color:#5D7AA8; text-transform:uppercase;
+  }
+
+  /* La Final: pieza central del cuadro -- tarjeta más grande, con el
+     dorado apareciendo como protagonista puntual sobre el mismo fondo
+     azul noche (único lugar donde el acento dorado domina, igual que el
+     oro es la pieza central del trofeo real en un cuerpo azul). */
+  body.liga-sudamericana .final-col .match{
+    padding:24px 26px; border:1.5px solid rgba(216,160,40,0.55); border-radius:14px;
+    background: linear-gradient(160deg, rgba(31,94,255,0.22) 0%, rgba(216,160,40,0.08) 65%), #061024;
+    box-shadow: 0 0 0 1px rgba(216,160,40,0.28), 0 0 46px rgba(31,94,255,0.3), 0 24px 50px rgba(2,8,20,0.72);
+    animation: suda-card-in 0.5s cubic-bezier(0.22,1,0.36,1) backwards, suda-final-glow 3.6s ease-in-out infinite;
+  }
+  body.liga-sudamericana .final-col .match:hover{
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 0 0 1px rgba(216,160,40,0.4), 0 0 60px rgba(31,94,255,0.4), 0 24px 50px rgba(2,8,20,0.75);
+  }
+  body.liga-sudamericana .final-col .match .row{ font-size:16px; padding:8px 0; }
+  body.liga-sudamericana .final-col .match .row span:first-child{ font-size:16px; font-weight:700; }
+  body.liga-sudamericana .final-col .match .row span:last-child{ font-size:18px; }
+  body.liga-sudamericana .final-col .match .row.winner span:last-child{
+    font-size:19px; color:#F3D9A0; text-shadow: 0 0 14px rgba(216,160,40,0.5);
+  }
+  body.liga-sudamericana .final-col .match .row .escudo{ width:30px; height:30px; }
+  body.liga-sudamericana .final-col .match .leg-detail{
+    font-size:10.5px; margin-top:10px; padding-top:9px;
+  }
+
+  /* Líneas del cuadro: finas, con el mismo brillo discreto que Libertadores en azul */
+  body.liga-sudamericana .bracket-lines path{
+    stroke-width:1.2; opacity:0.75; stroke-linecap:round;
+    filter: drop-shadow(0 0 3px rgba(31,94,255,0.35));
+    transition: opacity 0.25s ease;
+  }
+  body.liga-sudamericana .bracket:hover .bracket-lines path{ opacity:0.9; }
+
+  @keyframes suda-card-in{ from{ opacity:0; transform:translateY(6px);} to{ opacity:1; transform:none; } }
+  @keyframes suda-final-glow{
+    0%, 100%{ box-shadow: 0 0 0 1px rgba(216,160,40,0.22), 0 0 40px rgba(31,94,255,0.24), 0 22px 46px rgba(2,8,20,0.68); }
+    50%{ box-shadow: 0 0 0 1px rgba(216,160,40,0.38), 0 0 58px rgba(31,94,255,0.4), 0 22px 46px rgba(2,8,20,0.68); }
+  }
+
+  /* ---- Campeón: cierre de gala, escudo grande y glow azul con detalle dorado ---- */
+  body.liga-sudamericana #campeon-anuncio-sudamericana .campeon-anuncio{
+    margin-top:32px; padding:28px 20px 8px; border-top:1px solid rgba(31,94,255,0.35);
+    font-family:'Poppins', sans-serif; font-weight:800; font-size:26px;
+    color:#F3D9A0; text-shadow: 0 0 30px rgba(31,94,255,0.4); letter-spacing:0.01em;
+  }
+  body.liga-sudamericana #campeon-anuncio-sudamericana .campeon-anuncio::before{
+    content:"🏆 CAMPEÓN DE LA SUDAMERICANA"; display:block; font-family:'JetBrains Mono', monospace;
+    font-size:11px; letter-spacing:0.3em; color:#8CA3C9; margin-bottom:14px; font-weight:400;
+  }
+  body.liga-sudamericana #campeon-anuncio-sudamericana .escudo{
+    width:56px; height:56px; vertical-align:-16px; margin-right:14px;
+    filter: drop-shadow(0 0 14px rgba(31,94,255,0.55));
+  }
+
+  /* ---- Monte Carlo: informe prolijo con acentos azul eléctrico ---- */
+  body.liga-sudamericana #mc-list-sudamericana{ border-color: rgba(31,94,255,0.24); }
+  body.liga-sudamericana .mc-row .name .pct{ color:#3E7BFF; }
+  body.liga-sudamericana .mc-bar-fill{ background:#1F5EFF !important; }
+
+  /* ---- Pestaña propia: acento azul eléctrico al estar activa ---- */
+  body.liga-sudamericana .liga-tab.active{
+    background: linear-gradient(135deg, rgba(31,94,255,0.24), rgba(31,94,255,0.08));
+    color:#BFD6FF; box-shadow: inset 0 0 0 1px rgba(31,94,255,0.45);
+  }
+  body.liga-sudamericana .liga-tab:not(.active){ color: var(--muted); }
+  body.liga-sudamericana .liga-tabs .group{ border:1px solid rgba(31,94,255,0.2); background: rgba(255,255,255,0.02); }
+  body.liga-sudamericana .liga-tabs{ border-bottom:1px solid rgba(31,94,255,0.18); }
+
+  /* ---- Animaciones propias (discretas) y responsive: mismo criterio que Libertadores ---- */
+  @keyframes suda-hero-in{ from{ opacity:0; transform:translateY(-8px);} to{ opacity:1; transform:none; } }
+  @media (max-width:600px){
+    body.liga-sudamericana .hero{ padding-top:48px; }
+    body.liga-sudamericana .torneo-logo[data-liga="sudamericana"]{ width:112px; height:112px; padding:16px; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    body.liga-sudamericana .hero{ animation:none; }
+    body.liga-sudamericana .hero .meta > div,
+    body.liga-sudamericana .btn-simular,
+    body.liga-sudamericana .match{ transition:none; }
+    body.liga-sudamericana .match,
+    body.liga-sudamericana .final-col .match{ animation:none; }
+  }
 </style>
 </head>
 <body>
@@ -3144,6 +3854,8 @@
       <img class="torneo-logo" data-liga="primerac" src="logos-torneos/primera-c.png" alt=""
            onerror="this.remove()">
       <img class="torneo-logo" data-liga="libertadores" src="logos-torneos/copa-libertadores.png" alt=""
+           onerror="this.remove()">
+      <img class="torneo-logo" data-liga="sudamericana" src="logos-torneos/copa-sudamericana.png" alt=""
            onerror="this.remove()">
     </div>
     <div class="eyebrow" id="hero-eyebrow">SIMULACIÓN MONTE CARLO — <span id="hero-n">0</span> CORRIDAS</div>
@@ -3813,7 +4525,9 @@
       <section id="sec-temporada-resumen">
         <div class="section-head"><span class="idx">01</span><h2>Resumen de la temporada</h2><div class="rule"></div></div>
         <p class="section-note" style="margin-top:0;">Un vistazo rápido a las 6 competencias: campeón, quién asciende y quién desciende. Tocá una tarjeta para ver el detalle completo, tablas y el Reducido de cada una.</p>
-        <div id="temporada-competencias-grid" class="temporada-grid"></div>
+        <div id="temporada-competencias-grid-ligas-fila1" class="temporada-grid temporada-grid-ligas temporada-grid-ligas-fila1"></div>
+        <div id="temporada-competencias-grid-ligas-fila2" class="temporada-grid temporada-grid-ligas temporada-grid-ligas-fila2"></div>
+        <div id="temporada-competencias-grid-copas" class="temporada-grid temporada-grid-copas"></div>
       </section>
 
       <section id="sec-temporada-tablas">
@@ -3823,8 +4537,10 @@
           <span style="display:inline-flex; align-items:center; gap:6px; margin-right:16px;"><i style="display:inline-block; width:10px; height:10px; border-radius:2px; background:var(--qualified-accent);"></i>Asciende por Reducido</span>
           <span style="display:inline-flex; align-items:center; gap:6px;"><i style="display:inline-block; width:10px; height:10px; border-radius:2px; background:var(--relegation-accent);"></i>Desciende</span>
         </p>
-        <div class="zone-tabs" id="temporada-competencia-tabs">
-          <div class="group" id="temporada-competencia-tabs-group"></div>
+        <div class="zone-tabs zone-tabs-temporada" id="temporada-competencia-tabs">
+          <div class="group temporada-competencia-tabs-group" id="temporada-competencia-tabs-group-ligas-fila1"></div>
+          <div class="group temporada-competencia-tabs-group" id="temporada-competencia-tabs-group-ligas-fila2"></div>
+          <div class="group temporada-competencia-tabs-group" id="temporada-competencia-tabs-group-copas"></div>
         </div>
         <div id="temporada-detalle-competencia"></div>
       </section>
@@ -4626,6 +5342,69 @@ function escudoHTML(nombre){
     ?? ESCUDOS_LOWER[crudo.toLowerCase()] ?? ESCUDOS_LOWER[limpio.toLowerCase()]
     ?? slugifyEquipo(limpio || crudo);
   return `<img class="escudo" src="escudos/${archivo}.png" alt="" loading="lazy" onerror="this.remove()">`;
+}
+
+// Banderas de país para los clubes de Copa Libertadores/Copa Sudamericana:
+// se usan solo en el cuadro (llaveLibertadoresHTML, compartida por ambas
+// copas) y en la fase de grupos dentro de Modo Temporada -- no tocan
+// escudoHTML() ni ninguna otra competencia. PAIS_CLUB_EXTRANJERO cubre los
+// clubes no argentinos habituales de ambos torneos; si un club no está acá
+// y tampoco en ESCUDOS (que sí cubre los argentinos), simplemente no se
+// muestra bandera -- no rompe nada, mismo criterio "mejor ausente que
+// rota" que ya usa el resto del sitio.
+const PAIS_BANDERA = {
+  AR: '🇦🇷', BR: '🇧🇷', UY: '🇺🇾', PY: '🇵🇾', CL: '🇨🇱',
+  BO: '🇧🇴', EC: '🇪🇨', CO: '🇨🇴', PE: '🇵🇪', VE: '🇻🇪',
+};
+const PAIS_CLUB_EXTRANJERO = {
+  // Brasil
+  'Fluminense':'BR', 'Palmeiras':'BR', 'Corinthians':'BR', 'Cruzeiro':'BR', 'Flamengo':'BR', 'Mirasol':'BR', 'Mirasol FC':'BR',
+  'São Paulo':'BR', 'Sao Paulo':'BR', 'Grêmio':'BR', 'Gremio':'BR', 'Internacional':'BR', 'Atlético Mineiro':'BR', 'Atletico Mineiro':'BR',
+  'Botafogo':'BR', 'Vasco da Gama':'BR', 'Vasco':'BR', 'Bahia':'BR', 'Fortaleza':'BR', 'Athletico Paranaense':'BR',
+  'Red Bull Bragantino':'BR', 'Bragantino':'BR', 'Santos':'BR', 'Ceará':'BR', 'Ceara':'BR', 'Criciúma':'BR', 'Criciuma':'BR',
+  'Vitória':'BR', 'Vitoria':'BR', 'Cuiabá':'BR', 'Cuiaba':'BR', 'Juventude':'BR', 'Coritiba':'BR', 'Goiás':'BR', 'Goias':'BR',
+  // Uruguay
+  'Peñarol':'UY', 'Penarol':'UY', 'Defensor Sporting':'UY', 'Danubio':'UY', 'Liverpool':'UY',
+  'Cerro Largo':'UY', 'Boston River':'UY', 'Racing Club de Montevideo':'UY', 'Wanderers':'UY', 'Montevideo Wanderers':'UY',
+  // Paraguay
+  'Olimpia':'PY', 'Club Olimpia':'PY', 'Libertad':'PY', 'Club Libertad':'PY', 'Cerro Porteño':'PY', 'Club Cerro Porteño':'PY',
+  'Guaraní':'PY', 'Guarani':'PY', 'Sportivo Luqueño':'PY', 'Sol de América':'PY', 'Sol de America':'PY', 'Sol De América':'PY',
+  // Chile
+  'Colo-Colo':'CL', 'Colo Colo':'CL', 'Universidad de Chile':'CL', 'Palestino':'CL', 'Huachipato':'CL',
+  'Ñublense':'CL', 'Nublense':'CL', 'Cobresal':'CL', 'Coquimbo Unido':'CL', 'Universidad Católica':'CL', 'Universidad Catolica':'CL',
+  // Bolivia
+  'Bolívar':'BO', 'Bolivar':'BO', 'The Strongest':'BO', 'Always Ready':'BO', 'Nacional Potosí':'BO', 'Nacional Potosi':'BO',
+  'Wilstermann':'BO', 'Jorge Wilstermann':'BO',
+  // Ecuador
+  'Barcelona SC':'EC', 'Barcelona (ECU)':'EC', 'Emelec':'EC', 'Aucas':'EC', 'LDU de Quito':'EC', 'LDU Quito':'EC',
+  'Liga de Quito':'EC', 'Independiente del Valle':'EC', 'Deportivo Cuenca':'EC',
+  // Colombia
+  'Millonarios':'CO', 'Atlético Nacional':'CO', 'Atletico Nacional':'CO', 'Junior':'CO', 'Junior de Barranquilla':'CO',
+  'América de Cali':'CO', 'America de Cali':'CO', 'Independiente Medellín':'CO', 'Independiente Medellin':'CO',
+  'Santa Fe':'CO', 'Independiente Santa Fe':'CO', 'Deportes Tolima':'CO', 'Tolima':'CO',
+  // Perú
+  'Universitario':'PE', 'Universitario de Deportes':'PE', 'Alianza Lima':'PE', 'Sporting Cristal':'PE',
+  'Melgar':'PE', 'FBC Melgar':'PE', 'Cusco FC':'PE',
+  // Venezuela
+  'Deportivo Táchira':'VE', 'Deportivo Tachira':'VE', 'Caracas FC':'VE', 'Caracas':'VE', 'Metropolitanos':'VE', 'Monagas':'VE',
+};
+function paisDeClub(nombre){
+  const crudo = String(nombre || '').trim();
+  if (!crudo) return null;
+  const limpio = crudo.replace(/\s*\(.*?\)\s*/g, '').split('—')[0].trim();
+  const extranjero = PAIS_CLUB_EXTRANJERO[crudo] ?? PAIS_CLUB_EXTRANJERO[limpio];
+  if (extranjero) return extranjero;
+  // Un club presente en ESCUDOS que no matcheó como extranjero arriba es
+  // argentino: ESCUDOS solo agrega clubes no-argentinos en su bloque final
+  // "COPA LIBERTADORES (equipos extranjeros del cuadro)", ya cubierto por
+  // PAIS_CLUB_EXTRANJERO.
+  if (ESCUDOS[crudo] || ESCUDOS[limpio] || ESCUDOS_LOWER[crudo.toLowerCase()] || ESCUDOS_LOWER[limpio.toLowerCase()]) return 'AR';
+  return null;
+}
+function banderaHTML(nombre){
+  const pais = paisDeClub(nombre);
+  if (!pais || !PAIS_BANDERA[pais]) return '';
+  return `<span class="bandera-club" aria-hidden="true">${PAIS_BANDERA[pais]}</span>`;
 }
 
 // Cartel del campeón como pie del cuadro completo (ver .campeon-anuncio en
@@ -8116,8 +8895,8 @@ function llaveLibertadoresHTML(ll, esFinal){
     const winLocal = ll.avanza === ll.local;
     let nota = ll.penales ? "definido por penales" : "";
     return `<div class="match ${ll.jugado ? 'real' : 'sim'}" data-local="${ll.local}" data-visitante="${ll.visitante}" data-avanza="${ll.avanza || ''}">
-      <div class="row ${winLocal ? 'winner' : ''}"><span>${escudoHTML(ll.local)}${ll.local}</span><span>${ll.golesLocal ?? ''}</span></div>
-      <div class="row ${!winLocal ? 'winner' : ''}"><span>${escudoHTML(ll.visitante)}${ll.visitante}</span><span>${ll.golesVisitante ?? ''}</span></div>
+      <div class="row ${winLocal ? 'winner' : ''}"><span>${escudoHTML(ll.local)}${banderaHTML(ll.local)}${ll.local}</span><span>${ll.golesLocal ?? ''}</span></div>
+      <div class="row ${!winLocal ? 'winner' : ''}"><span>${escudoHTML(ll.visitante)}${banderaHTML(ll.visitante)}${ll.visitante}</span><span>${ll.golesVisitante ?? ''}</span></div>
       ${nota ? `<div class="leg-detail">${nota}</div>` : ''}
     </div>`;
   }
@@ -8128,8 +8907,8 @@ function llaveLibertadoresHTML(ll, esFinal){
   if (ll.penales) nota = "definido por penales";
   else if (ll.alargue) nota = "definido en el alargue";
   return `<div class="match ${ll.jugado ? 'real' : 'sim'}" data-local="${eqA}" data-visitante="${eqB}" data-avanza="${ll.avanza || ''}">
-    <div class="row ${winA ? 'winner' : ''}"><span>${escudoHTML(eqA)}${eqA}</span><span>${ll.agregado[eqA]}</span></div>
-    <div class="row ${!winA ? 'winner' : ''}"><span>${escudoHTML(eqB)}${eqB}</span><span>${ll.agregado[eqB]}</span></div>
+    <div class="row ${winA ? 'winner' : ''}"><span>${escudoHTML(eqA)}${banderaHTML(eqA)}${eqA}</span><span>${ll.agregado[eqA]}</span></div>
+    <div class="row ${!winA ? 'winner' : ''}"><span>${escudoHTML(eqB)}${banderaHTML(eqB)}${eqB}</span><span>${ll.agregado[eqB]}</span></div>
     <div class="leg-detail">Ida ${ll.ida.golesLocal}-${ll.ida.golesVisitante} · Vuelta ${ll.vuelta.golesLocal}-${ll.vuelta.golesVisitante}${nota ? ` (${nota})` : ''}</div>
   </div>`;
 }
@@ -8232,7 +9011,7 @@ function renderMCLibertadores(){
     row.innerHTML = `
       <div class="pos">${i + 1}</div>
       <div>
-        <div class="name"><span>${escudoHTML(f.equipo)}${f.equipo}</span><span class="pct" style="color:${color}">${f['%campeon']}% campeón</span></div>
+        <div class="name"><span>${escudoHTML(f.equipo)}${banderaHTML(f.equipo)}${f.equipo}</span><span class="pct" style="color:${color}">${f['%campeon']}% campeón</span></div>
         <div class="mc-bar-track">
           <div class="mc-bar-fill directo" style="width:${f['%campeon']}%; background:${color}"></div>
         </div>
@@ -8282,7 +9061,7 @@ function renderTeamCardLibertadores(t){
   const azul = 'var(--azul)';
   const cabecera = `
     <div class="tc-head">
-      <div class="tc-name">${escudoHTML(t.equipo)}${t.equipo}</div>
+      <div class="tc-name">${escudoHTML(t.equipo)}${banderaHTML(t.equipo)}${t.equipo}</div>
       <span class="tc-zone" style="background:${t.vivo ? 'var(--amber-dim)' : 'var(--danger-dim)'}; color:${t.vivo ? 'var(--amber)' : 'var(--danger)'}">${t.vivo ? 'EN CARRERA' : 'ELIMINADO'}</span>
     </div>`;
 
@@ -8351,7 +9130,7 @@ function renderMCSudamericana(){
     row.innerHTML = `
       <div class="pos">${i + 1}</div>
       <div>
-        <div class="name"><span>${escudoHTML(f.equipo)}${f.equipo}</span><span class="pct" style="color:${color}">${f['%campeon']}% campeón</span></div>
+        <div class="name"><span>${escudoHTML(f.equipo)}${banderaHTML(f.equipo)}${f.equipo}</span><span class="pct" style="color:${color}">${f['%campeon']}% campeón</span></div>
         <div class="mc-bar-track">
           <div class="mc-bar-fill directo" style="width:${f['%campeon']}%; background:${color}"></div>
         </div>
@@ -8401,7 +9180,7 @@ function renderTeamCardSudamericana(t){
   const azul = 'var(--azul)';
   const cabecera = `
     <div class="tc-head">
-      <div class="tc-name">${escudoHTML(t.equipo)}${t.equipo}</div>
+      <div class="tc-name">${escudoHTML(t.equipo)}${banderaHTML(t.equipo)}${t.equipo}</div>
       <span class="tc-zone" style="background:${t.vivo ? 'var(--amber-dim)' : 'var(--danger-dim)'}; color:${t.vivo ? 'var(--amber)' : 'var(--danger)'}">${t.vivo ? 'EN CARRERA' : 'ELIMINADO'}</span>
     </div>`;
 
@@ -9081,9 +9860,9 @@ const ORDEN_COMPETENCIAS = ["lpf", "nacional", "bmetro", "federal_a", "primerac"
 // tiene una identidad visual propia, toma prestada la de cada competencia en
 // vez de mostrar todo con el mismo look genérico.
 const COLOR_COMPETENCIA = {
-  lpf: "#0E86D4", nacional: "#D8A53B", bmetro: "#A68F57",
-  federal_a: "#37B8A8", primerac: "#93763A", copa: "#C08F0E",
-  libertadores: "#7A1FA2", sudamericana: "#C0392B",
+  lpf: "#0E86D4", nacional: "#D8A53B", bmetro: "#8A94A6",
+  federal_a: "#1E9765", primerac: "#D14545", copa: "#29B6F6",
+  libertadores: "#C9A227", sudamericana: "#2979FF",
 };
 const LOGO_COMPETENCIA = {
   lpf: "liga-profesional", nacional: "primera-nacional", bmetro: "b-metropolitana",
@@ -9536,7 +10315,7 @@ function detalleCompetenciaHTML(slug, comp){
 
 function setCompetenciaTemporada(slug){
   COMPETENCIA_ACTUAL_TEMPORADA = slug;
-  document.querySelectorAll('#temporada-competencia-tabs-group .zone-tab')
+  document.querySelectorAll('#temporada-competencia-tabs .zone-tab')
     .forEach(b => b.classList.toggle('active', b.dataset.competencia === slug));
 
   if (slug === 'libertadores' || slug === 'sudamericana'){
@@ -9569,17 +10348,20 @@ function detalleCopaInternacionalTemporadaHTML(slug){
   const bracketHTML = slug === 'libertadores'
     ? bracketLibertadoresHTML(datos.rondas, datos.campeon)
     : bracketSudamericanaHTML(datos.rondas, datos.campeon);
-  // Reusa las clases genéricas de tabla que ya tiene el resto del sitio
-  // (.table-wrap + <table>, con tr.reducido para las filas "clasifica" --
-  // mismo verde que ya usa el Reducido de ascenso en las otras pestañas)
-  // en vez de inventar CSS nuevo solo para esto.
+  // Cada zona pasa a ser una tarjeta con clases semánticas propias
+  // (temporada-copa-zona, dentro de temporada-copa-grupos-libertadores/
+  // -sudamericana) en vez de estilos inline sueltos, para que el CSS le
+  // dé exactamente la misma identidad visual (dorado/ámbar o azul, con
+  // los mismos bordes, acentos y brillos) que ya tiene el cuadro de su
+  // propia copa. Sigue reusando .table-wrap/table/tr.reducido -- solo
+  // cambia el envoltorio y las clases del título de zona.
   const zonasHTML = (datos.zonas || []).map(z => `
-    <div style="min-width:220px;">
-      <div style="font-family:'JetBrains Mono'; font-size:12px; color:var(--muted); margin-bottom:6px;">Zona ${z.letra}</div>
+    <div class="temporada-copa-zona">
+      <div class="temporada-copa-zona-titulo">Zona ${z.letra}</div>
       <div class="table-wrap"><table>
         <tbody>
           ${z.tabla.map((f, i) => `<tr class="${i < 2 ? 'reducido' : ''}">
-            <td>${i + 1}</td><td>${escudoHTML(f.equipo)}${f.equipo}</td><td>${f.puntos} pts</td>
+            <td>${i + 1}</td><td>${escudoHTML(f.equipo)}${banderaHTML(f.equipo)}${f.equipo}</td><td>${f.puntos} pts</td>
           </tr>`).join('')}
         </tbody>
       </table></div>
@@ -9589,7 +10371,7 @@ function detalleCopaInternacionalTemporadaHTML(slug){
     <div class="campeon-anuncio-wrap">${campeonAnuncioHTML(datos.campeon, '🏆')}</div>
     ${zonasHTML ? `
       <div class="section-note" style="margin:18px 0 10px;">Fase de grupos de esta temporada -- los dos primeros de cada zona (en verde) clasifican.</div>
-      <div style="display:flex; flex-wrap:wrap; gap:16px; margin-bottom:24px;">${zonasHTML}</div>
+      <div class="temporada-copa-grupos temporada-copa-grupos-${slug}">${zonasHTML}</div>
     ` : ''}
     <div class="section-note" style="margin:18px 0 10px;">Cuadro desde ${slug === 'libertadores' ? 'Octavos de Final' : 'los Playoffs de Octavos'}.</div>
     <div class="bracket-scroll"><div class="bracket" id="${bracketId}">${bracketHTML}</div></div>
@@ -9640,6 +10422,25 @@ function competenciaCardHTML(slug, comp){
   </div>`;
 }
 
+// Tarjeta resumen para Libertadores/Sudamericana: no siguen el shape
+// ResultadoTorneo (campeon/ascensos/descensos/datos) que usa
+// competenciaCardHTML, así que se arma aparte -- solo escudo, nombre y
+// campeón, sin franja de ascenso/descenso (no aplica en un cuadro de
+// eliminación directa internacional).
+function copaInternacionalCardHTML(slug, datos){
+  const nombre = NOMBRE_LINDO_COMPETENCIA[slug] || slug;
+  const color = COLOR_COMPETENCIA[slug] || 'var(--amber)';
+  const campeonHTML = datos && datos.campeon
+    ? `<div class="campeon-nombre"><span class="trofeo">🏆</span>${escudoHTML(datos.campeon)}${datos.campeon}</div>`
+    : `<div class="campeon-nombre" style="color:var(--muted); font-size:15px;">Sin campeón único</div>`;
+  return `<div class="temporada-card" style="--tc-color:${color};" onclick="setLigaTemporadaScrollTo('${slug}')" role="button" tabindex="0">
+    <div class="liga-nombre"><img src="logos-torneos/copa-${slug}.png" alt="" onerror="this.remove()"><span>${nombre}</span></div>
+    ${campeonHTML}
+    <div class="temporada-card-sep"></div>
+    <div class="temporada-card-foot"><div style="color:var(--muted); font-size:12.5px;">Fase de grupos + cuadro de eliminación directa.</div></div>
+  </div>`;
+}
+
 function setLigaTemporadaScrollTo(slug){
   setCompetenciaTemporada(slug);
   document.getElementById('sec-temporada-tablas').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -9662,10 +10463,28 @@ function friendlyMotivoTemporada(motivo){
 function renderTemporada(datos){
   DATA_TEMPORADA = datos;
 
-  const tabsGroup = document.getElementById('temporada-competencia-tabs-group');
-  const tabsCompetencias = ORDEN_COMPETENCIAS
+  // La barra de pestañas se separa en 2 filas: 5 ligas domésticas arriba
+  // (temporada-competencia-tabs-group-ligas) y las 3 copas -- Argentina,
+  // Libertadores, Sudamericana -- abajo (...-group-copas). Antes eran 8
+  // pestañas en una sola fila sin wrap ni scroll, así que Copa
+  // Libertadores quedaba cortada por el borde del viewport y Copa
+  // Sudamericana (la última) directamente no se veía.
+  const tabBtnHTML = slug => `<button class="zone-tab" data-competencia="${slug}" style="--tc-color:${COLOR_COMPETENCIA[slug] || 'var(--amber)'};" onclick="setCompetenciaTemporada('${slug}')">${NOMBRE_LINDO_COMPETENCIA[slug]}</button>`;
+
+  // Fila 1: Liga Profesional + Primera Nacional. Fila 2: B Metropolitana,
+  // Federal A y Primera C. Mismo esquema de 3 filas (2/3/3) que las
+  // tarjetas de la sección "Resumen de la temporada".
+  const ligasFila1 = ["lpf", "nacional"];
+  const tabsGroupLigasFila1 = document.getElementById('temporada-competencia-tabs-group-ligas-fila1');
+  tabsGroupLigasFila1.innerHTML = ligasFila1
     .filter(slug => datos.competencias[slug])
-    .map(slug => `<button class="zone-tab" data-competencia="${slug}" style="--tc-color:${COLOR_COMPETENCIA[slug] || 'var(--amber)'};" onclick="setCompetenciaTemporada('${slug}')">${NOMBRE_LINDO_COMPETENCIA[slug]}</button>`);
+    .map(tabBtnHTML).join('');
+
+  const tabsGroupLigasFila2 = document.getElementById('temporada-competencia-tabs-group-ligas-fila2');
+  tabsGroupLigasFila2.innerHTML = ORDEN_COMPETENCIAS
+    .filter(slug => slug !== 'copa' && !ligasFila1.includes(slug) && datos.competencias[slug])
+    .map(tabBtnHTML).join('');
+
   // Libertadores/Sudamericana no siguen el shape ResultadoTorneo del
   // resto (campeon/ascensos/descensos/datos) -- son el dict que arma
   // season/libertadores_grupos.py::simular_temporada_libertadores() /
@@ -9675,22 +10494,42 @@ function renderTemporada(datos){
   // distinto (bracket, no tabla de posiciones). Si vinieron con error
   // (ver "error" en el dict, ej. sin datos suficientes esa corrida) no
   // se muestra la pestaña -- mejor ausente que rota.
-  const tabsCopasInternacionales = [
+  const tabsGroupCopas = document.getElementById('temporada-competencia-tabs-group-copas');
+  tabsGroupCopas.innerHTML = [
+    datos.competencias.copa ? "copa" : null,
     datos.libertadores && !datos.libertadores.error ? "libertadores" : null,
     datos.sudamericana && !datos.sudamericana.error ? "sudamericana" : null,
-  ].filter(Boolean).map(slug => `<button class="zone-tab" data-competencia="${slug}" style="--tc-color:${COLOR_COMPETENCIA[slug]};" onclick="setCompetenciaTemporada('${slug}')">${NOMBRE_LINDO_COMPETENCIA[slug]}</button>`);
-  tabsGroup.innerHTML = tabsCompetencias.join('') + tabsCopasInternacionales.join('');
+  ].filter(Boolean).map(tabBtnHTML).join('');
 
   const primeraDisponible = ORDEN_COMPETENCIAS.find(slug => datos.competencias[slug]);
   setCompetenciaTemporada(
     datos.competencias[COMPETENCIA_ACTUAL_TEMPORADA] ? COMPETENCIA_ACTUAL_TEMPORADA : primeraDisponible
   );
 
-  const grid = document.getElementById('temporada-competencias-grid');
-  grid.innerHTML = ORDEN_COMPETENCIAS
+  // Mismo criterio que la barra de pestañas: 5 ligas arriba, 3 copas
+  // abajo (antes eran 6 tarjetas -- ni Libertadores ni Sudamericana
+  // aparecían acá, solo en su propia pestaña de la sección de tablas).
+  // Fila 1: Liga Profesional y Primera Nacional. Fila 2: B Metropolitana,
+  // Federal A y Primera C. Fila 3 (grid-copas, abajo): Copa Argentina,
+  // Copa Libertadores y Copa Sudamericana.
+  const gridLigasFila1 = document.getElementById('temporada-competencias-grid-ligas-fila1');
+  gridLigasFila1.innerHTML = ["lpf", "nacional"]
     .filter(slug => datos.competencias[slug])
     .map(slug => competenciaCardHTML(slug, datos.competencias[slug]))
     .join('');
+
+  const gridLigasFila2 = document.getElementById('temporada-competencias-grid-ligas-fila2');
+  gridLigasFila2.innerHTML = ORDEN_COMPETENCIAS
+    .filter(slug => slug !== 'copa' && slug !== 'lpf' && slug !== 'nacional' && datos.competencias[slug])
+    .map(slug => competenciaCardHTML(slug, datos.competencias[slug]))
+    .join('');
+
+  const gridCopas = document.getElementById('temporada-competencias-grid-copas');
+  gridCopas.innerHTML = [
+    datos.competencias.copa ? competenciaCardHTML('copa', datos.competencias.copa) : '',
+    datos.libertadores && !datos.libertadores.error ? copaInternacionalCardHTML('libertadores', datos.libertadores) : '',
+    datos.sudamericana && !datos.sudamericana.error ? copaInternacionalCardHTML('sudamericana', datos.sudamericana) : '',
+  ].join('');
 
   const movList = document.getElementById('temporada-movimientos-list');
   const movimientos = (datos.promocion && datos.promocion.movimientos) || [];
