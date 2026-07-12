@@ -131,6 +131,10 @@ class Handler(SimpleHTTPRequestHandler):
             self._manejar_datos_csv(["tabla_federal_a.csv", "fixture_federal_a.csv", "resultados_federal_a.csv"])
         elif self.path == "/api/datos-primerac":
             self._manejar_datos_csv(["tabla_primerac.csv", "fixture_primerac.csv", "resultados_primerac.csv"])
+        elif self.path == "/api/datos-libertadores":
+            self._manejar_datos_locales(["libertadores_cuadro.csv", "libertadores_elo.csv"])
+        elif self.path == "/api/datos-sudamericana":
+            self._manejar_datos_locales(["sudamericana_cuadro.csv", "sudamericana_elo.csv"])
         else:
             super().do_GET()
 
@@ -150,6 +154,16 @@ class Handler(SimpleHTTPRequestHandler):
     def _manejar_datos_nacional(self):
         try:
             self._responder_json(200, {"files": league_csv_files("nacional")})
+        except Exception as e:
+            self._responder_json(*_error_http(e))
+
+    def _manejar_datos_locales(self, nombres):
+        """A diferencia de _manejar_datos_csv (Supabase), Libertadores y
+        Sudamericana no pasan por la base: leen directo de datos/*.csv
+        (ver cargar_datos_libertadores()/cargar_datos_sudamericana())."""
+        try:
+            archivos = {nombre: (rutas.datos_dir() / nombre).read_text(encoding="utf-8") for nombre in nombres}
+            self._responder_json(200, {"files": archivos})
         except Exception as e:
             self._responder_json(*_error_http(e))
 

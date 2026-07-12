@@ -71,6 +71,10 @@ PYSIM_SOURCE_FILES = [
     "fixture_generator.py",
     "main_primerac.py",
     "modelos/estadisticas_primerac.py",
+    "main_libertadores.py",
+    "modelos/estadisticas_libertadores.py",
+    "main_sudamericana.py",
+    "modelos/estadisticas_sudamericana.py",
 ]
 # El código fuente no cambia mientras el proceso está corriendo, así que se
 # lee y cachea una sola vez.
@@ -387,6 +391,47 @@ def datos_primerac():
         return _error_response(e)
     finally:
         _lock_primerac.release_read()
+
+
+def _archivos_datos_locales(nombres: list[str]) -> dict[str, str]:
+    """A diferencia de las demás competencias (Supabase, vía
+    league_csv_files/cup_csv_files), Libertadores y Sudamericana no
+    pasan por la base: cargar_datos_libertadores()/
+    cargar_datos_sudamericana() leen directo de datos/*.csv (ver
+    modelos/estadisticas_libertadores.py y estadisticas_sudamericana.py).
+    Esto lee esos mismos archivos tal cual para mandárselos al Web
+    Worker con Pyodide."""
+    archivos = {}
+    for nombre in nombres:
+        ruta = rutas.datos_dir() / nombre
+        archivos[nombre] = ruta.read_text(encoding="utf-8")
+    return archivos
+
+
+@app.get("/api/datos-libertadores")
+def datos_libertadores():
+    """Antes este endpoint no existía: sim-worker.js ya lo pedía (junto
+    con el resto de /api/datos-*) para inicializar el simulador local
+    en el navegador, así que esa petición devolvía 404 y tumbaba TODO
+    el Web Worker (no solo Libertadores) -- ejecutarSimulacion() caía
+    siempre al backend para cualquier liga, sin aviso. Devuelve
+    libertadores_cuadro.csv y libertadores_elo.csv (ver
+    cargar_datos_libertadores())."""
+    try:
+        return {"files": _archivos_datos_locales(["libertadores_cuadro.csv", "libertadores_elo.csv"])}
+    except Exception as e:
+        return _error_response(e)
+
+
+@app.get("/api/datos-sudamericana")
+def datos_sudamericana():
+    """Igual que /api/datos-libertadores pero con
+    sudamericana_cuadro.csv y sudamericana_elo.csv (ver
+    cargar_datos_sudamericana())."""
+    try:
+        return {"files": _archivos_datos_locales(["sudamericana_cuadro.csv", "sudamericana_elo.csv"])}
+    except Exception as e:
+        return _error_response(e)
 
 
 @app.get("/")
