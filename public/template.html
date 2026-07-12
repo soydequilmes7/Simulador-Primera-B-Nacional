@@ -5356,37 +5356,74 @@ const PAIS_BANDERA = {
   AR: '🇦🇷', BR: '🇧🇷', UY: '🇺🇾', PY: '🇵🇾', CL: '🇨🇱',
   BO: '🇧🇴', EC: '🇪🇨', CO: '🇨🇴', PE: '🇵🇪', VE: '🇻🇪',
 };
+// Generado desde datos/libertadores_pool_internacional.csv (101 clubes,
+// la MISMA fuente que usa season/libertadores_manager.py para rotar el
+// pool en Modo Temporada) + un par de equipos del cuadro real fijo de
+// Sudamericana que no forman parte del pool rotativo (Recoleta FC,
+// Montevideo City Torque -- ver datos/sudamericana_cuadro.csv). Incluye
+// las claves DESAMBIGUADAS con sufijo de país ("Universidad Católica
+// (Chile)"/"Universidad Católica (Ecuador)", "Nacional (Uruguay)"/
+// "Nacional (Paraguay)") ANTES de la limpieza de paréntesis que hace
+// paisDeClub() -- son búsquedas exactas por `crudo`, tienen prioridad
+// sobre el fallback genérico "Universidad Católica"/"Nacional" (que ya
+// no existe acá a propósito: sin esas dos entradas genéricas, un club
+// duplicado sin desambiguar no muestra bandera en vez de mostrar la
+// incorrecta -- mismo criterio "mejor ausente que rota" del resto del
+// archivo). Si un club nuevo entra al pool más adelante y no aparece
+// acá, no rompe nada -- banderaHTML() simplemente no muestra bandera.
 const PAIS_CLUB_EXTRANJERO = {
   // Brasil
-  'Fluminense':'BR', 'Palmeiras':'BR', 'Corinthians':'BR', 'Cruzeiro':'BR', 'Flamengo':'BR', 'Mirasol':'BR', 'Mirasol FC':'BR',
-  'São Paulo':'BR', 'Sao Paulo':'BR', 'Grêmio':'BR', 'Gremio':'BR', 'Internacional':'BR', 'Atlético Mineiro':'BR', 'Atletico Mineiro':'BR',
-  'Botafogo':'BR', 'Vasco da Gama':'BR', 'Vasco':'BR', 'Bahia':'BR', 'Fortaleza':'BR', 'Athletico Paranaense':'BR',
-  'Red Bull Bragantino':'BR', 'Bragantino':'BR', 'Santos':'BR', 'Ceará':'BR', 'Ceara':'BR', 'Criciúma':'BR', 'Criciuma':'BR',
-  'Vitória':'BR', 'Vitoria':'BR', 'Cuiabá':'BR', 'Cuiaba':'BR', 'Juventude':'BR', 'Coritiba':'BR', 'Goiás':'BR', 'Goias':'BR',
+  'Athletico Paranaense':'BR', 'Atletico Mineiro':'BR', 'Atlético Mineiro':'BR', 'Bahia':'BR',
+  'Botafogo':'BR', 'Corinthians':'BR', 'Cruzeiro':'BR', 'Cuiaba':'BR', 'Cuiabá':'BR',
+  'Flamengo':'BR', 'Fluminense':'BR', 'Fortaleza':'BR', 'Gremio':'BR',
+  'Grêmio':'BR', 'Internacional':'BR', 'Juventude':'BR', 'Mirassol':'BR',
+  'Palmeiras':'BR', 'Red Bull Bragantino':'BR', 'Bragantino':'BR', 'Santos':'BR', 'São Paulo':'BR', 'Sao Paulo':'BR',
+  'Vasco da Gama':'BR', 'Vasco':'BR', 'Vitoria':'BR', 'Vitória':'BR',
   // Uruguay
-  'Peñarol':'UY', 'Penarol':'UY', 'Defensor Sporting':'UY', 'Danubio':'UY', 'Liverpool':'UY',
-  'Cerro Largo':'UY', 'Boston River':'UY', 'Racing Club de Montevideo':'UY', 'Wanderers':'UY', 'Montevideo Wanderers':'UY',
+  'Boston River':'UY', 'Cerro':'UY', 'Cerro Largo':'UY', 'Danubio':'UY',
+  'Defensor Sporting':'UY', 'Juventud':'UY', 'Liverpool':'UY', 'Montevideo City Torque':'UY',
+  'Montevideo Wanderers':'UY', 'Wanderers':'UY', 'Nacional (Uruguay)':'UY', 'Penarol':'UY', 'Peñarol':'UY',
+  'Racing':'UY',
   // Paraguay
-  'Olimpia':'PY', 'Club Olimpia':'PY', 'Libertad':'PY', 'Club Libertad':'PY', 'Cerro Porteño':'PY', 'Club Cerro Porteño':'PY',
-  'Guaraní':'PY', 'Guarani':'PY', 'Sportivo Luqueño':'PY', 'Sol de América':'PY', 'Sol de America':'PY', 'Sol De América':'PY',
+  '2 de Mayo':'PY', 'Ameliano':'PY', 'Cerro Porteno':'PY', 'Cerro Porteño':'PY',
+  'Guarani':'PY', 'Guaraní':'PY', 'Libertad':'PY', 'Nacional (Paraguay)':'PY', 'Olimpia':'PY',
+  'Recoleta FC':'PY', 'Sportivo Luqueno':'PY', 'Sportivo Luqueño':'PY', 'Sportivo Trinidense':'PY',
   // Chile
-  'Colo-Colo':'CL', 'Colo Colo':'CL', 'Universidad de Chile':'CL', 'Palestino':'CL', 'Huachipato':'CL',
-  'Ñublense':'CL', 'Nublense':'CL', 'Cobresal':'CL', 'Coquimbo Unido':'CL', 'Universidad Católica':'CL', 'Universidad Catolica':'CL',
+  'Audax Italiano':'CL', 'Cobresal':'CL', 'Colo-Colo':'CL', 'Colo Colo':'CL', 'Coquimbo Unido':'CL',
+  'Deportes Iquique':'CL', 'Everton':'CL', 'Huachipato':'CL', 'Nublense':'CL', 'Ñublense':'CL',
+  "O'Higgins":'CL', 'Palestino':'CL', 'Union Espanola':'CL', 'Unión Española':'CL',
+  'Universidad Catolica (Chile)':'CL', 'Universidad Católica (Chile)':'CL', 'Universidad de Chile':'CL',
+  // Sin desambiguar (sin sufijo de país): el cuadro real fijo de
+  // Libertadores (datos/libertadores_cuadro.csv) todavía usa el nombre
+  // así -- es casi siempre la chilena en el contexto de Libertadores
+  // (mucho más frecuente que la ecuatoriana). El pool rotativo de Modo
+  // Temporada SIEMPRE usa las claves desambiguadas de arriba, que
+  // ganan por búsqueda exacta antes de llegar acá.
+  'Universidad Católica':'CL',
   // Bolivia
-  'Bolívar':'BO', 'Bolivar':'BO', 'The Strongest':'BO', 'Always Ready':'BO', 'Nacional Potosí':'BO', 'Nacional Potosi':'BO',
-  'Wilstermann':'BO', 'Jorge Wilstermann':'BO',
+  'Always Ready':'BO', 'Aurora':'BO', 'Blooming':'BO', 'Bolivar':'BO', 'Bolívar':'BO',
+  'Guabira':'BO', 'Guabirá':'BO', 'Nacional Potosi':'BO', 'Nacional Potosí':'BO',
+  'Oriente Petrolero':'BO', 'San Antonio Bulo Bulo':'BO', 'The Strongest':'BO',
+  'Universitario de Vinto':'BO', 'Wilstermann':'BO', 'Jorge Wilstermann':'BO',
   // Ecuador
-  'Barcelona SC':'EC', 'Barcelona (ECU)':'EC', 'Emelec':'EC', 'Aucas':'EC', 'LDU de Quito':'EC', 'LDU Quito':'EC',
-  'Liga de Quito':'EC', 'Independiente del Valle':'EC', 'Deportivo Cuenca':'EC',
+  'Aucas':'EC', 'Barcelona SC':'EC', 'Barcelona (ECU)':'EC', 'Delfin':'EC', 'Delfín':'EC',
+  'El Nacional':'EC', 'Emelec':'EC', 'Independiente del Valle':'EC', 'Liga de Quito':'EC',
+  'LDU de Quito':'EC', 'LDU Quito':'EC', 'Macara':'EC', 'Macará':'EC', 'Mushuc Runa':'EC', 'Orense':'EC',
+  'Universidad Catolica (Ecuador)':'EC', 'Universidad Católica (Ecuador)':'EC', 'Deportivo Cuenca':'EC',
   // Colombia
-  'Millonarios':'CO', 'Atlético Nacional':'CO', 'Atletico Nacional':'CO', 'Junior':'CO', 'Junior de Barranquilla':'CO',
-  'América de Cali':'CO', 'America de Cali':'CO', 'Independiente Medellín':'CO', 'Independiente Medellin':'CO',
-  'Santa Fe':'CO', 'Independiente Santa Fe':'CO', 'Deportes Tolima':'CO', 'Tolima':'CO',
+  'America de Cali':'CO', 'América de Cali':'CO', 'Atletico Bucaramanga':'CO', 'Atlético Bucaramanga':'CO',
+  'Atletico Nacional':'CO', 'Atlético Nacional':'CO', 'Deportes Tolima':'CO', 'Tolima':'CO',
+  'Independiente Medellin':'CO', 'Independiente Medellín':'CO', 'Independiente Santa Fe':'CO', 'Santa Fe':'CO',
+  'Junior':'CO', 'Junior de Barranquilla':'CO', 'Millonarios':'CO', 'Once Caldas':'CO',
   // Perú
-  'Universitario':'PE', 'Universitario de Deportes':'PE', 'Alianza Lima':'PE', 'Sporting Cristal':'PE',
-  'Melgar':'PE', 'FBC Melgar':'PE', 'Cusco FC':'PE',
+  'ADT':'PE', 'Alianza Atletico':'PE', 'Alianza Atlético':'PE', 'Alianza Lima':'PE',
+  'Atletico Grau':'PE', 'Atlético Grau':'PE', 'Cienciano':'PE', 'Cusco FC':'PE',
+  'Deportivo Garcilaso':'PE', 'FBC Melgar':'PE', 'Melgar':'PE', 'Sport Huancayo':'PE',
+  'Sporting Cristal':'PE', 'Universitario':'PE', 'Universitario de Deportes':'PE',
   // Venezuela
-  'Deportivo Táchira':'VE', 'Deportivo Tachira':'VE', 'Caracas FC':'VE', 'Caracas':'VE', 'Metropolitanos':'VE', 'Monagas':'VE',
+  'Academia Puerto Cabello':'VE', 'Carabobo':'VE', 'Caracas':'VE', 'Caracas FC':'VE',
+  'Deportivo La Guaira':'VE', 'Deportivo Tachira':'VE', 'Deportivo Táchira':'VE',
+  'Metropolitanos':'VE', 'Monagas':'VE', 'Rayo Zuliano':'VE', 'Universidad Central de Venezuela':'VE',
 };
 function paisDeClub(nombre){
   const crudo = String(nombre || '').trim();
