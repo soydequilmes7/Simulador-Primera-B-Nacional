@@ -979,6 +979,11 @@
      así que sus botones quedaban pegados al margen izquierdo en vez de
      centrados dentro de la fila -- ver capturas del pedido. */
   .zone-tabs-temporada .group{ justify-content:center; flex-wrap:wrap; }
+  /* A diferencia de .zone-tabs "normal" (Zona A/B de una sola liga, donde
+     tiene sentido que quede fijo arriba mientras se scrollea la tabla),
+     este selector tiene 3 filas y 8 competencias: fijarlo tapaba buena
+     parte de la pantalla al scrollear en Modo Temporada. */
+  .zone-tabs-temporada{ position:static; top:auto; z-index:auto; backdrop-filter:none; }
 
   /* ---------- MODO TEMPORADA · dashboard superior ----------
      Convierte el arranque de la pestaña en un mini-dashboard (mismo
@@ -1225,10 +1230,8 @@
   }
   #temporada-detalle-competencia .bracket-scroll{ scrollbar-width:none; -ms-overflow-style:none; }
   #temporada-detalle-competencia .bracket-scroll::-webkit-scrollbar{ display:none; }
-  #temporada-detalle-competencia:has(#bracket-temporada-libertadores) .bracket-wrap.scrollable .bracket-scroll,
-  #temporada-detalle-competencia:has(#bracket-temporada-sudamericana) .bracket-wrap.scrollable .bracket-scroll{ cursor:grab; }
-  #temporada-detalle-competencia:has(#bracket-temporada-libertadores) .bracket-wrap.scrollable .bracket-scroll.is-dragging,
-  #temporada-detalle-competencia:has(#bracket-temporada-sudamericana) .bracket-wrap.scrollable .bracket-scroll.is-dragging{ cursor:grabbing; user-select:none; }
+  #temporada-detalle-competencia .bracket-wrap.scrollable .bracket-scroll{ cursor:grab; }
+  #temporada-detalle-competencia .bracket-wrap.scrollable .bracket-scroll.is-dragging{ cursor:grabbing; user-select:none; }
 
   /* -- Copa Libertadores: dorado, igual que en su propia pestaña -- */
   #bracket-temporada-libertadores .round-title{
@@ -1428,6 +1431,18 @@
      es que se lea el nombre del equipo completo. */
   .temporada-copa-zona .escudo{ width:16px; height:16px; margin-right:5px; vertical-align:-3px; }
   .temporada-copa-zona .bandera-club{ margin-right:3px; font-size:0.8em; }
+
+  /* Partidos jugados entre sí, debajo de la tabla de cada zona -- mismo
+     .match que usa el bracket, pero en una lista compacta de 1 columna
+     en vez de las columnas por ronda del cuadro. */
+  .temporada-copa-zona-partidos-titulo{
+    font-family:'JetBrains Mono'; font-size:9.5px; letter-spacing:0.1em; text-transform:uppercase;
+    color:var(--muted); margin:12px 0 7px;
+  }
+  .temporada-copa-zona-partidos{ display:flex; flex-direction:column; gap:6px; }
+  .temporada-copa-zona-partidos .match{ padding:6px 9px; font-size:11px; }
+  .temporada-copa-zona-partidos .match .row{ padding:2px 0; }
+  .temporada-copa-zona-partidos .escudo{ width:14px; height:14px; margin-right:5px; vertical-align:-3px; }
 
   /* Indicador de clasificación: mismos 3 colores en Libertadores y
      Sudamericana para que se entienda de un vistazo en cualquiera de
@@ -3378,16 +3393,12 @@
   /* Scrollbar oculta pero scroll funcional: el contenido sigue siendo
      desplazable (rueda, trackpad, drag, Shift+rueda), solo se esconde
      la barra nativa para que no rompa el look premium. */
-  body.liga-libertadores .bracket-scroll,
-  body.liga-sudamericana .bracket-scroll{
+  .bracket-scroll{
     scrollbar-width:none; -ms-overflow-style:none;
   }
-  body.liga-libertadores .bracket-scroll::-webkit-scrollbar,
-  body.liga-sudamericana .bracket-scroll::-webkit-scrollbar{ display:none; }
-  body.liga-libertadores .bracket-wrap.scrollable .bracket-scroll,
-  body.liga-sudamericana .bracket-wrap.scrollable .bracket-scroll{ cursor:grab; }
-  body.liga-libertadores .bracket-wrap.scrollable .bracket-scroll.is-dragging,
-  body.liga-sudamericana .bracket-wrap.scrollable .bracket-scroll.is-dragging{ cursor:grabbing; user-select:none; }
+  .bracket-scroll::-webkit-scrollbar{ display:none; }
+  .bracket-wrap.scrollable .bracket-scroll{ cursor:grab; }
+  .bracket-wrap.scrollable .bracket-scroll.is-dragging{ cursor:grabbing; user-select:none; }
 
   body.liga-libertadores .round-title{
     position:relative; color:#EAD9A0; font-size:11px; font-weight:700;
@@ -10683,7 +10694,9 @@ function detalleCopaInternacionalTemporadaHTML(slug){
   //    Libertadores; el 3° (ámbar) desciende a la Copa Sudamericana.
   //  - Sudamericana: 1° (turquesa) pasa directo a Octavos; el 2°
   //    (violeta) juega el Playoff de Octavos.
-  const zonasHTML = (datos.zonas || []).map(z => `
+  const zonasHTML = (datos.zonas || []).map(z => {
+    const partidosHTML = (z.partidos || []).map(p => matchHTML(p)).join('');
+    return `
     <div class="temporada-copa-zona">
       <div class="temporada-copa-zona-titulo">Zona ${z.letra}</div>
       <div class="table-wrap"><table>
@@ -10705,7 +10718,12 @@ function detalleCopaInternacionalTemporadaHTML(slug){
           }).join('')}
         </tbody>
       </table></div>
-    </div>`).join('');
+      ${partidosHTML ? `
+        <div class="temporada-copa-zona-partidos-titulo">Partidos entre sí</div>
+        <div class="temporada-copa-zona-partidos">${partidosHTML}</div>
+      ` : ''}
+    </div>`;
+  }).join('');
   const columnasZonas = columnasParejasZonas((datos.zonas || []).length);
   const leyendaHTML = slug === 'libertadores'
     ? `<div class="temporada-copa-grupos-leyenda">
@@ -11500,32 +11518,27 @@ document.getElementById('btn-reiniciar-temporada').addEventListener('click', rei
 
 /* ---------- FIN MODO TEMPORADA ---------- */
 
-/* ---------- DRAG-TO-SCROLL DE LOS CUADROS DE LIBERTADORES ----------
+/* ---------- DRAG-TO-SCROLL DE TODOS LOS CUADROS ----------
    Solo estético/UX: la scrollbar nativa de estos cuadros queda oculta por
-   CSS (ver body.liga-libertadores .bracket-scroll), así que agregamos
-   una forma de moverlos con el mouse (arrastrar) o con Shift + rueda,
-   además del scroll táctil/trackpad. No toca datos ni el render del
-   bracket.
+   CSS (ver .bracket-scroll, sin scopear a ninguna liga en particular),
+   así que agregamos una forma de moverlos con el mouse (arrastrar) o con
+   Shift + rueda, además del scroll táctil/trackpad. No toca datos ni el
+   render del bracket.
+   Antes esto solo cubría Libertadores/Sudamericana (esCuadroArrastrable()
+   tenía una lista blanca por body class/id de cuadro) -- el resto de los
+   cuadros (Copa Argentina y los Reducidos de Nacional/B Metro/Primera C,
+   tanto en su propia pestaña como dentro de Modo Temporada) se quedaban
+   sin arrastre aunque visualmente lucieran igual. Ahora cualquier
+   ".bracket-scroll" del sitio es arrastrable: no hace falta lista blanca.
    Usa delegación de eventos sobre todo el documento (en vez de atarse a
-   un único elemento fijo) porque en esta pestaña hay más de un
-   ".bracket-scroll": el cuadro real (id="bracket-libertadores", ya
-   presente en el HTML estático) y el cuadro ad-hoc que arma "Simular
-   hasta el título" (se crea recién al hacer click, dentro de
-   #campeon-resultado-libertadores). Así el arrastre funciona en
-   cualquiera de los dos, incluidos los que todavía no existen al cargar
-   la página.
-   También cubre el mismo cuadro dentro de Modo Temporada
-   (#bracket-temporada-libertadores/#bracket-temporada-sudamericana,
-   ver detalleCopaInternacionalTemporadaHTML): ahí el body queda en
-   liga-temporada en vez de liga-libertadores/liga-sudamericana, así que
-   se identifica por el id del cuadro en vez del body class. */
-(function initDragScrollLibertadores(){
+   un único elemento fijo) porque cada pestaña puede tener más de un
+   ".bracket-scroll" -- el cuadro real (ya presente en el HTML estático) y
+   el cuadro ad-hoc que arma "Simular hasta el título" (se crea recién al
+   hacer click). Así el arrastre funciona en cualquiera de los dos,
+   incluidos los que todavía no existen al cargar la página. */
+(function initDragScrollBrackets(){
   function esCuadroArrastrable(candidato){
-    if (!candidato) return false;
-    if (document.body.classList.contains('liga-libertadores') || document.body.classList.contains('liga-sudamericana')) return true;
-    if (document.body.classList.contains('liga-temporada') &&
-        candidato.querySelector('#bracket-temporada-libertadores, #bracket-temporada-sudamericana')) return true;
-    return false;
+    return !!candidato;
   }
 
   let scrollEl = null;
