@@ -35,6 +35,7 @@ from main_bmetro import correr_simulacion_bmetro, simular_hasta_ascenso_bmetro
 from main_federal import correr_simulacion_federal, simular_hasta_ascenso_federal
 from main_primerac import correr_simulacion as correr_simulacion_primerac, simular_hasta_campeon as simular_hasta_ascenso_primerac
 from main_libertadores import correr_simulacion_libertadores, simular_hasta_campeon_libertadores
+from main_sudamericana import correr_simulacion_sudamericana, simular_hasta_campeon_sudamericana
 
 
 def simular(n_sims):
@@ -106,6 +107,15 @@ def simular_campeon_libertadores(equipo_objetivo, max_intentos):
     return _envolver_hasta_campeon(resultado, equipo_objetivo, max_intentos)
 
 
+def simular_sudamericana(n_sims):
+    return correr_simulacion_sudamericana(imprimir=False, guardar_json=False, n_sims=n_sims)
+
+
+def simular_campeon_sudamericana(equipo_objetivo, max_intentos):
+    resultado = simular_hasta_campeon_sudamericana(equipo_objetivo, max_intentos=max_intentos, imprimir=False)
+    return _envolver_hasta_campeon(resultado, equipo_objetivo, max_intentos)
+
+
 _TAREAS = {
     "simular": lambda kwargs: simular(kwargs["n_sims"]),
     "simular-lpf": lambda kwargs: simular_lpf(kwargs["n_sims"]),
@@ -121,6 +131,8 @@ _TAREAS = {
     "simular-campeon-primerac": lambda kwargs: simular_campeon_primerac(kwargs["equipo"], kwargs["max_intentos"]),
     "simular-libertadores": lambda kwargs: simular_libertadores(kwargs["n_sims"]),
     "simular-campeon-libertadores": lambda kwargs: simular_campeon_libertadores(kwargs["equipo"], kwargs["max_intentos"]),
+    "simular-sudamericana": lambda kwargs: simular_sudamericana(kwargs["n_sims"]),
+    "simular-campeon-sudamericana": lambda kwargs: simular_campeon_sudamericana(kwargs["equipo"], kwargs["max_intentos"]),
 }
 
 

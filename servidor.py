@@ -69,6 +69,8 @@ PYSIM_SOURCE_FILES = [
     "modelos/estadisticas_primerac.py",
     "main_libertadores.py",
     "modelos/estadisticas_libertadores.py",
+    "main_sudamericana.py",
+    "modelos/estadisticas_sudamericana.py",
 ]
 _pysim_source_cache = None
 

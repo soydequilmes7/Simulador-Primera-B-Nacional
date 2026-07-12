@@ -4040,6 +4040,18 @@
       </div>
       <div id="sim-status-libertadores" class="sim-status"></div>
     </div>
+
+    <div class="sim-control" id="sim-control-sudamericana" style="display:none">
+      <div class="sim-select-row">
+        <label for="sim-count-sudamericana">Cantidad de simulaciones</label>
+        <input type="number" id="sim-count-sudamericana" value="1000" min="50" max="5000" step="1">
+        <span class="rango">(50–5000)</span>
+      </div>
+      <div class="btn-row">
+        <button id="btn-simular-sudamericana" class="btn-simular">🔄 Nueva simulación</button>
+      </div>
+      <div id="sim-status-sudamericana" class="sim-status"></div>
+    </div>
   </div>
 
   <div class="liga-tabs">
@@ -4863,6 +4875,23 @@
     </div>
     <div class="search-hint">Escribí el nombre del equipo para ver sus chances en la Copa, ronda por ronda</div>
     <div id="search-result-sudamericana"></div>
+  </div>
+
+  <div class="search-section" id="campeon-section-sudamericana">
+    <div class="section-head" style="margin-bottom:14px;">
+      <span class="idx">🏆</span><h2 style="font-size:18px;">Simulá hasta que tu equipo salga campeón</h2><div class="rule"></div>
+    </div>
+    <p class="section-note" style="margin:0 0 16px; text-align:center; max-width:none;">
+      Elegí uno de los 24 equipos (16 de Playoffs + 8 directos a Octavos): repetimos el cuadro completo
+      una y otra vez hasta encontrar la primera corrida en la que se consagra campeón, y te mostramos
+      ese camino llave por llave.
+    </p>
+    <div class="campeon-controls">
+      <select id="campeon-equipo-sudamericana"><option value="">Elegí un equipo…</option></select>
+      <button id="btn-campeon-sudamericana" class="btn-simular">🏆 Simular hasta el título</button>
+    </div>
+    <div id="campeon-status-sudamericana" class="sim-status"></div>
+    <div id="campeon-resultado-sudamericana"></div>
   </div>
 
   <section id="sec-sudamericana-cuadro">
@@ -8408,6 +8437,7 @@ function setLiga(liga){
   document.getElementById('sim-control-federal').style.display = liga === 'federal' ? '' : 'none';
   document.getElementById('sim-control-primerac').style.display = liga === 'primerac' ? '' : 'none';
   document.getElementById('sim-control-libertadores').style.display = liga === 'libertadores' ? '' : 'none';
+  document.getElementById('sim-control-sudamericana').style.display = liga === 'sudamericana' ? '' : 'none';
   document.body.classList.toggle('liga-nacional', liga === 'nacional');
   document.body.classList.toggle('liga-lpf', liga === 'lpf');
   document.body.classList.toggle('liga-copa', liga === 'copa');
@@ -8904,6 +8934,7 @@ function iniciarSudamericana(){
   const anuncio = document.getElementById('campeon-anuncio-sudamericana');
   if (anuncio) anuncio.innerHTML = campeonAnuncioHTML(DATA_SUDAMERICANA.campeon, '🏆');
   renderMCSudamericana();
+  poblarSelectEquiposSudamericana();
   TEAM_INDEX_SUDAMERICANA = buildTeamIndexSudamericana();
   poblarDatalistSudamericana(TEAM_INDEX_SUDAMERICANA);
   const busqueda = document.getElementById('team-search-sudamericana');
@@ -9013,6 +9044,109 @@ async function simularHastaCampeonLibertadores(){
   }
 }
 document.getElementById('btn-campeon-libertadores').addEventListener('click', simularHastaCampeonLibertadores);
+
+function poblarSelectEquiposSudamericana(){
+  const sel = document.getElementById('campeon-equipo-sudamericana');
+  if (!sel || !DATA_SUDAMERICANA || !DATA_SUDAMERICANA.equipos_vivos) return;
+  const valorPrevio = sel.value;
+  sel.innerHTML = '<option value="">Elegí un equipo…</option>' +
+    DATA_SUDAMERICANA.equipos_vivos.map(n => `<option value="${n}">${n}</option>`).join('');
+  if (valorPrevio && DATA_SUDAMERICANA.equipos_vivos.includes(valorPrevio)) sel.value = valorPrevio;
+}
+
+function leerNSimsSudamericana(){
+  const input = document.getElementById('sim-count-sudamericana');
+  let n = parseInt(input.value, 10);
+  if (!Number.isFinite(n)) n = 1000;
+  n = Math.max(50, Math.min(5000, n));
+  input.value = n;
+  return n;
+}
+
+// Mismo patrón que correrSimulacionLibertadores(): Pyodide en el
+// navegador primero (main_sudamericana.py y
+// modelos/estadisticas_sudamericana.py ya están sumados a
+// PYSIM_SOURCE_FILES en servidor.py) y si no está disponible cae al
+// backend (servidor.py/api/index.py, /api/simular-sudamericana).
+async function correrSimulacionSudamericana(){
+  const btn = document.getElementById('btn-simular-sudamericana');
+  const status = document.getElementById('sim-status-sudamericana');
+  const input = document.getElementById('sim-count-sudamericana');
+  const nSims = leerNSimsSudamericana();
+
+  if (!beginApiAction(status)) return;
+
+  btn.disabled = true;
+  input.disabled = true;
+  btn.textContent = "Simulando…";
+  status.classList.remove('error', 'ok');
+  status.textContent = `Corriendo el cuadro completo ${nSims} veces — puede tardar unos segundos.`;
+
+  try {
+    const cuerpo = await ejecutarSimulacion("simular-sudamericana", { n_sims: Number(nSims) }, "/api/simular-sudamericana", status);
+    DATA_SUDAMERICANA = cuerpo;
+    iniciarSudamericana();
+    status.classList.add('ok');
+    status.textContent = "✓ Simulación actualizada (" + (DATA_SUDAMERICANA.generado || "") + ")";
+  } catch (e) {
+    setApiErrorStatus(status, "No se pudo correr la simulación", e);
+  } finally {
+    btn.disabled = false;
+    input.disabled = false;
+    btn.textContent = "🔄 Nueva simulación";
+    endApiAction();
+  }
+}
+document.getElementById('btn-simular-sudamericana').addEventListener('click', correrSimulacionSudamericana);
+
+async function simularHastaCampeonSudamericana(){
+  const sel = document.getElementById('campeon-equipo-sudamericana');
+  const btn = document.getElementById('btn-campeon-sudamericana');
+  const status = document.getElementById('campeon-status-sudamericana');
+  const cont = document.getElementById('campeon-resultado-sudamericana');
+  const equipo = sel.value;
+
+  if (!equipo){
+    status.classList.add('error');
+    status.textContent = "Elegí un equipo primero.";
+    return;
+  }
+  if (!beginApiAction(status)) return;
+
+  btn.disabled = true;
+  sel.disabled = true;
+  btn.textContent = "Simulando…";
+  status.classList.remove('error', 'ok');
+  status.textContent = `Repitiendo la Copa hasta que ${equipo} salga campeón — puede tardar unos segundos.`;
+  cont.innerHTML = "";
+
+  try {
+    const cuerpo = await ejecutarSimulacion("simular-campeon-sudamericana", { equipo }, "/api/simular-campeon-sudamericana", status);
+
+    if (!cuerpo.logrado){
+      status.classList.add('error');
+      status.textContent = `No salió campeón en ${cuerpo.max_intentos} corridas — probá de nuevo.`;
+      return;
+    }
+    status.classList.add('ok');
+    status.textContent = `✓ Campeón en el intento N° ${cuerpo.intentos}`;
+    const campeonCorrida = cuerpo.rondas.final[0].avanza;
+    cont.innerHTML = `
+      <div class="campeon-summary">🏆 <b>${cuerpo.equipo}</b> se consagra campeón en esta corrida simulada
+        (intento N° ${cuerpo.intentos} de una búsqueda al azar entre distintos cuadros posibles)</div>
+      <div class="bracket-scroll" style="margin-top:14px;"><div class="bracket">${bracketSudamericanaHTML(cuerpo.rondas, campeonCorrida)}</div></div>
+      <div class="campeon-anuncio-wrap">${campeonAnuncioHTML(campeonCorrida, '🏆')}</div>
+    `;
+  } catch (e) {
+    setApiErrorStatus(status, "No se pudo simular", e);
+  } finally {
+    btn.disabled = false;
+    sel.disabled = false;
+    btn.textContent = "🏆 Simular hasta el título";
+    endApiAction();
+  }
+}
+document.getElementById('btn-campeon-sudamericana').addEventListener('click', simularHastaCampeonSudamericana);
 
 function llaveLibertadoresHTML(ll, esFinal){
   if (esFinal){
@@ -10004,12 +10138,21 @@ let PALMARES_TEMPORADA = [];   // acumulado {ronda, campeones:{slug: nombre|null
 const ANIO_BASE_TEMPORADA = 2026;
 const anioDeRondaTemporada = (ronda) => ANIO_BASE_TEMPORADA + (ronda - 1);
 
-function tablaSimpleHTML(filas, titulo, ascensoDirecto, ascensoReducido, descensosSet){
+function tablaSimpleHTML(filas, titulo, ascensoDirecto, ascensoReducido, descensosSet, opts){
+  // opts (todos opcionales): reducidoSet (Nacional/BMetro/Primera C -- TODOS
+  // los clasificados al Reducido, no solo el que terminó ascendiendo, mismo
+  // criterio que ya usan las pestañas propias de cada liga vía posición en
+  // la tabla) y libertadoresSet/sudamericanaSet (solo LPF, cupos a copas
+  // internacionales calculados en calcularCuposCopasLPF()).
+  const { reducidoSet, libertadoresSet, sudamericanaSet } = opts || {};
   const filasHTML = (filas || []).map((f, i) => {
     const clases = [];
     if (ascensoDirecto && f.equipo === ascensoDirecto) clases.push('punta');
-    else if (ascensoReducido && f.equipo === ascensoReducido) clases.push('reducido');
     else if (descensosSet && descensosSet.has(f.equipo)) clases.push('descenso');
+    else if (libertadoresSet && libertadoresSet.has(f.equipo)) clases.push('libertadores');
+    else if (sudamericanaSet && sudamericanaSet.has(f.equipo)) clases.push('sudamericana');
+    else if (reducidoSet && reducidoSet.has(f.equipo)) clases.push('reducido');
+    else if (ascensoReducido && f.equipo === ascensoReducido) clases.push('reducido');
     return `
     <tr class="${clases.join(' ')}">
       <td>${i + 1}</td>
@@ -10146,6 +10289,11 @@ function tablasCompetenciaHTML(slug, comp){
     // terminaba mostrando 4 o 5 equipos en vez de 6.
     const campeonCopaArgTemporada = obtenerCampeonCopaArgentinaTemporada(DATA_TEMPORADA && DATA_TEMPORADA.competencias, datos.tabla_anual, datos.generado);
     const cupos = calcularCuposCopasLPF(datos.tabla_anual, datos.campeon_apertura, datos.campeon_clausura, campeonCopaArgTemporada);
+    // Mismos sets que colorean la Tabla Anual de la pestaña LPF "real"
+    // (ver LPF_EQUIPOS_LIBERTADORES/LPF_EQUIPOS_SUDAMERICANA en
+    // renderCopasLPF()), acá calculados sobre los cupos de ESTA corrida.
+    const libertadoresSetLPF = new Set(cupos.libertadores.map(c => c.equipo));
+    const sudamericanaSetLPF = new Set(cupos.sudamericana);
     const copasHTML = (cupos.libertadores.length || cupos.sudamericana.length) ? `
       <div class="copas-grid" style="margin-top:20px;">
         <div class="copa-card libertadores">
@@ -10239,18 +10387,25 @@ function tablasCompetenciaHTML(slug, comp){
       </div>
       ${playoffsHTML}
       <div class="temporada-reducido-label">Tabla Anual 2026 (Apertura + Clausura)</div>
-      <div class="temporada-tablas-grid uno">${tablaSimpleHTML(datos.tabla_anual, null, null, null, descSet)}</div>
+      <div class="temporada-tablas-grid uno">${tablaSimpleHTML(datos.tabla_anual, null, null, null, descSet, { libertadoresSet: libertadoresSetLPF, sudamericanaSet: sudamericanaSetLPF })}</div>
       <div class="temporada-reducido-label">Tabla de Promedios (Art. 26 — define uno de los 2 descensos)</div>
       <div class="temporada-tablas-grid uno">${tablaPromediosHTML(datos.tabla_promedios, descSet)}</div>
       ${copasHTML}`;
   }
   if (slug === "bmetro"){
-    return `<div class="temporada-tablas-grid uno">${tablaSimpleHTML(datos.tabla, null, ascDirecto, ascReducido, descSet)}</div>`;
+    // Todos los que jugaron el Reducido (no solo el que terminó
+    // ascendiendo), leídos del propio cuadro ya simulado -- mismo
+    // criterio que usa el buscador global (construirIndiceEquiposTemporada).
+    const reducidoSet = new Set();
+    if (datos.reducido) extraerEquiposDeObjetoTemporada(datos.reducido, reducidoSet);
+    return `<div class="temporada-tablas-grid uno">${tablaSimpleHTML(datos.tabla, null, ascDirecto, ascReducido, descSet, { reducidoSet })}</div>`;
   }
   if (slug === "nacional" || slug === "primerac"){
+    const reducidoSet = new Set();
+    if (datos.reducido) extraerEquiposDeObjetoTemporada(datos.reducido, reducidoSet);
     return `<div class="temporada-tablas-grid dos">
-      ${tablaSimpleHTML(datos.tablas.A, "Zona A", ascDirecto, ascReducido, descSet)}
-      ${tablaSimpleHTML(datos.tablas.B, "Zona B", ascDirecto, ascReducido, descSet)}
+      ${tablaSimpleHTML(datos.tablas.A, "Zona A", ascDirecto, ascReducido, descSet, { reducidoSet })}
+      ${tablaSimpleHTML(datos.tablas.B, "Zona B", ascDirecto, ascReducido, descSet, { reducidoSet })}
     </div>`;
   }
   if (slug === "federal_a"){

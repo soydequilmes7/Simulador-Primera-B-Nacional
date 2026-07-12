@@ -178,6 +178,7 @@ _lock_bmetro = ReadWriteLock()
 _lock_federal = ReadWriteLock()
 _lock_primerac = ReadWriteLock()
 _lock_libertadores = ReadWriteLock()
+_lock_sudamericana = ReadWriteLock()
 
 
 class SimularBody(BaseModel):
@@ -210,6 +211,10 @@ class SimularCampeonBody(BaseModel):
 
 
 class SimularLibertadoresBody(BaseModel):
+    n_sims: int = N_SIMULACIONES
+
+
+class SimularSudamericanaBody(BaseModel):
     n_sims: int = N_SIMULACIONES
 
 
@@ -830,6 +835,54 @@ def simular_campeon_libertadores_endpoint(body: SimularCampeonBody):
         return _error_response(e)
     finally:
         _lock_libertadores.release_read()
+
+
+@app.post("/api/simular-sudamericana")
+def simular_sudamericana_endpoint(body: SimularSudamericanaBody = SimularSudamericanaBody()):
+    """Simula el cuadro de la Copa Sudamericana (Playoffs de Octavos en
+    adelante, ida y vuelta salvo la Final a partido único) + Monte
+    Carlo de % por ronda, y lo devuelve en la respuesta. Mismo patrón
+    que /api/simular-libertadores."""
+    n_sims = _clamp_n_sims(body.n_sims)
+
+    ocupado = _adquirir_lectura(
+        _lock_sudamericana,
+        "Hay una actualización de Copa Sudamericana en curso. Esperá unos segundos y probá de nuevo.",
+    )
+    if ocupado:
+        return ocupado
+    try:
+        return pysim_dispatch.simular_sudamericana(n_sims)
+    except Exception as e:
+        return _error_response(e)
+    finally:
+        _lock_sudamericana.release_read()
+
+
+@app.post("/api/simular-campeon-sudamericana")
+def simular_campeon_sudamericana_endpoint(body: SimularCampeonBody):
+    """Corre simular_hasta_campeon_sudamericana() del equipo pedido y
+    devuelve esa corrida completa del cuadro."""
+    equipo_objetivo = body.equipo.strip()
+    if not equipo_objetivo:
+        return JSONResponse(status_code=400, content={"error": "Falta indicar el equipo"})
+
+    max_intentos = _clamp_max_intentos(body.max_intentos)
+
+    ocupado = _adquirir_lectura(
+        _lock_sudamericana,
+        "Hay una actualización de Copa Sudamericana en curso. Esperá unos segundos y probá de nuevo.",
+    )
+    if ocupado:
+        return ocupado
+    try:
+        return pysim_dispatch.simular_campeon_sudamericana(equipo_objetivo, max_intentos)
+    except ValueError as e:
+        return JSONResponse(status_code=400, content={"error": str(e)})
+    except Exception as e:
+        return _error_response(e)
+    finally:
+        _lock_sudamericana.release_read()
 
 
 @app.post("/api/actualizar")
