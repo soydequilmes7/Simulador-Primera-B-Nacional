@@ -308,4 +308,14 @@ def simular_temporada_libertadores(
         "cuadro_octavos": cuadro_octavos,
         "rondas": rondas_detalle,
         "campeon": campeon,
+        # Nombres de los clubes NO argentinos que salieron sorteados
+        # esta temporada (del pool de datos/libertadores_pool_
+        # internacional.csv) -- season/sudamericana_temporada.py los
+        # excluye de su propio sorteo para que un mismo club no
+        # termine jugando las dos copas la misma temporada.
+        "equipos_internacionales_usados": [c.equipo for c in clasificacion.equipos if c.pais != "Argentina"],
+        # Elo de los 32 participantes -- season/sudamericana_temporada.py
+        # lo necesita para simular los Playoffs con el Elo real de los
+        # 8 terceros de zona de ESTA Libertadores, no un valor genérico.
+        "elo_por_equipo": elo_por_equipo,
     }

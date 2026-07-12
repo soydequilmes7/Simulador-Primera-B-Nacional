@@ -109,6 +109,13 @@ class ResultadoTemporada:
     # correr_temporada()) -- cero cambio de comportamiento para
     # cualquier llamador existente.
     resultado_libertadores: dict = field(default_factory=dict)
+    # Etapa 10: Copa Sudamericana dentro de Modo Temporada, ver
+    # season/sudamericana_temporada.py::simular_temporada_sudamericana().
+    # Necesita resultado_libertadores de la MISMA corrida (usa sus
+    # terceros de zona) -- por eso correr_sudamericana=True exige
+    # correr_libertadores=True (ver correr_temporada(), levanta
+    # ValueError si no). Vacío si correr_sudamericana=False (default).
+    resultado_sudamericana: dict = field(default_factory=dict)
 
 
 class SeasonEngine:
@@ -201,7 +208,8 @@ class SeasonEngine:
                           temporada_siguiente: str | None = None,
                           history_manager: HistoryManager | None = None,
                           cuadro_copa_override: list | None = None,
-                          correr_libertadores: bool = False) -> ResultadoTemporada:
+                          correr_libertadores: bool = False,
+                          correr_sudamericana: bool = False) -> ResultadoTemporada:
         """
         cuadro_copa_override: ver _correr_competencias() -- cuadro de
             32avos ya sorteado para esta corrida de Copa Argentina, en
@@ -216,6 +224,15 @@ class SeasonEngine:
             ResultadoTemporada.resultado_libertadores. False (default):
             cero cambio de comportamiento para cualquier llamador
             existente.
+        correr_sudamericana: Etapa 10 -- igual que correr_libertadores
+            pero para Copa Sudamericana (ver season/sudamericana_
+            temporada.py::simular_temporada_sudamericana()). Exige
+            correr_libertadores=True: Sudamericana usa los 8 terceros
+            de zona de la Libertadores de ESTA MISMA temporada para
+            armar sus Playoffs (ver ese módulo) -- levanta ValueError
+            si se pide correr_sudamericana=True sin correr_libertadores
+            =True, en vez de correr con datos de Libertadores vacíos o
+            de una temporada anterior.
         generar_temporada_siguiente: Etapa 7 -- si es True, además de
             correr las 6 competencias y (opcionalmente) promocionar,
             persiste la temporada N+1 vía HistoryManager.persist_season()
@@ -264,6 +281,31 @@ class SeasonEngine:
                 # corrupto/incompleto) -- se deja constancia en el
                 # resultado y el resto de la temporada sigue normal.
                 resultado_libertadores = {"error": str(e)}
+
+        resultado_sudamericana = {}
+        if correr_sudamericana:
+            if not correr_libertadores:
+                raise ValueError(
+                    "correr_sudamericana=True necesita correr_libertadores=True -- "
+                    "Sudamericana arma sus Playoffs con los 8 terceros de zona de la "
+                    "Libertadores de esta misma temporada (ver season/sudamericana_"
+                    "temporada.py), no puede correr sin ese resultado."
+                )
+            if "error" not in resultado_libertadores:
+                from season.sudamericana_temporada import simular_temporada_sudamericana
+                try:
+                    resultado_sudamericana = simular_temporada_sudamericana(
+                        clasificacion.get("sudamericana", []),
+                        resultado_libertadores,
+                    )
+                except ValueError as e:
+                    # Mismo criterio no-bloqueante que Libertadores arriba.
+                    resultado_sudamericana = {"error": str(e)}
+            else:
+                # Si Libertadores ya vino con error, Sudamericana no
+                # tiene de dónde sacar los terceros de zona -- se deja
+                # constancia sin intentar correr con datos a medias.
+                resultado_sudamericana = {"error": f"Libertadores falló esta temporada: {resultado_libertadores['error']}"}
 
         elo_actualizados = {}
         if generar_temporada_siguiente:
@@ -330,6 +372,7 @@ class SeasonEngine:
             elo_actualizados=elo_actualizados,
             cuadro_copa_siguiente=cuadro_copa_siguiente,
             resultado_libertadores=resultado_libertadores,
+            resultado_sudamericana=resultado_sudamericana,
         )
 
 

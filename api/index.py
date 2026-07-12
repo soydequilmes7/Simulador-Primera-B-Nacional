@@ -858,6 +858,7 @@ class SimularTemporadaBody(BaseModel):
     estado_anterior: dict | None = None
     numero_ronda: int = 1
     correr_libertadores: bool = True
+    correr_sudamericana: bool = True
 
 
 _lock_season = ReadWriteLock()
@@ -950,7 +951,7 @@ def _serializar_resultado_torneo(r) -> dict:
 
 
 def _correr_temporada_desde_estado(estado_anterior: dict | None, numero_ronda: int, aplicar_promocion: bool,
-                                    correr_libertadores: bool = True):
+                                    correr_libertadores: bool = True, correr_sudamericana: bool = True):
     """Corre las 6 competencias, aplica promoción, y arma el
     `proximo_estado` (capturado en memoria, sin persistir) para poder
     seguir "avanzando" temporadas sin volver a tocar Supabase.
@@ -1138,6 +1139,25 @@ def _correr_temporada_desde_estado(estado_anterior: dict | None, numero_ronda: i
         except ValueError as e:
             resultado_libertadores = {"error": str(e)}
 
+    # Etapa 10: Copa Sudamericana -- mismo criterio no-bloqueante, y
+    # misma dependencia de correr_libertadores que SeasonEngine.
+    # correr_temporada() (ver ese módulo para el porqué: Sudamericana
+    # usa los terceros de zona de ESTA MISMA Libertadores).
+    resultado_sudamericana = {}
+    if correr_sudamericana:
+        if not correr_libertadores:
+            resultado_sudamericana = {"error": "correr_sudamericana necesita correr_libertadores=True."}
+        elif "error" in resultado_libertadores:
+            resultado_sudamericana = {"error": f"Libertadores falló esta temporada: {resultado_libertadores['error']}"}
+        else:
+            from season.sudamericana_temporada import simular_temporada_sudamericana
+            try:
+                resultado_sudamericana = simular_temporada_sudamericana(
+                    clasificacion.get("sudamericana", []), resultado_libertadores,
+                )
+            except ValueError as e:
+                resultado_sudamericana = {"error": str(e)}
+
     # Igual criterio que arriba (ver comentario de `clasificacion`):
     # CopaArgentinaManager.calcular() vive en season_engine.correr_
     # temporada(), que acá no llamamos directo -- así que se corre a
@@ -1272,7 +1292,7 @@ def _correr_temporada_desde_estado(estado_anterior: dict | None, numero_ronda: i
             },
         }
 
-    return resultados, promocion, proximo_estado, clasificacion, clasificacion_copa_argentina, resultado_libertadores
+    return resultados, promocion, proximo_estado, clasificacion, clasificacion_copa_argentina, resultado_libertadores, resultado_sudamericana
 
 
 @app.post("/api/season/play")
@@ -1319,8 +1339,8 @@ def season_play_endpoint(body: SimularTemporadaBody = SimularTemporadaBody()):
     if ocupado:
         return ocupado
     try:
-        resultados, promocion, proximo_estado, clasificacion, clasificacion_copa_argentina, resultado_libertadores = _correr_temporada_desde_estado(
-            body.estado_anterior, body.numero_ronda, body.aplicar_promocion, body.correr_libertadores,
+        resultados, promocion, proximo_estado, clasificacion, clasificacion_copa_argentina, resultado_libertadores, resultado_sudamericana = _correr_temporada_desde_estado(
+            body.estado_anterior, body.numero_ronda, body.aplicar_promocion, body.correr_libertadores, body.correr_sudamericana,
         )
         return {
             "generado": datetime.now().isoformat(timespec="seconds"),
@@ -1330,6 +1350,7 @@ def season_play_endpoint(body: SimularTemporadaBody = SimularTemporadaBody()):
             "clasificacion_copas": clasificacion,
             "clasificacion_copa_argentina": clasificacion_copa_argentina,
             "libertadores": resultado_libertadores,
+            "sudamericana": resultado_sudamericana,
             "promocion": promocion,
             "proximo_estado": proximo_estado,
         }
@@ -1392,6 +1413,7 @@ def season_generate_next_endpoint(body: GenerarTemporadaBody):
             temporada_actual=body.temporada_actual,
             temporada_siguiente=body.temporada_siguiente,
             correr_libertadores=True,
+            correr_sudamericana=True,
         )
 
         return {
@@ -1405,6 +1427,7 @@ def season_generate_next_endpoint(body: GenerarTemporadaBody):
             "clasificacion_copas": resultado.clasificacion,
             "clasificacion_copa_argentina": resultado.clasificacion_copa_argentina,
             "libertadores": resultado.resultado_libertadores,
+            "sudamericana": resultado.resultado_sudamericana,
             "promocion": resultado.promocion,
             "historia": resultado.historia,
             "elo_actualizados": resultado.elo_actualizados,

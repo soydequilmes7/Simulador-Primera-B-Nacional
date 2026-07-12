@@ -83,59 +83,81 @@ def cargar_pool_internacional(ruta: str | None = None) -> list[ClubInternacional
 
 class LibertadoresManager:
     """Arma la clasificación completa (32 equipos) de una temporada de
-    Modo Temporada, combinando los cupos argentinos reales de la
-    temporada con una rotación aleatoria del pool internacional."""
+    Modo Temporada, combinando los cupos locales reales de la
+    temporada con una rotación aleatoria del pool internacional.
 
-    def __init__(self, pool: list[ClubInternacional] | None = None):
+    quotas_pais/cupos_local son parámetros de instancia (no constantes
+    del módulo) a propósito: season/sudamericana_temporada.py reusa
+    esta MISMA clase con sus propias cuotas en vez de duplicar toda la
+    lógica de armado -- ver ese módulo. Default: los de Libertadores
+    (QUOTAS_PAIS/CUPOS_ARGENTINA de este módulo)."""
+
+    def __init__(self, pool: list[ClubInternacional] | None = None,
+                 quotas_pais: dict[str, int] | None = None,
+                 cupos_local: int | None = None):
         self.pool = pool if pool is not None else cargar_pool_internacional()
+        self.quotas_pais = quotas_pais if quotas_pais is not None else QUOTAS_PAIS
+        self.cupos_local = cupos_local if cupos_local is not None else CUPOS_ARGENTINA
 
     def armar_clasificacion(
         self,
-        clasificados_argentinos: list[str],
-        elo_argentinos: dict[str, float] | None = None,
+        clasificados_locales: list[str],
+        elo_locales: dict[str, float] | None = None,
         rng: random.Random | None = None,
+        excluir: set[str] | None = None,
     ) -> ClasificacionLibertadores:
-        """clasificados_argentinos: los hasta 6 nombres que devuelve
-        QualificationManager.calcular()["libertadores"] de la propia
+        """clasificados_locales: los hasta cupos_local nombres que
+        devuelve QualificationManager.calcular() de la propia
         temporada (ya viene con el reglamento real de cascada
         aplicado, ver ese módulo -- acá no se revalida nada de eso).
 
-        elo_argentinos: Elo opcional por club argentino (si no se
-        pasa, se usa un valor genérico -- ver DEFAULT_ELO_ARGENTINO).
-        Pensado para engancharse más adelante con
-        season/rating_carryover.py si se quiere Elo real de LPF.
-        """
+        elo_locales: Elo opcional por club local (si no se pasa, se
+        usa un valor genérico -- ver DEFAULT_ELO_ARGENTINO). Pensado
+        para engancharse más adelante con season/rating_carryover.py
+        si se quiere Elo real de LPF.
+
+        excluir: nombres de equipo a sacar del pool ANTES de elegir --
+        pensado para que un mismo club no termine jugando Libertadores
+        Y Sudamericana la misma temporada (ver
+        season/sudamericana_temporada.py, que arma la clasificación de
+        Sudamericana pasando como excluir los equipos que ya sacó
+        LibertadoresManager esa temporada)."""
         rng = rng or random.Random()
-        elo_argentinos = elo_argentinos or {}
+        elo_locales = elo_locales or {}
+        excluir = excluir or set()
         avisos: list[str] = []
         equipos: list[ClubInternacional] = []
 
-        if len(clasificados_argentinos) > CUPOS_ARGENTINA:
+        if len(clasificados_locales) > self.cupos_local:
             avisos.append(
-                f"Se recibieron {len(clasificados_argentinos)} clasificados argentinos, "
-                f"se usan solo los primeros {CUPOS_ARGENTINA}."
+                f"Se recibieron {len(clasificados_locales)} clasificados, "
+                f"se usan solo los primeros {self.cupos_local}."
             )
-        for nombre in clasificados_argentinos[:CUPOS_ARGENTINA]:
+        for nombre in clasificados_locales[:self.cupos_local]:
             equipos.append(ClubInternacional(
                 equipo=nombre, pais="Argentina",
-                elo=elo_argentinos.get(nombre, DEFAULT_ELO_ARGENTINO),
+                elo=elo_locales.get(nombre, DEFAULT_ELO_ARGENTINO),
             ))
-        if len(clasificados_argentinos) < CUPOS_ARGENTINA:
+        if len(clasificados_locales) < self.cupos_local:
             avisos.append(
-                f"Solo hay {len(clasificados_argentinos)}/{CUPOS_ARGENTINA} clasificados "
-                f"argentinos disponibles -- la fase de grupos queda con menos de 32 equipos."
+                f"Solo hay {len(clasificados_locales)}/{self.cupos_local} clasificados "
+                f"disponibles -- la fase de grupos queda con menos de "
+                f"{self.cupos_local + sum(self.quotas_pais.values())} equipos."
             )
 
         pool_por_pais: dict[str, list[ClubInternacional]] = {}
         for club in self.pool:
+            if club.equipo in excluir:
+                continue
             pool_por_pais.setdefault(club.pais, []).append(club)
 
-        for pais, cupo in QUOTAS_PAIS.items():
+        for pais, cupo in self.quotas_pais.items():
             candidatos = pool_por_pais.get(pais, [])
             if len(candidatos) < cupo:
                 avisos.append(
-                    f"El pool de {pais} tiene {len(candidatos)} equipos pero la cuota es "
-                    f"{cupo} -- se usan todos los disponibles."
+                    f"El pool de {pais} tiene {len(candidatos)} equipos disponibles (tras "
+                    f"excluir los usados en otra copa) pero la cuota es {cupo} -- se usan "
+                    f"todos los disponibles."
                 )
             elegidos = candidatos[:] if len(candidatos) <= cupo else rng.sample(candidatos, cupo)
             equipos.extend(elegidos)

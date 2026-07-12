@@ -130,7 +130,8 @@ class TestWiringSeasonEngine(unittest.TestCase):
         clasificacion_fake = {
             "libertadores": ["Boca Juniors", "River Plate", "Racing Club", "Talleres",
                               "Vélez Sarsfield", "Estudiantes de la Plata"],
-            "sudamericana": [],
+            "sudamericana": ["Independiente", "Huracán", "Argentinos Juniors", "Banfield",
+                              "San Lorenzo", "Unión"],
         }
         return patch.object(SeasonEngine, "_correr_competencias", return_value=resultados_fake), \
             patch("season.season_engine.QualificationManager"), \
@@ -158,6 +159,37 @@ class TestWiringSeasonEngine(unittest.TestCase):
         self.assertIn("campeon", resultado.resultado_libertadores)
         self.assertEqual(len(resultado.resultado_libertadores["zonas"]), 8)
         self.assertNotIn("error", resultado.resultado_libertadores)
+
+    def test_sudamericana_sin_libertadores_levanta_valueerror(self):
+        from season.season_engine import SeasonEngine
+        p1, p2, p3, p4, registry, clasificacion_fake = self._engine_con_mocks()
+        with p1, p2 as QM, p3 as CAM, p4:
+            QM.return_value.calcular.return_value = clasificacion_fake
+            CAM.return_value.calcular.return_value = {"por_division": {}}
+            with self.assertRaises(ValueError):
+                SeasonEngine(registry).correr_temporada(n_sims=10, correr_sudamericana=True)
+
+    def test_ambos_true_corren_las_dos_copas(self):
+        from season.season_engine import SeasonEngine
+        p1, p2, p3, p4, registry, clasificacion_fake = self._engine_con_mocks()
+        with p1, p2 as QM, p3 as CAM, p4:
+            QM.return_value.calcular.return_value = clasificacion_fake
+            CAM.return_value.calcular.return_value = {"por_division": {}}
+            resultado = SeasonEngine(registry).correr_temporada(
+                n_sims=10, correr_libertadores=True, correr_sudamericana=True,
+            )
+        self.assertNotIn("error", resultado.resultado_libertadores)
+        self.assertNotIn("error", resultado.resultado_sudamericana)
+        self.assertIn("campeon", resultado.resultado_sudamericana)
+        self.assertEqual(len(resultado.resultado_sudamericana["zonas"]), 8)
+
+        # Ningún club internacional debería repetirse entre las dos copas.
+        usados_libertadores = set(resultado.resultado_libertadores["equipos_internacionales_usados"])
+        usados_sudamericana = {
+            f["equipo"] for z in resultado.resultado_sudamericana["zonas"] for f in z["tabla"]
+            if f["pais"] != "Argentina"
+        }
+        self.assertEqual(usados_libertadores & usados_sudamericana, set())
 
 
 if __name__ == "__main__":
