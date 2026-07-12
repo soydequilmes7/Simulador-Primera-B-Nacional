@@ -1024,7 +1024,7 @@
   .temporada-dashboard-metrics{
     position:relative;
     margin-top:28px; display:grid; grid-template-columns:repeat(auto-fit, minmax(180px,1fr));
-    gap:14px; max-width:480px; margin-left:auto; margin-right:auto;
+    gap:14px; max-width:780px; margin-left:auto; margin-right:auto;
   }
   .temporada-metric-card{
     background: rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.16);
@@ -11071,6 +11071,8 @@ function renderDashboardTemporada(datos){
 
   const compLPF = datos.competencias.lpf;
   const compCopa = datos.competencias.copa;
+  const compLibertadores = datos.libertadores && !datos.libertadores.error ? datos.libertadores : null;
+  const compSudamericana = datos.sudamericana && !datos.sudamericana.error ? datos.sudamericana : null;
   let totalAscensos = 0, totalDescensos = 0, totalCompetencias = 0;
   ORDEN_COMPETENCIAS.forEach(slug => {
     const c = datos.competencias[slug];
@@ -11079,6 +11081,14 @@ function renderDashboardTemporada(datos){
     totalAscensos += (c.ascensos || []).length;
     totalDescensos += (c.descensos || []).length;
   });
+  // Libertadores/Sudamericana no viven en datos.competencias (no tienen
+  // ascensos/descensos: es fase de grupos + eliminación directa) sino en
+  // datos.libertadores/datos.sudamericana -- ver
+  // detalleCopaInternacionalTemporadaHTML(). Cuentan para el total de
+  // competencias corridas (6 domésticas + Copa Argentina + estas dos = 8),
+  // pero no aportan ascensos/descensos.
+  if (compLibertadores) totalCompetencias += 1;
+  if (compSudamericana) totalCompetencias += 1;
 
   // Equipos/Competencias/Ascensos/Descensos por temporada: se muestran
   // arriba de todo, reutilizando el bloque .hero .meta (ver
@@ -11101,6 +11111,16 @@ function renderDashboardTemporada(datos){
       lbl: '🏆 Copa Argentina',
       val: compCopa && compCopa.campeon ? `${escudoHTML(compCopa.campeon)}${compCopa.campeon}` : 'Sin definir',
       clase: compCopa && compCopa.campeon ? '' : 'num',
+    },
+    {
+      lbl: '🌎 Copa Libertadores',
+      val: compLibertadores && compLibertadores.campeon ? `${escudoHTML(compLibertadores.campeon)}${compLibertadores.campeon}` : 'Sin definir',
+      clase: compLibertadores && compLibertadores.campeon ? '' : 'num',
+    },
+    {
+      lbl: '🌎 Copa Sudamericana',
+      val: compSudamericana && compSudamericana.campeon ? `${escudoHTML(compSudamericana.campeon)}${compSudamericana.campeon}` : 'Sin definir',
+      clase: compSudamericana && compSudamericana.campeon ? '' : 'num',
     },
   ];
 
@@ -11213,6 +11233,38 @@ function construirIndiceEquiposTemporada(datos){
     }
   });
 
+  // Libertadores/Sudamericana no viven en datos.competencias (no tienen
+  // ascensos/descensos ni zonas A/B fijas: es fase de grupos + eliminación
+  // directa) sino en datos.libertadores/datos.sudamericana -- ver
+  // detalleCopaInternacionalTemporadaHTML(). Sin esto, el conteo de
+  // "equipos" del dashboard (TEMPORADA_META_CACHE.equipos, más arriba en
+  // renderDashboardTemporada) no incluía a los ~100 clubes extranjeros del
+  // pool rotativo (season/libertadores_manager.py) -- solo a los
+  // argentinos, que ya entran por LPF.
+  ['libertadores', 'sudamericana'].forEach(slug => {
+    const d = datos[slug];
+    if (!d || d.error) return;
+    const puntosPorEquipo = new Map();
+    (d.zonas || []).forEach(z => (z.tabla || []).forEach(fila => puntosPorEquipo.set(fila.equipo, fila.puntos)));
+    // Ronda 1 (temporada real 2026) no tiene fase de grupos simulada -- el
+    // cuadro real ya arranca en Octavos (ver docstring de
+    // modelos/estadisticas_libertadores.py) -- así que además se suman los
+    // equipos que solo aparecen en el cuadro (rondas), sin entrada en zonas.
+    const soloEnRondas = new Set();
+    extraerEquiposDeObjetoTemporada(d.rondas, soloEnRondas);
+    soloEnRondas.forEach(equipo => { if (!puntosPorEquipo.has(equipo)) puntosPorEquipo.set(equipo, null); });
+    puntosPorEquipo.forEach((puntos, equipo) => {
+      agregar(equipo, {
+        slug, nombre: NOMBRE_LINDO_COMPETENCIA[slug] || slug,
+        color: COLOR_COMPETENCIA[slug], logo: LOGO_COMPETENCIA[slug],
+        zona: null, posicion: null, puntos, gf: null, gc: null, dg: null,
+        campeon: !!(d.campeon && d.campeon === equipo),
+        ascendioDirecto: false, ascendioReducido: false, clasificoReducido: false,
+        descendio: false, clasificaCopaArgentina: false, campeonCopaArgentinaTorneo: false,
+      });
+    });
+  });
+
   return indice;
 }
 
@@ -11290,9 +11342,9 @@ function renderFichaEquipoTemporada(nombre){
   // Un equipo casi siempre tiene una sola entrada (su propia liga); si por
   // algún motivo aparece en más de una se muestran todas apiladas.
   cont.innerHTML = registro.entradas.map(e => {
-    const dg = e.dg > 0 ? `+${e.dg}` : e.dg;
+    const dg = (e.dg === null || e.dg === undefined) ? '—' : (e.dg > 0 ? `+${e.dg}` : e.dg);
     const datos = [
-      datoFichaHTML(`📍 Posición${e.zona ? ' (' + e.zona + ')' : ''}`, `${e.posicion}°`),
+      datoFichaHTML(`📍 Posición${e.zona ? ' (' + e.zona + ')' : ''}`, e.posicion ? `${e.posicion}°` : '—'),
       datoFichaHTML('⬆ Ascendió directo', e.ascendioDirecto ? 'Sí' : 'No', e.ascendioDirecto ? 'si' : 'no'),
       datoFichaHTML('🎟 Ascendió por Reducido', e.ascendioReducido ? 'Sí' : 'No', e.ascendioReducido ? 'si' : 'no'),
       datoFichaHTML('⬇ Descendió', e.descendio ? 'Sí' : 'No', e.descendio ? 'rojo' : 'no'),
@@ -11318,9 +11370,9 @@ function renderFichaEquipoTemporada(nombre){
         <button class="temporada-ficha-cerrar" onclick="cerrarFichaEquipoTemporada(); document.getElementById('temporada-buscador-input').value='';" aria-label="Cerrar ficha">✕</button>
       </div>
       <div class="temporada-ficha-stats">
-        <div class="temporada-ficha-stat"><div class="num">${e.puntos}</div><div class="lbl">Puntos</div></div>
-        <div class="temporada-ficha-stat"><div class="num">${e.gf}</div><div class="lbl">GF</div></div>
-        <div class="temporada-ficha-stat"><div class="num">${e.gc}</div><div class="lbl">GC</div></div>
+        <div class="temporada-ficha-stat"><div class="num">${e.puntos ?? '—'}</div><div class="lbl">Puntos</div></div>
+        <div class="temporada-ficha-stat"><div class="num">${e.gf ?? '—'}</div><div class="lbl">GF</div></div>
+        <div class="temporada-ficha-stat"><div class="num">${e.gc ?? '—'}</div><div class="lbl">GC</div></div>
         <div class="temporada-ficha-stat"><div class="num">${dg}</div><div class="lbl">DG</div></div>
       </div>
       <div class="temporada-ficha-sep"></div>
