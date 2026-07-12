@@ -3,11 +3,11 @@
 season/test_libertadores_grupos.py
 
 Cubre los casos borde de la fase de grupos de Libertadores: pool
-insuficiente por país, cupos argentinos incompletos, y el bug real
-encontrado durante el desarrollo (armar_cuadro_octavos() fallaba con
-un simple intercambio hacia adelante cuando el choque de país caía en
-la última llave -- ver season/validar_libertadores_grupos.py para el
-caso reproducido con semillas concretas).
+insuficiente por país, cupos argentinos incompletos, y el sorteo de
+Octavos (sortear_octavos()) -- confirmado contra el instructivo
+oficial de CONMEBOL que a partir de Octavos NO hay restricción de país
+(a diferencia de la fase de grupos, ver season/libertadores_sorteo.py)
+y que el Bombo 1 (mejor ranking) define la vuelta como local.
 """
 from __future__ import annotations
 
@@ -18,7 +18,7 @@ from season.libertadores_manager import (
     ClubInternacional, LibertadoresManager, CUPOS_ARGENTINA, CANTIDAD_TOTAL,
 )
 from season.libertadores_sorteo import sortear_grupos
-from season.libertadores_grupos import armar_cuadro_octavos
+from season.libertadores_grupos import sortear_octavos
 
 
 def _pool_minimo() -> list[ClubInternacional]:
@@ -60,37 +60,45 @@ class TestLibertadoresManager(unittest.TestCase):
         self.assertTrue(any("Venezuela" in a for a in clasificacion.avisos))
 
 
-class TestArmarCuadroOctavos(unittest.TestCase):
-    def test_nunca_cruza_dos_equipos_del_mismo_pais(self):
-        """Caso real que rompía con el intercambio hacia adelante: el
-        choque de país cae en la última posición, sin margen para
-        reacomodar mirando solo hacia adelante."""
-        primeros = ["AR1", "BR1", "PY1", "BR2", "CO1", "PE1", "EC1", "BO1"]
-        segundos = ["BR3", "PE2", "VE1", "PY2", "CL1", "CL2", "CO2", "BR4"]
-        pais = {
-            "AR1": "Argentina", "BR1": "Brasil", "PY1": "Paraguay", "BR2": "Brasil",
-            "CO1": "Colombia", "PE1": "Peru", "EC1": "Ecuador", "BO1": "Bolivia",
-            "BR3": "Brasil", "PE2": "Peru", "VE1": "Venezuela", "PY2": "Paraguay",
-            "CL1": "Chile", "CL2": "Chile", "CO2": "Colombia", "BR4": "Brasil",
-        }
-        cuadro = armar_cuadro_octavos(primeros, segundos, pais)
+class TestSortearOctavos(unittest.TestCase):
+    def test_devuelve_8_llaves_con_los_16_equipos(self):
+        bombo1 = [f"P{i}" for i in range(8)]
+        bombo2 = [f"S{i}" for i in range(8)]
+        cuadro = sortear_octavos(bombo1, bombo2, rng=random.Random(1))
         self.assertEqual(len(cuadro), 8)
-        for fila in cuadro:
-            self.assertNotEqual(
-                pais[fila["equipo_ida_local"]], pais[fila["equipo_vuelta_local"]],
-                f"Llave {fila['llave']} cruza dos equipos del mismo país: {fila}",
-            )
+        equipos_en_cuadro = {f["equipo_ida_local"] for f in cuadro} | {f["equipo_vuelta_local"] for f in cuadro}
+        self.assertEqual(equipos_en_cuadro, set(bombo1) | set(bombo2))
 
-    def test_sin_solucion_posible_levanta_error_explicito(self):
-        """Si TODOS los primeros son del mismo país que TODOS los
-        segundos, no hay ninguna asignación válida -- debe fallar
-        explícito, no devolver un cuadro con choques."""
-        primeros = [f"AR{i}" for i in range(8)]
-        segundos = [f"BR{i}" for i in range(8)]
-        pais = {**{p: "Argentina" for p in primeros}, **{s: "Brasil" for s in segundos}}
-        pais["AR0"] = "Brasil"  # un solo primero comparte país con TODOS los segundos
-        with self.assertRaises(ValueError):
-            armar_cuadro_octavos(primeros, segundos, pais)
+    def test_bombo1_siempre_define_la_vuelta_como_local(self):
+        bombo1 = [f"P{i}" for i in range(8)]
+        bombo2 = [f"S{i}" for i in range(8)]
+        cuadro = sortear_octavos(bombo1, bombo2, rng=random.Random(2))
+        for fila in cuadro:
+            self.assertIn(fila["equipo_vuelta_local"], bombo1)
+            self.assertIn(fila["equipo_ida_local"], bombo2)
+
+    def test_permite_cruce_de_mismo_pais_sin_restriccion(self):
+        """A partir de Octavos, CONMEBOL no restringe por país (a
+        diferencia de la fase de grupos) -- sortear_octavos() no debe
+        aplicar ninguna lógica de evitar países, y con dos bombos
+        íntegramente del mismo país (caso extremo) tiene que poder
+        devolver un cuadro sin problema."""
+        bombo1 = [f"AR{i}" for i in range(8)]
+        bombo2 = [f"AR2_{i}" for i in range(8)]
+        cuadro = sortear_octavos(bombo1, bombo2, rng=random.Random(3))
+        self.assertEqual(len(cuadro), 8)
+
+    def test_es_aleatorio_no_espejado(self):
+        """Con semillas distintas, el orden del cruce tiene que variar
+        -- si fuera siempre el mismo orden (ej. espejado fijo), no
+        sería un sorteo real."""
+        bombo1 = [f"P{i}" for i in range(8)]
+        bombo2 = [f"S{i}" for i in range(8)]
+        ordenes = set()
+        for seed in range(10):
+            cuadro = sortear_octavos(bombo1, bombo2, rng=random.Random(seed))
+            ordenes.add(tuple(f["equipo_ida_local"] for f in cuadro))
+        self.assertGreater(len(ordenes), 1)
 
 
 class TestSorteoGrupos(unittest.TestCase):

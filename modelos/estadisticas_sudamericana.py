@@ -13,14 +13,22 @@ mezclan dos orígenes distintos:
       zona de Sudamericana y los 3° de zona de Libertadores -- ver
       season/libertadores_grupos.py para de dónde salen esos terceros).
 
-Reglamento real 2026 (CONMEBOL, confirmado): Playoffs a ida y vuelta,
-igual que Octavos/Cuartos/Semis; Final a partido único en sede neutral
--- mismo formato que ya tiene Libertadores, así que se hereda
-EstadisticasLibertadores en vez de reescribir jugar_llave_ida_vuelta()/
-simular_libertadores() desde cero. Lo único propio de acá es resolver
-los Playoffs primero y usar sus 8 ganadores para completar el lado
-"equipo_vuelta_local" que datos/sudamericana_cuadro.csv deja en blanco
-en cada llave de Octavos (ver cargar_datos_sudamericana()).
+Reglamento real 2026 (CONMEBOL, confirmado contra el instructivo
+oficial conmebol.com): Playoffs a ida y vuelta, igual que Octavos/
+Cuartos/Semis; Final a partido único en sede neutral -- mismo formato
+que ya tiene Libertadores, así que se hereda EstadisticasLibertadores
+en vez de reescribir jugar_llave_ida_vuelta()/simular_libertadores()
+desde cero. Lo único propio de acá es resolver los Playoffs primero y
+usar sus 8 ganadores para completar el lado "equipo_ida_local" que
+datos/sudamericana_cuadro.csv deja en blanco en cada llave de Octavos
+(ver cargar_datos_sudamericana()) -- el 1° de zona de Sudamericana
+(ya conocido, va en equipo_vuelta_local) define la vuelta como local,
+mejor ranking que un ganador de Playoffs (instructivo oficial: "los
+equipos con mejor performance... definirán sus partidos de local").
+
+Sin restricción de país en Playoffs/Octavos (a diferencia de la fase
+de grupos): pueden cruzarse dos equipos del mismo país acá, confirmado
+por el instructivo oficial y varias coberturas de mayo 2026.
 
 Ronda 1:1, no 2:1: la llave `i` de Playoffs alimenta la llave `i` de
 Octavos (mismo cruce que ya sorteó CONMEBOL), NO el esquema 2k-1/2k que
@@ -44,7 +52,7 @@ class EstadisticasSudamericana(EstadisticasLibertadores):
     def __init__(self):
         super().__init__()
         self.cuadro_playoffs: list[dict] = []
-        # Valor ORIGINAL (del CSV) de equipo_vuelta_local por llave de
+        # Valor ORIGINAL (del CSV) de equipo_ida_local por llave de
         # octavos -- vacío hoy (nadie jugó los Playoffs todavía), pero
         # el día que el CSV se actualice con resultados reales de
         # Playoffs, ese valor real tiene que ganarle siempre al
@@ -53,7 +61,7 @@ class EstadisticasSudamericana(EstadisticasLibertadores):
         # simulaciones siguientes (Monte Carlo) dejaban de jugar los
         # Playoffs de verdad -- quedaban pegadas al resultado de la
         # primera corrida.
-        self._octavos_vuelta_original: dict[int, str] = {}
+        self._octavos_ida_original: dict[int, str] = {}
 
     # ------------------------------------------------------------------
     # Carga
@@ -71,8 +79,8 @@ class EstadisticasSudamericana(EstadisticasLibertadores):
 
         self.cuadro_playoffs = [f for f in filas if f["ronda"] == RONDA_PLAYOFFS]
         self.cuadro = [f for f in filas if f["ronda"] != RONDA_PLAYOFFS]
-        self._octavos_vuelta_original = {
-            int(f["llave"]): f["equipo_vuelta_local"] for f in self.cuadro if f["ronda"] == "octavos"
+        self._octavos_ida_original = {
+            int(f["llave"]): f["equipo_ida_local"] for f in self.cuadro if f["ronda"] == "octavos"
         }
 
         ruta_elo = rutas.datos_dir() / "sudamericana_elo.csv"
@@ -92,7 +100,7 @@ class EstadisticasSudamericana(EstadisticasLibertadores):
             nombres.add(cruce["equipo_vuelta_local"])
         for cruce in self.cuadro:
             if cruce["ronda"] == "octavos":
-                nombres.add(cruce["equipo_ida_local"])
+                nombres.add(cruce["equipo_vuelta_local"])
         self.crear_equipos_desde_elo(nombres, self.elo)
 
     # ------------------------------------------------------------------
@@ -101,9 +109,11 @@ class EstadisticasSudamericana(EstadisticasLibertadores):
     def simular_sudamericana(self):
         """Resuelve primero los Playoffs (8 llaves independientes, ida
         y vuelta) y con sus ganadores completa el cuadro de Octavos
-        (llave i de Playoffs -> lado "equipo_vuelta_local" de la llave
-        i de Octavos, ver docstring del módulo). De ahí en más delega
-        en simular_libertadores() heredado, que ya sabe cablear
+        (llave i de Playoffs -> lado "equipo_ida_local" de la llave i
+        de Octavos: el ganador de Playoffs abre la serie de visitante,
+        el 1° de zona de Sudamericana -- mejor ranking -- define la
+        vuelta como local, ver docstring del módulo). De ahí en más
+        delega en simular_libertadores() heredado, que ya sabe cablear
         Octavos -> Cuartos -> Semis -> Final solo.
 
         Devuelve ({"playoffs": [...], "octavos": [...], "cuartos": [...],
@@ -120,12 +130,12 @@ class EstadisticasSudamericana(EstadisticasLibertadores):
         for cruce in self.cuadro:
             if cruce["ronda"] == "octavos":
                 llave = int(cruce["llave"])
-                original = self._octavos_vuelta_original.get(llave, "")
+                original = self._octavos_ida_original.get(llave, "")
                 # El dato real (si algún día el CSV ya trae el Playoff
                 # jugado de verdad) siempre gana; si no, el ganador
                 # simulado de ESTA corrida -- nunca el de una corrida
                 # anterior (ver comentario en __init__).
-                cruce["equipo_vuelta_local"] = original or ganadores_playoffs[llave]
+                cruce["equipo_ida_local"] = original or ganadores_playoffs[llave]
 
         rondas_detalle, campeon = self.simular_libertadores()
         return {RONDA_PLAYOFFS: detalle_playoffs, **rondas_detalle}, campeon
@@ -149,7 +159,7 @@ class EstadisticasSudamericana(EstadisticasLibertadores):
 
         participantes = {c["equipo_ida_local"] for c in self.cuadro_playoffs} | \
             {c["equipo_vuelta_local"] for c in self.cuadro_playoffs} | \
-            {c["equipo_ida_local"] for c in self.cuadro if c["ronda"] == "octavos"}
+            {c["equipo_vuelta_local"] for c in self.cuadro if c["ronda"] == "octavos"}
         rondas_contadas = ["octavos", "cuartos", "semis", "final"]
         contador = {nombre: {r: 0 for r in rondas_contadas} | {"campeon": 0} for nombre in participantes}
 

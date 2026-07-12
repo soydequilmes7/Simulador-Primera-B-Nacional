@@ -19,12 +19,25 @@ en vez de duplicarla:
       Playoffs -> Octavos -> Cuartos -> Semis -> Final -- acá solo se
       arma el cuadro que consume, no se toca su lógica interna.
 
-Reglamento real simplificado (mismo criterio que Libertadores, ver
-season/libertadores_grupos.py): 32 clasificados, 8 zonas de 4, ida y
-vuelta. El 1° de cada zona va directo a Octavos; el 2° va a Playoffs
-de Octavos contra un 3° de zona de Libertadores (ver ese módulo -- por
-eso esta función necesita el resultado YA CORRIDO de Libertadores de
-la misma temporada como insumo, no solo QualificationManager).
+Reglamento real de Playoffs/Octavos (confirmado contra el instructivo
+oficial de CONMEBOL, conmebol.com, "Aquí todo sobre el sorteo:
+CONMEBOL Libertadores - CONMEBOL Sudamericana", 29/05/2026 -- una
+versión anterior de este módulo tenía esto mal, evitaba cruces de
+mismo país con backtracking donde el reglamento real NO restringe
+nada):
+
+    Playoffs de Octavos: NO es un sorteo, es determinístico por
+    desempeño -- "el mejor segundo [de Sudamericana] enfrenta al peor
+    tercero [de Libertadores], y así sucesivamente". Sin restricción
+    de país (pueden cruzarse dos equipos del mismo país si vienen de
+    competencias distintas). Ida en la cancha del tercero de
+    Libertadores, vuelta en la del segundo de Sudamericana (el más
+    beneficiado, por eso define la serie).
+
+    Octavos de Final: acá sí es un sorteo abierto -- Bolillero 1 son
+    los 8 primeros de zona de Sudamericana, Bolillero 2 son los 8
+    ganadores de Playoffs. Se sortea sin restricción de país. El
+    Bolillero 1 (mejor ranking) define la vuelta como local.
 
 Un mismo club no puede jugar Libertadores Y Sudamericana la misma
 temporada: se arma la clasificación de Sudamericana excluyendo del
@@ -39,7 +52,7 @@ import random
 from modelos.estadisticas_sudamericana import EstadisticasSudamericana
 from season.libertadores_manager import LibertadoresManager, cargar_pool_internacional
 from season.libertadores_sorteo import sortear_grupos
-from season.libertadores_grupos import jugar_fase_de_grupos, armar_cuadro_octavos
+from season.libertadores_grupos import jugar_fase_de_grupos
 
 CUPOS_ARGENTINA_SUDAMERICANA = 6
 # Cuotas propias (no las mismas que Libertadores, ver QUOTAS_PAIS en
@@ -97,46 +110,24 @@ def simular_temporada_sudamericana(
     zonas_jugadas = jugar_fase_de_grupos(zonas_sorteadas, elo_por_equipo, pais_por_equipo, rng=rng)
 
     primeros = [z.tabla[0].equipo for z in zonas_jugadas]  # directo a Octavos
-    segundos = [z.tabla[1].equipo for z in zonas_jugadas]  # a Playoffs
+    segundos_con_stats = [z.tabla[1] for z in zonas_jugadas]  # a Playoffs
 
-    terceros_libertadores = [z["tabla"][2]["equipo"] for z in resultado_libertadores["zonas"]]
-    pais_terceros_lib = {z["tabla"][2]["equipo"]: z["tabla"][2]["pais"] for z in resultado_libertadores["zonas"]}
+    terceros_con_stats = [
+        {"equipo": z["tabla"][2]["equipo"], "puntos": z["tabla"][2]["puntos"],
+         "dg": z["tabla"][2]["dg"], "gf": z["tabla"][2]["gf"]}
+        for z in resultado_libertadores["zonas"]
+    ]
+    terceros_libertadores = [t["equipo"] for t in terceros_con_stats]
     elo_terceros_lib = {t: resultado_libertadores["elo_por_equipo"][t] for t in terceros_libertadores}
-    pais_por_equipo_completo = {**pais_por_equipo, **pais_terceros_lib}
     elo_por_equipo_completo = {**elo_por_equipo, **elo_terceros_lib}
 
-    try:
-        cuadro_playoffs = armar_cuadro_octavos(segundos, terceros_libertadores, pais_por_equipo_completo)
-        aviso_playoffs = None
-    except ValueError:
-        # Mismo motivo que el fallback de _armar_octavos_desde_playoffs
-        # más abajo: con varios cupos argentinos de cada lado repartidos
-        # en 8 zonas, a veces no hay forma de evitar TODOS los cruces de
-        # mismo país. No debería tumbar la simulación por eso.
-        cuadro_playoffs = [
-            {
-                "ronda": "playoffs", "llave": i + 1,
-                "equipo_ida_local": segundos[i], "equipo_vuelta_local": list(reversed(terceros_libertadores))[i],
-                "goles_ida_local": "", "goles_ida_visitante": "",
-                "goles_vuelta_local": "", "goles_vuelta_visitante": "",
-                "ganador": "",
-            }
-            for i in range(8)
-        ]
-        aviso_playoffs = (
-            "No se pudo armar Playoffs evitando todos los cruces de mismo país entre "
-            "un 2° de zona de Sudamericana y un 3° de zona de Libertadores -- se usó el "
-            "orden de ranking simple."
-        )
-    for fila in cuadro_playoffs:
-        fila["ronda"] = "playoffs"
-
-    cuadro_octavos, aviso_octavos = _armar_octavos_desde_playoffs(primeros, cuadro_playoffs, pais_por_equipo_completo)
+    cuadro_playoffs = _armar_playoffs_por_ranking(segundos_con_stats, terceros_con_stats)
+    cuadro_octavos = _sortear_octavos_pendientes(primeros, cantidad_llaves=8, rng=rng)
 
     motor = EstadisticasSudamericana()
     motor.cuadro_playoffs = cuadro_playoffs
     motor.cuadro = cuadro_octavos
-    motor._octavos_vuelta_original = {int(f["llave"]): "" for f in cuadro_octavos}
+    motor._octavos_ida_original = {int(f["llave"]): "" for f in cuadro_octavos}
     motor.crear_equipos_desde_elo(
         {c.equipo for c in clasificacion.equipos} | set(terceros_libertadores),
         elo_por_equipo_completo,
@@ -144,7 +135,7 @@ def simular_temporada_sudamericana(
     rondas_detalle, campeon = motor.simular_sudamericana()
 
     return {
-        "avisos": clasificacion.avisos + ([aviso_playoffs] if aviso_playoffs else []) + ([aviso_octavos] if aviso_octavos else []),
+        "avisos": clasificacion.avisos,
         "zonas": [
             {
                 "letra": z.letra,
@@ -166,76 +157,64 @@ def simular_temporada_sudamericana(
     }
 
 
-def _armar_octavos_desde_playoffs(primeros: list[str], cuadro_playoffs: list[dict],
-                                   pais_por_equipo: dict[str, str]):
-    """Empareja los 8 directos a Octavos (1° de zona de Sudamericana)
-    con las 8 llaves de Playoffs, evitando -- cuando se puede -- que el
-    directo comparta país con CUALQUIERA de los dos posibles rivales
-    de esa llave (todavía no se sabe quién gana el Playoff al momento
-    de armar el cuadro).
+def _ordenar_por_desempeno(candidatos: list[dict]) -> list[dict]:
+    """Ordena de mejor a peor por (puntos, diferencia de gol, goles a
+    favor) -- mismo criterio que ya usa la tabla de zona (ver
+    season/libertadores_grupos.py::_ordenar_tabla()), aplicado acá
+    para comparar equipos de ZONAS DISTINTAS entre sí. Aproximación
+    razonable: CONMEBOL no publica en detalle el criterio exacto para
+    rankear "mejor segundo"/"peor tercero" entre grupos."""
+    return sorted(candidatos, key=lambda c: (c["puntos"], c["dg"], c["gf"]), reverse=True)
 
-    A diferencia de armar_cuadro_octavos() (Libertadores, ver
-    season/libertadores_grupos.py), acá la restricción es
-    frecuentemente IMPOSIBLE de cumplir del todo: con hasta 6 cupos
-    argentinos de cada lado repartidos en 8 zonas, es normal que
-    Argentina (u otro país con varios cupos) aparezca como país
-    prohibido en más llaves de las que hay directos de otros países
-    disponibles para taparlas. Por eso, si el backtracking estricto no
-    encuentra solución, se cae a un emparejamiento simple por orden de
-    ranking (sin la restricción de país) y se devuelve un aviso
-    explícito en vez de reventar la simulación -- una llave con cruce
-    de mismo país en Octavos es una imperfección de realismo, no un
-    error de datos.
 
-    Devuelve (filas_octavos, aviso | None)."""
-    if len(primeros) != 8 or len(cuadro_playoffs) != 8:
-        raise ValueError(
-            f"Se necesitan 8 directos y 8 llaves de playoffs, se recibieron "
-            f"{len(primeros)}/{len(cuadro_playoffs)}."
-        )
-
-    prohibidos_por_llave = [
-        {pais_por_equipo[cruce["equipo_ida_local"]], pais_por_equipo[cruce["equipo_vuelta_local"]]}
-        for cruce in cuadro_playoffs
-    ]
-    preferencia = [sorted(range(8), key=lambda j, i=i: abs(j - i)) for i in range(8)]
-
-    asignacion = _backtracking_octavos_sudamericana(primeros, prohibidos_por_llave, pais_por_equipo, preferencia)
-    aviso = None
-    if asignacion is None:
-        asignacion = primeros
-        aviso = (
-            "No se pudo armar Octavos evitando todos los cruces de mismo país entre un "
-            "directo y los posibles rivales de Playoffs (normal con varios cupos "
-            "argentinos repartidos en 8 zonas) -- se usó el orden de ranking simple, "
-            "puede haber alguna llave con choque de país."
-        )
+def _armar_playoffs_por_ranking(segundos_con_stats: list, terceros_con_stats: list[dict]) -> list[dict]:
+    """Playoffs de Octavos: determinístico por desempeño, NO es un
+    sorteo (ver docstring del módulo) -- el mejor segundo de
+    Sudamericana enfrenta al peor tercero de Libertadores, bajando
+    sucesivamente. Ida en la cancha del tercero de Libertadores
+    (menos beneficiado), vuelta en la del segundo de Sudamericana."""
+    segundos_ordenados = _ordenar_por_desempeno([
+        {"equipo": f.equipo, "puntos": f.puntos, "dg": f.dg, "gf": f.gf} for f in segundos_con_stats
+    ])
+    terceros_ordenados = _ordenar_por_desempeno(terceros_con_stats)
+    peor_a_mejor_terceros = list(reversed(terceros_ordenados))
 
     return [
         {
-            "ronda": "octavos", "llave": i + 1,
-            "equipo_ida_local": directo, "equipo_vuelta_local": "",
+            "ronda": "playoffs", "llave": i + 1,
+            "equipo_ida_local": peor_a_mejor_terceros[i]["equipo"],
+            "equipo_vuelta_local": segundos_ordenados[i]["equipo"],
             "goles_ida_local": "", "goles_ida_visitante": "",
             "goles_vuelta_local": "", "goles_vuelta_visitante": "",
             "ganador": "",
         }
-        for i, directo in enumerate(asignacion)
-    ], aviso
+        for i in range(8)
+    ]
 
 
-def _backtracking_octavos_sudamericana(primeros, prohibidos_por_llave, pais_por_equipo, preferencia,
-                                        k: int = 0, usados: frozenset = frozenset()):
-    if k == len(prohibidos_por_llave):
-        return []
-    for j in preferencia[k]:
-        if j in usados:
-            continue
-        candidato = primeros[j]
-        if pais_por_equipo[candidato] in prohibidos_por_llave[k]:
-            continue
-        resto = _backtracking_octavos_sudamericana(
-            primeros, prohibidos_por_llave, pais_por_equipo, preferencia, k + 1, usados | {j},
-        )
-        if resto is not None:
-            return [candidato] + resto
-    return None
+def _sortear_octavos_pendientes(bombo1: list[str], cantidad_llaves: int,
+                                 rng: random.Random | None = None) -> list[dict]:
+    """Sorteo abierto de Octavos, SIN restricción de país (ver
+    docstring del módulo): asigna al azar cada equipo del Bombo 1 (1°
+    de zona de Sudamericana) a una de las 8 llaves de Playoffs -- el
+    rival de esa llave todavía no se conoce (se completa recién cuando
+    se simulan los Playoffs, ver EstadisticasSudamericana.
+    simular_sudamericana()). El Bombo 1 define la vuelta como local; el
+    ganador de Playoffs (Bolillero 2) abre la serie de local."""
+    if len(bombo1) != cantidad_llaves:
+        raise ValueError(f"Se necesitan {cantidad_llaves} equipos en el Bombo 1, se recibieron {len(bombo1)}.")
+    rng = rng or random.Random()
+
+    bombo1_sorteado = bombo1[:]
+    rng.shuffle(bombo1_sorteado)
+
+    return [
+        {
+            "ronda": "octavos", "llave": i + 1,
+            "equipo_ida_local": "", "equipo_vuelta_local": bombo1_sorteado[i],
+            "goles_ida_local": "", "goles_ida_visitante": "",
+            "goles_vuelta_local": "", "goles_vuelta_visitante": "",
+            "ganador": "",
+        }
+        for i in range(cantidad_llaves)
+    ]

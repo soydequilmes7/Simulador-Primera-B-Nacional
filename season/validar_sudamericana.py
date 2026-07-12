@@ -37,9 +37,9 @@ def validar_cuadro_real() -> list:
             fallas.append(f"ronda {ronda}: {n} llaves, se esperaban {cantidad}")
 
     octavos = cuadro_por_ronda.get("octavos", [])
-    sin_directo = [f for f in octavos if not f["equipo_ida_local"]]
+    sin_directo = [f for f in octavos if not f["equipo_vuelta_local"]]
     if sin_directo:
-        fallas.append(f"Hay llaves de octavos sin el lado directo cargado: {sin_directo}")
+        fallas.append(f"Hay llaves de octavos sin el lado directo (vuelta) cargado: {sin_directo}")
 
     print(f"  {'OK' if not fallas else 'FALLÓ'}")
     return fallas

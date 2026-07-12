@@ -177,69 +177,46 @@ def armar_bombos_octavos(zonas_jugadas: list[ZonaJugada]) -> tuple[list[str], li
     return primeros, segundos
 
 
-def armar_cuadro_octavos(primeros: list[str], segundos: list[str],
-                          pais_por_equipo: dict[str, str]) -> list[dict]:
-    """Empareja bombo 1 (primeros) contra bombo 2 (segundos), evitando
-    que dos equipos del mismo país se crucen. Punto de partida: orden
-    inverso (primero[0] vs segundo[7], primero[1] vs segundo[6], ...),
-    igual que el criterio real de CONMEBOL. Si esa asignación directa
-    tiene algún choque de país, se busca con backtracking la
-    asignación válida más parecida posible al orden inverso (un simple
-    intercambio hacia adelante no alcanza cuando el choque cae en las
-    últimas llaves, sin margen para reacomodar -- ver
-    season/validar_libertadores_grupos.py). Devuelve filas con el
-    mismo shape que datos/libertadores_cuadro.csv (sin resultados
-    todavía), lista para pasarle a EstadisticasLibertadores.cuadro."""
-    if len(primeros) != 8 or len(segundos) != 8:
-        raise ValueError(f"Se necesitan 8 primeros y 8 segundos, se recibieron {len(primeros)}/{len(segundos)}.")
+def sortear_octavos(bombo1: list[str], bombo2: list[str], rng: random.Random | None = None) -> list[dict]:
+    """Sorteo real de CONMEBOL para Octavos de Final (confirmado contra
+    el instructivo oficial, conmebol.com, "Aquí todo sobre el sorteo:
+    CONMEBOL Libertadores - CONMEBOL Sudamericana", 29/05/2026):
 
-    orden_inverso = list(reversed(segundos))
-    # Para cada primero, candidatos de segundo ordenados por cercanía a
-    # su posición "natural" (orden inverso) -- así el backtracking, si
-    # tiene margen para elegir, prefiere quedarse lo más cerca posible
-    # del criterio real.
-    preferencia = [sorted(range(8), key=lambda j, i=i: abs(j - i)) for i in range(8)]
+        - Bombo 1 = los 8 primeros de zona (mejor ranking).
+        - Bombo 2 = los 8 segundos de zona (Libertadores) o los 8
+          ganadores de Playoffs (Sudamericana).
+        - El sorteo es ABIERTO: se extrae una bolilla de cada bombo
+          para cada llave, SIN restricción de país ni de haber
+          compartido grupo -- a diferencia de la fase de grupos, acá
+          SÍ pueden cruzarse dos equipos del mismo país (confirmado
+          también por 365Scores/442/Infobae, mayo 2026 -- "no existen
+          restricciones por país").
+        - Localía: el equipo del Bombo 1 (mejor ranking) define la
+          VUELTA como local, el del Bombo 2 abre la serie de local en
+          la ida. ("Los equipos con mejor performance... definirán sus
+          partidos de local" en la vuelta -- instructivo oficial.)
 
-    asignacion = _backtracking_sin_choque_pais(primeros, orden_inverso, pais_por_equipo, preferencia)
-    if asignacion is None:
-        raise ValueError(
-            "No se pudo armar un cuadro de octavos sin cruces de mismo país -- un país "
-            "concentra demasiados equipos en los mismos bombos. Revisar QUOTAS_PAIS."
-        )
+    Antes esta función evitaba cruces de mismo país con backtracking:
+    era un error, no forma parte del reglamento real a partir de esta
+    instancia (solo aplica en la fase de grupos, ver
+    season/libertadores_sorteo.py::sortear_grupos())."""
+    if len(bombo1) != 8 or len(bombo2) != 8:
+        raise ValueError(f"Se necesitan 8 equipos en cada bombo, se recibieron {len(bombo1)}/{len(bombo2)}.")
+    rng = rng or random.Random()
+
+    bombo2_sorteado = bombo2[:]
+    rng.shuffle(bombo2_sorteado)
 
     return [
         {
             "ronda": "octavos", "llave": i + 1,
-            "equipo_ida_local": primeros[i], "equipo_vuelta_local": asignacion[i],
+            "equipo_ida_local": bombo2_sorteado[i], "equipo_vuelta_local": bombo1[i],
             "goles_ida_local": "", "goles_ida_visitante": "",
             "goles_vuelta_local": "", "goles_vuelta_visitante": "",
             "ganador": "",
         }
         for i in range(8)
     ]
-
-
-def _backtracking_sin_choque_pais(primeros, orden_inverso, pais_por_equipo, preferencia,
-                                   i: int = 0, usados: frozenset = frozenset()):
-    """Asigna, en orden de primeros[0..7], un segundo distinto para
-    cada uno (sin repetir y sin compartir país), probando primero las
-    posiciones más cercanas al orden inverso real. Devuelve la lista
-    de 8 asignaciones o None si no hay ninguna combinación posible."""
-    if i == len(primeros):
-        return []
-    pais_local = pais_por_equipo[primeros[i]]
-    for j in preferencia[i]:
-        if j in usados:
-            continue
-        candidato = orden_inverso[j]
-        if pais_por_equipo[candidato] == pais_local:
-            continue
-        resto = _backtracking_sin_choque_pais(
-            primeros, orden_inverso, pais_por_equipo, preferencia, i + 1, usados | {j},
-        )
-        if resto is not None:
-            return [candidato] + resto
-    return None
 
 
 def simular_temporada_libertadores(
@@ -282,7 +259,7 @@ def simular_temporada_libertadores(
     zonas_jugadas = jugar_fase_de_grupos(zonas_sorteadas, elo_por_equipo, pais_por_equipo, rng=rng)
 
     primeros, segundos = armar_bombos_octavos(zonas_jugadas)
-    cuadro_octavos = armar_cuadro_octavos(primeros, segundos, pais_por_equipo)
+    cuadro_octavos = sortear_octavos(primeros, segundos, rng=rng)
 
     motor = EstadisticasLibertadores()
     motor.cuadro = cuadro_octavos

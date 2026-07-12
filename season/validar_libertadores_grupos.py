@@ -18,7 +18,7 @@ import random
 
 from season.libertadores_manager import LibertadoresManager, CANTIDAD_TOTAL
 from season.libertadores_sorteo import sortear_grupos, CANTIDAD_ZONAS, EQUIPOS_POR_ZONA
-from season.libertadores_grupos import jugar_fase_de_grupos, armar_bombos_octavos, armar_cuadro_octavos
+from season.libertadores_grupos import jugar_fase_de_grupos, armar_bombos_octavos, sortear_octavos
 
 CLASIFICADOS_ARGENTINOS_EJEMPLO = [
     "Boca Juniors", "River Plate", "Racing Club", "Talleres", "Vélez Sarsfield", "Estudiantes de la Plata",
@@ -75,7 +75,7 @@ def validar_sorteo_sin_repetir_pais() -> list:
 
 
 def validar_fase_de_grupos_y_octavos() -> list:
-    print("\n[Parte C] jugar_fase_de_grupos() + armar_cuadro_octavos()")
+    print("\n[Parte C] jugar_fase_de_grupos() + sortear_octavos()")
     fallas = []
     manager = LibertadoresManager()
     rng = random.Random(123)
@@ -102,12 +102,17 @@ def validar_fase_de_grupos_y_octavos() -> list:
     if len(primeros) != 8 or len(segundos) != 8:
         fallas.append(f"Bombos de octavos: {len(primeros)} primeros / {len(segundos)} segundos, se esperaban 8/8")
 
-    cuadro = armar_cuadro_octavos(primeros, segundos, pais_por_equipo)
+    cuadro = sortear_octavos(primeros, segundos, rng=rng)
     if len(cuadro) != 8:
         fallas.append(f"Cuadro de octavos armado con {len(cuadro)} llaves, se esperaban 8")
+    # Desde Octavos NO hay restricción de país (confirmado contra el
+    # instructivo oficial de CONMEBOL) -- lo único que se valida acá es
+    # que el Bombo 1 (primeros) siempre defina la vuelta como local.
     for fila in cuadro:
-        if pais_por_equipo[fila["equipo_ida_local"]] == pais_por_equipo[fila["equipo_vuelta_local"]]:
-            fallas.append(f"Llave {fila['llave']} enfrenta a dos equipos del mismo país: {fila}")
+        if fila["equipo_vuelta_local"] not in primeros:
+            fallas.append(f"Llave {fila['llave']}: el local de la vuelta no es del Bombo 1: {fila}")
+        if fila["equipo_ida_local"] not in segundos:
+            fallas.append(f"Llave {fila['llave']}: el local de la ida no es del Bombo 2: {fila}")
 
     print(f"  Cuadro de octavos: {[(f['equipo_ida_local'], f['equipo_vuelta_local']) for f in cuadro]}")
     print(f"  {'OK' if not fallas else 'FALLÓ'}")

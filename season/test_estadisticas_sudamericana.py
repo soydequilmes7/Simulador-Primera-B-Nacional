@@ -4,7 +4,7 @@ season/test_estadisticas_sudamericana.py
 
 Cubre el bug real encontrado al construir Monte Carlo: la primera
 llamada a simular_sudamericana() completaba en el CSV cargado en
-memoria el lado "equipo_vuelta_local" de cada llave de Octavos con el
+memoria el lado "equipo_ida_local" de cada llave de Octavos con el
 ganador de Playoffs de ESA corrida -- pero como la escritura era
 permanente (mutaba self.cuadro sin volver a un estado original), las
 corridas siguientes ya no jugaban los Playoffs de verdad: quedaban
@@ -35,7 +35,7 @@ class TestSimularSudamericanaNoMutaPermanente(unittest.TestCase):
         for _ in range(30):
             rondas, _ = self.motor.simular_sudamericana()
             equipos_llave1 = set(rondas["octavos"][0]["agregado"].keys())
-            # El lado "directo" (equipo_ida_local, ver datos/sudamericana_cuadro.csv)
+            # El lado "directo" (equipo_vuelta_local, ver datos/sudamericana_cuadro.csv)
             # es siempre el mismo por diseño -- lo que puede variar es
             # el otro lado (el que sale de Playoffs).
             rivales_vistos |= equipos_llave1
@@ -56,7 +56,7 @@ class TestSimularSudamericanaNoMutaPermanente(unittest.TestCase):
         # punto del test es la prioridad del dato "real" del CSV
         # sobre el simulado, no si el nombre existe en self.equipos.
         equipo_confirmado = self.motor.cuadro_playoffs[0]["equipo_ida_local"]
-        self.motor._octavos_vuelta_original[1] = equipo_confirmado
+        self.motor._octavos_ida_original[1] = equipo_confirmado
         rondas, _ = self.motor.simular_sudamericana()
         equipos_llave1 = set(rondas["octavos"][0]["agregado"].keys())
         self.assertIn(equipo_confirmado, equipos_llave1)
@@ -69,7 +69,7 @@ class TestMonteCarloSudamericana(unittest.TestCase):
         motor.crear_equipos_sudamericana()
         mc = motor.monte_carlo_sudamericana(n_simulaciones=50)
 
-        directos = {c["equipo_ida_local"] for c in motor.cuadro if c["ronda"] == "octavos"}
+        directos = {c["equipo_vuelta_local"] for c in motor.cuadro if c["ronda"] == "octavos"}
         por_equipo = {f["equipo"]: f for f in mc}
         for nombre in directos:
             self.assertEqual(
@@ -83,7 +83,7 @@ class TestMonteCarloSudamericana(unittest.TestCase):
         motor.crear_equipos_sudamericana()
         mc = motor.monte_carlo_sudamericana(n_simulaciones=200)
 
-        directos = {c["equipo_ida_local"] for c in motor.cuadro if c["ronda"] == "octavos"}
+        directos = {c["equipo_vuelta_local"] for c in motor.cuadro if c["ronda"] == "octavos"}
         por_equipo = {f["equipo"]: f for f in mc}
         de_playoffs = [f for n, f in por_equipo.items() if n not in directos]
         self.assertTrue(

@@ -1,6 +1,6 @@
 {
   "liga": "Copa Sudamericana",
-  "generado": "11/07/2026 22:56",
+  "generado": "12/07/2026 12:05",
   "n_simulaciones": 1000,
   "rondas": {
     "playoffs": [
@@ -8,39 +8,39 @@
         "ida": {
           "local": "Grêmio",
           "visitante": "Bolívar",
-          "golesLocal": 2,
-          "golesVisitante": 0
+          "golesLocal": 1,
+          "golesVisitante": 1
         },
         "vuelta": {
           "local": "Bolívar",
           "visitante": "Grêmio",
-          "golesLocal": 2,
-          "golesVisitante": 1
+          "golesLocal": 3,
+          "golesVisitante": 0
         },
         "agregado": {
-          "Grêmio": 3,
-          "Bolívar": 2
+          "Grêmio": 1,
+          "Bolívar": 4
         },
         "penales": null,
-        "avanza": "Grêmio",
+        "avanza": "Bolívar",
         "jugado": false
       },
       {
         "ida": {
           "local": "Sporting Cristal",
           "visitante": "Red Bull Bragantino",
-          "golesLocal": 0,
-          "golesVisitante": 2
+          "golesLocal": 2,
+          "golesVisitante": 1
         },
         "vuelta": {
           "local": "Red Bull Bragantino",
           "visitante": "Sporting Cristal",
-          "golesLocal": 1,
-          "golesVisitante": 1
+          "golesLocal": 5,
+          "golesVisitante": 2
         },
         "agregado": {
-          "Sporting Cristal": 1,
-          "Red Bull Bragantino": 3
+          "Sporting Cristal": 4,
+          "Red Bull Bragantino": 6
         },
         "penales": null,
         "avanza": "Red Bull Bragantino",
@@ -50,8 +50,8 @@
         "ida": {
           "local": "Independiente Medellín",
           "visitante": "Vasco da Gama",
-          "golesLocal": 1,
-          "golesVisitante": 0
+          "golesLocal": 2,
+          "golesVisitante": 3
         },
         "vuelta": {
           "local": "Vasco da Gama",
@@ -60,16 +60,10 @@
           "golesVisitante": 0
         },
         "agregado": {
-          "Independiente Medellín": 1,
-          "Vasco da Gama": 2
+          "Independiente Medellín": 2,
+          "Vasco da Gama": 4
         },
         "penales": null,
-        "alargue": {
-          "local": "Vasco da Gama",
-          "visitante": "Independiente Medellín",
-          "golesLocal": 1,
-          "golesVisitante": 0
-        },
         "avanza": "Vasco da Gama",
         "jugado": false
       },
@@ -77,39 +71,39 @@
         "ida": {
           "local": "Boca Juniors",
           "visitante": "O'Higgins",
-          "golesLocal": 2,
+          "golesLocal": 1,
           "golesVisitante": 2
         },
         "vuelta": {
           "local": "O'Higgins",
           "visitante": "Boca Juniors",
-          "golesLocal": 3,
-          "golesVisitante": 1
+          "golesLocal": 0,
+          "golesVisitante": 2
         },
         "agregado": {
           "Boca Juniors": 3,
-          "O'Higgins": 5
+          "O'Higgins": 2
         },
         "penales": null,
-        "avanza": "O'Higgins",
+        "avanza": "Boca Juniors",
         "jugado": false
       },
       {
         "ida": {
           "local": "Nacional (Uruguay)",
           "visitante": "Tigre",
-          "golesLocal": 2,
-          "golesVisitante": 2
+          "golesLocal": 3,
+          "golesVisitante": 1
         },
         "vuelta": {
           "local": "Tigre",
           "visitante": "Nacional (Uruguay)",
           "golesLocal": 1,
-          "golesVisitante": 5
+          "golesVisitante": 1
         },
         "agregado": {
-          "Nacional (Uruguay)": 7,
-          "Tigre": 3
+          "Nacional (Uruguay)": 4,
+          "Tigre": 2
         },
         "penales": null,
         "avanza": "Nacional (Uruguay)",
@@ -119,18 +113,18 @@
         "ida": {
           "local": "Independiente Santa Fe",
           "visitante": "Caracas FC",
-          "golesLocal": 3,
+          "golesLocal": 2,
           "golesVisitante": 0
         },
         "vuelta": {
           "local": "Caracas FC",
           "visitante": "Independiente Santa Fe",
-          "golesLocal": 1,
-          "golesVisitante": 2
+          "golesLocal": 0,
+          "golesVisitante": 0
         },
         "agregado": {
-          "Independiente Santa Fe": 5,
-          "Caracas FC": 1
+          "Independiente Santa Fe": 2,
+          "Caracas FC": 0
         },
         "penales": null,
         "avanza": "Independiente Santa Fe",
@@ -140,62 +134,62 @@
         "ida": {
           "local": "Lanús",
           "visitante": "Cienciano",
-          "golesLocal": 1,
-          "golesVisitante": 1
+          "golesLocal": 0,
+          "golesVisitante": 2
         },
         "vuelta": {
           "local": "Cienciano",
           "visitante": "Lanús",
           "golesLocal": 0,
-          "golesVisitante": 3
+          "golesVisitante": 0
         },
         "agregado": {
-          "Lanús": 4,
-          "Cienciano": 1
+          "Lanús": 0,
+          "Cienciano": 2
         },
         "penales": null,
-        "avanza": "Lanús",
+        "avanza": "Cienciano",
         "jugado": false
       },
       {
         "ida": {
           "local": "Universidad Central de Venezuela",
           "visitante": "Santos",
-          "golesLocal": 2,
-          "golesVisitante": 2
+          "golesLocal": 3,
+          "golesVisitante": 1
         },
         "vuelta": {
           "local": "Santos",
           "visitante": "Universidad Central de Venezuela",
-          "golesLocal": 1,
-          "golesVisitante": 0
+          "golesLocal": 3,
+          "golesVisitante": 2
         },
         "agregado": {
-          "Universidad Central de Venezuela": 2,
-          "Santos": 3
+          "Universidad Central de Venezuela": 5,
+          "Santos": 4
         },
         "penales": null,
-        "avanza": "Santos",
+        "avanza": "Universidad Central de Venezuela",
         "jugado": false
       }
     ],
     "octavos": [
       {
         "ida": {
-          "local": "São Paulo",
-          "visitante": "Grêmio",
+          "local": "Bolívar",
+          "visitante": "São Paulo",
           "golesLocal": 2,
-          "golesVisitante": 1
+          "golesVisitante": 3
         },
         "vuelta": {
-          "local": "Grêmio",
-          "visitante": "São Paulo",
-          "golesLocal": 0,
+          "local": "São Paulo",
+          "visitante": "Bolívar",
+          "golesLocal": 1,
           "golesVisitante": 1
         },
         "agregado": {
-          "São Paulo": 3,
-          "Grêmio": 1
+          "Bolívar": 3,
+          "São Paulo": 4
         },
         "penales": null,
         "avanza": "São Paulo",
@@ -203,41 +197,41 @@
       },
       {
         "ida": {
-          "local": "Atlético Mineiro",
-          "visitante": "Red Bull Bragantino",
-          "golesLocal": 1,
+          "local": "Red Bull Bragantino",
+          "visitante": "Atlético Mineiro",
+          "golesLocal": 2,
           "golesVisitante": 1
         },
         "vuelta": {
-          "local": "Red Bull Bragantino",
-          "visitante": "Atlético Mineiro",
+          "local": "Atlético Mineiro",
+          "visitante": "Red Bull Bragantino",
           "golesLocal": 0,
-          "golesVisitante": 2
+          "golesVisitante": 0
         },
         "agregado": {
-          "Atlético Mineiro": 3,
-          "Red Bull Bragantino": 1
+          "Red Bull Bragantino": 2,
+          "Atlético Mineiro": 1
         },
         "penales": null,
-        "avanza": "Atlético Mineiro",
+        "avanza": "Red Bull Bragantino",
         "jugado": false
       },
       {
         "ida": {
-          "local": "Olimpia",
-          "visitante": "Vasco da Gama",
-          "golesLocal": 4,
-          "golesVisitante": 0
-        },
-        "vuelta": {
           "local": "Vasco da Gama",
           "visitante": "Olimpia",
           "golesLocal": 1,
           "golesVisitante": 1
         },
+        "vuelta": {
+          "local": "Olimpia",
+          "visitante": "Vasco da Gama",
+          "golesLocal": 1,
+          "golesVisitante": 0
+        },
         "agregado": {
-          "Olimpia": 5,
-          "Vasco da Gama": 1
+          "Vasco da Gama": 1,
+          "Olimpia": 2
         },
         "penales": null,
         "avanza": "Olimpia",
@@ -245,41 +239,41 @@
       },
       {
         "ida": {
-          "local": "Recoleta FC",
-          "visitante": "O'Higgins",
-          "golesLocal": 2,
-          "golesVisitante": 2
+          "local": "Boca Juniors",
+          "visitante": "Recoleta FC",
+          "golesLocal": 1,
+          "golesVisitante": 1
         },
         "vuelta": {
-          "local": "O'Higgins",
-          "visitante": "Recoleta FC",
-          "golesLocal": 0,
-          "golesVisitante": 3
+          "local": "Recoleta FC",
+          "visitante": "Boca Juniors",
+          "golesLocal": 1,
+          "golesVisitante": 2
         },
         "agregado": {
-          "Recoleta FC": 5,
-          "O'Higgins": 2
+          "Boca Juniors": 3,
+          "Recoleta FC": 2
         },
         "penales": null,
-        "avanza": "Recoleta FC",
+        "avanza": "Boca Juniors",
         "jugado": false
       },
       {
         "ida": {
-          "local": "Montevideo City Torque",
-          "visitante": "Nacional (Uruguay)",
-          "golesLocal": 1,
-          "golesVisitante": 0
-        },
-        "vuelta": {
           "local": "Nacional (Uruguay)",
           "visitante": "Montevideo City Torque",
           "golesLocal": 3,
           "golesVisitante": 1
         },
+        "vuelta": {
+          "local": "Montevideo City Torque",
+          "visitante": "Nacional (Uruguay)",
+          "golesLocal": 2,
+          "golesVisitante": 1
+        },
         "agregado": {
-          "Montevideo City Torque": 2,
-          "Nacional (Uruguay)": 3
+          "Nacional (Uruguay)": 4,
+          "Montevideo City Torque": 3
         },
         "penales": null,
         "avanza": "Nacional (Uruguay)",
@@ -287,77 +281,71 @@
       },
       {
         "ida": {
-          "local": "River Plate",
-          "visitante": "Independiente Santa Fe",
-          "golesLocal": 5,
-          "golesVisitante": 3
-        },
-        "vuelta": {
           "local": "Independiente Santa Fe",
           "visitante": "River Plate",
-          "golesLocal": 4,
+          "golesLocal": 1,
+          "golesVisitante": 1
+        },
+        "vuelta": {
+          "local": "River Plate",
+          "visitante": "Independiente Santa Fe",
+          "golesLocal": 2,
           "golesVisitante": 2
         },
         "agregado": {
-          "River Plate": 7,
-          "Independiente Santa Fe": 7
+          "Independiente Santa Fe": 5,
+          "River Plate": 3
         },
-        "penales": true,
+        "penales": null,
         "alargue": {
-          "local": "Independiente Santa Fe",
-          "visitante": "River Plate",
+          "local": "River Plate",
+          "visitante": "Independiente Santa Fe",
           "golesLocal": 0,
-          "golesVisitante": 0
+          "golesVisitante": 2
         },
         "avanza": "Independiente Santa Fe",
         "jugado": false
       },
       {
         "ida": {
-          "local": "Botafogo",
-          "visitante": "Lanús",
-          "golesLocal": 1,
-          "golesVisitante": 2
-        },
-        "vuelta": {
-          "local": "Lanús",
+          "local": "Cienciano",
           "visitante": "Botafogo",
-          "golesLocal": 3,
+          "golesLocal": 0,
           "golesVisitante": 1
         },
+        "vuelta": {
+          "local": "Botafogo",
+          "visitante": "Cienciano",
+          "golesLocal": 0,
+          "golesVisitante": 0
+        },
         "agregado": {
-          "Botafogo": 2,
-          "Lanús": 5
+          "Cienciano": 0,
+          "Botafogo": 1
         },
         "penales": null,
-        "avanza": "Lanús",
+        "avanza": "Botafogo",
         "jugado": false
       },
       {
         "ida": {
-          "local": "Macará",
-          "visitante": "Santos",
-          "golesLocal": 0,
-          "golesVisitante": 1
-        },
-        "vuelta": {
-          "local": "Santos",
+          "local": "Universidad Central de Venezuela",
           "visitante": "Macará",
-          "golesLocal": 0,
-          "golesVisitante": 1
-        },
-        "agregado": {
-          "Macará": 1,
-          "Santos": 2
-        },
-        "penales": null,
-        "alargue": {
-          "local": "Santos",
-          "visitante": "Macará",
-          "golesLocal": 1,
+          "golesLocal": 2,
           "golesVisitante": 0
         },
-        "avanza": "Santos",
+        "vuelta": {
+          "local": "Macará",
+          "visitante": "Universidad Central de Venezuela",
+          "golesLocal": 0,
+          "golesVisitante": 2
+        },
+        "agregado": {
+          "Universidad Central de Venezuela": 4,
+          "Macará": 0
+        },
+        "penales": null,
+        "avanza": "Universidad Central de Venezuela",
         "jugado": false
       }
     ],
@@ -365,19 +353,19 @@
       {
         "ida": {
           "local": "São Paulo",
-          "visitante": "Atlético Mineiro",
-          "golesLocal": 2,
-          "golesVisitante": 1
+          "visitante": "Red Bull Bragantino",
+          "golesLocal": 1,
+          "golesVisitante": 0
         },
         "vuelta": {
-          "local": "Atlético Mineiro",
+          "local": "Red Bull Bragantino",
           "visitante": "São Paulo",
-          "golesLocal": 0,
+          "golesLocal": 1,
           "golesVisitante": 1
         },
         "agregado": {
-          "São Paulo": 3,
-          "Atlético Mineiro": 1
+          "São Paulo": 2,
+          "Red Bull Bragantino": 1
         },
         "penales": null,
         "avanza": "São Paulo",
@@ -386,19 +374,19 @@
       {
         "ida": {
           "local": "Olimpia",
-          "visitante": "Recoleta FC",
+          "visitante": "Boca Juniors",
           "golesLocal": 3,
-          "golesVisitante": 0
+          "golesVisitante": 2
         },
         "vuelta": {
-          "local": "Recoleta FC",
+          "local": "Boca Juniors",
           "visitante": "Olimpia",
-          "golesLocal": 0,
-          "golesVisitante": 1
+          "golesLocal": 1,
+          "golesVisitante": 4
         },
         "agregado": {
-          "Olimpia": 4,
-          "Recoleta FC": 0
+          "Olimpia": 7,
+          "Boca Juniors": 3
         },
         "penales": null,
         "avanza": "Olimpia",
@@ -409,7 +397,7 @@
           "local": "Nacional (Uruguay)",
           "visitante": "Independiente Santa Fe",
           "golesLocal": 1,
-          "golesVisitante": 2
+          "golesVisitante": 1
         },
         "vuelta": {
           "local": "Independiente Santa Fe",
@@ -422,28 +410,40 @@
           "Independiente Santa Fe": 3
         },
         "penales": null,
+        "alargue": {
+          "local": "Independiente Santa Fe",
+          "visitante": "Nacional (Uruguay)",
+          "golesLocal": 1,
+          "golesVisitante": 0
+        },
         "avanza": "Independiente Santa Fe",
         "jugado": false
       },
       {
         "ida": {
-          "local": "Lanús",
-          "visitante": "Santos",
-          "golesLocal": 3,
-          "golesVisitante": 0
+          "local": "Botafogo",
+          "visitante": "Universidad Central de Venezuela",
+          "golesLocal": 1,
+          "golesVisitante": 1
         },
         "vuelta": {
-          "local": "Santos",
-          "visitante": "Lanús",
-          "golesLocal": 1,
+          "local": "Universidad Central de Venezuela",
+          "visitante": "Botafogo",
+          "golesLocal": 2,
           "golesVisitante": 2
         },
         "agregado": {
-          "Lanús": 5,
-          "Santos": 1
+          "Botafogo": 3,
+          "Universidad Central de Venezuela": 3
         },
-        "penales": null,
-        "avanza": "Lanús",
+        "penales": true,
+        "alargue": {
+          "local": "Universidad Central de Venezuela",
+          "visitante": "Botafogo",
+          "golesLocal": 0,
+          "golesVisitante": 0
+        },
+        "avanza": "Botafogo",
         "jugado": false
       }
     ],
@@ -452,253 +452,259 @@
         "ida": {
           "local": "São Paulo",
           "visitante": "Olimpia",
-          "golesLocal": 1,
-          "golesVisitante": 1
+          "golesLocal": 4,
+          "golesVisitante": 0
         },
         "vuelta": {
           "local": "Olimpia",
           "visitante": "São Paulo",
-          "golesLocal": 2,
-          "golesVisitante": 0
+          "golesLocal": 0,
+          "golesVisitante": 1
         },
         "agregado": {
-          "São Paulo": 1,
-          "Olimpia": 3
+          "São Paulo": 5,
+          "Olimpia": 0
         },
         "penales": null,
-        "avanza": "Olimpia",
+        "avanza": "São Paulo",
         "jugado": false
       },
       {
         "ida": {
           "local": "Independiente Santa Fe",
-          "visitante": "Lanús",
+          "visitante": "Botafogo",
           "golesLocal": 0,
           "golesVisitante": 0
         },
         "vuelta": {
-          "local": "Lanús",
+          "local": "Botafogo",
           "visitante": "Independiente Santa Fe",
-          "golesLocal": 2,
+          "golesLocal": 1,
           "golesVisitante": 1
         },
         "agregado": {
-          "Independiente Santa Fe": 1,
-          "Lanús": 2
+          "Independiente Santa Fe": 2,
+          "Botafogo": 1
         },
         "penales": null,
-        "avanza": "Lanús",
+        "alargue": {
+          "local": "Botafogo",
+          "visitante": "Independiente Santa Fe",
+          "golesLocal": 0,
+          "golesVisitante": 1
+        },
+        "avanza": "Independiente Santa Fe",
         "jugado": false
       }
     ],
     "final": [
       {
-        "local": "Olimpia",
-        "visitante": "Lanús",
+        "local": "São Paulo",
+        "visitante": "Independiente Santa Fe",
         "golesLocal": 3,
-        "golesVisitante": 1,
-        "avanza": "Olimpia",
+        "golesVisitante": 0,
+        "avanza": "São Paulo",
         "jugado": false,
         "penales": null
       }
     ]
   },
-  "campeon": "Olimpia",
+  "campeon": "São Paulo",
   "monte_carlo": [
     {
       "equipo": "River Plate",
       "%octavos": 100.0,
-      "%cuartos": 60.1,
-      "%semis": 34.6,
-      "%final": 20.2,
-      "%campeon": 11.6
+      "%cuartos": 59.6,
+      "%semis": 32.1,
+      "%final": 18.8,
+      "%campeon": 9.8
     },
     {
       "equipo": "Olimpia",
       "%octavos": 100.0,
-      "%cuartos": 56.5,
-      "%semis": 32.7,
-      "%final": 16.7,
-      "%campeon": 9.2
-    },
-    {
-      "equipo": "Atlético Mineiro",
-      "%octavos": 100.0,
-      "%cuartos": 54.8,
-      "%semis": 28.2,
-      "%final": 15.1,
-      "%campeon": 8.2
+      "%cuartos": 57.0,
+      "%semis": 34.2,
+      "%final": 17.1,
+      "%campeon": 9.3
     },
     {
       "equipo": "Botafogo",
       "%octavos": 100.0,
-      "%cuartos": 57.5,
-      "%semis": 31.4,
-      "%final": 15.8,
-      "%campeon": 7.5
-    },
-    {
-      "equipo": "Nacional (Uruguay)",
-      "%octavos": 57.0,
-      "%cuartos": 34.5,
-      "%semis": 19.1,
-      "%final": 12.6,
-      "%campeon": 7.4
+      "%cuartos": 55.8,
+      "%semis": 33.8,
+      "%final": 19.5,
+      "%campeon": 8.8
     },
     {
       "equipo": "São Paulo",
       "%octavos": 100.0,
-      "%cuartos": 52.0,
-      "%semis": 25.9,
-      "%final": 12.8,
-      "%campeon": 5.9
+      "%cuartos": 49.5,
+      "%semis": 26.8,
+      "%final": 14.4,
+      "%campeon": 7.5
+    },
+    {
+      "equipo": "Atlético Mineiro",
+      "%octavos": 100.0,
+      "%cuartos": 56.2,
+      "%semis": 26.6,
+      "%final": 13.4,
+      "%campeon": 7.1
+    },
+    {
+      "equipo": "Nacional (Uruguay)",
+      "%octavos": 58.5,
+      "%cuartos": 33.7,
+      "%semis": 19.3,
+      "%final": 11.1,
+      "%campeon": 6.2
     },
     {
       "equipo": "Boca Juniors",
-      "%octavos": 59.4,
-      "%cuartos": 38.1,
-      "%semis": 19.8,
-      "%final": 11.2,
-      "%campeon": 5.5
+      "%octavos": 59.3,
+      "%cuartos": 37.3,
+      "%semis": 18.6,
+      "%final": 10.2,
+      "%campeon": 5.4
     },
     {
       "equipo": "Macará",
       "%octavos": 100.0,
-      "%cuartos": 52.6,
-      "%semis": 24.4,
-      "%final": 10.9,
-      "%campeon": 5.4
+      "%cuartos": 53.4,
+      "%semis": 24.6,
+      "%final": 11.0,
+      "%campeon": 5.3
     },
     {
       "equipo": "Grêmio",
-      "%octavos": 54.0,
-      "%cuartos": 26.9,
-      "%semis": 14.8,
-      "%final": 7.8,
-      "%campeon": 3.8
-    },
-    {
-      "equipo": "Santos",
-      "%octavos": 56.7,
-      "%cuartos": 28.1,
-      "%semis": 13.4,
-      "%final": 6.5,
-      "%campeon": 3.2
+      "%octavos": 58.4,
+      "%cuartos": 31.1,
+      "%semis": 16.9,
+      "%final": 9.0,
+      "%campeon": 5.0
     },
     {
       "equipo": "Sporting Cristal",
-      "%octavos": 50.0,
-      "%cuartos": 23.7,
-      "%semis": 10.4,
-      "%final": 6.2,
-      "%campeon": 2.9
+      "%octavos": 54.3,
+      "%cuartos": 24.4,
+      "%semis": 11.8,
+      "%final": 5.9,
+      "%campeon": 3.5
     },
     {
       "equipo": "Montevideo City Torque",
       "%octavos": 100.0,
-      "%cuartos": 43.6,
-      "%semis": 17.3,
-      "%final": 7.4,
-      "%campeon": 2.8
+      "%cuartos": 45.3,
+      "%semis": 20.4,
+      "%final": 7.3,
+      "%campeon": 3.3
     },
     {
       "equipo": "Lanús",
       "%octavos": 53.0,
-      "%cuartos": 23.7,
-      "%semis": 12.3,
-      "%final": 5.3,
-      "%campeon": 2.8
-    },
-    {
-      "equipo": "Bolívar",
-      "%octavos": 46.0,
-      "%cuartos": 21.1,
-      "%semis": 11.2,
-      "%final": 5.6,
-      "%campeon": 2.7
+      "%cuartos": 23.0,
+      "%semis": 13.8,
+      "%final": 7.0,
+      "%campeon": 2.9
     },
     {
       "equipo": "Independiente Medellín",
-      "%octavos": 48.6,
-      "%cuartos": 22.0,
-      "%semis": 10.6,
-      "%final": 5.5,
-      "%campeon": 2.7
-    },
-    {
-      "equipo": "Tigre",
-      "%octavos": 43.0,
-      "%cuartos": 21.9,
-      "%semis": 10.4,
-      "%final": 5.8,
-      "%campeon": 2.6
-    },
-    {
-      "equipo": "O'Higgins",
-      "%octavos": 40.6,
-      "%cuartos": 22.8,
-      "%semis": 11.5,
-      "%final": 5.6,
-      "%campeon": 2.6
-    },
-    {
-      "equipo": "Caracas FC",
-      "%octavos": 49.1,
-      "%cuartos": 20.3,
-      "%semis": 10.0,
-      "%final": 4.2,
-      "%campeon": 2.5
-    },
-    {
-      "equipo": "Red Bull Bragantino",
-      "%octavos": 50.0,
-      "%cuartos": 21.5,
-      "%semis": 9.5,
-      "%final": 5.0,
-      "%campeon": 2.4
+      "%octavos": 49.8,
+      "%cuartos": 20.4,
+      "%semis": 10.8,
+      "%final": 5.9,
+      "%campeon": 2.9
     },
     {
       "equipo": "Vasco da Gama",
-      "%octavos": 51.4,
-      "%cuartos": 21.5,
-      "%semis": 10.7,
-      "%final": 3.6,
-      "%campeon": 2.1
+      "%octavos": 50.2,
+      "%cuartos": 22.6,
+      "%semis": 12.3,
+      "%final": 6.1,
+      "%campeon": 2.8
     },
     {
-      "equipo": "Independiente Santa Fe",
-      "%octavos": 50.9,
-      "%cuartos": 19.6,
-      "%semis": 8.6,
-      "%final": 3.7,
-      "%campeon": 1.8
+      "equipo": "Tigre",
+      "%octavos": 41.5,
+      "%cuartos": 21.0,
+      "%semis": 10.6,
+      "%final": 4.8,
+      "%campeon": 2.3
     },
     {
-      "equipo": "Cienciano",
-      "%octavos": 47.0,
-      "%cuartos": 18.8,
-      "%semis": 9.5,
-      "%final": 4.1,
-      "%campeon": 1.7
+      "equipo": "Red Bull Bragantino",
+      "%octavos": 45.7,
+      "%cuartos": 19.4,
+      "%semis": 8.5,
+      "%final": 4.7,
+      "%campeon": 2.3
     },
     {
       "equipo": "Recoleta FC",
       "%octavos": 100.0,
-      "%cuartos": 39.1,
-      "%semis": 14.7,
-      "%final": 4.9,
-      "%campeon": 1.4
+      "%cuartos": 40.2,
+      "%semis": 14.9,
+      "%final": 5.5,
+      "%campeon": 2.2
+    },
+    {
+      "equipo": "Caracas FC",
+      "%octavos": 51.0,
+      "%cuartos": 20.9,
+      "%semis": 9.1,
+      "%final": 4.3,
+      "%campeon": 2.2
+    },
+    {
+      "equipo": "Santos",
+      "%octavos": 56.7,
+      "%cuartos": 27.0,
+      "%semis": 11.1,
+      "%final": 4.7,
+      "%campeon": 2.1
+    },
+    {
+      "equipo": "Bolívar",
+      "%octavos": 41.6,
+      "%cuartos": 19.4,
+      "%semis": 9.4,
+      "%final": 4.5,
+      "%campeon": 2.0
+    },
+    {
+      "equipo": "Cienciano",
+      "%octavos": 47.0,
+      "%cuartos": 21.2,
+      "%semis": 9.5,
+      "%final": 4.3,
+      "%campeon": 2.0
+    },
+    {
+      "equipo": "O'Higgins",
+      "%octavos": 40.7,
+      "%cuartos": 22.5,
+      "%semis": 9.2,
+      "%final": 3.3,
+      "%campeon": 2.0
+    },
+    {
+      "equipo": "Independiente Santa Fe",
+      "%octavos": 49.0,
+      "%cuartos": 19.5,
+      "%semis": 8.5,
+      "%final": 4.1,
+      "%campeon": 1.8
     },
     {
       "equipo": "Universidad Central de Venezuela",
       "%octavos": 43.3,
-      "%cuartos": 19.3,
-      "%semis": 9.0,
-      "%final": 3.5,
+      "%cuartos": 19.6,
+      "%semis": 7.2,
+      "%final": 3.1,
       "%campeon": 1.3
     }
   ],
   "equipos_vivos": [
-    "Olimpia"
+    "São Paulo"
   ]
 }
