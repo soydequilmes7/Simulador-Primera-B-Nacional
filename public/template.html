@@ -1045,6 +1045,7 @@
   }
   .temporada-metric-card .val img.escudo{ width:20px; height:20px; }
   .temporada-metric-card .val.num{ font-family:'JetBrains Mono'; font-size:25px; color: var(--hero-accent); }
+  .temporada-metric-card .lbl img.temporada-metric-logo{ width:15px; height:15px; object-fit:contain; flex-shrink:0; }
   .temporada-metric-card .sub{
     margin-top:6px; font-family:'JetBrains Mono'; font-size:10.5px;
     color: var(--hero-dim); text-align:center;
@@ -10206,6 +10207,7 @@ const COLOR_COMPETENCIA = {
 const LOGO_COMPETENCIA = {
   lpf: "liga-profesional", nacional: "primera-nacional", bmetro: "b-metropolitana",
   federal_a: "federal-a", primerac: "primera-c", copa: "copa-argentina",
+  recopa: "recopa-sudamericana",
 };
 
 let DATA_TEMPORADA = null;
@@ -11128,7 +11130,7 @@ function renderDashboardTemporada(datos){
       clase: compSudamericana && compSudamericana.campeon ? '' : 'num',
     },
     {
-      lbl: '🏆 Recopa Sudamericana',
+      lbl: `<img src="logos-torneos/${LOGO_COMPETENCIA.recopa}.png" alt="" class="temporada-metric-logo" onerror="this.remove()">Recopa Sudamericana`,
       val: compRecopa && compRecopa.avanza ? `${escudoHTML(compRecopa.avanza)}${compRecopa.avanza}` : 'Sin definir',
       clase: compRecopa && compRecopa.avanza ? '' : 'num',
       // Campeón Libertadores vs campeón Sudamericana, partido único a
