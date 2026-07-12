@@ -1023,8 +1023,22 @@
   .temporada-dashboard-sub{ position:relative; margin-top:9px; color: var(--hero-dim); font-size:13px; font-family:'JetBrains Mono'; }
   .temporada-dashboard-metrics{
     position:relative;
-    margin-top:28px; display:grid; grid-template-columns:repeat(auto-fit, minmax(180px,1fr));
+    margin-top:28px; display:grid; grid-template-columns:repeat(4, minmax(160px,1fr));
     gap:14px; max-width:780px; margin-left:auto; margin-right:auto;
+  }
+  /* La 5ta tarjeta (Recopa Sudamericana) no completa la fila de 4, así que
+     en vez de dejarla pegada a la izquierda (default de grid auto-flow) se
+     la centra debajo, entre las columnas de Copa Argentina y Copa
+     Libertadores -- ver nth-child(5) más abajo, ligado al orden fijo en el
+     que renderDashboardTemporada() arma el array `metricas`. */
+  .temporada-dashboard-metrics .temporada-metric-card:nth-child(5){ grid-column: 2 / 4; }
+  @media (max-width: 900px){
+    .temporada-dashboard-metrics{ grid-template-columns:repeat(2, minmax(160px,1fr)); }
+    .temporada-dashboard-metrics .temporada-metric-card:nth-child(5){ grid-column: 1 / 3; }
+  }
+  @media (max-width: 480px){
+    .temporada-dashboard-metrics{ grid-template-columns:1fr; }
+    .temporada-dashboard-metrics .temporada-metric-card:nth-child(5){ grid-column:1; }
   }
   .temporada-metric-card{
     background: rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.16);
@@ -10207,6 +10221,7 @@ const COLOR_COMPETENCIA = {
 const LOGO_COMPETENCIA = {
   lpf: "liga-profesional", nacional: "primera-nacional", bmetro: "b-metropolitana",
   federal_a: "federal-a", primerac: "primera-c", copa: "copa-argentina",
+  libertadores: "copa-libertadores", sudamericana: "copa-sudamericana",
   recopa: "recopa-sudamericana",
 };
 
@@ -11110,22 +11125,22 @@ function renderDashboardTemporada(datos){
 
   const metricas = [
     {
-      lbl: '🏆 Campeón LPF',
+      lbl: `<img src="logos-torneos/${LOGO_COMPETENCIA.lpf}.png" alt="" class="temporada-metric-logo" onerror="this.remove()">Campeón LPF`,
       val: compLPF && compLPF.campeon ? `${escudoHTML(compLPF.campeon)}${compLPF.campeon}` : 'Sin definir',
       clase: compLPF && compLPF.campeon ? '' : 'num',
     },
     {
-      lbl: '🏆 Copa Argentina',
+      lbl: `<img src="logos-torneos/${LOGO_COMPETENCIA.copa}.png" alt="" class="temporada-metric-logo" onerror="this.remove()">Copa Argentina`,
       val: compCopa && compCopa.campeon ? `${escudoHTML(compCopa.campeon)}${compCopa.campeon}` : 'Sin definir',
       clase: compCopa && compCopa.campeon ? '' : 'num',
     },
     {
-      lbl: '🌎 Copa Libertadores',
+      lbl: `<img src="logos-torneos/${LOGO_COMPETENCIA.libertadores}.png" alt="" class="temporada-metric-logo" onerror="this.remove()">Copa Libertadores`,
       val: compLibertadores && compLibertadores.campeon ? `${escudoHTML(compLibertadores.campeon)}${compLibertadores.campeon}` : 'Sin definir',
       clase: compLibertadores && compLibertadores.campeon ? '' : 'num',
     },
     {
-      lbl: '🌎 Copa Sudamericana',
+      lbl: `<img src="logos-torneos/${LOGO_COMPETENCIA.sudamericana}.png" alt="" class="temporada-metric-logo" onerror="this.remove()">Copa Sudamericana`,
       val: compSudamericana && compSudamericana.campeon ? `${escudoHTML(compSudamericana.campeon)}${compSudamericana.campeon}` : 'Sin definir',
       clase: compSudamericana && compSudamericana.campeon ? '' : 'num',
     },
@@ -11568,7 +11583,7 @@ async function correrTemporada(){
 
   const esPrimeraRonda = !ESTADO_TEMPORADA_LOCAL;
   btn.disabled = true;
-  btn.textContent = esPrimeraRonda ? "Simulando las 6 competencias…" : `Simulando la ronda ${NUMERO_RONDA_TEMPORADA}…`;
+  btn.textContent = esPrimeraRonda ? "Simulando las 8 competencias…" : `Simulando la ronda ${NUMERO_RONDA_TEMPORADA}…`;
   status.classList.remove('error', 'ok');
   status.textContent = esPrimeraRonda
     ? "Corriendo una temporada real de cada competencia, una atrás de la otra."
