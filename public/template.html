@@ -9073,6 +9073,7 @@ refreshAllBracketLines();
 const NOMBRE_LINDO_COMPETENCIA = {
   lpf: "Liga Profesional", nacional: "Primera Nacional", bmetro: "B Metropolitana",
   federal_a: "Federal A", primerac: "Primera C", copa: "Copa Argentina",
+  libertadores: "Copa Libertadores", sudamericana: "Copa Sudamericana",
 };
 const ORDEN_COMPETENCIAS = ["lpf", "nacional", "bmetro", "federal_a", "primerac", "copa"];
 // Mismo color que usa cada torneo en su propia pestaña activa (.liga-tab.active
@@ -9082,6 +9083,7 @@ const ORDEN_COMPETENCIAS = ["lpf", "nacional", "bmetro", "federal_a", "primerac"
 const COLOR_COMPETENCIA = {
   lpf: "#0E86D4", nacional: "#D8A53B", bmetro: "#A68F57",
   federal_a: "#37B8A8", primerac: "#93763A", copa: "#C08F0E",
+  libertadores: "#7A1FA2", sudamericana: "#C0392B",
 };
 const LOGO_COMPETENCIA = {
   lpf: "liga-profesional", nacional: "primera-nacional", bmetro: "b-metropolitana",
@@ -9536,9 +9538,62 @@ function setCompetenciaTemporada(slug){
   COMPETENCIA_ACTUAL_TEMPORADA = slug;
   document.querySelectorAll('#temporada-competencia-tabs-group .zone-tab')
     .forEach(b => b.classList.toggle('active', b.dataset.competencia === slug));
+
+  if (slug === 'libertadores' || slug === 'sudamericana'){
+    document.getElementById('temporada-detalle-competencia').innerHTML = detalleCopaInternacionalTemporadaHTML(slug);
+    refreshAllBracketNavs();
+    refreshAllBracketLines();
+    return;
+  }
+
   const comp = DATA_TEMPORADA && DATA_TEMPORADA.competencias[slug];
   document.getElementById('temporada-detalle-competencia').innerHTML =
     comp ? detalleCompetenciaHTML(slug, comp) : '';
+}
+
+// Libertadores/Sudamericana dentro de Modo Temporada: mismo cuadro
+// "enfrentado" que ya tienen sus pestañas propias (bracketLibertadoresHTML/
+// bracketSudamericanaHTML, ver más arriba), pero acá con el resultado de
+// ESTA temporada simulada (datos.libertadores/datos.sudamericana, ver
+// season/season_engine.py::correr_temporada(correr_libertadores=...,
+// correr_sudamericana=...)) en vez del cuadro real fijo. Sin Monte Carlo
+// ni buscador acá -- el pipeline por temporada no corre esa simulación
+// extra (sería 1000 corridas x cada ronda de Modo Temporada, no
+// justifica el costo), solo el resultado de la corrida real.
+function detalleCopaInternacionalTemporadaHTML(slug){
+  const datos = DATA_TEMPORADA && DATA_TEMPORADA[slug];
+  if (!datos || datos.error){
+    return `<div class="no-result">${datos && datos.error ? datos.error : `Sin datos de ${NOMBRE_LINDO_COMPETENCIA[slug]} en esta corrida.`}</div>`;
+  }
+  const bracketId = `bracket-temporada-${slug}`;
+  const bracketHTML = slug === 'libertadores'
+    ? bracketLibertadoresHTML(datos.rondas, datos.campeon)
+    : bracketSudamericanaHTML(datos.rondas, datos.campeon);
+  // Reusa las clases genéricas de tabla que ya tiene el resto del sitio
+  // (.table-wrap + <table>, con tr.reducido para las filas "clasifica" --
+  // mismo verde que ya usa el Reducido de ascenso en las otras pestañas)
+  // en vez de inventar CSS nuevo solo para esto.
+  const zonasHTML = (datos.zonas || []).map(z => `
+    <div style="min-width:220px;">
+      <div style="font-family:'JetBrains Mono'; font-size:12px; color:var(--muted); margin-bottom:6px;">Zona ${z.letra}</div>
+      <div class="table-wrap"><table>
+        <tbody>
+          ${z.tabla.map((f, i) => `<tr class="${i < 2 ? 'reducido' : ''}">
+            <td>${i + 1}</td><td>${escudoHTML(f.equipo)}${f.equipo}</td><td>${f.puntos} pts</td>
+          </tr>`).join('')}
+        </tbody>
+      </table></div>
+    </div>`).join('');
+
+  return `
+    <div class="campeon-anuncio-wrap">${campeonAnuncioHTML(datos.campeon, '🏆')}</div>
+    ${zonasHTML ? `
+      <div class="section-note" style="margin:18px 0 10px;">Fase de grupos de esta temporada -- los dos primeros de cada zona (en verde) clasifican.</div>
+      <div style="display:flex; flex-wrap:wrap; gap:16px; margin-bottom:24px;">${zonasHTML}</div>
+    ` : ''}
+    <div class="section-note" style="margin:18px 0 10px;">Cuadro desde ${slug === 'libertadores' ? 'Octavos de Final' : 'los Playoffs de Octavos'}.</div>
+    <div class="bracket-scroll"><div class="bracket" id="${bracketId}">${bracketHTML}</div></div>
+  `;
 }
 
 function competenciaCardHTML(slug, comp){
@@ -9608,10 +9663,23 @@ function renderTemporada(datos){
   DATA_TEMPORADA = datos;
 
   const tabsGroup = document.getElementById('temporada-competencia-tabs-group');
-  tabsGroup.innerHTML = ORDEN_COMPETENCIAS
+  const tabsCompetencias = ORDEN_COMPETENCIAS
     .filter(slug => datos.competencias[slug])
-    .map(slug => `<button class="zone-tab" data-competencia="${slug}" style="--tc-color:${COLOR_COMPETENCIA[slug] || 'var(--amber)'};" onclick="setCompetenciaTemporada('${slug}')">${NOMBRE_LINDO_COMPETENCIA[slug]}</button>`)
-    .join('');
+    .map(slug => `<button class="zone-tab" data-competencia="${slug}" style="--tc-color:${COLOR_COMPETENCIA[slug] || 'var(--amber)'};" onclick="setCompetenciaTemporada('${slug}')">${NOMBRE_LINDO_COMPETENCIA[slug]}</button>`);
+  // Libertadores/Sudamericana no siguen el shape ResultadoTorneo del
+  // resto (campeon/ascensos/descensos/datos) -- son el dict que arma
+  // season/libertadores_grupos.py::simular_temporada_libertadores() /
+  // season/sudamericana_temporada.py::simular_temporada_sudamericana()
+  // (zonas/cuadro_playoffs/cuadro_octavos/rondas/campeon), por eso van
+  // aparte de ORDEN_COMPETENCIAS y setCompetenciaTemporada() las trata
+  // distinto (bracket, no tabla de posiciones). Si vinieron con error
+  // (ver "error" en el dict, ej. sin datos suficientes esa corrida) no
+  // se muestra la pestaña -- mejor ausente que rota.
+  const tabsCopasInternacionales = [
+    datos.libertadores && !datos.libertadores.error ? "libertadores" : null,
+    datos.sudamericana && !datos.sudamericana.error ? "sudamericana" : null,
+  ].filter(Boolean).map(slug => `<button class="zone-tab" data-competencia="${slug}" style="--tc-color:${COLOR_COMPETENCIA[slug]};" onclick="setCompetenciaTemporada('${slug}')">${NOMBRE_LINDO_COMPETENCIA[slug]}</button>`);
+  tabsGroup.innerHTML = tabsCompetencias.join('') + tabsCopasInternacionales.join('');
 
   const primeraDisponible = ORDEN_COMPETENCIAS.find(slug => datos.competencias[slug]);
   setCompetenciaTemporada(
