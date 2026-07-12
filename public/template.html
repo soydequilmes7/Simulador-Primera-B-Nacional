@@ -627,6 +627,17 @@
   tbody tr.sudamericana td:nth-child(2){ color: var(--zone-b); font-weight:600; }
   tbody tr.sudamericana{ box-shadow: inset 3px 0 0 var(--zone-b); }
 
+  /* Modo Temporada · Tabla Anual LPF: el naranja clarito (--zone-b-dim,
+     hereda de :root porque body.liga-temporada no pisa --zone-b) queda
+     casi blanco y se pierde contra el resto de filas. Acá lo reemplazamos
+     por un naranja oscuro sólido, solo dentro de Modo Temporada. */
+  body.liga-temporada tbody tr.sudamericana{
+    background: rgba(184,117,46,0.30);
+    box-shadow: inset 3px 0 0 #C97C2E;
+  }
+  body.liga-temporada tbody tr.sudamericana:hover{ background: rgba(184,117,46,0.4); filter:none; }
+  body.liga-temporada tbody tr.sudamericana td:nth-child(2){ color: #E0A458; font-weight:700; }
+
   /* ---------- ASCENSO CARD ---------- */
   .ascenso-card{
     border:1px solid var(--line); border-radius: var(--radius); padding:22px 24px;
@@ -3704,6 +3715,18 @@
   body.liga-sudamericana .sim-control{ margin-top:26px; display:flex; flex-direction:column; align-items:center; gap:10px; }
   body.liga-sudamericana .sim-select-row label,
   body.liga-sudamericana .sim-select-row .rango{ color: var(--hero-dim); }
+  body.liga-sudamericana #sim-count-sudamericana{
+    font-size:13px; font-weight:600; color:#EAF1FF;
+    background: rgba(255,255,255,0.05);
+    border:1px solid rgba(31,94,255,0.35); border-radius:8px;
+    padding:9px 10px; width:92px; text-align:center; outline:none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+  }
+  body.liga-sudamericana #sim-count-sudamericana:hover:not(:disabled){ border-color: rgba(31,94,255,0.6); }
+  body.liga-sudamericana #sim-count-sudamericana:focus{ border-color:#1F5EFF; box-shadow:0 0 0 3px rgba(31,94,255,0.2); }
+  body.liga-sudamericana #sim-count-sudamericana:disabled{ cursor:wait; opacity:0.5; }
+  body.liga-sudamericana #sim-count-sudamericana::-webkit-inner-spin-button,
+  body.liga-sudamericana #sim-count-sudamericana::-webkit-outer-spin-button{ opacity:0.6; }
   body.liga-sudamericana .btn-simular{
     background: var(--btn-grad); color: var(--btn-ink); border:none; border-radius:999px;
     font-weight:700; letter-spacing:0.04em; padding:13px 30px; text-transform:uppercase; font-size:12px;
@@ -3834,6 +3857,17 @@
     0%, 100%{ box-shadow: 0 0 0 1px rgba(216,160,40,0.22), 0 0 40px rgba(31,94,255,0.24), 0 22px 46px rgba(2,8,20,0.68); }
     50%{ box-shadow: 0 0 0 1px rgba(216,160,40,0.38), 0 0 58px rgba(31,94,255,0.4), 0 22px 46px rgba(2,8,20,0.68); }
   }
+
+  /* ---- Select "Elegí un equipo" del buscador de campeón: mismo look
+     vidrio/eléctrico que el resto de los controles de esta liga ---- */
+  body.liga-sudamericana #campeon-equipo-sudamericana{
+    font-family:'Poppins', sans-serif; font-weight:500; color: var(--ink);
+    background: rgba(255,255,255,0.05); border:1px solid rgba(31,94,255,0.35);
+    border-radius:999px; padding:10px 18px;
+  }
+  body.liga-sudamericana #campeon-equipo-sudamericana:hover:not(:disabled),
+  body.liga-sudamericana #campeon-equipo-sudamericana:focus{ border-color:#1F5EFF; }
+  body.liga-sudamericana #campeon-equipo-sudamericana option{ background:#0A0F1C; color:#EAF1FF; }
 
   /* ---- Campeón: cierre de gala, escudo grande y glow azul con detalle dorado ---- */
   body.liga-sudamericana #campeon-anuncio-sudamericana .campeon-anuncio{
@@ -4978,7 +5012,7 @@ function setApiActionsDisabled(disabled){
   document.querySelectorAll('.btn-simular, .btn-actualizar').forEach(btn => {
     btn.disabled = disabled;
   });
-  document.querySelectorAll('#sim-count, #sim-count-lpf, #sim-count-copa, #sim-count-bmetro, #sim-count-federal, #sim-count-primerac, #sim-count-libertadores, #campeon-equipo, #campeon-equipo-lpf, #campeon-equipo-copa, #campeon-equipo-bmetro, #campeon-equipo-federal, #campeon-equipo-primerac, #campeon-equipo-libertadores').forEach(control => {
+  document.querySelectorAll('#sim-count, #sim-count-lpf, #sim-count-copa, #sim-count-bmetro, #sim-count-federal, #sim-count-primerac, #sim-count-libertadores, #sim-count-sudamericana, #campeon-equipo, #campeon-equipo-lpf, #campeon-equipo-copa, #campeon-equipo-bmetro, #campeon-equipo-federal, #campeon-equipo-primerac, #campeon-equipo-libertadores, #campeon-equipo-sudamericana').forEach(control => {
     control.disabled = disabled;
   });
 }
@@ -10144,7 +10178,11 @@ function tablaSimpleHTML(filas, titulo, ascensoDirecto, ascensoReducido, descens
   // criterio que ya usan las pestañas propias de cada liga vía posición en
   // la tabla) y libertadoresSet/sudamericanaSet (solo LPF, cupos a copas
   // internacionales calculados en calcularCuposCopasLPF()).
-  const { reducidoSet, libertadoresSet, sudamericanaSet } = opts || {};
+  // marcarPlayoffTop8 (solo LPF, tablas de Zona A/B del Apertura y el
+  // Clausura dentro de Modo Temporada): igual criterio que ya usa
+  // filaTablaLPFHTML() en la página propia de LPF -- punta = líder de
+  // zona, top 8 (posiciones 2 a 8) = clasifican a los playoffs.
+  const { reducidoSet, libertadoresSet, sudamericanaSet, marcarPlayoffTop8 } = opts || {};
   const filasHTML = (filas || []).map((f, i) => {
     const clases = [];
     if (ascensoDirecto && f.equipo === ascensoDirecto) clases.push('punta');
@@ -10153,6 +10191,8 @@ function tablaSimpleHTML(filas, titulo, ascensoDirecto, ascensoReducido, descens
     else if (sudamericanaSet && sudamericanaSet.has(f.equipo)) clases.push('sudamericana');
     else if (reducidoSet && reducidoSet.has(f.equipo)) clases.push('reducido');
     else if (ascensoReducido && f.equipo === ascensoReducido) clases.push('reducido');
+    else if (marcarPlayoffTop8 && i === 0) clases.push('punta');
+    else if (marcarPlayoffTop8 && i >= 1 && i <= 7) clases.push('reducido');
     return `
     <tr class="${clases.join(' ')}">
       <td>${i + 1}</td>
@@ -10376,14 +10416,14 @@ function tablasCompetenciaHTML(slug, comp){
     return `
       <div class="temporada-reducido-label" style="margin-top:0;">Apertura 2026 (dato real)</div>
       <div class="temporada-tablas-grid dos">
-        ${tablaSimpleHTML(apertura.A, "Zona A", null, null, null)}
-        ${tablaSimpleHTML(apertura.B, "Zona B", null, null, null)}
+        ${tablaSimpleHTML(apertura.A, "Zona A", null, null, null, { marcarPlayoffTop8: true })}
+        ${tablaSimpleHTML(apertura.B, "Zona B", null, null, null, { marcarPlayoffTop8: true })}
       </div>
       ${playoffsAperturaHTML}
       <div class="temporada-reducido-label">Clausura 2026 (simulado)</div>
       <div class="temporada-tablas-grid dos">
-        ${tablaSimpleHTML(clausura.A, "Zona A", null, null, null)}
-        ${tablaSimpleHTML(clausura.B, "Zona B", null, null, null)}
+        ${tablaSimpleHTML(clausura.A, "Zona A", null, null, null, { marcarPlayoffTop8: true })}
+        ${tablaSimpleHTML(clausura.B, "Zona B", null, null, null, { marcarPlayoffTop8: true })}
       </div>
       ${playoffsHTML}
       <div class="temporada-reducido-label">Tabla Anual 2026 (Apertura + Clausura)</div>
