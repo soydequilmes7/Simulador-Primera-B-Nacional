@@ -5308,6 +5308,16 @@ const ESCUDOS = {
   'Cruzeiro':'cruzeiro', 'Cruzeiro Esporte Clube':'cruzeiro',
   'Corinthians':'corinthians', 'SC Corinthians Paulista':'corinthians',
   'Universidad Católica':'universidadcatolica', 'Universidad Catolica':'universidadcatolica',
+  // Desambiguadas (ver datos/libertadores_pool_internacional.csv): sin
+  // esto, escudoHTML() limpia el paréntesis ANTES de buscar y las dos
+  // caen en la entrada genérica de arriba (la chilena) -- mismo bug que
+  // ya se corrigió para la bandera (banderaHTML/PAIS_CLUB_EXTRANJERO),
+  // acá aplicado al escudo. El archivo de Ecuador se llama
+  // "unversidadcatolicaecu.png" en el repo (sin la "i" de "universidad",
+  // typo real del archivo subido) -- si en algún momento se renombra el
+  // PNG, hay que actualizar esta línea junto con el archivo.
+  'Universidad Católica (Chile)':'universidadcatolica', 'Universidad Catolica (Chile)':'universidadcatolica',
+  'Universidad Católica (Ecuador)':'unversidadcatolicaecu', 'Universidad Catolica (Ecuador)':'unversidadcatolicaecu',
 };
 
 // Sin acentos, sin espacios ni símbolos, todo en minúscula — para poder
