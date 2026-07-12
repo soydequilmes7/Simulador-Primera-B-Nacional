@@ -963,6 +963,11 @@
      sola fila de 8 que se salía del viewport sin scroll y dejaba Copa
      Libertadores cortada y Copa Sudamericana directamente invisible. */
   .zone-tabs-temporada{ flex-direction:column; gap:10px; }
+  /* .group stretches a lo ancho del contenedor (align-items:stretch, default
+     en flex-direction:column) pero .group en sí no tenía justify-content,
+     así que sus botones quedaban pegados al margen izquierdo en vez de
+     centrados dentro de la fila -- ver capturas del pedido. */
+  .zone-tabs-temporada .group{ justify-content:center; flex-wrap:wrap; }
 
   /* ---------- MODO TEMPORADA · dashboard superior ----------
      Convierte el arranque de la pestaña en un mini-dashboard (mismo
@@ -1209,6 +1214,10 @@
   }
   #temporada-detalle-competencia .bracket-scroll{ scrollbar-width:none; -ms-overflow-style:none; }
   #temporada-detalle-competencia .bracket-scroll::-webkit-scrollbar{ display:none; }
+  #temporada-detalle-competencia:has(#bracket-temporada-libertadores) .bracket-wrap.scrollable .bracket-scroll,
+  #temporada-detalle-competencia:has(#bracket-temporada-sudamericana) .bracket-wrap.scrollable .bracket-scroll{ cursor:grab; }
+  #temporada-detalle-competencia:has(#bracket-temporada-libertadores) .bracket-wrap.scrollable .bracket-scroll.is-dragging,
+  #temporada-detalle-competencia:has(#bracket-temporada-sudamericana) .bracket-wrap.scrollable .bracket-scroll.is-dragging{ cursor:grabbing; user-select:none; }
 
   /* -- Copa Libertadores: dorado, igual que en su propia pestaña -- */
   #bracket-temporada-libertadores .round-title{
@@ -1350,21 +1359,95 @@
      #bracket-temporada-sudamericana .match), en vez de un genérico
      compartido entre ambas. -- */
   .temporada-copa-grupos{
-    display:grid; grid-template-columns:repeat(auto-fit, minmax(230px,1fr)); gap:18px;
-    align-items:start; margin-bottom:24px;
+    display:grid; grid-template-columns:repeat(var(--zonas-cols, 4), minmax(0,1fr)); gap:18px;
+    align-items:stretch; margin-bottom:24px;
+  }
+  /* auto-fit armaba filas disparejas (p.ej. 8 zonas en 3 columnas
+     terminaba en 3+3+2, con la última fila pegada a la izquierda): el
+     número de columnas ahora lo define columnasParejasZonas() en JS,
+     como la cantidad que más se acerca a 4 dividiendo el total de zonas
+     sin resto, para que todas las filas queden completas y prolijas. En
+     pantallas chicas se prioriza legibilidad por sobre lo parejo. */
+  @media (max-width:980px){ .temporada-copa-grupos{ grid-template-columns:repeat(2, minmax(0,1fr)) !important; } }
+  @media (max-width:620px){ .temporada-copa-grupos{ grid-template-columns:1fr !important; } }
+  /* Las tarjetas de zona necesitan más ancho real que el que deja el
+     <section> de 920px para que el nombre del equipo entre sin
+     truncarse tanto -- este wrapper "revienta" el ancho del contenedor
+     centrado usando el viewport como referencia (96vw, hasta 1400px),
+     sin generar scroll horizontal porque el body ya usa
+     overflow-x:clip y nunca se excede el 100vw. En mobile (donde ya
+     se cae a 1-2 columnas) no hace falta: se mantiene el ancho normal. */
+  .temporada-copa-grupos-wide{ width:100%; }
+  @media (min-width:621px){
+    .temporada-copa-grupos-wide{
+      width:96vw; max-width:1400px; padding:0 16px;
+      margin-left:50%; transform:translateX(-50%);
+    }
   }
   .temporada-copa-zona{
-    border-radius:11px; padding:14px 15px 8px;
+    display:flex; flex-direction:column; height:100%;
+    border-radius:11px; padding:14px 15px 12px;
     transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
   }
   .temporada-copa-zona-titulo{
     font-family:'JetBrains Mono'; font-weight:700; font-size:11.5px; letter-spacing:0.14em;
     text-transform:uppercase; padding-bottom:8px; margin-bottom:10px; border-bottom:2px solid;
   }
+  /* Tarjeta de grupo: ancho y alto siempre iguales entre sí (grid con
+     align-items:stretch + esta tarjeta y su tabla en flex column) y sin
+     scroll bajo ninguna circunstancia -- table-layout:fixed + colgroup
+     fijan el ancho de cada columna y el nombre del equipo se trunca con
+     ellipsis en vez de desbordar. overflow:hidden en vez de auto/scroll. */
   .temporada-copa-zona .table-wrap{
     border-radius:var(--radius-sm); box-shadow:var(--card-shadow);
     transition: box-shadow 0.2s ease, transform 0.2s ease;
+    flex:1; display:flex; flex-direction:column;
+    overflow:hidden;
   }
+  .temporada-copa-zona table{
+    width:100%; min-width:0 !important; table-layout:fixed; flex:1;
+  }
+  .temporada-copa-zona thead th{ padding:7px 8px; font-size:10px; }
+  .temporada-copa-zona tbody td{ padding:7px 6px; font-size:12.5px; white-space:nowrap; }
+  .temporada-copa-zona tbody td:first-child{ text-align:center; padding-right:2px; }
+  .temporada-copa-zona tbody td:nth-child(2){ overflow:hidden; text-overflow:ellipsis; }
+  .temporada-copa-zona tbody td:last-child{ font-weight:700; text-align:right; padding-left:2px; }
+  /* Escudo/bandera más chicos acá que en el resto del sitio -- el
+     espacio horizontal de estas tarjetas es limitado y lo prioritario
+     es que se lea el nombre del equipo completo. */
+  .temporada-copa-zona .escudo{ width:16px; height:16px; margin-right:5px; vertical-align:-3px; }
+  .temporada-copa-zona .bandera-club{ margin-right:3px; font-size:0.8em; }
+
+  /* Indicador de clasificación: mismos 3 colores en Libertadores y
+     Sudamericana para que se entienda de un vistazo en cualquiera de
+     las dos copas -- turquesa = pasa directo a Octavos, violeta =
+     juega el Playoff de Octavos, ámbar = desciende a la Copa
+     Sudamericana (solo aplica al 3er puesto de zonas de Libertadores). */
+  .temporada-copa-zona tbody tr.clasif-octavos{ background: rgba(45,212,191,0.14); box-shadow: inset 3px 0 0 #2DD4BF; }
+  .temporada-copa-zona tbody tr.clasif-octavos:hover{ background: rgba(45,212,191,0.2); }
+  .temporada-copa-zona tbody tr.clasif-octavos td:first-child{ color:#2DD4BF; }
+  .temporada-copa-zona tbody tr.clasif-octavos td:nth-child(2){ color:#5EEAD4; font-weight:700; }
+  .temporada-copa-zona tbody tr.clasif-octavos td:last-child{ color:#2DD4BF; }
+
+  .temporada-copa-zona tbody tr.clasif-playoff{ background: rgba(139,92,246,0.14); box-shadow: inset 3px 0 0 #8B5CF6; }
+  .temporada-copa-zona tbody tr.clasif-playoff:hover{ background: rgba(139,92,246,0.2); }
+  .temporada-copa-zona tbody tr.clasif-playoff td:first-child{ color:#A78BFA; }
+  .temporada-copa-zona tbody tr.clasif-playoff td:nth-child(2){ color:#C4B5FD; font-weight:700; }
+  .temporada-copa-zona tbody tr.clasif-playoff td:last-child{ color:#A78BFA; }
+
+  .temporada-copa-zona tbody tr.clasif-sudamericana{ background: rgba(245,158,11,0.14); box-shadow: inset 3px 0 0 #F59E0B; }
+  .temporada-copa-zona tbody tr.clasif-sudamericana:hover{ background: rgba(245,158,11,0.2); }
+  .temporada-copa-zona tbody tr.clasif-sudamericana td:first-child{ color:#F59E0B; }
+  .temporada-copa-zona tbody tr.clasif-sudamericana td:nth-child(2){ color:#FBBF6A; font-weight:700; }
+  .temporada-copa-zona tbody tr.clasif-sudamericana td:last-child{ color:#F59E0B; }
+
+  /* Leyenda de colores debajo de la grilla de zonas */
+  .temporada-copa-grupos-leyenda{
+    display:flex; flex-wrap:wrap; gap:14px 22px; margin:-8px 0 18px; padding:0 2px;
+    font-family:'JetBrains Mono'; font-size:11px; letter-spacing:0.02em; color:var(--ink-dim);
+  }
+  .temporada-copa-grupos-leyenda span{ display:inline-flex; align-items:center; gap:7px; }
+  .temporada-copa-grupos-leyenda i{ width:10px; height:10px; border-radius:3px; flex:none; }
 
   /* Libertadores: dorado/ámbar, igual que el cuadro de su propia copa */
   .temporada-copa-grupos-libertadores .temporada-copa-zona{
@@ -1380,9 +1463,6 @@
   .temporada-copa-grupos-libertadores .temporada-copa-zona .table-wrap:hover{
     box-shadow:var(--card-shadow-hover), 0 0 0 1px rgba(212,175,55,0.35);
   }
-  .temporada-copa-grupos-libertadores tbody tr.reducido{ background: rgba(212,175,55,0.1); box-shadow: inset 3px 0 0 #D4AF37; }
-  .temporada-copa-grupos-libertadores tbody tr.reducido:hover{ background: rgba(212,175,55,0.15); }
-  .temporada-copa-grupos-libertadores tbody tr.reducido td:nth-child(2){ color:#EAD9A0; font-weight:700; }
 
   /* Sudamericana: azul eléctrico, igual que el cuadro de su propia copa */
   .temporada-copa-grupos-sudamericana .temporada-copa-zona{
@@ -1398,9 +1478,6 @@
   .temporada-copa-grupos-sudamericana .temporada-copa-zona .table-wrap:hover{
     box-shadow:var(--card-shadow-hover), 0 0 0 1px rgba(31,94,255,0.32);
   }
-  .temporada-copa-grupos-sudamericana tbody tr.reducido{ background: rgba(31,94,255,0.12); box-shadow: inset 3px 0 0 #1F5EFF; }
-  .temporada-copa-grupos-sudamericana tbody tr.reducido:hover{ background: rgba(31,94,255,0.16); }
-  .temporada-copa-grupos-sudamericana tbody tr.reducido td:nth-child(2){ color:#3E7BFF; font-weight:700; }
 
   /* Bandera de país junto al escudo, en el cuadro y en los grupos de
      ambas copas (ver banderaHTML()). */
@@ -10400,29 +10477,79 @@ function detalleCopaInternacionalTemporadaHTML(slug){
   // -sudamericana) en vez de estilos inline sueltos, para que el CSS le
   // dé exactamente la misma identidad visual (dorado/ámbar o azul, con
   // los mismos bordes, acentos y brillos) que ya tiene el cuadro de su
-  // propia copa. Sigue reusando .table-wrap/table/tr.reducido -- solo
-  // cambia el envoltorio y las clases del título de zona.
+  // propia copa. Solo se muestran posición, equipo y PTS (sin PJ) y la
+  // tabla usa colgroup + table-layout:fixed para que ancho/alto sean
+  // siempre los mismos entre tarjetas y el nombre del equipo se trunque
+  // con ellipsis en vez de generar scroll horizontal.
+  //
+  // Clasificación (mismo criterio real de CONMEBOL, 3 colores fijos en
+  // ambas copas para leerse de un vistazo):
+  //  - Libertadores: 1° y 2° (turquesa) pasan directo a Octavos de la
+  //    Libertadores; el 3° (ámbar) desciende a la Copa Sudamericana.
+  //  - Sudamericana: 1° (turquesa) pasa directo a Octavos; el 2°
+  //    (violeta) juega el Playoff de Octavos.
   const zonasHTML = (datos.zonas || []).map(z => `
     <div class="temporada-copa-zona">
       <div class="temporada-copa-zona-titulo">Zona ${z.letra}</div>
       <div class="table-wrap"><table>
+        <colgroup><col style="width:20px;"><col><col style="width:34px;"></colgroup>
+        <thead><tr><th>#</th><th>Equipo</th><th>Pts</th></tr></thead>
         <tbody>
-          ${z.tabla.map((f, i) => `<tr class="${i < 2 ? 'reducido' : ''}">
-            <td>${i + 1}</td><td>${escudoHTML(f.equipo)}${banderaHTML(f.equipo)}${f.equipo}</td><td>${f.puntos} pts</td>
-          </tr>`).join('')}
+          ${z.tabla.map((f, i) => {
+            let clase = '';
+            if (slug === 'libertadores'){
+              if (i === 0 || i === 1) clase = 'clasif-octavos';
+              else if (i === 2) clase = 'clasif-sudamericana';
+            } else {
+              if (i === 0) clase = 'clasif-octavos';
+              else if (i === 1) clase = 'clasif-playoff';
+            }
+            return `<tr class="${clase}">
+            <td>${i + 1}</td><td title="${f.equipo}">${escudoHTML(f.equipo)}${banderaHTML(f.equipo)}${f.equipo}</td><td>${f.puntos}</td>
+          </tr>`;
+          }).join('')}
         </tbody>
       </table></div>
     </div>`).join('');
+  const columnasZonas = columnasParejasZonas((datos.zonas || []).length);
+  const leyendaHTML = slug === 'libertadores'
+    ? `<div class="temporada-copa-grupos-leyenda">
+        <span><i style="background:#2DD4BF;"></i>1° y 2° -- Octavos de la Libertadores</span>
+        <span><i style="background:#F59E0B;"></i>3° -- pasa a la Copa Sudamericana</span>
+      </div>`
+    : `<div class="temporada-copa-grupos-leyenda">
+        <span><i style="background:#2DD4BF;"></i>1° -- directo a Octavos</span>
+        <span><i style="background:#8B5CF6;"></i>2° -- Playoff de Octavos</span>
+      </div>`;
 
   return `
     <div class="campeon-anuncio-wrap">${campeonAnuncioHTML(datos.campeon, '🏆')}</div>
     ${zonasHTML ? `
-      <div class="section-note" style="margin:18px 0 10px;">Fase de grupos de esta temporada -- los dos primeros de cada zona (en verde) clasifican.</div>
-      <div class="temporada-copa-grupos temporada-copa-grupos-${slug}">${zonasHTML}</div>
+      <div class="section-note" style="margin:18px 0 10px;">Fase de grupos de esta temporada.</div>
+      <div class="temporada-copa-grupos-wide">
+        <div class="temporada-copa-grupos temporada-copa-grupos-${slug}" style="--zonas-cols:${columnasZonas};">${zonasHTML}</div>
+        ${leyendaHTML}
+      </div>
     ` : ''}
     <div class="section-note" style="margin:18px 0 10px;">Cuadro desde ${slug === 'libertadores' ? 'Octavos de Final' : 'los Playoffs de Octavos'}.</div>
     <div class="bracket-scroll"><div class="bracket" id="${bracketId}">${bracketHTML}</div></div>
   `;
+}
+
+// Elige, para un total dado de zonas, la cantidad de columnas (lo más
+// cercana a 4 posible) que las divide sin resto -- para que la grilla de
+// grupos siempre termine en filas completas (p.ej. 8 zonas -> 4 columnas
+// x 2 filas) en vez de dejar la última fila desparramada a la izquierda
+// (lo que pasaba antes con auto-fit, p.ej. 8 zonas en 3 columnas
+// terminaba en 3+3+2). Si el total no es divisible por 4, 3 ni 2 (caso
+// raro, cantidades de zonas casi siempre son pares), cae a 2 columnas
+// como default más prolijo que un valor sin probar.
+function columnasParejasZonas(total){
+  if (!total) return 4;
+  for (const candidata of [4, 3, 2]){
+    if (total % candidata === 0) return candidata;
+  }
+  return total <= 3 ? total : 2;
 }
 
 function competenciaCardHTML(slug, comp){
@@ -11191,8 +11318,21 @@ document.getElementById('btn-reiniciar-temporada').addEventListener('click', rei
    hasta el título" (se crea recién al hacer click, dentro de
    #campeon-resultado-libertadores). Así el arrastre funciona en
    cualquiera de los dos, incluidos los que todavía no existen al cargar
-   la página. */
+   la página.
+   También cubre el mismo cuadro dentro de Modo Temporada
+   (#bracket-temporada-libertadores/#bracket-temporada-sudamericana,
+   ver detalleCopaInternacionalTemporadaHTML): ahí el body queda en
+   liga-temporada en vez de liga-libertadores/liga-sudamericana, así que
+   se identifica por el id del cuadro en vez del body class. */
 (function initDragScrollLibertadores(){
+  function esCuadroArrastrable(candidato){
+    if (!candidato) return false;
+    if (document.body.classList.contains('liga-libertadores') || document.body.classList.contains('liga-sudamericana')) return true;
+    if (document.body.classList.contains('liga-temporada') &&
+        candidato.querySelector('#bracket-temporada-libertadores, #bracket-temporada-sudamericana')) return true;
+    return false;
+  }
+
   let scrollEl = null;
   let arrastrando = false;
   let startX = 0;
@@ -11201,7 +11341,7 @@ document.getElementById('btn-reiniciar-temporada').addEventListener('click', rei
 
   document.addEventListener('mousedown', (ev) => {
     const candidato = ev.target.closest('.bracket-scroll');
-    if (!candidato || !document.body.classList.contains('liga-libertadores') && !document.body.classList.contains('liga-sudamericana')) return;
+    if (!esCuadroArrastrable(candidato)) return;
     scrollEl = candidato;
     arrastrando = true;
     movido = false;
@@ -11233,7 +11373,7 @@ document.getElementById('btn-reiniciar-temporada').addEventListener('click', rei
   // Shift + rueda del mouse: traduce el scroll vertical a horizontal
   document.addEventListener('wheel', (ev) => {
     const candidato = ev.target.closest('.bracket-scroll');
-    if (!candidato || !document.body.classList.contains('liga-libertadores') && !document.body.classList.contains('liga-sudamericana')) return;
+    if (!esCuadroArrastrable(candidato)) return;
     if (!ev.shiftKey) return;
     if (ev.deltaY === 0) return;
     ev.preventDefault();
@@ -11250,7 +11390,7 @@ document.getElementById('btn-reiniciar-temporada').addEventListener('click', rei
 
   document.addEventListener('touchstart', (ev) => {
     const candidato = ev.target.closest('.bracket-scroll');
-    if (!candidato || !document.body.classList.contains('liga-libertadores') && !document.body.classList.contains('liga-sudamericana')) return;
+    if (!esCuadroArrastrable(candidato)) return;
     if (ev.touches.length !== 1) return;
     touchScrollEl = candidato;
     touchStartX = ev.touches[0].pageX;
