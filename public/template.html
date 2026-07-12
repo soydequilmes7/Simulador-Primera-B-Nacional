@@ -1807,25 +1807,31 @@
     .liga-tabs{
       align-items:stretch;
       gap:10px;
-      padding:10px 12px;
+      padding:10px 0;
     }
     .liga-tabs .group{
       width:100%;
       flex:1 1 100%;
+      overflow-x:auto;
+      -webkit-overflow-scrolling:touch;
+      scrollbar-width:none;
+      justify-content:flex-start;
+      margin:0 12px;
+      width:calc(100% - 24px);
     }
+    .liga-tabs .group::-webkit-scrollbar{ display:none; }
     .liga-tab{
-      flex:1 1 0;
+      flex:0 0 auto;
       display:flex;
       align-items:center;
       justify-content:center;
-      min-height:54px;
-      padding:9px 8px;
+      min-height:44px;
+      padding:10px 16px;
       font-size:13px;
       line-height:1.15;
       letter-spacing:0.02em;
       text-align:center;
-      white-space:normal;
-      overflow-wrap:anywhere;
+      white-space:nowrap;
     }
     .theme-toggle{
       margin:0 auto;
@@ -8466,6 +8472,11 @@ function actualizarHero(liga){
 
 function setLiga(liga){
   document.querySelectorAll('.liga-tab').forEach(b => b.classList.toggle('active', b.dataset.liga === liga));
+  // En mobile la barra de pestañas ahora scrollea horizontal (ver
+  // @media max-width:600px): si la pestaña elegida no está a la vista
+  // (ej. al cargar la página directo en Modo Temporada), la centramos.
+  const tabActiva = document.querySelector('.liga-tab.active');
+  if (tabActiva) tabActiva.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
   document.getElementById('vista-nacional').style.display = liga === 'nacional' ? '' : 'none';
   document.getElementById('vista-lpf').style.display = liga === 'lpf' ? '' : 'none';
   document.getElementById('vista-copa').style.display = liga === 'copa' ? '' : 'none';
