@@ -1434,12 +1434,27 @@
 
   /* Partidos jugados entre sí, debajo de la tabla de cada zona -- mismo
      .match que usa el bracket, pero en una lista compacta de 1 columna
-     en vez de las columnas por ronda del cuadro. */
-  .temporada-copa-zona-partidos-titulo{
+     en vez de las columnas por ronda del cuadro. Colapsado por defecto
+     (<details> nativo, sin JS): mostrar los partidos de las 8 zonas de
+     una quedaba muy feo -- entre la cantidad de partidos jugados varía
+     zona a zona, y con el grid en align-items:stretch todas las tarjetas
+     de una misma fila se estiran a la altura de la más alta, dejando
+     saltos grandes entre fila y fila. Cada usuario abre solo la/las
+     zonas que le interesan. */
+  .temporada-copa-zona-partidos-toggle{ margin-top:12px; }
+  .temporada-copa-zona-partidos-toggle summary{
+    cursor:pointer; list-style:none; user-select:none;
+    display:flex; align-items:center; gap:6px;
     font-family:'JetBrains Mono'; font-size:9.5px; letter-spacing:0.1em; text-transform:uppercase;
-    color:var(--muted); margin:12px 0 7px;
+    color:var(--muted); transition:color 0.15s ease;
   }
-  .temporada-copa-zona-partidos{ display:flex; flex-direction:column; gap:6px; }
+  .temporada-copa-zona-partidos-toggle summary:hover{ color:var(--ink-dim); }
+  .temporada-copa-zona-partidos-toggle summary::-webkit-details-marker{ display:none; }
+  .temporada-copa-zona-partidos-toggle summary::before{
+    content:'▸'; font-size:8px; flex-shrink:0; transition: transform 0.15s ease;
+  }
+  .temporada-copa-zona-partidos-toggle[open] summary::before{ transform:rotate(90deg); }
+  .temporada-copa-zona-partidos{ display:flex; flex-direction:column; gap:6px; margin-top:8px; }
   .temporada-copa-zona-partidos .match{ padding:6px 9px; font-size:11px; }
   .temporada-copa-zona-partidos .match .row{ padding:2px 0; }
   .temporada-copa-zona-partidos .escudo{ width:14px; height:14px; margin-right:5px; vertical-align:-3px; }
@@ -5475,6 +5490,12 @@ const ESCUDOS = {
   // PNG, hay que actualizar esta línea junto con el archivo.
   'Universidad Católica (Chile)':'universidadcatolica', 'Universidad Catolica (Chile)':'universidadcatolica',
   'Universidad Católica (Ecuador)':'unversidadcatolicaecu', 'Universidad Catolica (Ecuador)':'unversidadcatolicaecu',
+  // Racing (Uruguay), del pool internacional (datos/libertadores_pool_
+  // internacional.csv) -- sin desambiguar, "Racing" a secas caía en la
+  // entrada de Racing Club (Avellaneda) de más arriba (misma colisión que
+  // Universidad Católica de arriba). El nombre real del club en el pool ya
+  // se renombró a "Racing (Uruguay)" para desambiguar en origen.
+  'Racing (Uruguay)':'racingmontevideo',
 };
 
 // Sin acentos, sin espacios ni símbolos, todo en minúscula — para poder
@@ -5550,7 +5571,7 @@ const PAIS_CLUB_EXTRANJERO = {
   'Boston River':'UY', 'Cerro':'UY', 'Cerro Largo':'UY', 'Danubio':'UY',
   'Defensor Sporting':'UY', 'Juventud':'UY', 'Liverpool':'UY', 'Montevideo City Torque':'UY',
   'Montevideo Wanderers':'UY', 'Wanderers':'UY', 'Nacional (Uruguay)':'UY', 'Penarol':'UY', 'Peñarol':'UY',
-  'Racing':'UY',
+  'Racing (Uruguay)':'UY',
   // Paraguay
   '2 de Mayo':'PY', 'Ameliano':'PY', 'Cerro Porteno':'PY', 'Cerro Porteño':'PY',
   'Guarani':'PY', 'Guaraní':'PY', 'Libertad':'PY', 'Nacional (Paraguay)':'PY', 'Olimpia':'PY',
@@ -10709,7 +10730,7 @@ function detalleCopaInternacionalTemporadaHTML(slug){
     const partidosHTML = (z.partidos || []).map(p => matchHTML(p)).join('');
     return `
     <div class="temporada-copa-zona">
-      <div class="temporada-copa-zona-titulo">Zona ${z.letra}</div>
+      <div class="temporada-copa-zona-titulo">Grupo ${z.letra}</div>
       <div class="table-wrap"><table>
         <colgroup><col style="width:20px;"><col><col style="width:34px;"></colgroup>
         <thead><tr><th>#</th><th>Equipo</th><th>Pts</th></tr></thead>
@@ -10730,8 +10751,10 @@ function detalleCopaInternacionalTemporadaHTML(slug){
         </tbody>
       </table></div>
       ${partidosHTML ? `
-        <div class="temporada-copa-zona-partidos-titulo">Partidos entre sí</div>
-        <div class="temporada-copa-zona-partidos">${partidosHTML}</div>
+        <details class="temporada-copa-zona-partidos-toggle">
+          <summary>Partidos entre sí</summary>
+          <div class="temporada-copa-zona-partidos">${partidosHTML}</div>
+        </details>
       ` : ''}
     </div>`;
   }).join('');
