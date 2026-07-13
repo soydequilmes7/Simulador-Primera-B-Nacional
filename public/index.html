@@ -776,6 +776,9 @@
   body.liga-temporada section{ margin-bottom:52px; }
 
   @keyframes temporada-hero-in{ from{ opacity:0; transform:translateY(-8px);} to{ opacity:1; transform:none; } }
+  @media (max-width:600px){
+    body.liga-temporada .torneo-logo[data-liga="temporada"]{ width:112px; height:112px; padding:16px; }
+  }
   @media (prefers-reduced-motion: reduce){
     body.liga-temporada .hero{ animation:none; }
     body.liga-temporada .hero .meta > div{ transition:none; }
@@ -2319,6 +2322,11 @@
   body.liga-bmetro .torneo-logo[data-liga="bmetro"]{ display:block; }
   body.liga-federal .torneo-logo[data-liga="federal"]{ display:block; }
   body.liga-primerac .torneo-logo[data-liga="primerac"]{ display:block; }
+  body.liga-temporada .torneo-logo[data-liga="temporada"]{
+    display:block; width:156px; height:156px; padding:22px;
+    box-shadow: 0 0 0 6px rgba(124,77,255,0.1), 0 10px 30px rgba(0,0,0,0.6), 0 0 46px rgba(124,77,255,0.35);
+  }
+  body.liga-temporada .torneo-logo-wrap{ margin-bottom:26px; }
 
   /* Filas de tabla del Federal A: clasifica a la fase siguiente / posible
      mejor 5° (zonas de 9) / desciende (Reválida 1ª Etapa, según la lista
@@ -4027,6 +4035,8 @@
            onerror="this.remove()">
       <img class="torneo-logo" data-liga="sudamericana" src="logos-torneos/copa-sudamericana.png" alt=""
            onerror="this.remove()">
+      <img class="torneo-logo" data-liga="temporada" src="logos-torneos/modotorneo.png" alt=""
+           onerror="this.remove()">
     </div>
     <div class="eyebrow" id="hero-eyebrow">SIMULACIÓN MONTE CARLO — <span id="hero-n">0</span> CORRIDAS</div>
     <h1 class="display"><span id="hero-title-prefix">SIMULADOR </span><span id="hero-title-span">PRIMERA NACIONAL</span></h1>
@@ -4678,7 +4688,7 @@
     <div class="search-section" style="text-align:center;">
       <p style="color:var(--ink-dim); max-width:640px; margin:0 auto 18px;">
         Corre las 8 competencias (Liga Profesional, Primera Nacional, B Metropolitana,
-        Federal A, Primera C, Copa Libertadores, Copa Sudamericana y Copa Argentina) UNA vez cada una y calcula quién asciende,
+        Federal A, Primera C, Copa Libertadores, Copa Sudamericana, Recopa Sudamericana y Copa Argentina) UNA vez cada una y calcula quién asciende,
         quién desciende, quién clasifica a las copas internacionales, quién clasifica
         a la próxima Copa Argentina y quién sale campeón de cada copa. 
       </p>
@@ -4692,7 +4702,7 @@
       <div class="temporada-dashboard">
         <span class="temporada-dashboard-eyebrow">MODO TEMPORADA</span>
         <h2 class="temporada-dashboard-title" id="temporada-dashboard-title">Así quedó la temporada</h2>
-        <p class="temporada-dashboard-sub" id="temporada-dashboard-estado">Corrida real completa — sin Monte Carlo</p>
+        <p class="temporada-dashboard-sub" id="temporada-dashboard-estado">Corrida real completa</p>
         <div class="temporada-dashboard-metrics" id="temporada-dashboard-metrics"></div>
         <div class="temporada-dashboard-metrics-extra" id="temporada-dashboard-metrics-extra"></div>
       </div>
@@ -4750,6 +4760,12 @@
         <div class="section-head"><span class="idx">06</span><h2>Palmarés de la simulación</h2><div class="rule"></div></div>
         <p class="section-note" style="margin-top:0;">Un campeón por ronda y por competencia, acumulado a medida que vas simulando temporadas seguidas. Se reinicia si volvés a empezar desde datos reales.</p>
         <div class="table-wrap"><div id="temporada-palmares-tabla"></div></div>
+      </section>
+
+      <section id="sec-temporada-palmares-selecciones">
+        <div class="section-head"><span class="idx">07</span><h2>Palmarés de selecciones</h2><div class="rule"></div></div>
+        <p class="section-note" style="margin-top:0;">Campeones del Mundial, la Copa América, la Eurocopa y la Finalissima en los años simulados. Se reinicia si volvés a empezar desde datos reales.</p>
+        <div class="table-wrap"><div id="temporada-palmares-selecciones-tabla"></div></div>
       </section>
     </div>
   </div>
@@ -10281,20 +10297,37 @@ const anioDeRondaTemporada = (ronda) => ANIO_BASE_TEMPORADA + (ronda - 1);
 // el resto del estado en reiniciarTemporada().
 const PAISES_MUNDIAL = [
   "Argentina", "Alemania", "Italia", "Brasil", "Uruguay", "Francia",
-  "Inglaterra", "España", "Países Bajos", "Checoslovaquia", "Hungría",
-  "Suecia", "Croacia",
+  "Inglaterra", "España", "Países Bajos", "Serbia", "Hungría",
+  "Suecia", "Croacia", "Suiza", "Portugal", "Dinamarca", "Grecia", "Rusia", "Polonia",
 ];
 const BANDERA_PAIS_MUNDIAL = {
   "Argentina": "🇦🇷", "Alemania": "🇩🇪", "Italia": "🇮🇹", "Brasil": "🇧🇷",
   "Uruguay": "🇺🇾", "Francia": "🇫🇷", "Inglaterra": "🏴󠁧󠁢󠁥󠁮󠁧󠁿", "España": "🇪🇸",
-  "Países Bajos": "🇳🇱", "Checoslovaquia": "🏆", "Hungría": "🇭🇺",
-  "Suecia": "🇸🇪", "Croacia": "🇭🇷",
+  "Países Bajos": "🇳🇱", "Serbia": "🇷🇸", "Hungría": "🇭🇺",
+  "Suecia": "🇸🇪", "Croacia": "🇭🇷", "Suiza": "🇨🇭", "Portugal": "🇵🇹", "Dinamarca": "🇩🇰", "Grecia": "🇬🇷", "Rusia": "🇷🇺", "Polonia": "🇵🇱",
 };
+// Marcadores de final "de color" para estas selecciones ficticias (no hay
+// equipos ni Elo real detrás, es sólo un dato de sabor para la tarjeta) --
+// mezcla de resultados ajustados, con alargue y con penales, como suelen
+// ser las finales grandes. sortearResultadoFinalSelecciones() elige
+// campeón + subcampeón (siempre distintos) + un marcador de este pool.
+const MARCADORES_FINAL_SELECCIONES = [
+  "1-0", "2-1", "2-0", "3-1", "1-0 (alargue)", "2-1 (alargue)",
+  "1-1 (4-2 por penales)", "0-0 (5-4 por penales)", "2-2 (3-1 por penales)",
+];
+function sortearResultadoFinalSelecciones(paises){
+  const iCampeon = Math.floor(Math.random() * paises.length);
+  let iSubcampeon;
+  do { iSubcampeon = Math.floor(Math.random() * paises.length); } while (iSubcampeon === iCampeon);
+  const marcador = MARCADORES_FINAL_SELECCIONES[Math.floor(Math.random() * MARCADORES_FINAL_SELECCIONES.length)];
+  return { campeon: paises[iCampeon], subcampeon: paises[iSubcampeon], marcador };
+}
+
 let CAMPEONES_MUNDIAL_CACHE = {};
 const esAnioMundial = (anio) => anio >= 2030 && (anio - 2030) % 4 === 0;
-function campeonMundial(anio){
+function resultadoMundial(anio){
   if (!(anio in CAMPEONES_MUNDIAL_CACHE)){
-    CAMPEONES_MUNDIAL_CACHE[anio] = PAISES_MUNDIAL[Math.floor(Math.random() * PAISES_MUNDIAL.length)];
+    CAMPEONES_MUNDIAL_CACHE[anio] = sortearResultadoFinalSelecciones(PAISES_MUNDIAL);
   }
   return CAMPEONES_MUNDIAL_CACHE[anio];
 }
@@ -10303,17 +10336,17 @@ function campeonMundial(anio){
 // arrancando en 2028 (no coincide con el Mundial, que arranca en 2030) y
 // rotando sólo entre selecciones sudamericanas.
 const PAISES_COPA_AMERICA = [
-  "Argentina", "Uruguay", "Brasil", "Paraguay", "Chile", "Perú", "Bolivia", "Colombia",
+  "Argentina", "Uruguay", "Brasil", "Paraguay", "Chile", "Perú", "Bolivia", "Colombia", "Ecuador"
 ];
 const BANDERA_PAIS_COPA_AMERICA = {
   "Argentina": "🇦🇷", "Uruguay": "🇺🇾", "Brasil": "🇧🇷", "Paraguay": "🇵🇾",
-  "Chile": "🇨🇱", "Perú": "🇵🇪", "Bolivia": "🇧🇴", "Colombia": "🇨🇴",
+  "Chile": "🇨🇱", "Perú": "🇵🇪", "Bolivia": "🇧🇴", "Colombia": "🇨🇴", "Ecuador": "🇪🇨"
 };
 let CAMPEONES_COPA_AMERICA_CACHE = {};
 const esAnioCopaAmerica = (anio) => anio >= 2028 && (anio - 2028) % 4 === 0;
-function campeonCopaAmerica(anio){
+function resultadoCopaAmerica(anio){
   if (!(anio in CAMPEONES_COPA_AMERICA_CACHE)){
-    CAMPEONES_COPA_AMERICA_CACHE[anio] = PAISES_COPA_AMERICA[Math.floor(Math.random() * PAISES_COPA_AMERICA.length)];
+    CAMPEONES_COPA_AMERICA_CACHE[anio] = sortearResultadoFinalSelecciones(PAISES_COPA_AMERICA);
   }
   return CAMPEONES_COPA_AMERICA_CACHE[anio];
 }
@@ -10323,20 +10356,50 @@ function campeonCopaAmerica(anio){
 // de la app) rotando entre selecciones europeas.
 const PAISES_EUROCOPA = [
   "España", "Italia", "Alemania", "Francia", "Países Bajos", "Dinamarca",
-  "Grecia", "Portugal", "Suiza", "Croacia", "Suecia",
+  "Grecia", "Portugal", "Suiza", "Croacia", "Suecia", "Polonia", "Bélgica", "Rusia", "Ucrania", "Turquía"
 ];
 const BANDERA_PAIS_EUROCOPA = {
   "España": "🇪🇸", "Italia": "🇮🇹", "Alemania": "🇩🇪", "Francia": "🇫🇷",
   "Países Bajos": "🇳🇱", "Dinamarca": "🇩🇰", "Grecia": "🇬🇷", "Portugal": "🇵🇹",
-  "Suiza": "🇨🇭", "Croacia": "🇭🇷", "Suecia": "🇸🇪",
+  "Suiza": "🇨🇭", "Croacia": "🇭🇷", "Suecia": "🇸🇪", "Polonia": "🇵🇱", "Bélgica": "🇧🇪", "Rusia": "🇷🇺", "Ucrania": "🇺🇦", "Turquía": "🇹🇷"
 };
 let CAMPEONES_EUROCOPA_CACHE = {};
 const esAnioEurocopa = (anio) => anio >= 2028 && (anio - 2028) % 4 === 0;
-function campeonEurocopa(anio){
+function resultadoEurocopa(anio){
   if (!(anio in CAMPEONES_EUROCOPA_CACHE)){
-    CAMPEONES_EUROCOPA_CACHE[anio] = PAISES_EUROCOPA[Math.floor(Math.random() * PAISES_EUROCOPA.length)];
+    CAMPEONES_EUROCOPA_CACHE[anio] = sortearResultadoFinalSelecciones(PAISES_EUROCOPA);
   }
   return CAMPEONES_EUROCOPA_CACHE[anio];
+}
+
+// Bandera de cualquier selección ya definida arriba, sin importar de qué
+// pool (Mundial/Copa América/Eurocopa) viene -- lo usan la Finalissima y el
+// historial de abajo, que mezclan selecciones de los tres pools.
+function banderaSeleccion(pais){
+  return BANDERA_PAIS_MUNDIAL[pais] || BANDERA_PAIS_COPA_AMERICA[pais] || BANDERA_PAIS_EUROCOPA[pais] || '🏆';
+}
+
+// Finalissima: partido único (a cancha neutral, con alargue y penales si
+// hace falta) entre el campeón de la Copa América y el campeón de la
+// Eurocopa, un año después de que se jugaron esas dos copas -- arrancan
+// juntas en 2028, así que la primera Finalissima es en 2029 y se repite
+// cada 4 años (2029, 2033, 2037...). Reutiliza resultadoCopaAmerica()/
+// resultadoEurocopa() del año anterior (que ya están cacheados si esa
+// temporada se llegó a jugar) para saber quién la disputa.
+let CAMPEONES_FINALISSIMA_CACHE = {};
+const esAnioFinalissima = (anio) => anio >= 2029 && (anio - 2029) % 4 === 0;
+function resultadoFinalissima(anio){
+  if (!(anio in CAMPEONES_FINALISSIMA_CACHE)){
+    const anioPrevio = anio - 1;
+    const campeonCopaAmerica = resultadoCopaAmerica(anioPrevio).campeon;
+    const campeonEurocopa = resultadoEurocopa(anioPrevio).campeon;
+    CAMPEONES_FINALISSIMA_CACHE[anio] = {
+      ...sortearResultadoFinalSelecciones([campeonCopaAmerica, campeonEurocopa]),
+      rivalCopaAmerica: campeonCopaAmerica,
+      rivalEurocopa: campeonEurocopa,
+    };
+  }
+  return CAMPEONES_FINALISSIMA_CACHE[anio];
 }
 
 function tablaSimpleHTML(filas, titulo, ascensoDirecto, ascensoReducido, descensosSet, opts){
@@ -10978,11 +11041,22 @@ function copaInternacionalCardHTML(slug, datos){
   const campeonHTML = datos && datos.campeon
     ? `<div class="campeon-nombre"><span class="trofeo">🏆</span>${escudoHTML(datos.campeon)}${nombreMostrable(datos.campeon)}</div>`
     : `<div class="campeon-nombre" style="color:var(--muted); font-size:15px;">Sin campeón único</div>`;
+  // Esta copa se juega EN la ronda actual pero con los clasificados
+  // DIFERIDOS de la ronda anterior (ver backend, plazas_diferidas_
+  // continental) -- se aclara acá para que no se lea como si fueran
+  // los clasificados que se acaban de mostrar en "Clasificación a
+  // copas 2027" un poco más arriba en la misma pantalla (esos son los
+  // que juegan la EDICIÓN SIGUIENTE, no esta).
+  const rondaOrigen = datos && (datos.ronda_clasificacion || datos.ronda_clasificacion === 0)
+    ? datos.ronda_clasificacion : null;
+  const notaOrigen = rondaOrigen
+    ? `Jugada con los clasificados de la temporada ${anioDeRondaTemporada(rondaOrigen)}.`
+    : 'Fase de grupos + cuadro de eliminación directa.';
   return `<div class="temporada-card" style="--tc-color:${color};" onclick="setLigaTemporadaScrollTo('${slug}')" role="button" tabindex="0">
     <div class="liga-nombre"><img src="logos-torneos/copa-${slug}.png" alt="" onerror="this.remove()"><span>${nombre}</span></div>
     ${campeonHTML}
     <div class="temporada-card-sep"></div>
-    <div class="temporada-card-foot"><div style="color:var(--muted); font-size:12.5px;">Fase de grupos + cuadro de eliminación directa.</div></div>
+    <div class="temporada-card-foot"><div style="color:var(--muted); font-size:12.5px;">${notaOrigen}</div></div>
   </div>`;
 }
 
@@ -11098,9 +11172,19 @@ function renderTemporada(datos){
     : '<div style="color:var(--muted);">No se aplicaron movimientos entre divisiones en esta corrida.</div>';
 
   const avisos = (datos.promocion && datos.promocion.avisos) || [];
+  // Si Libertadores/Sudamericana no corrieron esta ronda por falta de
+  // clasificados diferidos de una ronda anterior (ver backend,
+  // plazas_diferidas_continental), ese motivo queda en .error -- se
+  // suma acá para que no parezca que la copa simplemente "desapareció"
+  // de la barra de pestañas sin explicación.
+  const avisosContinental = [
+    datos.libertadores && datos.libertadores.error,
+    datos.sudamericana && datos.sudamericana.error,
+  ].filter(Boolean);
   const avisosDiv = document.getElementById('temporada-avisos');
-  avisosDiv.innerHTML = avisos.length
-    ? 'Avisos: ' + avisos.map(a => typeof a === 'string' ? a : JSON.stringify(a)).join(' · ')
+  const todosLosAvisos = [...avisos, ...avisosContinental];
+  avisosDiv.innerHTML = todosLosAvisos.length
+    ? 'Avisos: ' + todosLosAvisos.map(a => typeof a === 'string' ? a : JSON.stringify(a)).join(' · ')
     : '';
 
   const copasList = document.getElementById('temporada-copas-list');
@@ -11121,16 +11205,28 @@ function renderTemporada(datos){
     datosLPFTemporada.campeon_clausura,
     campeonCopaArgTemporadaResumen
   );
+  // El año que va en el título es el de la temporada de PARTICIPACIÓN,
+  // no el de la clasificación: estos clubes clasificaron jugando la
+  // temporada `anioDeRondaTemporada(NUMERO_RONDA_TEMPORADA)` (la que se
+  // acaba de simular), pero por reglamento real juegan la Libertadores/
+  // Sudamericana recién la edición del año SIGUIENTE -- antes acá
+  // decía "2027" fijo sin importar en qué ronda estuviera parado, así
+  // que a partir de la ronda 2 el rótulo quedaba mal (mostraba 2027 de
+  // nuevo en vez de 2028, etc.).
+  const anioParticipacionCopas = anioDeRondaTemporada(NUMERO_RONDA_TEMPORADA) + 1;
   copasList.innerHTML = (cuposResumen.libertadores.length || cuposResumen.sudamericana.length) ? `
     <div class="copas-grid">
       <div class="copa-card libertadores">
-        <div class="copa-title"><img class="copa-logo" src="logos-torneos/copa-libertadores.png" alt="" onerror="this.remove()">Copa Libertadores 2027</div>
+        <div class="copa-title"><img class="copa-logo" src="logos-torneos/copa-libertadores.png" alt="" onerror="this.remove()">Copa Libertadores ${anioParticipacionCopas}</div>
         <ol>${cuposResumen.libertadores.map(c => `<li class="${c.inventado ? 'inventado' : ''}">${escudoHTML(c.equipo)}${nombreMostrable(c.equipo)}<span style="margin-left:auto; color:var(--muted); font-size:11px; font-style:normal;">${c.etiqueta}</span></li>`).join('')}</ol>
       </div>
       <div class="copa-card sudamericana">
-        <div class="copa-title"><img class="copa-logo" src="logos-torneos/copa-sudamericana.png" alt="" onerror="this.remove()">Copa Sudamericana 2027</div>
+        <div class="copa-title"><img class="copa-logo" src="logos-torneos/copa-sudamericana.png" alt="" onerror="this.remove()">Copa Sudamericana ${anioParticipacionCopas}</div>
         <ol>${cuposResumen.sudamericana.map(equipo => `<li>${escudoHTML(equipo)}${nombreMostrable(equipo)}</li>`).join('')}</ol>
       </div>
+    </div>
+    <div style="color:var(--muted); font-size:12px; margin-top:8px;">
+      Clasificados jugando la temporada ${anioDeRondaTemporada(NUMERO_RONDA_TEMPORADA)} -- participan recién en la edición ${anioParticipacionCopas}, no en la que se acaba de simular.
     </div>`
     : '<div style="color:var(--muted);">Sin clasificados calculados en esta corrida.</div>';
 
@@ -11175,6 +11271,7 @@ function renderTemporada(datos){
   document.getElementById('hero-eyebrow').innerHTML = `CORRIDA REAL COMPLETADA — SIN MONTE CARLO`;
 
   renderDashboardTemporada(datos);
+  renderPalmaresSelecciones();
   INDICE_EQUIPOS_TEMPORADA = construirIndiceEquiposTemporada(datos);
   const buscadorInput = document.getElementById('temporada-buscador-input');
   if (buscadorInput) buscadorInput.value = '';
@@ -11266,37 +11363,53 @@ function renderDashboardTemporada(datos){
       lbl: `<img src="logos-torneos/${LOGO_COMPETENCIA.recopa}.png" alt="" class="temporada-metric-logo" onerror="this.remove()">Recopa Sudamericana`,
       val: compRecopa && compRecopa.avanza ? `${escudoHTML(compRecopa.avanza)}${nombreMostrable(compRecopa.avanza)}` : 'Sin definir',
       clase: compRecopa && compRecopa.avanza ? '' : 'num',
-      // Campeón Libertadores vs campeón Sudamericana, partido único a
-      // cancha neutral -- ver season/recopa_sudamericana.py. "Sin definir"
+      // Campeón Sudamericana (local en la ida) vs campeón Libertadores
+      // (local en la vuelta) -- la Recopa se juega a ida y vuelta, a
+      // diferencia de las finales a partido único de Libertadores/
+      // Sudamericana (ver season/recopa_sudamericana.py). "Sin definir"
       // si alguna de las dos copas falló esta temporada (criterio no
       // bloqueante, mismo que Libertadores/Sudamericana arriba).
       sub: compRecopa
-        ? `${compRecopa.local} ${compRecopa.golesLocal} - ${compRecopa.golesVisitante} ${compRecopa.visitante}${compRecopa.penales ? ' (por penales)' : ''}`
+        ? `Ida ${compRecopa.ida.golesLocal}-${compRecopa.ida.golesVisitante} · Vuelta ${compRecopa.vuelta.golesLocal}-${compRecopa.vuelta.golesVisitante}` +
+          ` · Global ${compRecopa.agregado[compRecopa.campeon_sudamericana]}-${compRecopa.agregado[compRecopa.campeon_libertadores]}` +
+          (compRecopa.penales ? ' (por penales)' : compRecopa.alargue ? ' (en el alargue)' : '')
         : '',
     },
   ];
   if (esAnioMundial(anioTemporada)){
-    const paisCampeon = campeonMundial(anioTemporada);
+    const { campeon: paisCampeon, subcampeon: paisSubMundial, marcador: marcadorMundial } = resultadoMundial(anioTemporada);
     extras.push({
       lbl: `<img src="logos-torneos/worldcup.png" alt="" class="temporada-metric-logo" onerror="this.remove()">Mundial ${anioTemporada}`,
       val: `<span class="mundial-pais">${paisCampeon}</span><span class="mundial-bandera">${BANDERA_PAIS_MUNDIAL[paisCampeon] || '🏆'}</span>`,
       clase: 'mundial',
+      sub: `le ganó la final a ${paisSubMundial} ${BANDERA_PAIS_MUNDIAL[paisSubMundial] || ''} (${marcadorMundial})`,
     });
   }
   if (esAnioCopaAmerica(anioTemporada)){
-    const paisCampeonCA = campeonCopaAmerica(anioTemporada);
+    const { campeon: paisCampeonCA, subcampeon: paisSubCA, marcador: marcadorCA } = resultadoCopaAmerica(anioTemporada);
     extras.push({
       lbl: `<img src="logos-torneos/copaamerica.png" alt="" class="temporada-metric-logo" onerror="this.remove()">Copa América ${anioTemporada}`,
       val: `<span class="mundial-pais">${paisCampeonCA}</span><span class="mundial-bandera">${BANDERA_PAIS_COPA_AMERICA[paisCampeonCA] || '🏆'}</span>`,
       clase: 'mundial',
+      sub: `le ganó la final a ${paisSubCA} ${BANDERA_PAIS_COPA_AMERICA[paisSubCA] || ''} (${marcadorCA})`,
     });
   }
   if (esAnioEurocopa(anioTemporada)){
-    const paisCampeonEuro = campeonEurocopa(anioTemporada);
+    const { campeon: paisCampeonEuro, subcampeon: paisSubEuro, marcador: marcadorEuro } = resultadoEurocopa(anioTemporada);
     extras.push({
       lbl: `<img src="logos-torneos/eurocopa.png" alt="" class="temporada-metric-logo" onerror="this.remove()">Eurocopa ${anioTemporada}`,
       val: `<span class="mundial-pais">${paisCampeonEuro}</span><span class="mundial-bandera">${BANDERA_PAIS_EUROCOPA[paisCampeonEuro] || '🏆'}</span>`,
       clase: 'mundial',
+      sub: `le ganó la final a ${paisSubEuro} ${BANDERA_PAIS_EUROCOPA[paisSubEuro] || ''} (${marcadorEuro})`,
+    });
+  }
+  if (esAnioFinalissima(anioTemporada)){
+    const { campeon: paisCampeonFinal, subcampeon: paisSubFinal, marcador: marcadorFinal, rivalCopaAmerica, rivalEurocopa } = resultadoFinalissima(anioTemporada);
+    extras.push({
+      lbl: `<img src="logos-torneos/finalissima.png" alt="" class="temporada-metric-logo" onerror="this.remove()">Finalissima ${anioTemporada}`,
+      val: `<span class="mundial-pais">${paisCampeonFinal}</span><span class="mundial-bandera">${banderaSeleccion(paisCampeonFinal)}</span>`,
+      clase: 'mundial',
+      sub: `le ganó la final a ${paisSubFinal} ${banderaSeleccion(paisSubFinal)} (${marcadorFinal})`,
     });
   }
 
@@ -11725,6 +11838,103 @@ function renderPalmares(){
     </table>`;
 }
 
+// Mismo criterio que renderPalmares() (vitrina de trofeos + tabla por
+// período), pero para las 4 competencias de selecciones en vez de las de
+// clubes. No usa PALMARES_TEMPORADA (esa es por ronda de club) sino
+// directamente las caches CAMPEONES_*_CACHE, que ya quedan pobladas por
+// año a medida que renderDashboardTemporada() va llamando a
+// resultadoMundial()/resultadoCopaAmerica()/resultadoEurocopa()/
+// resultadoFinalissima() en cada ronda mundialista/continental que toca.
+function renderPalmaresSelecciones(){
+  const cont = document.getElementById('temporada-palmares-selecciones-tabla');
+  if (!cont) return;
+
+  const ORDEN_SELECCIONES = ["mundial", "copaamerica", "eurocopa", "finalissima"];
+  const NOMBRE_SELECCION = { mundial: "Mundial", copaamerica: "Copa América", eurocopa: "Eurocopa", finalissima: "Finalissima" };
+  const LOGO_SELECCION = { mundial: "worldcup", copaamerica: "copaamerica", eurocopa: "eurocopa", finalissima: "finalissima" };
+  const CACHES_SELECCION = { mundial: CAMPEONES_MUNDIAL_CACHE, copaamerica: CAMPEONES_COPA_AMERICA_CACHE, eurocopa: CAMPEONES_EUROCOPA_CACHE, finalissima: CAMPEONES_FINALISSIMA_CACHE };
+
+  const anios = new Set();
+  ORDEN_SELECCIONES.forEach(slug => Object.keys(CACHES_SELECCION[slug]).forEach(a => anios.add(Number(a))));
+
+  if (!anios.size){
+    cont.innerHTML = '<p class="palmares-vacio">Todavía no se simuló ningún año con Mundial, Copa América, Eurocopa o Finalissima.</p>';
+    return;
+  }
+
+  const trofeosPorSeleccion = new Map();
+  ORDEN_SELECCIONES.forEach(slug => {
+    Object.entries(CACHES_SELECCION[slug]).forEach(([anio, resultado]) => {
+      const campeon = resultado && resultado.campeon;
+      if (!campeon) return;
+      if (!trofeosPorSeleccion.has(campeon)) trofeosPorSeleccion.set(campeon, { total: 0, porCompetencia: new Map() });
+      const reg = trofeosPorSeleccion.get(campeon);
+      reg.total += 1;
+      if (!reg.porCompetencia.has(slug)) reg.porCompetencia.set(slug, []);
+      reg.porCompetencia.get(slug).push(Number(anio));
+    });
+  });
+
+  const rankingSelecciones = [...trofeosPorSeleccion.entries()].sort((a, b) => b[1].total - a[1].total);
+  const medalla = (i) => i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i + 1}°`;
+
+  const rankingHTML = rankingSelecciones.length ? `
+    <div class="palmares-ranking">
+      ${rankingSelecciones.map(([pais, reg], i) => `
+        <div class="palmares-ranking-item">
+          <div class="palmares-ranking-top">
+            <span class="palmares-ranking-pos">${medalla(i)}</span>
+            <span class="palmares-ranking-equipo">${banderaSeleccion(pais)} ${pais}</span>
+            <span class="palmares-ranking-total">${reg.total} título${reg.total === 1 ? '' : 's'}</span>
+          </div>
+          <div class="palmares-ranking-detalle">
+            ${ORDEN_SELECCIONES.filter(slug => reg.porCompetencia.has(slug)).map(slug => {
+              const aniosComp = reg.porCompetencia.get(slug).sort((a, b) => a - b);
+              return `
+                <div class="palmares-ranking-comp">
+                  <img src="logos-torneos/${LOGO_SELECCION[slug]}.png" alt="" onerror="this.remove()">
+                  <span class="comp-nombre">${NOMBRE_SELECCION[slug]}</span>
+                  <span class="comp-cantidad">${aniosComp.length}×</span>
+                  <span class="comp-anios">${aniosComp.join(', ')}</span>
+                </div>`;
+            }).join('')}
+          </div>
+        </div>`).join('')}
+    </div>` : '';
+
+  // Años más recientes arriba, misma idea que la tabla de clubes.
+  const aniosOrdenados = [...anios].sort((a, b) => b - a);
+
+  cont.innerHTML = `
+    ${rankingHTML}
+    <table class="palmares-tabla">
+      <thead>
+        <tr>
+          <th>Año</th>
+          ${ORDEN_SELECCIONES.map(slug => `
+            <th>
+              <span class="palmares-th-liga">
+                <img src="logos-torneos/${LOGO_SELECCION[slug]}.png" alt="" onerror="this.remove()">
+                ${NOMBRE_SELECCION[slug]}
+              </span>
+            </th>`).join('')}
+        </tr>
+      </thead>
+      <tbody>
+        ${aniosOrdenados.map(anio => `<tr>
+          <td class="ronda">${anio}</td>
+          ${ORDEN_SELECCIONES.map(slug => {
+            const resultado = CACHES_SELECCION[slug][anio];
+            const campeon = resultado ? resultado.campeon : null;
+            return campeon
+              ? `<td><span class="campeon-celda">${banderaSeleccion(campeon)} ${campeon}</span></td>`
+              : `<td class="vacio">—</td>`;
+          }).join('')}
+        </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+
 async function correrTemporada(){
   const btn = document.getElementById('btn-simular-temporada');
   const status = document.getElementById('temporada-status');
@@ -11761,7 +11971,7 @@ async function correrTemporada(){
     status.textContent = `✓ Temporada simulada (${cuerpo.generado}) -- nada de esto se guardó en la base.`;
     btnReiniciar.style.display = '';
     rondaInfo.style.display = '';
-    rondaInfo.textContent = `Vas por la ronda ${NUMERO_RONDA_TEMPORADA - 1} en memoria (Federal A y Copa siguen leyendo datos reales cada vez -- no cubiertas por el avance local).`;
+    rondaInfo.textContent = `Vas por la ronda ${NUMERO_RONDA_TEMPORADA - 1}`;
   } catch (e) {
     setApiErrorStatus(status, "No se pudo simular la temporada", e);
   } finally {
@@ -11778,7 +11988,9 @@ function reiniciarTemporada(){
   CAMPEONES_MUNDIAL_CACHE = {};
   CAMPEONES_COPA_AMERICA_CACHE = {};
   CAMPEONES_EUROCOPA_CACHE = {};
+  CAMPEONES_FINALISSIMA_CACHE = {};
   renderPalmares();
+  renderPalmaresSelecciones();
   TEMPORADA_META_CACHE = null;
   aplicarMetaTemporada();
   document.getElementById('btn-simular-temporada').textContent = "▶ Simular la temporada completa";

@@ -43,6 +43,33 @@ from season.libertadores_sorteo import sortear_grupos
 FECHAS_POR_ZONA = 6
 CLASIFICAN_A_OCTAVOS = 2
 
+# Impulso leve para Argentina y Brasil en Modo Temporada: son las dos
+# federaciones de mayor nivel relativo de la Libertadores y el pool
+# internacional (rotación aleatoria por país, ver
+# season/libertadores_manager.py) no siempre lo refleja temporada a
+# temporada. Se aplica multiplicando el Elo ANTES de convertirlo a
+# ataque/defensa (ver EstadisticasLibertadores.crear_equipos_desde_elo,
+# ELO_ALPHA=0.6), y sólo para el Elo que se usa PARA SIMULAR: el
+# elo_por_equipo que se devuelve en el resultado (y que
+# season/sudamericana_temporada.py y season/recopa_sudamericana.py
+# reusan para otras copas) queda sin boostear, para no arrastrar esta
+# ventaja fuera de la Libertadores. Multiplicador chico a propósito
+# ("un poco más de chances", no un cambio grosero de nivel).
+BOOST_ELO_PAIS: dict[str, float] = {
+    "Argentina": 1.03,
+    "Brasil": 1.03,
+}
+
+
+def _elo_boosteado(elo_por_equipo: dict[str, float], pais_por_equipo: dict[str, str]) -> dict[str, float]:
+    """Copia de elo_por_equipo con el Elo de equipos argentinos/
+    brasileños multiplicado por BOOST_ELO_PAIS (el resto queda igual).
+    Ver docstring de BOOST_ELO_PAIS."""
+    return {
+        equipo: elo * BOOST_ELO_PAIS.get(pais_por_equipo.get(equipo), 1.0)
+        for equipo, elo in elo_por_equipo.items()
+    }
+
 
 @dataclass
 class FilaTablaZona:
@@ -256,14 +283,18 @@ def simular_temporada_libertadores(
     zonas_sorteadas = sortear_grupos(clasificacion, rng=rng)
     elo_por_equipo = clasificacion.elo_por_equipo()
     pais_por_equipo = {c.equipo: c.pais for c in clasificacion.equipos}
-    zonas_jugadas = jugar_fase_de_grupos(zonas_sorteadas, elo_por_equipo, pais_por_equipo, rng=rng)
+    # elo_simulacion (con el boost de BOOST_ELO_PAIS) se usa para JUGAR la
+    # fase de grupos y el cuadro de octavos; elo_por_equipo (sin boostear)
+    # es el que se devuelve al final, ver docstring de BOOST_ELO_PAIS.
+    elo_simulacion = _elo_boosteado(elo_por_equipo, pais_por_equipo)
+    zonas_jugadas = jugar_fase_de_grupos(zonas_sorteadas, elo_simulacion, pais_por_equipo, rng=rng)
 
     primeros, segundos = armar_bombos_octavos(zonas_jugadas)
     cuadro_octavos = sortear_octavos(primeros, segundos, rng=rng)
 
     motor = EstadisticasLibertadores()
     motor.cuadro = cuadro_octavos
-    motor.crear_equipos_desde_elo({c.equipo for c in clasificacion.equipos}, elo_por_equipo)
+    motor.crear_equipos_desde_elo({c.equipo for c in clasificacion.equipos}, elo_simulacion)
     rondas_detalle, campeon = motor.simular_libertadores()
 
     return {

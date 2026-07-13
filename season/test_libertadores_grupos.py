@@ -157,13 +157,40 @@ class TestWiringSeasonEngine(unittest.TestCase):
             resultado = SeasonEngine(registry).correr_temporada(n_sims=10, correr_libertadores=False)
         self.assertEqual(resultado.resultado_libertadores, {})
 
-    def test_true_corre_el_pipeline_completo(self):
+    def test_sin_plazas_diferidas_no_corre_con_clasificacion_de_esta_temporada(self):
+        """Fix "calendario real": sin plazas_diferidas (equivalente a la
+        ronda 1, sin temporada anterior de la cual arrastrar
+        clasificados), correr_libertadores=True NO debe usar la
+        clasificacion que recién calculó ESTA MISMA corrida -- debe
+        quedar en {"error": ...} en vez de adivinar con el equipo
+        equivocado."""
         from season.season_engine import SeasonEngine
         p1, p2, p3, p4, registry, clasificacion_fake = self._engine_con_mocks()
         with p1, p2 as QM, p3 as CAM, p4:
             QM.return_value.calcular.return_value = clasificacion_fake
             CAM.return_value.calcular.return_value = {"por_division": {}}
             resultado = SeasonEngine(registry).correr_temporada(n_sims=10, correr_libertadores=True)
+        self.assertIn("error", resultado.resultado_libertadores)
+        # Pero sí deja los cupos de esta temporada listos para la
+        # PRÓXIMA corrida (temporada_siguiente).
+        self.assertEqual(
+            resultado.plazas_diferidas_siguiente["libertadores"],
+            clasificacion_fake["libertadores"],
+        )
+
+    def test_true_corre_el_pipeline_completo(self):
+        """Con plazas_diferidas (los cupos que calculó la temporada
+        ANTERIOR), correr_libertadores=True sí corre el pipeline
+        completo -- poblado con esos cupos, no con la clasificacion de
+        esta misma corrida."""
+        from season.season_engine import SeasonEngine
+        p1, p2, p3, p4, registry, clasificacion_fake = self._engine_con_mocks()
+        with p1, p2 as QM, p3 as CAM, p4:
+            QM.return_value.calcular.return_value = clasificacion_fake
+            CAM.return_value.calcular.return_value = {"por_division": {}}
+            resultado = SeasonEngine(registry).correr_temporada(
+                n_sims=10, correr_libertadores=True, plazas_diferidas=clasificacion_fake,
+            )
         self.assertIn("campeon", resultado.resultado_libertadores)
         self.assertEqual(len(resultado.resultado_libertadores["zonas"]), 8)
         self.assertNotIn("error", resultado.resultado_libertadores)
@@ -185,6 +212,7 @@ class TestWiringSeasonEngine(unittest.TestCase):
             CAM.return_value.calcular.return_value = {"por_division": {}}
             resultado = SeasonEngine(registry).correr_temporada(
                 n_sims=10, correr_libertadores=True, correr_sudamericana=True,
+                plazas_diferidas=clasificacion_fake,
             )
         self.assertNotIn("error", resultado.resultado_libertadores)
         self.assertNotIn("error", resultado.resultado_sudamericana)

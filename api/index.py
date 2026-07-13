@@ -1218,11 +1218,27 @@ def _correr_temporada_desde_estado(estado_anterior: dict | None, numero_ronda: i
     # para poder inyectar el monkeypatch de datos_por_liga -- así que hay
     # que llamarlo a mano con el mismo criterio, si no esta ronda nunca
     # trae clasificados (el frontend quedaba mostrando siempre "Sin
-    # clasificados calculados en esta corrida").
+    # clasificados calculados en esta corrida"). Estos son los cupos que
+    # clasifica ESTA ronda -- NO se usan para poblar la Libertadores/
+    # Sudamericana de esta misma ronda (ver más abajo, `plazas_
+    # diferidas_ronda_anterior`): juegan recién la ronda SIGUIENTE, que
+    # es cuando corresponde según el calendario real.
     clasificacion = QualificationManager().calcular(
         resultado_lpf=resultados["lpf"],
         resultado_copa=resultados["copa"],
     )
+
+    # Fix "calendario real" de clasificación continental (ver
+    # season/season_engine.py::correr_temporada(), parámetro
+    # plazas_diferidas): los clasificados que juegan la Libertadores/
+    # Sudamericana de ESTA ronda son los que calculó la ronda ANTERIOR
+    # (guardados en estado_anterior["plazas_diferidas_continental"] --
+    # mismo patrón que ya usa cuadro_copa_32avos un poco más arriba en
+    # esta misma función). None en la ronda 1 (no hay "ronda anterior"
+    # de Modo Temporada de la cual arrastrar clasificados) -- en ese
+    # caso NO se corre Libertadores/Sudamericana con los clasificados
+    # de ESTA ronda (sería el bug original), se deja constancia.
+    plazas_diferidas_ronda_anterior = (estado_anterior or {}).get("plazas_diferidas_continental")
 
     # Etapa 9: Copa Libertadores dentro de Modo Temporada -- mismo
     # criterio que SeasonEngine.correr_temporada(correr_libertadores=...)
@@ -1231,11 +1247,23 @@ def _correr_temporada_desde_estado(estado_anterior: dict | None, numero_ronda: i
     # llama _correr_competencias() directo, no correr_temporada().
     resultado_libertadores = {}
     if correr_libertadores:
-        from season.libertadores_grupos import simular_temporada_libertadores
-        try:
-            resultado_libertadores = simular_temporada_libertadores(clasificacion.get("libertadores", []))
-        except ValueError as e:
-            resultado_libertadores = {"error": str(e)}
+        if plazas_diferidas_ronda_anterior is None:
+            resultado_libertadores = {
+                "error": (
+                    "Todavía no hay clasificados de una ronda anterior de Modo Temporada -- "
+                    "la Copa Libertadores se habilita a partir de la ronda siguiente a esta, "
+                    "con los clasificados que salgan de acá."
+                )
+            }
+        else:
+            from season.libertadores_grupos import simular_temporada_libertadores
+            try:
+                resultado_libertadores = simular_temporada_libertadores(
+                    plazas_diferidas_ronda_anterior.get("libertadores", []),
+                )
+                resultado_libertadores["ronda_clasificacion"] = plazas_diferidas_ronda_anterior.get("ronda_clasificacion")
+            except ValueError as e:
+                resultado_libertadores = {"error": str(e)}
 
     # Etapa 10: Copa Sudamericana -- mismo criterio no-bloqueante, y
     # misma dependencia de correr_libertadores que SeasonEngine.
@@ -1245,14 +1273,22 @@ def _correr_temporada_desde_estado(estado_anterior: dict | None, numero_ronda: i
     if correr_sudamericana:
         if not correr_libertadores:
             resultado_sudamericana = {"error": "correr_sudamericana necesita correr_libertadores=True."}
+        elif plazas_diferidas_ronda_anterior is None:
+            resultado_sudamericana = {
+                "error": (
+                    "Todavía no hay clasificados de una ronda anterior de Modo Temporada -- "
+                    "misma razón que Libertadores arriba."
+                )
+            }
         elif "error" in resultado_libertadores:
             resultado_sudamericana = {"error": f"Libertadores falló esta temporada: {resultado_libertadores['error']}"}
         else:
             from season.sudamericana_temporada import simular_temporada_sudamericana
             try:
                 resultado_sudamericana = simular_temporada_sudamericana(
-                    clasificacion.get("sudamericana", []), resultado_libertadores,
+                    plazas_diferidas_ronda_anterior.get("sudamericana", []), resultado_libertadores,
                 )
+                resultado_sudamericana["ronda_clasificacion"] = plazas_diferidas_ronda_anterior.get("ronda_clasificacion")
             except ValueError as e:
                 resultado_sudamericana = {"error": str(e)}
 
@@ -1362,6 +1398,21 @@ def _correr_temporada_desde_estado(estado_anterior: dict | None, numero_ronda: i
             "numero_ronda": numero_ronda + 1,
             "pool_regional_federal": promocion.get("pool_regional_restante", []),
             "cuadro_copa_32avos": cuadro_copa_siguiente,
+            # Cupos de Libertadores/Sudamericana recién calculados en
+            # ESTA ronda (`clasificacion`, arriba) -- NO se jugaron
+            # ahora (ver plazas_diferidas_ronda_anterior más arriba),
+            # quedan acá para que la PRÓXIMA llamada a este endpoint
+            # los use como plazas_diferidas_ronda_anterior y pueble su
+            # propia Libertadores/Sudamericana con ellos (edición del
+            # calendario real que les corresponde). Mismo patrón que
+            # cuadro_copa_32avos de la línea de arriba.
+            "plazas_diferidas_continental": {
+                "libertadores": clasificacion.get("libertadores", []),
+                "sudamericana": clasificacion.get("sudamericana", []),
+                "detalle": clasificacion.get("detalle", {}),
+                "avisos": clasificacion.get("avisos", []),
+                "ronda_clasificacion": numero_ronda,
+            },
             # Fases 2-5 de HANDOFF_carryover_ratings.md -- ver el
             # bloque de arriba donde se restauran ambos al principio
             # de esta misma función. persist_season() (llamado un poco
@@ -1457,8 +1508,15 @@ def season_play_endpoint(body: SimularTemporadaBody = SimularTemporadaBody()):
             "n_simulaciones": N_SIMS_TEMPORADA,
             "numero_ronda": body.numero_ronda,
             "competencias": {slug: _serializar_resultado_torneo(r) for slug, r in resultados.items()},
+            # Cupos que clasifican en ESTA ronda -- juegan la Libertadores/
+            # Sudamericana de la ronda SIGUIENTE (numero_ronda + 1), no la
+            # que se ve en "libertadores"/"sudamericana" acá abajo.
             "clasificacion_copas": clasificacion,
             "clasificacion_copa_argentina": clasificacion_copa_argentina,
+            # Copa continental jugada EN esta ronda, poblada con los
+            # clasificados de la ronda ANTERIOR (numero_ronda - 1) -- trae
+            # {"error": "..."} en la ronda 1, donde todavía no hay
+            # clasificados propios de Modo Temporada para arrastrar.
             "libertadores": resultado_libertadores,
             "sudamericana": resultado_sudamericana,
             "recopa": resultado_recopa,
@@ -1517,6 +1575,23 @@ def season_generate_next_endpoint(body: GenerarTemporadaBody):
 
         registry = ClubRegistry.build_from_current_data()
         engine = SeasonEngine(registry)
+
+        # Fix "calendario real" de clasificación continental (ver
+        # season/season_engine.py::correr_temporada(), parámetro
+        # plazas_diferidas): los clasificados a Libertadores/
+        # Sudamericana que juegan la temporada `temporada_actual` son
+        # los que se calcularon y guardaron al cierre de la temporada
+        # ANTERIOR (ver más abajo, guardar_plazas_diferidas_continental
+        # con temporada_siguiente=temporada_actual de esa corrida
+        # pasada) -- NUNCA los que recién calcule esta misma corrida.
+        # None si no hay nada guardado (ej. primera vez que se llama a
+        # este endpoint para esta cadena de temporadas): correr_
+        # temporada() degrada resultado_libertadores/resultado_
+        # sudamericana a {"error": "..."} en vez de usar los cupos de
+        # `temporada_actual` (que corresponden a la edición del año
+        # SIGUIENTE, no a esta).
+        plazas_diferidas = data_access.plazas_diferidas_continental(body.temporada_actual)
+
         resultado = engine.correr_temporada(
             n_sims=n_sims,
             aplicar_promocion=True,
@@ -1526,6 +1601,17 @@ def season_generate_next_endpoint(body: GenerarTemporadaBody):
             correr_libertadores=True,
             correr_sudamericana=True,
             correr_recopa=True,
+            plazas_diferidas=plazas_diferidas,
+        )
+
+        # Los cupos que ACABA de calcular esta corrida (a partir de la
+        # LPF/Copa Argentina de `temporada_actual`) no se juegan ahora --
+        # se guardan para que la PRÓXIMA llamada a este endpoint (la que
+        # reciba temporada_actual=temporada_siguiente de ESTA corrida)
+        # los use para poblar su Libertadores/Sudamericana, que es la
+        # edición del calendario real que les corresponde.
+        data_access.guardar_plazas_diferidas_continental(
+            body.temporada_siguiente, resultado.plazas_diferidas_siguiente,
         )
 
         return {
@@ -1536,14 +1622,21 @@ def season_generate_next_endpoint(body: GenerarTemporadaBody):
             "competencias": {
                 slug: _serializar_resultado_torneo(r) for slug, r in resultado.resultados.items()
             },
+            # Cupos que clasificaron ESTA temporada (temporada_actual) --
+            # juegan Libertadores/Sudamericana `temporada_siguiente`, NO
+            # esta corrida (ver aviso en "libertadores"/"sudamericana").
             "clasificacion_copas": resultado.clasificacion,
             "clasificacion_copa_argentina": resultado.clasificacion_copa_argentina,
+            # Copa continental jugada EN `temporada_actual`, poblada con
+            # los clasificados que guardó la corrida ANTERIOR (la de
+            # temporada_actual-1) -- error si no había nada guardado.
             "libertadores": resultado.resultado_libertadores,
             "sudamericana": resultado.resultado_sudamericana,
             "recopa": resultado.resultado_recopa,
             "promocion": resultado.promocion,
             "historia": resultado.historia,
             "elo_actualizados": resultado.elo_actualizados,
+            "temporada_clasificacion_participa_en": body.temporada_siguiente,
         }
     except Exception as e:
         return _error_response(e)

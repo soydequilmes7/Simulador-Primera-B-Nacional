@@ -151,6 +151,55 @@ def campeon_apertura_lpf() -> str | None:
 _CLAVE_PLAYOFFS_APERTURA_LPF = "lpf_playoffs_apertura"
 
 
+# ---------------------------------------------------------------------
+# Etapa 12 (fix "calendario real" de clasificación continental, ver
+# season/season_engine.py::correr_temporada(), parámetro
+# `plazas_diferidas`): cupos de Copa Libertadores/Copa Sudamericana
+# calculados al CIERRE de una temporada, que hay que arrastrar a la
+# corrida de la temporada SIGUIENTE (que es la que efectivamente los
+# juega). Mismo patrón save_simulation_output()/simulation_output() de
+# arriba, clave por temporada de PARTICIPACIÓN (no de clasificación),
+# para que /api/season/generate-next (que no encadena estado propio
+# entre llamadas, a diferencia de /api/season/play) pueda leer/escribir
+# esto entre una corrida y la siguiente sin depender de que el cliente
+# se lo mande de vuelta.
+# ---------------------------------------------------------------------
+def _clave_plazas_diferidas(temporada_participacion: str) -> str:
+    return f"plazas_diferidas_continental:{temporada_participacion}"
+
+
+def guardar_plazas_diferidas_continental(temporada_participacion: str, plazas: dict) -> None:
+    """Persiste los cupos de Libertadores/Sudamericana que acaban de
+    calcularse al cierre de una temporada, indexados por la temporada
+    en la que EFECTIVAMENTE se van a jugar (temporada_participacion =
+    temporada_clasificacion + 1). En Pyodide no hace nada, mismo
+    criterio que guardar_campeon_apertura_lpf()."""
+    if usando_pyodide():
+        return
+
+    from db.repository import repository
+
+    repository().save_simulation_output(
+        _clave_plazas_diferidas(temporada_participacion), "lpf", plazas,
+    )
+
+
+def plazas_diferidas_continental(temporada_participacion: str) -> dict | None:
+    """Lee los cupos diferidos guardados para que los juegue la
+    temporada `temporada_participacion`. None si no hay nada guardado
+    (ej. la primera temporada de una cadena, sin "temporada anterior"
+    de Modo Temporada de la cual arrastrar clasificados) -- el caller
+    (SeasonEngine.correr_temporada(plazas_diferidas=...)) debe degradar
+    a NO correr Libertadores/Sudamericana en vez de adivinar con los
+    clasificados de la temporada equivocada."""
+    if usando_pyodide():
+        return None
+
+    from db.repository import repository
+
+    return repository().simulation_output(_clave_plazas_diferidas(temporada_participacion))
+
+
 def guardar_playoffs_apertura_lpf(detalle_playoffs: dict) -> None:
     """Persiste el cuadro REAL de playoffs que definió el campeón del
     Apertura simulado de LPF (octavos/cuartos/semis/final, mismo shape

@@ -103,7 +103,17 @@ def validar_dependencia_en_season_engine() -> list:
         except ValueError:
             pass
 
-        resultado = engine.correr_temporada(n_sims=10, correr_libertadores=True, correr_sudamericana=True)
+        resultado = engine.correr_temporada(
+            n_sims=10, correr_libertadores=True, correr_sudamericana=True,
+            # Fix "calendario real" de clasificación continental: sin
+            # plazas_diferidas, correr_libertadores=True/correr_
+            # sudamericana=True quedan en {"error": ...} a propósito
+            # (ver season/season_engine.py) en vez de usar la
+            # clasificacion de esta misma corrida -- acá se simula que
+            # clasificacion_fake es lo que calculó la temporada
+            # ANTERIOR, para poder seguir probando el pipeline completo.
+            plazas_diferidas=clasificacion_fake,
+        )
         if "error" in resultado.resultado_sudamericana:
             fallas.append(f"resultado_sudamericana con error: {resultado.resultado_sudamericana['error']}")
         if not resultado.resultado_sudamericana.get("campeon"):
