@@ -42,7 +42,7 @@ from main_federal import correr_simulacion_federal, simular_hasta_ascenso_federa
 from actualizar_resultados_federal import actualizar as actualizar_federal
 from main_libertadores import correr_simulacion_libertadores
 from db.client import DatabaseConfigError
-from db.repository import cup_csv_files, league_csv_files, repository
+from db.repository import cup_csv_files, league_csv_files, transaction
 from posiciones_evolucion import calcular_evolucion, tamano_por_zona
 import rutas
 
@@ -164,10 +164,10 @@ class Handler(SimpleHTTPRequestHandler):
         """Posición de cada equipo de Primera Nacional después de cada
         fecha ya jugada (ver posiciones_evolucion.calcular_evolucion)."""
         try:
-            repo = repository()
-            tabla_actual = repo.standing_records("nacional")
-            zona_por_club = {fila["equipo"]: fila["zona"] for fila in tabla_actual}
-            partidos_jugados = repo.match_records("nacional", "played")
+            with transaction() as repo:
+                tabla_actual = repo.standing_records("nacional")
+                zona_por_club = {fila["equipo"]: fila["zona"] for fila in tabla_actual}
+                partidos_jugados = repo.match_records("nacional", "played")
             evolucion = calcular_evolucion(partidos_jugados, zona_por_club)
             self._responder_json(200, {
                 "evolucion": evolucion,
