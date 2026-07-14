@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Anton&family=Manrope:wght@400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.1/echarts.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js" onerror="window.__echartsLoadError = true;"></script>
 <style>
   /* =====================================================================
      DOS IDENTIDADES VISUALES
@@ -6016,7 +6016,12 @@ function renderEvolucionChart(liga){
   const statusEl = document.getElementById(`evolucion-status-${liga}`);
   if (!estado.datos) return;
   const el = document.getElementById(`evolucion-chart-${liga}`);
-  if (!el || typeof echarts === 'undefined') return;
+  if (!el) return;
+  if (typeof echarts === 'undefined') {
+    if (statusEl) statusEl.textContent = 'No se pudo cargar la librería del gráfico (ECharts). Revisá tu conexión o algún bloqueador de scripts y recargá la página.';
+    console.error('[evolucion-posiciones] echarts no está definido -- el <script> del CDN no cargó.');
+    return;
+  }
 
   const hayDatos = estado.equipos.some(eq => (estado.datos.evolucion[eq] || []).length > 0);
   if (!hayDatos) {
