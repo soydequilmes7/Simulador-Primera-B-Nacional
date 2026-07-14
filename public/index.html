@@ -6057,15 +6057,26 @@ async function cargarEvolucion(liga){
   }
   estado.cargando = true;
   if (statusEl) statusEl.textContent = 'Cargando evolución de posiciones…';
+  const controlador = new AbortController();
+  const avisoLento = setTimeout(() => {
+    if (statusEl) statusEl.textContent = 'Está tardando más de lo normal… (puede ser la primera consulta a la base)';
+  }, 6000);
+  const timeoutId = setTimeout(() => controlador.abort(), 20000);
   try {
-    const resp = await fetch(EVOLUCION_CONFIG[liga].endpoint);
+    const resp = await fetch(EVOLUCION_CONFIG[liga].endpoint, { signal: controlador.signal });
     const body = await resp.json();
     if (!resp.ok || body.error) throw new Error(body.error || `Error ${resp.status}`);
     estado.datos = body;
     actualizarZonaEvolucion(liga);
   } catch (err) {
-    if (statusEl) statusEl.textContent = `No se pudo cargar la evolución de posiciones: ${err.message}`;
+    const mensaje = err.name === 'AbortError'
+      ? 'El servidor no respondió a tiempo (20s). Revisá que /api/evolucion-posiciones-nacional esté disponible.'
+      : `No se pudo cargar la evolución de posiciones: ${err.message}`;
+    if (statusEl) statusEl.textContent = mensaje;
+    console.error('[evolucion-posiciones]', liga, err);
   } finally {
+    clearTimeout(avisoLento);
+    clearTimeout(timeoutId);
     estado.cargando = false;
   }
 }
