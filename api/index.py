@@ -327,6 +327,34 @@ def evolucion_posiciones_nacional():
         _lock_nacional.release_read()
 
 
+@app.get("/api/evolucion-posiciones-bmetro")
+def evolucion_posiciones_bmetro():
+    """Igual que /api/evolucion-posiciones-nacional pero para B
+    Metropolitana. A diferencia de Nacional, B Metro tiene una sola
+    zona ("Unica") -- calcular_evolucion() es agnóstico a eso, así que
+    no hace falta ningún cambio en posiciones_evolucion.py."""
+    ocupado = _adquirir_lectura(
+        _lock_bmetro,
+        "Hay una actualización de B Metropolitana en curso. Esperá unos segundos y probá de nuevo.",
+    )
+    if ocupado:
+        return ocupado
+    try:
+        with transaction() as repo:
+            tabla_actual = repo.standing_records("bmetro")
+            zona_por_club = {fila["equipo"]: fila["zona"] for fila in tabla_actual}
+            partidos_jugados = repo.match_records("bmetro", "played")
+        evolucion = calcular_evolucion(partidos_jugados, zona_por_club)
+        return {
+            "evolucion": evolucion,
+            "zonas": tamano_por_zona(zona_por_club),
+        }
+    except Exception as e:
+        return _error_response(e)
+    finally:
+        _lock_bmetro.release_read()
+
+
 @app.get("/api/datos-copa")
 def datos_copa():
     """Igual que /api/datos-nacional pero con el cuadro de la Copa

@@ -4601,8 +4601,42 @@
     <div id="campeon-resultado-bmetro"></div>
   </div>
 
+  <section id="sec-tabla-actual-bmetro">
+    <div class="section-head"><span class="idx">01</span><h2>Tabla actual</h2><div class="rule"></div></div>
+    <p class="section-note">Clasificación real en este momento, tal como quedó tras los partidos ya jugados (mismos datos que usa el buscador de equipos). Tabla única, sin zonas.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>GF</th><th>GC</th><th>DG</th></tr></thead>
+        <tbody id="tabla-actual-body-bmetro"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="evolucion-posiciones" id="sec-evolucion-bmetro">
+    <button type="button" class="evolucion-toggle" id="evolucion-toggle-bmetro" aria-expanded="false" aria-controls="evolucion-body-bmetro">
+      <span class="evolucion-toggle-text">
+        <span class="evolucion-toggle-label">📈 Evolución de posiciones</span>
+        <span class="evolucion-toggle-sub">Cómo varió la posición de cada equipo, fecha a fecha, a lo largo de la temporada</span>
+      </span>
+      <span class="evolucion-toggle-caret">▼</span>
+    </button>
+    <div class="evolucion-body" id="evolucion-body-bmetro" hidden>
+      <div class="evolucion-picker">
+        <div class="evolucion-picker-head">
+          <span class="evolucion-picker-title">Equipos visibles</span>
+          <input type="text" id="evolucion-buscar-bmetro" class="evolucion-picker-search" placeholder="Buscar equipo…" autocomplete="off">
+        </div>
+        <div class="evolucion-picker-list" id="evolucion-picker-list-bmetro"></div>
+      </div>
+      <div class="evolucion-chart-wrap">
+        <div class="evolucion-chart" id="evolucion-chart-bmetro"></div>
+      </div>
+      <div class="evolucion-status" id="evolucion-status-bmetro"></div>
+    </div>
+  </section>
+
   <section id="sec-tabla-bmetro">
-    <div class="section-head"><span class="idx">01</span><h2>Tabla final simulada</h2><div class="rule"></div></div>
+    <div class="section-head"><span class="idx">02</span><h2>Tabla final simulada</h2><div class="rule"></div></div>
     <p class="section-note">Resultado de una corrida puntual de la temporada regular: se completan los partidos pendientes del fixture sobre la base de los resultados ya jugados. Tabla única, sin zonas.</p>
     <div class="table-wrap">
       <table>
@@ -4613,7 +4647,7 @@
   </section>
 
   <section id="sec-ascenso-bmetro">
-    <div class="section-head"><span class="idx">02</span><h2>Camino al ascenso</h2><div class="rule"></div></div>
+    <div class="section-head"><span class="idx">03</span><h2>Camino al ascenso</h2><div class="rule"></div></div>
     <p class="section-note">El puntero de la tabla asciende directo. Los ocho mejor ubicados detrás de él (2° al 9°) juegan el Torneo Reducido por el 2° ascenso: cuartos, semifinal y final, todo a ida y vuelta.</p>
 
     <div class="ascenso-card">
@@ -4629,7 +4663,7 @@
   </section>
 
   <section id="sec-mc-bmetro">
-    <div class="section-head"><span class="idx">03</span><h2>Probabilidades — Monte Carlo</h2><div class="rule"></div></div>
+    <div class="section-head"><span class="idx">04</span><h2>Probabilidades — Monte Carlo</h2><div class="rule"></div></div>
     <p class="section-note">Cada barra desglosa el % de simulaciones en que el equipo asciende directo (puntero) o por el Reducido. A la derecha, el % de veces que descendió.</p>
     <div class="legend">
       <span><i style="background:var(--zone-a)"></i> Ascenso directo</span>
@@ -4640,7 +4674,7 @@
   </section>
 
   <section id="sec-esperada-bmetro">
-    <div class="section-head"><span class="idx">04</span><h2>Posición final esperada</h2><div class="rule"></div></div>
+    <div class="section-head"><span class="idx">05</span><h2>Posición final esperada</h2><div class="rule"></div></div>
     <p class="section-note">Puntos y posición promedio de cada equipo a lo largo de todas las simulaciones.</p>
     <div class="table-wrap">
       <table>
@@ -5912,7 +5946,8 @@ const EVOLUCION_CONFIG = {
   nacional: {
     endpoint: '/api/evolucion-posiciones-nacional',
     // Zona que se está mostrando ahora mismo (misma que las pestañas
-    // Zona A / Zona B de más arriba en la página).
+    // Zona A / Zona B de más arriba en la página). Ignora `datos`:
+    // Nacional sí tiene pestañas propias para elegir zona.
     zonaActiva: () => zonaActual,
     // Mismo criterio que ya usa renderFilasTabla() para "Tabla actual":
     // 1° = ascenso directo, 2° a 8° = reducido, últimos 2 = descenso.
@@ -5920,6 +5955,19 @@ const EVOLUCION_CONFIG = {
     banda: (totalEquipos) => ([
       { nombre: 'ascenso', desde: 1, hasta: 1, color: '#2E9E5B' },
       { nombre: 'reducido', desde: 2, hasta: Math.min(8, totalEquipos - 1), color: '#C9A227' },
+      { nombre: 'descenso', desde: Math.max(1, totalEquipos - 1), hasta: totalEquipos, color: '#DC2626' },
+    ]),
+  },
+  bmetro: {
+    endpoint: '/api/evolucion-posiciones-bmetro',
+    // B Metro es una sola tabla, sin zonas ni pestañas -- la "zona
+    // activa" es directamente la única que trae el backend.
+    zonaActiva: (datos) => Object.keys((datos && datos.zonas) || {})[0],
+    // Mismo criterio que ya usa renderTablaActualBMetro(): 1° = puntero
+    // (ascenso directo), 2° a 9° = Torneo Reducido, últimos 2 = descenso.
+    banda: (totalEquipos) => ([
+      { nombre: 'ascenso', desde: 1, hasta: 1, color: '#2E9E5B' },
+      { nombre: 'reducido', desde: 2, hasta: Math.min(9, totalEquipos - 1), color: '#C9A227' },
       { nombre: 'descenso', desde: Math.max(1, totalEquipos - 1), hasta: totalEquipos, color: '#DC2626' },
     ]),
   },
@@ -6155,7 +6203,7 @@ function actualizarZonaEvolucion(liga){
   const estado = estadoEvolucion(liga);
   const config = EVOLUCION_CONFIG[liga];
   if (!estado.datos) return;
-  const zona = config.zonaActiva();
+  const zona = config.zonaActiva(estado.datos);
   const nuevoDestacado = calcularDestacado(liga, estado, zona);
 
   if (zona !== estado.zona) {
@@ -8149,6 +8197,7 @@ async function cargarDatosBMetro(){
 }
 
 function iniciarBMetro(){
+  renderTablaActualBMetro();
   renderTablaBMetro();
   renderReducidoBMetro();
   renderMCBMetro();
@@ -8400,6 +8449,25 @@ async function correrActualizacionBMetro(){
 }
 
 document.getElementById('btn-actualizar-bmetro').addEventListener('click', correrActualizacionBMetro);
+
+function renderTablaActualBMetro(){
+  const body = document.getElementById('tabla-actual-body-bmetro');
+  if (!body || !DATA_BMETRO) return;
+  // tabla_actual = posiciones reales de HOY (tabla_bmetro.csv). Si por algún
+  // motivo no viene, caemos a la tabla simulada para no romper la página.
+  const filas = DATA_BMETRO.tabla_actual || DATA_BMETRO.tabla;
+  const nDesc = DATA_BMETRO.descensos_n || 2;
+  const nRed = DATA_BMETRO.reducido_n || 9;
+  body.innerHTML = "";
+  filas.forEach((f, i) => {
+    const tr = document.createElement('tr');
+    if (i === 0) tr.classList.add('punta');
+    else if (i >= 1 && i <= nRed - 1) tr.classList.add('reducido');
+    if (i >= filas.length - nDesc) tr.classList.add('descenso');
+    tr.innerHTML = `<td>${i+1}</td><td>${escudoHTML(f.equipo)}${nombreMostrable(f.equipo)}</td><td>${f.puntos}</td><td>${f.gf}</td><td>${f.gc}</td><td>${f.dg > 0 ? '+'+f.dg : f.dg}</td>`;
+    body.appendChild(tr);
+  });
+}
 
 function renderTablaBMetro(){
   const body = document.getElementById('tabla-bmetro-body');
