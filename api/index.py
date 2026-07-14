@@ -36,7 +36,8 @@ import rutas
 import data_access
 import pysim_dispatch
 from db.client import DatabaseConfigError, database_schema, database_url
-from db.repository import cup_csv_files, league_csv_files
+from db.repository import cup_csv_files, league_csv_files, repository
+from posiciones_evolucion import calcular_evolucion, tamano_por_zona
 from main_lpf import correr_simulacion_lpf
 from actualizar_resultados import actualizar
 from actualizar_resultados_lpf import actualizar as actualizar_lpf
@@ -292,6 +293,34 @@ def datos_nacional():
         return ocupado
     try:
         return {"files": league_csv_files("nacional")}
+    except Exception as e:
+        return _error_response(e)
+    finally:
+        _lock_nacional.release_read()
+
+
+@app.get("/api/evolucion-posiciones-nacional")
+def evolucion_posiciones_nacional():
+    """Posición de cada equipo de Primera Nacional después de cada fecha
+    ya jugada, para el gráfico "Evolución de posiciones" del frontend.
+    Reconstruye la serie recorriendo los partidos jugados que ya están
+    en Supabase (mismos que usa calcular_tabla.py); no simula nada."""
+    ocupado = _adquirir_lectura(
+        _lock_nacional,
+        "Hay una actualización de Primera Nacional en curso. Esperá unos segundos y probá de nuevo.",
+    )
+    if ocupado:
+        return ocupado
+    try:
+        repo = repository()
+        tabla_actual = repo.standing_records("nacional")
+        zona_por_club = {fila["equipo"]: fila["zona"] for fila in tabla_actual}
+        partidos_jugados = repo.match_records("nacional", "played")
+        evolucion = calcular_evolucion(partidos_jugados, zona_por_club)
+        return {
+            "evolucion": evolucion,
+            "zonas": tamano_por_zona(zona_por_club),
+        }
     except Exception as e:
         return _error_response(e)
     finally:

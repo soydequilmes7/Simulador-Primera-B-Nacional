@@ -42,7 +42,8 @@ from main_federal import correr_simulacion_federal, simular_hasta_ascenso_federa
 from actualizar_resultados_federal import actualizar as actualizar_federal
 from main_libertadores import correr_simulacion_libertadores
 from db.client import DatabaseConfigError
-from db.repository import cup_csv_files, league_csv_files
+from db.repository import cup_csv_files, league_csv_files, repository
+from posiciones_evolucion import calcular_evolucion, tamano_por_zona
 import rutas
 
 # Mismos archivos que sirve api/index.py en /api/pysim-source, para que
@@ -121,6 +122,8 @@ class Handler(SimpleHTTPRequestHandler):
             self._manejar_pysim_source()
         elif self.path == "/api/datos-nacional":
             self._manejar_datos_nacional()
+        elif self.path == "/api/evolucion-posiciones-nacional":
+            self._manejar_evolucion_posiciones_nacional()
         elif self.path == "/api/datos-copa":
             self._manejar_datos_csv(["copa_argentina.csv"])
         elif self.path == "/api/datos-lpf":
@@ -154,6 +157,22 @@ class Handler(SimpleHTTPRequestHandler):
     def _manejar_datos_nacional(self):
         try:
             self._responder_json(200, {"files": league_csv_files("nacional")})
+        except Exception as e:
+            self._responder_json(*_error_http(e))
+
+    def _manejar_evolucion_posiciones_nacional(self):
+        """Posición de cada equipo de Primera Nacional después de cada
+        fecha ya jugada (ver posiciones_evolucion.calcular_evolucion)."""
+        try:
+            repo = repository()
+            tabla_actual = repo.standing_records("nacional")
+            zona_por_club = {fila["equipo"]: fila["zona"] for fila in tabla_actual}
+            partidos_jugados = repo.match_records("nacional", "played")
+            evolucion = calcular_evolucion(partidos_jugados, zona_por_club)
+            self._responder_json(200, {
+                "evolucion": evolucion,
+                "zonas": tamano_por_zona(zona_por_club),
+            })
         except Exception as e:
             self._responder_json(*_error_http(e))
 

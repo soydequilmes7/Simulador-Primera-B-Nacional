@@ -11,6 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Anton&family=Manrope:wght@400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.1/echarts.min.js"></script>
 <style>
   /* =====================================================================
      DOS IDENTIDADES VISUALES
@@ -4002,6 +4003,44 @@
     body.liga-sudamericana .match,
     body.liga-sudamericana .final-col .match{ animation:none; }
   }
+
+  /* ---- Evolución de posiciones (acordeón + gráfico ECharts) ----
+     Un solo bloque de estilos reutilizado por las 5 competiciones de
+     liga (Nacional, LPF, B Metro, Federal A, Primera C): cada una
+     instancia el mismo markup con un sufijo de id distinto. */
+  .evolucion-posiciones{ margin-top: 28px; }
+  .evolucion-toggle{
+    width:100%; display:flex; align-items:center; justify-content:space-between;
+    background: var(--bg-panel); border:1px solid var(--line); border-radius: var(--radius-sm);
+    padding:14px 18px; cursor:pointer; font-family:'Plus Jakarta Sans', sans-serif;
+    font-size:15px; font-weight:600; color: var(--ink); text-align:left;
+  }
+  .evolucion-toggle:hover{ border-color: var(--ink-dim); }
+  .evolucion-toggle-caret{ transition: transform 220ms ease; color: var(--muted); }
+  .evolucion-toggle[aria-expanded="true"] .evolucion-toggle-caret{ transform: rotate(180deg); }
+  .evolucion-body{
+    border:1px solid var(--line); border-top:none; border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+    padding:18px; background: var(--bg-panel);
+  }
+  .evolucion-controls{ display:flex; flex-direction:column; gap:10px; margin-bottom:14px; }
+  .evolucion-controls input[type="text"]{
+    width:100%; box-sizing:border-box; padding:10px 12px; border:1px solid var(--line);
+    border-radius: var(--radius-sm); background: var(--bg); color: var(--ink); font-size:14px;
+  }
+  .evolucion-chips{ display:flex; flex-wrap:wrap; gap:6px; }
+  .evolucion-chip{
+    display:inline-flex; align-items:center; gap:6px; padding:5px 10px; border-radius:999px;
+    font-size:12px; font-weight:600; color:#fff; cursor:pointer; user-select:none; opacity:1;
+    transition: opacity 200ms ease;
+  }
+  .evolucion-chip.apagado{ opacity:0.35; }
+  .evolucion-chip .x{ opacity:0.8; }
+  .evolucion-chart-wrap{ width:100%; overflow-x:auto; }
+  .evolucion-chart{ width:100%; min-width:480px; height:380px; }
+  .evolucion-status{ margin-top:8px; font-size:12px; color: var(--muted); }
+  @media (max-width:600px){
+    .evolucion-chart{ min-width:640px; height:320px; }
+  }
 </style>
 </head>
 <body>
@@ -4240,6 +4279,23 @@
         <thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>GF</th><th>GC</th><th>DG</th></tr></thead>
         <tbody id="tabla-actual-body"></tbody>
       </table>
+    </div>
+  </section>
+
+  <section class="evolucion-posiciones" id="sec-evolucion-nacional">
+    <button type="button" class="evolucion-toggle" id="evolucion-toggle-nacional" aria-expanded="false" aria-controls="evolucion-body-nacional">
+      <span class="evolucion-toggle-label">📈 Evolución de posiciones</span>
+      <span class="evolucion-toggle-caret">▼</span>
+    </button>
+    <div class="evolucion-body" id="evolucion-body-nacional" hidden>
+      <div class="evolucion-controls">
+        <input type="text" id="evolucion-buscar-nacional" list="team-list" placeholder="Agregar equipo al gráfico…" autocomplete="off">
+        <div class="evolucion-chips" id="evolucion-chips-nacional"></div>
+      </div>
+      <div class="evolucion-chart-wrap">
+        <div class="evolucion-chart" id="evolucion-chart-nacional"></div>
+      </div>
+      <div class="evolucion-status" id="evolucion-status-nacional"></div>
     </div>
   </section>
 
@@ -5822,6 +5878,263 @@ function renderFilasTabla(bodyId, filas, equipoDestacado){
   });
 }
 
+/* ==========================================================================
+   EVOLUCIÓN DE POSICIONES (acordeón + ECharts)
+   --------------------------------------------------------------------------
+   generarDatosEvolucionChart(): función pura, arma la opción de ECharts a
+   partir de los datos ya calculados por el backend (posiciones_evolucion.py).
+   No recalcula tablas ni pide nada nuevo -- solo dibuja lo que ya viene.
+   renderEvolucionChart(): efecto de borde, solo pinta lo que generó la
+   función de datos. Se instancia una vez por competencia y se reutiliza
+   (no se destruye el gráfico al abrir/cerrar el acordeón).
+   ========================================================================== */
+let equipoResaltadoNacional = null;
+
+const EVOLUCION_PALETA = [
+  '#E4572E', '#1F5EFF', '#2E9E5B', '#C9A227', '#8B5CF6',
+  '#EC4899', '#0EA5E9', '#F97316', '#14B8A6', '#A855F7',
+  '#DC2626', '#059669', '#7C3AED', '#DB2777', '#0891B2',
+];
+
+function colorParaEquipo(nombre){
+  let hash = 0;
+  for (let i = 0; i < nombre.length; i++){
+    hash = (hash * 31 + nombre.charCodeAt(i)) >>> 0;
+  }
+  return EVOLUCION_PALETA[hash % EVOLUCION_PALETA.length];
+}
+
+const EVOLUCION_CONFIG = {
+  nacional: {
+    endpoint: '/api/evolucion-posiciones-nacional',
+    // Mismo criterio que ya usa renderFilasTabla() para "Tabla actual":
+    // 1° = ascenso directo, 2° a 8° = reducido, últimos 2 = descenso.
+    // Se define acá UNA sola vez para que el gráfico no lo hardcodee.
+    banda: (totalEquipos) => ([
+      { nombre: 'ascenso', desde: 1, hasta: 1, color: '#2E9E5B' },
+      { nombre: 'reducido', desde: 2, hasta: Math.min(8, totalEquipos - 1), color: '#C9A227' },
+      { nombre: 'descenso', desde: Math.max(1, totalEquipos - 1), hasta: totalEquipos, color: '#DC2626' },
+    ]),
+  },
+};
+
+// { nacional: { cargando: bool, datos: {evolucion, zonas} | null, chart: echarts.ECharts | null,
+//               seleccionados: Set<string> } }
+const EVOLUCION_STATE = {};
+
+function estadoEvolucion(liga){
+  if (!EVOLUCION_STATE[liga]) {
+    EVOLUCION_STATE[liga] = { cargando: false, datos: null, chart: null, seleccionados: new Set() };
+  }
+  return EVOLUCION_STATE[liga];
+}
+
+/**
+ * Función pura: a partir de {evolucion, zonas} (tal como lo devuelve el
+ * backend) y la lista de equipos actualmente visibles, arma la opción de
+ * ECharts completa (ejes, bandas, series, tooltip). No toca el DOM.
+ */
+function generarDatosEvolucionChart(datos, liga, equiposVisibles){
+  const { evolucion, zonas } = datos;
+  const config = EVOLUCION_CONFIG[liga];
+  const totalFechas = Math.max(0, ...Object.values(evolucion).map(s => s.length));
+  const categorias = Array.from({ length: totalFechas }, (_, i) =>
+    i === totalFechas - 1 ? 'Fecha actual' : `Fecha ${i + 1}`
+  );
+  const totalEquiposMax = Math.max(1, ...Object.values(zonas || { _: 1 }));
+
+  const bandas = config.banda(totalEquiposMax).map(b => ({
+    name: b.nombre,
+    itemStyle: { color: b.color, opacity: 0.08 },
+    // markArea con eje Y invertido: yAxis va de arriba (1°) hacia abajo,
+    // el rango se define igual en valores de posición (0.5 a totalEquiposMax+0.5
+    // para que la banda tape la fila completa, no solo el punto).
+    coord: [b.desde - 0.5, b.hasta + 0.5],
+  }));
+
+  const series = equiposVisibles.map(equipo => {
+    const historial = evolucion[equipo] || [];
+    return {
+      name: equipo,
+      type: 'line',
+      data: historial.map(s => ({
+        value: s.posicion,
+        puntos: s.puntos,
+        dg: s.dg,
+        zona: s.zona,
+      })),
+      color: colorParaEquipo(equipo),
+      showSymbol: true,
+      symbolSize: 6,
+      smooth: false,
+      animationDuration: 700,
+      animationDurationUpdate: 250,
+      markArea: equipo === equiposVisibles[0] ? {
+        silent: true,
+        data: bandas.map(b => [
+          { name: b.name, itemStyle: b.itemStyle, xAxis: 'min', yAxis: b.coord[0] },
+          { xAxis: 'max', yAxis: b.coord[1] },
+        ]),
+      } : undefined,
+    };
+  });
+
+  return {
+    animationDurationUpdate: 250,
+    grid: { left: 44, right: 20, top: 24, bottom: 56, containLabel: true },
+    tooltip: {
+      trigger: 'item',
+      formatter: (p) => {
+        if (!p || !p.data) return '';
+        const fecha = categorias[p.dataIndex] || '';
+        return `<b>${p.seriesName}</b><br>${fecha}<br>` +
+          `Posición: ${p.data.value}°<br>Puntos: ${p.data.puntos}<br>` +
+          `Dif. de gol: ${p.data.dg > 0 ? '+' + p.data.dg : p.data.dg}`;
+      },
+    },
+    legend: { show: false, data: equiposVisibles },
+    xAxis: {
+      type: 'category',
+      data: categorias,
+      boundaryGap: false,
+      axisLabel: { fontSize: 11 },
+    },
+    yAxis: {
+      type: 'value',
+      inverse: true,
+      min: 1,
+      max: totalEquiposMax,
+      interval: 1,
+      name: 'Posición',
+      axisLabel: { fontSize: 11 },
+    },
+    dataZoom: [
+      { type: 'inside', xAxisIndex: 0 },
+      { type: 'slider', xAxisIndex: 0, height: 16, bottom: 8 },
+    ],
+    series,
+  };
+}
+
+function equiposPorDefecto(liga, datos){
+  const { evolucion, zonas } = datos;
+  if (liga === 'nacional' && equipoResaltadoNacional && evolucion[equipoResaltadoNacional]) {
+    return [equipoResaltadoNacional];
+  }
+  // Sin equipo resaltado: primeros 3 de la zona activa (según posición en
+  // la última fecha con datos), para no arrancar con el gráfico vacío ni
+  // saturado de líneas.
+  const zonaActivaPorLiga = { nacional: () => zonaActual };
+  const zona = zonaActivaPorLiga[liga] ? zonaActivaPorLiga[liga]() : Object.keys(zonas || {})[0];
+  const ultimaPosicion = (equipo) => {
+    const historial = evolucion[equipo];
+    return historial && historial.length ? historial[historial.length - 1].posicion : Infinity;
+  };
+  return Object.keys(evolucion)
+    .filter(equipo => !zona || (evolucion[equipo][0] && evolucion[equipo][0].zona === zona))
+    .sort((a, b) => ultimaPosicion(a) - ultimaPosicion(b))
+    .slice(0, 3);
+}
+
+function renderChipsEvolucion(liga){
+  const estado = estadoEvolucion(liga);
+  const cont = document.getElementById(`evolucion-chips-${liga}`);
+  if (!cont) return;
+  cont.innerHTML = '';
+  Array.from(estado.seleccionados).sort().forEach(equipo => {
+    const chip = document.createElement('span');
+    chip.className = 'evolucion-chip';
+    chip.style.background = colorParaEquipo(equipo);
+    chip.innerHTML = `${equipo} <span class="x">✕</span>`;
+    chip.onclick = () => {
+      estado.seleccionados.delete(equipo);
+      renderChipsEvolucion(liga);
+      renderEvolucionChart(liga);
+    };
+    cont.appendChild(chip);
+  });
+}
+
+/**
+ * Efecto de borde: instancia (una sola vez) o actualiza el gráfico de
+ * ECharts de la competencia dada, usando lo que devuelve
+ * generarDatosEvolucionChart(). No recalcula nada por su cuenta.
+ */
+function renderEvolucionChart(liga){
+  const estado = estadoEvolucion(liga);
+  if (!estado.datos) return;
+  const el = document.getElementById(`evolucion-chart-${liga}`);
+  if (!el || typeof echarts === 'undefined') return;
+  if (!estado.chart) estado.chart = echarts.init(el);
+  const equiposVisibles = Array.from(estado.seleccionados);
+  const opcion = generarDatosEvolucionChart(estado.datos, liga, equiposVisibles);
+  estado.chart.setOption(opcion, true);
+}
+
+async function cargarEvolucion(liga){
+  const estado = estadoEvolucion(liga);
+  const statusEl = document.getElementById(`evolucion-status-${liga}`);
+  if (estado.datos || estado.cargando) return;
+  estado.cargando = true;
+  if (statusEl) statusEl.textContent = 'Cargando evolución de posiciones…';
+  try {
+    const resp = await fetch(EVOLUCION_CONFIG[liga].endpoint);
+    const body = await resp.json();
+    if (!resp.ok || body.error) throw new Error(body.error || `Error ${resp.status}`);
+    estado.datos = body;
+    estado.seleccionados = new Set(equiposPorDefecto(liga, body));
+    if (statusEl) statusEl.textContent = '';
+    renderChipsEvolucion(liga);
+    renderEvolucionChart(liga);
+  } catch (err) {
+    if (statusEl) statusEl.textContent = `No se pudo cargar la evolución de posiciones: ${err.message}`;
+  } finally {
+    estado.cargando = false;
+  }
+}
+
+function initEvolucionAcordeon(liga){
+  const toggle = document.getElementById(`evolucion-toggle-${liga}`);
+  const body = document.getElementById(`evolucion-body-${liga}`);
+  const buscar = document.getElementById(`evolucion-buscar-${liga}`);
+  if (!toggle || !body) return;
+
+  toggle.addEventListener('click', () => {
+    const abierto = toggle.getAttribute('aria-expanded') === 'true';
+    toggle.setAttribute('aria-expanded', String(!abierto));
+    body.hidden = abierto;
+    if (!abierto) {
+      // Se inicializa recién al abrir por primera vez -- no se renderiza
+      // nada mientras el acordeón está cerrado.
+      cargarEvolucion(liga).then(() => {
+        const estado = estadoEvolucion(liga);
+        if (estado.chart) estado.chart.resize();
+      });
+    }
+  });
+
+  if (buscar) {
+    buscar.addEventListener('change', () => {
+      const equipo = buscar.value.trim();
+      buscar.value = '';
+      const estado = estadoEvolucion(liga);
+      if (!equipo || !estado.datos || !estado.datos.evolucion[equipo]) return;
+      estado.seleccionados.add(equipo);
+      renderChipsEvolucion(liga);
+      renderEvolucionChart(liga);
+    });
+  }
+
+  window.addEventListener('resize', () => {
+    const estado = estadoEvolucion(liga);
+    if (estado.chart) estado.chart.resize();
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  Object.keys(EVOLUCION_CONFIG).forEach(initEvolucionAcordeon);
+});
+
 function renderTabla(zona, equipoDestacado){
   // tabla_actual = posiciones reales de HOY (mismo dato que usa el
   // buscador, ver buildTeamIndex). Si data.json es viejo y no la trae,
@@ -6064,6 +6377,7 @@ function poblarDatalist(index){
 // efecto que usa Modo Temporada), para encontrarlo de un vistazo en las dos.
 function verEquipoEnTablaNacional(equipo, zona){
   setZone(zona);
+  equipoResaltadoNacional = equipo;
   const seccion = document.getElementById('sec-tabla-actual');
   if (seccion) seccion.scrollIntoView({ behavior: 'smooth', block: 'start' });
   setTimeout(() => {
