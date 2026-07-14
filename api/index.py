@@ -434,6 +434,68 @@ def datos_sudamericana():
         return _error_response(e)
 
 
+def _estado_persistido(key: str):
+    """Devuelve el último payload de simulación persistido en Supabase
+    para `key` (ver data_access.simulation_output()/
+    save_simulation_output()). Esto es lo que corren main.py y afines
+    después de cada simulación o de /api/actualizar-*, así que refleja
+    el estado real más reciente -- a diferencia de los archivos
+    data*.json estáticos en public/, que son un snapshot que solo se
+    regenera corriendo esos scripts a mano y nunca se reescribe en un
+    deploy de Render/Vercel.
+
+    ANTES: la página, al cargar (F5), solo pedía el data*.json estático.
+    Si alguien apretaba "Actualizar desde Promiedos", el scraper y la
+    simulación sí quedaban guardados en Supabase (se veía perfecto en
+    el momento porque el frontend usaba la respuesta del POST
+    directamente), pero al recargar la página volvía a leer el JSON
+    viejo -- síntoma: "se pierde la actualización al hacer F5". Este
+    endpoint es lo que el frontend debe consultar primero; el
+    data*.json estático queda solo como fallback para el caso de un
+    deploy nuevo contra una base recién sembrada, sin ninguna
+    simulación corrida todavía.
+
+    Devuelve siempre 200 con {"disponible": bool, "datos": ...} en vez
+    de 404, para que el frontend distinga "no hay nada guardado
+    todavía" (caso legítimo, cae al estático) de un error real de red
+    o de servidor."""
+    try:
+        payload = data_access.simulation_output(key)
+        return {"disponible": payload is not None, "datos": payload}
+    except Exception as e:
+        return _error_response(e)
+
+
+@app.get("/api/estado-nacional")
+def estado_nacional():
+    return _estado_persistido("nacional")
+
+
+@app.get("/api/estado-lpf")
+def estado_lpf():
+    return _estado_persistido("lpf")
+
+
+@app.get("/api/estado-bmetro")
+def estado_bmetro():
+    return _estado_persistido("bmetro")
+
+
+@app.get("/api/estado-federal")
+def estado_federal():
+    return _estado_persistido("federal_a")
+
+
+@app.get("/api/estado-primerac")
+def estado_primerac():
+    return _estado_persistido("primerac")
+
+
+@app.get("/api/estado-copa")
+def estado_copa():
+    return _estado_persistido("copa")
+
+
 @app.get("/")
 def root():
     return RedirectResponse(url="/index.html")

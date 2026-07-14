@@ -1,6 +1,7 @@
 import json
 import datetime
 
+import data_access
 import rutas
 from modelos.estadisticas_primerac import Estadisticas
 
@@ -137,6 +138,24 @@ def correr_simulacion(n_sims=1000, imprimir=True, guardar_json=True):
     }
 
     if guardar_json:
+        # Antes esto SOLO escribía data_primerac.json a disco. En
+        # producción (Render/Vercel) ese archivo no es el que termina
+        # sirviendo la página (public/ se sirve como estático desde el
+        # build, no desde el filesystem donde corre este proceso), así
+        # que el resultado nunca le llegaba al usuario después de un
+        # F5 -- mismo síntoma que las demás ligas antes de este fix.
+        # Ahora persistimos en Supabase con el mismo patrón de
+        # main.py/main_lpf.py/main_bmetro.py/main_federal.py, que es
+        # de donde /api/estado-primerac lee al servir la página.
+        try:
+            data_access.save_simulation_output("primerac", "primerac", datos_web, n_sims)
+            print("Resultado de simulación guardado en Supabase.")
+        except Exception as e:
+            print(f"Error al guardar la simulación en Supabase: {e}")
+
+        # Se mantiene la escritura local -- útil para desarrollo/debug
+        # corriendo el script a mano -- pero ya no es de la que depende
+        # la página en producción.
         ruta_data_json = rutas.public_dir() / "data_primerac.json"
         try:
             with open(ruta_data_json, "w", encoding="utf-8") as file:

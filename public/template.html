@@ -603,6 +603,11 @@
   tbody tr.descenso td:first-child{ color: var(--muted); }
   tbody tr.descenso td:nth-child(2){ color: var(--relegation-text); font-weight:600; }
 
+  /* "Tabla actual" (datos reales del scraper): mismo componente visual
+     que la tabla simulada, solo con una etiqueta sutil para distinguirla
+     de un vistazo sin duplicar estilos. */
+  #sec-tabla-actual .section-head .idx{ opacity:0.75; }
+
   body.dark:not(.liga-lpf) #sec-tabla{
     --leader-bg: linear-gradient(90deg, rgba(76,55,24,0.84) 0%, rgba(48,40,29,0.78) 48%, rgba(22,35,59,0.48) 100%);
     --leader-accent: #C89124;
@@ -1800,7 +1805,12 @@
   .racha-badge.d{ background: var(--danger); }
   .racha-badge[title]:hover::after{
     content: attr(title); position:absolute; bottom:130%; left:50%; transform:translateX(-50%);
-    background: var(--ink); border:1px solid var(--line); color:#fff;
+    /* Fondo y texto fijos (no var(--ink)): en modo oscuro --ink pasa a
+       ser casi blanco (es el color de texto normal sobre fondo
+       oscuro), así que este tooltip quedaba con fondo casi blanco y
+       texto blanco encima -- ilegible. Al no depender del tema, se ve
+       igual (oscuro con texto claro) tanto en modo claro como oscuro. */
+    background: #101828; border:1px solid rgba(255,255,255,0.16); color:#F5F7FA;
     font-size:11px; padding:5px 8px; border-radius:6px; white-space:nowrap; z-index:5;
   }
   .tc-racha-empty{ font-family:'JetBrains Mono'; font-size:11px; color:var(--muted); }
@@ -1814,6 +1824,17 @@
   }
   .tc-share button:hover{ color: var(--ink); border-color: var(--azul); transform: var(--hover-lift); }
   .tc-share button.copied{ color: var(--zone-a); border-color: var(--zone-a); }
+
+  /* ---- Toast (feedback de "imagen descargada / link copiado") ---- */
+  #app-toast{
+    position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 16px);
+    background: var(--ink); color: var(--bg-panel); font-family:'JetBrains Mono';
+    font-size:12.5px; letter-spacing:0.02em; padding:12px 20px; border-radius: var(--radius-sm);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25); opacity:0; pointer-events:none;
+    transition: opacity 0.25s ease, transform 0.25s ease; z-index: 9999; max-width: calc(100vw - 32px);
+    text-align:center;
+  }
+  #app-toast.visible{ opacity:1; transform: translate(-50%, 0); }
 
   @media (max-width: 600px){
     .team-card .tc-grid{ grid-template-columns: repeat(2, 1fr); }
@@ -4056,7 +4077,7 @@
       </div>
       <div class="btn-row">
         <button id="btn-simular" class="btn-simular">▶ Correr nueva simulación</button>
-        <button id="btn-actualizar" class="btn-actualizar">⟳ Actualizar desde Promiedos</button>
+        <button id="btn-actualizar" class="btn-actualizar">⟳ Actualizar Resultados</button>
       </div>
       <div id="sim-status" class="sim-status"></div>
       <div id="last-update" class="last-update"></div>
@@ -4070,7 +4091,7 @@
       </div>
       <div class="btn-row">
         <button id="btn-simular-lpf" class="btn-simular">▶ Correr nueva simulación (Clausura + playoffs)</button>
-        <button id="btn-actualizar-lpf" class="btn-actualizar">⟳ Actualizar desde Promiedos</button>
+        <button id="btn-actualizar-lpf" class="btn-actualizar">⟳ Actualizar Resultados</button>
       </div>
       <div id="sim-status-lpf" class="sim-status"></div>
       <div id="last-update-lpf" class="last-update"></div>
@@ -4084,7 +4105,7 @@
       </div>
       <div class="btn-row">
         <button id="btn-simular-copa" class="btn-simular">▶ Correr nueva simulación del cuadro</button>
-        <button id="btn-actualizar-copa" class="btn-actualizar">⟳ Actualizar desde Promiedos</button>
+        <button id="btn-actualizar-copa" class="btn-actualizar">⟳ Actualizar Resultados</button>
       </div>
       <div id="sim-status-copa" class="sim-status"></div>
       <div id="last-update-copa" class="last-update"></div>
@@ -4098,7 +4119,7 @@
       </div>
       <div class="btn-row">
         <button id="btn-simular-bmetro" class="btn-simular">▶ Correr nueva simulación</button>
-        <button id="btn-actualizar-bmetro" class="btn-actualizar">⟳ Actualizar desde Promiedos</button>
+        <button id="btn-actualizar-bmetro" class="btn-actualizar">⟳ Actualizar Resultados</button>
       </div>
       <div id="sim-status-bmetro" class="sim-status"></div>
       <div id="last-update-bmetro" class="last-update"></div>
@@ -4112,7 +4133,7 @@
       </div>
       <div class="btn-row">
         <button id="btn-simular-federal" class="btn-simular">▶ Correr nueva simulación</button>
-        <button id="btn-actualizar-federal" class="btn-actualizar">⟳ Actualizar desde Promiedos</button>
+        <button id="btn-actualizar-federal" class="btn-actualizar">⟳ Actualizar Resultados</button>
       </div>
       <div id="sim-status-federal" class="sim-status"></div>
       <div id="last-update-federal" class="last-update"></div>
@@ -4126,7 +4147,7 @@
       </div>
       <div class="btn-row">
         <button id="btn-simular-primerac" class="btn-simular">▶ Correr nueva simulación</button>
-        <button id="btn-actualizar-primerac" class="btn-actualizar">⟳ Actualizar desde Promiedos</button>
+        <button id="btn-actualizar-primerac" class="btn-actualizar">⟳ Actualizar Resultados</button>
       </div>
       <div id="sim-status-primerac" class="sim-status"></div>
       <div id="last-update-primerac" class="last-update"></div>
@@ -4209,8 +4230,19 @@
     </div>
   </div>
 
+  <section id="sec-tabla-actual">
+    <div class="section-head"><span class="idx">01</span><h2>Tabla actual</h2><div class="rule"></div></div>
+    <p class="section-note">Clasificación real de la zona en este momento, tal como quedó tras los partidos ya jugados (mismos datos que usa el buscador de equipos).</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>GF</th><th>GC</th><th>DG</th></tr></thead>
+        <tbody id="tabla-actual-body"></tbody>
+      </table>
+    </div>
+  </section>
+
   <section id="sec-tabla">
-    <div class="section-head"><span class="idx">01</span><h2>Tabla final simulada</h2><div class="rule"></div></div>
+    <div class="section-head"><span class="idx">02</span><h2>Tabla final simulada</h2><div class="rule"></div></div>
     <p class="section-note">Resultado de una corrida puntual de la fase regular: se completan los partidos pendientes del fixture sobre la base de los resultados ya jugados.</p>
     <div class="table-wrap">
       <table>
@@ -4221,7 +4253,7 @@
   </section>
 
   <section id="sec-ascenso">
-    <div class="section-head"><span class="idx">02</span><h2>Camino al ascenso</h2><div class="rule"></div></div>
+    <div class="section-head"><span class="idx">03</span><h2>Camino al ascenso</h2><div class="rule"></div></div>
     <p class="section-note">El puntero de cada zona define el primer ascenso en una final a partido único, cancha neutral. El perdedor pasa directo a semifinales del Reducido junto a los 7 ganadores de la primera ronda.</p>
 
     <div class="ascenso-card">
@@ -4238,7 +4270,7 @@
   </section>
 
   <section id="sec-mc">
-    <div class="section-head"><span class="idx">03</span><h2>Probabilidades — Monte Carlo</h2><div class="rule"></div></div>
+    <div class="section-head"><span class="idx">04</span><h2>Probabilidades — Monte Carlo</h2><div class="rule"></div></div>
     <p class="section-note">Cada barra desglosa el % de simulaciones en que el equipo asciende directo (zona 1) o por el Reducido. A la derecha, el % de veces que descendió, con su propia barra.</p>
     <div class="legend">
       <span><i style="background:var(--zone-a)"></i> Ascenso directo (Zona A)</span>
@@ -4251,7 +4283,7 @@
   </section>
 
   <section id="sec-esperada">
-    <div class="section-head"><span class="idx">04</span><h2>Posición final esperada</h2><div class="rule"></div></div>
+    <div class="section-head"><span class="idx">05</span><h2>Posición final esperada</h2><div class="rule"></div></div>
     <p class="section-note">Puntos y posición promedio de cada equipo a lo largo de todas las simulaciones — la foto más estable de "dónde debería terminar" cada uno.</p>
     <div class="table-wrap">
       <table>
@@ -4262,7 +4294,7 @@
   </section>
 
   <section id="sec-goleadores">
-    <div class="section-head"><span class="idx">05</span><h2>Goleadores</h2><div class="rule"></div></div>
+    <div class="section-head"><span class="idx">06</span><h2>Goleadores</h2><div class="rule"></div></div>
     <p class="section-note">Proyección por simulación: partimos de los goles ya convertidos y corremos hasta cinco mil simulaciones de los partidos que le quedan al equipo del jugador. El ritmo de cada uno se ajusta hacia el promedio de la liga mientras tiene pocos partidos jugados (para que una racha corta no dispare la proyección), y cada partido simulado tiene una probabilidad genérica de que no lo juegue —no sabemos si es lesión, suspensión o rotación, solo lo tratamos como riesgo—. Por eso el número que ves es un promedio entre un rango posible, no una cifra exacta.</p>
     <div class="table-wrap">
       <table>
@@ -4273,7 +4305,7 @@
   </section>
 
   <section id="sec-como-funciona">
-    <div class="section-head"><span class="idx">06</span><h2>¿Cómo funciona?</h2><div class="rule"></div></div>
+    <div class="section-head"><span class="idx">07</span><h2>¿Cómo funciona?</h2><div class="rule"></div></div>
     <p class="section-note">Todo lo que hay detrás del simulador: el modelo, los datos y las reglas del torneo.</p>
     <div class="faq">
       <details>
@@ -5232,17 +5264,43 @@ async function ejecutarSimulacion(tarea, payload, backendPath, statusEl){
   return cuerpo;
 }
 
+// Pide el estado persistido en Supabase para una liga (ver
+// /api/estado-nacional, /api/estado-lpf, etc. en api/index.py).
+// Devuelve el payload si hay algo guardado, o null si no hay nada
+// todavía o si falló la petición -- en cualquiera de esos dos casos
+// el caller debe caer al snapshot estático data*.json, igual que
+// hacía siempre (comportamiento de "primer deploy sin datos" no
+// cambia, solo el caso normal de "ya se actualizó antes").
+async function cargarEstadoPersistido(endpoint){
+  try {
+    const respuesta = await fetch(apiUrl(endpoint));
+    if (!respuesta.ok) return null;
+    const cuerpo = await respuesta.json();
+    return (cuerpo.disponible && cuerpo.datos) ? cuerpo.datos : null;
+  } catch (e) {
+    return null;
+  }
+}
+
 let DATA;
 
 async function cargarDatos() {
     try {
-        const respuesta = await fetch("./data.json?t=" + Date.now());
+        // Primero el estado persistido real en Supabase (lo que quedó
+        // guardado la última vez que se corrió una simulación o se
+        // apretó "Actualizar Resultados"); si todavía no hay nada
+        // ahí, caemos al snapshot estático data.json como antes.
+        DATA = await cargarEstadoPersistido("/api/estado-nacional");
 
-        if (!respuesta.ok) {
-            throw new Error("No se pudo cargar data.json");
+        if (!DATA) {
+            const respuesta = await fetch("./data.json?t=" + Date.now());
+
+            if (!respuesta.ok) {
+                throw new Error("No se pudo cargar data.json");
+            }
+
+            DATA = await respuesta.json();
         }
-
-        DATA = await respuesta.json();
 
         iniciar();
     } catch (e) {
@@ -5277,8 +5335,13 @@ function iniciar() {
 
     // Si el link trae ?equipo=Nombre (compartido con "Copiar link"),
     // abrimos esa ficha directo sin que el usuario tenga que buscar.
+    // Antes Nacional era la pestaña por defecto, así que no hacía falta
+    // cambiar de pestaña acá -- ahora que el default es LPF, un link
+    // viejo compartido de Nacional necesita este setLiga('nacional')
+    // para mostrar la ficha en la pestaña correcta.
     const equipoUrl = new URLSearchParams(window.location.search).get('equipo');
     if (equipoUrl){
+        setLiga('nacional');
         document.getElementById('team-search').value = equipoUrl;
         buscarEquipo(equipoUrl);
     }
@@ -5389,7 +5452,7 @@ async function correrActualizacion(){
     } finally {
         btn.disabled = false;
         input.disabled = false;
-        btn.textContent = "⟳ Actualizar desde Promiedos";
+        btn.textContent = "⟳ Actualizar Resultados";
         endApiAction();
     }
 }
@@ -5715,18 +5778,33 @@ function campeonAnuncioHTML(campeon, simbolo){
 }
 
 
-function renderTabla(zona){
-  const body = document.getElementById('tabla-body');
+// Componente genérico de tabla de posiciones: recibe únicamente los datos
+// a mostrar y los pinta en el tbody indicado. Lo usan tanto la "Tabla
+// actual" (datos reales del scraper) como la "Tabla final simulada", para
+// no duplicar el marcado/estilos de las filas (punta/reducido/descenso).
+function renderFilasTabla(bodyId, filas, equipoDestacado){
+  const body = document.getElementById(bodyId);
+  if (!body) return;
   body.innerHTML = "";
-  const filas = DATA.tablas[zona];
   filas.forEach((f, i) => {
     const tr = document.createElement('tr');
     if (i === 0) tr.classList.add('punta');
     else if (i >= 1 && i <= 7) tr.classList.add('reducido');
     if (i >= filas.length - 2) tr.classList.add('descenso');
+    tr.dataset.equipo = f.equipo;
+    if (equipoDestacado && f.equipo === equipoDestacado) tr.classList.add('temporada-fila-resaltada');
     tr.innerHTML = `<td>${i+1}</td><td>${escudoHTML(f.equipo)}${nombreMostrable(f.equipo)}</td><td>${f.puntos}</td><td>${f.gf}</td><td>${f.gc}</td><td>${f.dg > 0 ? '+'+f.dg : f.dg}</td>`;
     body.appendChild(tr);
   });
+}
+
+function renderTabla(zona, equipoDestacado){
+  // tabla_actual = posiciones reales de HOY (mismo dato que usa el
+  // buscador, ver buildTeamIndex). Si data.json es viejo y no la trae,
+  // caemos a la propia tabla simulada para no romper la página.
+  const actual = (DATA.tabla_actual && DATA.tabla_actual[zona]) || DATA.tablas[zona];
+  renderFilasTabla('tabla-actual-body', actual, equipoDestacado);
+  renderFilasTabla('tabla-body', DATA.tablas[zona], equipoDestacado);
 }
 
 function renderAscenso(){
@@ -5957,6 +6035,23 @@ function poblarDatalist(index){
   dl.innerHTML = Object.keys(index).sort().map(nombre => `<option value="${nombre}">`).join('');
 }
 
+// Lleva a las tablas de la zona del equipo, scrollea y resalta un par de
+// segundos su fila en "Tabla actual" y en "Tabla final simulada" (mismo
+// efecto que usa Modo Temporada), para encontrarlo de un vistazo en las dos.
+function verEquipoEnTablaNacional(equipo, zona){
+  setZone(zona);
+  const seccion = document.getElementById('sec-tabla-actual');
+  if (seccion) seccion.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  setTimeout(() => {
+    ['tabla-actual-body', 'tabla-body'].forEach(bodyId => {
+      const tr = document.querySelector(`#${bodyId} tr[data-equipo="${CSS.escape(equipo)}"]`);
+      if (!tr) return;
+      tr.classList.add('temporada-fila-resaltada');
+      setTimeout(() => tr.classList.remove('temporada-fila-resaltada'), 2400);
+    });
+  }, 450);
+}
+
 function renderTeamCard(t){
   const zoneColor = t.zona === 'A' ? 'var(--zone-a)' : 'var(--zone-b)';
   const zoneDim = t.zona === 'A' ? 'var(--zone-a-dim)' : 'var(--zone-b-dim)';
@@ -5985,8 +6080,9 @@ function renderTeamCard(t){
         ${renderRacha(t.ultimos5)}
       </div>
       <div class="tc-share">
-        <button onclick="compartirLink('${t.equipo.replace(/'/g, "\\'")}', this)">🔗 Copiar link</button>
-        <button onclick="compartirImagen('${t.equipo.replace(/'/g, "\\'")}', this)">📷 Descargar imagen</button>
+        <button onclick="verEquipoEnTablaNacional('${t.equipo.replace(/'/g, "\\'")}', '${t.zona}')">📊 Ver en la tabla</button>
+        <button onclick="compartirLink('nacional', '${t.equipo.replace(/'/g, "\\'")}', this)">🔗 Copiar link</button>
+        <button onclick="compartirFicha('nacional', '${t.equipo.replace(/'/g, "\\'")}', this)">📤 Compartir</button>
       </div>
     </div>
   `;
@@ -6007,29 +6103,90 @@ function renderRacha(ultimos5){
   }).join('')}</div>`;
 }
 
-/* ---------- COMPARTIR FICHA ---------- */
-function compartirLink(nombre, btn){
+/* ============================================================
+   SISTEMA DE COMPARTIDO (link + imagen + texto + Web Share API)
+   ============================================================
+   Todo lo relacionado a "compartir una ficha de equipo" vive en
+   este módulo, para las 6 competencias que tienen ficha con botones
+   de compartir (Nacional, Primera C, LPF, B Metropolitana, Federal A
+   y Copa Argentina). Si mañana se agrega una competencia nueva con
+   ficha de equipo, alcanza con sumar una entrada a SHARE_CONFIG: no
+   hace falta escribir un compartirLinkXxx ni un compartirImagenXxx
+   nuevo.
+
+   Separación de responsabilidades:
+   - SHARE_CONFIG / construirURLCompartida  -> estado de la URL
+   - construirTextoCompartido                -> texto del mensaje
+   - generarCanvasFicha / canvasABlob         -> imagen (reutiliza
+     el html2canvas que ya existía, sin duplicarlo)
+   - mostrarToast                             -> feedback de UI
+   - compartirLink / compartirFicha           -> orquestación
+------------------------------------------------------------- */
+
+// Watermark discreto que se agrega SOLO en la imagen exportada
+// (nunca en la ficha real de la página), para que quien vea la
+// imagen circulando en redes pueda encontrar el sitio.
+const SHARE_BRANDING_TEXTO = 'simuladorprimerab.xyz';
+
+// Un registro por competencia con ficha de equipo. `param` es el
+// query param que identifica al equipo en la URL compartida (cada
+// uno distinto para que convivan sin pisarse); `titulo` es el nombre
+// prolijo para el texto del mensaje; `data` devuelve el objeto DATA*
+// correspondiente (para leer n_simulaciones).
+const SHARE_CONFIG = {
+  nacional:  { param: 'equipo',          titulo: 'Primera Nacional',        data: () => (typeof DATA !== 'undefined' ? DATA : null) },
+  primerac:  { param: 'equipo_primerac', titulo: 'Primera C',               data: () => (typeof DATA_PRIMERAC !== 'undefined' ? DATA_PRIMERAC : null) },
+  lpf:       { param: 'equipo_lpf',      titulo: 'Liga Profesional',        data: () => (typeof DATA_LPF !== 'undefined' ? DATA_LPF : null) },
+  bmetro:    { param: 'equipo_bmetro',   titulo: 'Primera B Metropolitana', data: () => (typeof DATA_BMETRO !== 'undefined' ? DATA_BMETRO : null) },
+  federal:   { param: 'equipo_federal',  titulo: 'Torneo Federal A',        data: () => (typeof DATA_FEDERAL !== 'undefined' ? DATA_FEDERAL : null) },
+  copa:      { param: 'equipo_copa',     titulo: 'Copa Argentina',          data: () => (typeof DATA_COPA !== 'undefined' ? DATA_COPA : null) },
+};
+const SHARE_URL_PARAMS = Object.values(SHARE_CONFIG).map(c => c.param);
+
+// ---- 1) URL que conserva la vista exacta (competencia + equipo) ----
+// Limpia los params de todas las demás competencias para no arrastrar
+// una ficha vieja de otra pestaña en el link que se comparte.
+function construirURLCompartida(liga, nombreEquipo){
+  const cfg = SHARE_CONFIG[liga];
   const url = new URL(window.location.href);
-  url.searchParams.set('equipo', nombre);
-  navigator.clipboard.writeText(url.toString()).then(() => {
-    const original = btn.textContent;
-    btn.textContent = '✓ Copiado';
-    btn.classList.add('copied');
-    setTimeout(() => { btn.textContent = original; btn.classList.remove('copied'); }, 1800);
-  }).catch(() => {
-    prompt('Copiá el link:', url.toString());
-  });
+  SHARE_URL_PARAMS.forEach(p => url.searchParams.delete(p));
+  if (cfg) url.searchParams.set(cfg.param, nombreEquipo);
+  return url;
 }
 
-function compartirImagen(nombre, btn){
-  // btn.closest: funciona tanto para la ficha de Nacional (#search-result)
-  // como para la de LPF (#search-result-lpf) sin hardcodear el contenedor.
-  const card = btn.closest('.team-card');
-  if (!card) return;
-  const original = btn.textContent;
-  btn.textContent = 'Generando…';
-  btn.disabled = true;
-  html2canvas(card, {
+// ---- 2) Texto del mensaje ----
+// Reutiliza la frase que cada ficha ya arma en su `.tc-mc-title`
+// ("Ascenso total: X%", "Clasifica a playoffs en X%", "Campeón en
+// X%"...) en vez de reimplementar "cuál es la stat principal" por
+// competencia -- así el texto compartido queda siempre sincronizado
+// con lo que la ficha muestra, sin duplicar lógica.
+function construirTextoCompartido(liga, nombreEquipo, card, urlTexto){
+  const cfg = SHARE_CONFIG[liga] || {};
+  const tituloLiga = cfg.titulo || 'Simulador';
+  const data = cfg.data ? cfg.data() : null;
+  const nSims = data && data.n_simulaciones ? Number(data.n_simulaciones).toLocaleString('es-AR') : null;
+
+  const mcTitle = card ? card.querySelector('.tc-mc-title') : null;
+  // Sacamos el ", de las simulaciones" final para no repetir
+  // "simulaciones" dos veces al agregar el conteo de corridas abajo.
+  const frase = mcTitle
+    ? mcTitle.textContent.trim().replace(/\s+/g, ' ').replace(/\s*de las simulaciones\.?$/i, '')
+    : '';
+
+  let cuerpo = frase ? `${nombreEquipo}: ${frase}` : nombreEquipo;
+  if (nSims) cuerpo += ` según ${nSims} simulaciones de Monte Carlo`;
+
+  return `📊 Simulación ${tituloLiga}\n\n${cuerpo}.\n\nConsultá todas las probabilidades acá:\n${urlTexto}`;
+}
+
+// ---- 3) Imagen ----
+// Genera el <canvas> de la ficha (mismo html2canvas que ya funcionaba)
+// y le suma el watermark de marca solo en el clon que se fotografía,
+// para no tocar jamás la ficha visible en pantalla. Se reutiliza tanto
+// para la descarga directa (desktop) como para adjuntar el archivo al
+// menú nativo de compartir (mobile).
+function generarCanvasFicha(card){
+  return html2canvas(card, {
     backgroundColor: getComputedStyle(document.body).getPropertyValue('--bg-panel') || '#0F2018',
     scale: 2,
     onclone: (clonedDoc) => {
@@ -6040,19 +6197,136 @@ function compartirImagen(nombre, btn){
         clonedCard.style.animation = 'none';
         clonedCard.style.opacity = '1';
         clonedCard.style.transform = 'none';
+
+        // Branding discreto, esquina inferior derecha. position:relative
+        // se aplica también solo acá (en el clon), nunca en la página real.
+        clonedCard.style.position = 'relative';
+        const marca = clonedDoc.createElement('div');
+        marca.textContent = SHARE_BRANDING_TEXTO;
+        marca.style.cssText = [
+          'position:absolute', 'right:16px', 'bottom:10px',
+          "font-family:'JetBrains Mono', monospace", 'font-size:11px',
+          'letter-spacing:0.03em', 'color:rgba(148,163,184,0.55)',
+          'pointer-events:none', 'user-select:none', 'line-height:1',
+        ].join(';');
+        clonedCard.appendChild(marca);
       });
     }
-  }).then(canvas => {
+  });
+}
+
+function nombreArchivoFicha(nombreEquipo){
+  return `${nombreEquipo.replace(/\s+/g, '_')}_ficha.png`;
+}
+
+function canvasABlob(canvas){
+  return new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+}
+
+// ---- 4) Toast liviano, sin dependencias, para feedback de UI ----
+let _toastTimeout = null;
+function mostrarToast(mensaje){
+  let toast = document.getElementById('app-toast');
+  if (!toast){
+    toast = document.createElement('div');
+    toast.id = 'app-toast';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = mensaje;
+  toast.classList.add('visible');
+  clearTimeout(_toastTimeout);
+  _toastTimeout = setTimeout(() => toast.classList.remove('visible'), 3200);
+}
+
+// ---- 5) "🔗 Copiar link": solo el link con el estado actual ----
+function compartirLink(liga, nombre, btn){
+  const url = construirURLCompartida(liga, nombre);
+  navigator.clipboard.writeText(url.toString()).then(() => {
+    const original = btn.textContent;
+    btn.textContent = '✓ Copiado';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = original; btn.classList.remove('copied'); }, 1800);
+  }).catch(() => {
+    prompt('Copiá el link:', url.toString());
+  });
+}
+
+// ---- 6) "📤 Compartir": el flujo completo (imagen + texto + link) ----
+// Decide cómo compartir según lo que soporte el navegador:
+//   a) Web Share API con archivos (la mayoría de navegadores mobile):
+//      abre el menú nativo con imagen + texto + link ya adentro.
+//   b) Web Share API sin archivos: comparte texto + link.
+//   c) Sin Web Share API (desktop, o mobile viejo): descarga la
+//      imagen y copia el link al portapapeles, con un toast.
+// La detección es por soporte de la API (no por user-agent) porque
+// es la forma robusta y recomendada de hacer esto: algunos navegadores
+// de escritorio también exponen navigator.share, y en esos casos vale
+// más ofrecer el menú nativo que forzar la descarga.
+async function compartirFicha(liga, nombre, btn){
+  const card = btn.closest('.team-card');
+  if (!card) return;
+
+  const original = btn.textContent;
+  btn.textContent = 'Generando…';
+  btn.disabled = true;
+
+  try {
+    const url = construirURLCompartida(liga, nombre);
+    const urlTexto = url.toString();
+    const texto = construirTextoCompartido(liga, nombre, card, urlTexto);
+    const canvas = await generarCanvasFicha(card);
+    const nombreArchivo = nombreArchivoFicha(nombre);
+
+    if (navigator.canShare && navigator.share){
+      const blob = await canvasABlob(canvas);
+      if (blob){
+        const file = new File([blob], nombreArchivo, { type: 'image/png' });
+        if (navigator.canShare({ files: [file] })){
+          // El link ya va dentro de "text": WhatsApp/Instagram/etc no
+          // siempre muestran texto y url por separado, así el link
+          // nunca se pierde en el mensaje compartido.
+          await navigator.share({ files: [file], text: texto });
+          btn.textContent = original;
+          btn.disabled = false;
+          return;
+        }
+      }
+    }
+
+    if (navigator.share){
+      await navigator.share({ text: texto });
+      btn.textContent = original;
+      btn.disabled = false;
+      return;
+    }
+
+    // Sin Web Share API: descarga automática + copiar link + toast.
     const link = document.createElement('a');
-    link.download = `${nombre.replace(/\s+/g, '_')}_ficha.png`;
+    link.download = nombreArchivo;
     link.href = canvas.toDataURL('image/png');
     link.click();
+
+    try {
+      await navigator.clipboard.writeText(urlTexto);
+      mostrarToast('Imagen descargada y enlace copiado al portapapeles.');
+    } catch (e) {
+      mostrarToast('Imagen descargada. Copiá el link para compartirla.');
+    }
+
     btn.textContent = original;
     btn.disabled = false;
-  }).catch(() => {
+  } catch (e){
+    // El usuario cerró el menú nativo de compartir sin elegir nada:
+    // no es un error real, no hace falta mostrar "Error".
+    if (e && e.name === 'AbortError'){
+      btn.textContent = original;
+      btn.disabled = false;
+      return;
+    }
+    console.error('Error al compartir ficha:', e);
     btn.textContent = 'Error, probá de nuevo';
     setTimeout(() => { btn.textContent = original; btn.disabled = false; }, 2000);
-  });
+  }
 }
 
 function buscarEquipo(nombre){
@@ -6235,9 +6509,12 @@ let TEAM_INDEX_PRIMERAC = {};
 
 async function cargarDatosPrimeraC(){
   try {
-    const respuesta = await fetch("./data_primerac.json?t=" + Date.now());
-    if (!respuesta.ok) throw new Error("No se pudo cargar data_primerac.json");
-    DATA_PRIMERAC = await respuesta.json();
+    DATA_PRIMERAC = await cargarEstadoPersistido("/api/estado-primerac");
+    if (!DATA_PRIMERAC) {
+      const respuesta = await fetch("./data_primerac.json?t=" + Date.now());
+      if (!respuesta.ok) throw new Error("No se pudo cargar data_primerac.json");
+      DATA_PRIMERAC = await respuesta.json();
+    }
     iniciarPrimeraC();
   } catch (e) {
     const cont = document.getElementById('bracket-primerac');
@@ -6260,12 +6537,24 @@ function iniciarPrimeraC(){
   const busquedaPrimerac = document.getElementById('team-search-primerac');
   if (busquedaPrimerac && busquedaPrimerac.value) buscarEquipoPrimeraC(busquedaPrimerac.value);
 
-  const equipoUrl = new URLSearchParams(window.location.search).get('equipo');
-  if (equipoUrl && TEAM_INDEX_PRIMERAC[equipoUrl]){
-    document.getElementById('team-search-primerac').value = equipoUrl;
-    buscarEquipoPrimeraC(equipoUrl);
-  }
+  abrirFichaPrimeraCDesdeUrl();
   if (document.body.classList.contains('liga-primerac')) actualizarHero('primerac');
+}
+
+// Link compartido con ?equipo_primerac=...: cambia a la pestaña Primera C
+// y abre la ficha directo (equivalente al ?equipo= de Nacional, pero con
+// su propio parámetro para no pisarse con el de Nacional). Solo la
+// primera vez.
+let _fichaPrimeraCDesdeUrlAbierta = false;
+function abrirFichaPrimeraCDesdeUrl(){
+  if (_fichaPrimeraCDesdeUrlAbierta) return;
+  const equipoUrl = new URLSearchParams(window.location.search).get('equipo_primerac');
+  if (!equipoUrl) return;
+  _fichaPrimeraCDesdeUrlAbierta = true;
+  setLiga('primerac');
+  const input = document.getElementById('team-search-primerac');
+  if (input) input.value = equipoUrl;
+  buscarEquipoPrimeraC(equipoUrl);
 }
 
 function renderTablaPrimeraC(zona){
@@ -6460,8 +6749,8 @@ function renderTeamCardPrimeraC(t){
         ${renderRacha(t.ultimos5)}
       </div>
       <div class="tc-share">
-        <button onclick="compartirLink('${t.equipo.replace(/'/g, "\\'")}', this)">🔗 Copiar link</button>
-        <button onclick="compartirImagen('${t.equipo.replace(/'/g, "\\'")}', this)">📷 Descargar imagen</button>
+        <button onclick="compartirLink('primerac', '${t.equipo.replace(/'/g, "\\'")}', this)">🔗 Copiar link</button>
+        <button onclick="compartirFicha('primerac', '${t.equipo.replace(/'/g, "\\'")}', this)">📤 Compartir</button>
       </div>
     </div>
   `;
@@ -6583,7 +6872,7 @@ async function correrActualizacionPrimeraC(){
   } finally {
     btn.disabled = false;
     input.disabled = false;
-    btn.textContent = "⟳ Actualizar desde Promiedos";
+    btn.textContent = "⟳ Actualizar Resultados";
     endApiAction();
   }
 }
@@ -6732,9 +7021,12 @@ let zonaActualLPF = "A";
 
 async function cargarDatosLPF(){
   try {
-    const respuesta = await fetch("./data_lpf.json?t=" + Date.now());
-    if (!respuesta.ok) throw new Error("No se pudo cargar data_lpf.json");
-    DATA_LPF = await respuesta.json();
+    DATA_LPF = await cargarEstadoPersistido("/api/estado-lpf");
+    if (!DATA_LPF) {
+      const respuesta = await fetch("./data_lpf.json?t=" + Date.now());
+      if (!respuesta.ok) throw new Error("No se pudo cargar data_lpf.json");
+      DATA_LPF = await respuesta.json();
+    }
     iniciarLPF();
   } catch (e) {
     const cont = document.getElementById('vista-lpf');
@@ -7086,7 +7378,7 @@ async function correrActualizacionLPF(){
   } finally {
     btn.disabled = false;
     input.disabled = false;
-    btn.textContent = "⟳ Actualizar desde Promiedos";
+    btn.textContent = "⟳ Actualizar Resultados";
     endApiAction();
   }
 }
@@ -7171,25 +7463,11 @@ function renderTeamCardLPF(t){
         ${renderRacha(t.ultimos5)}
       </div>
       <div class="tc-share">
-        <button onclick="compartirLinkLPF('${t.equipo.replace(/'/g, "\\'")}', this)">🔗 Copiar link</button>
-        <button onclick="compartirImagen('${t.equipo.replace(/'/g, "\\'")}', this)">📷 Descargar imagen</button>
+        <button onclick="compartirLink('lpf', '${t.equipo.replace(/'/g, "\\'")}', this)">🔗 Copiar link</button>
+        <button onclick="compartirFicha('lpf', '${t.equipo.replace(/'/g, "\\'")}', this)">📤 Compartir</button>
       </div>
     </div>
   `;
-}
-
-function compartirLinkLPF(nombre, btn){
-  const url = new URL(window.location.href);
-  url.searchParams.delete('equipo');
-  url.searchParams.set('equipo_lpf', nombre);
-  navigator.clipboard.writeText(url.toString()).then(() => {
-    const original = btn.textContent;
-    btn.textContent = '✓ Copiado';
-    btn.classList.add('copied');
-    setTimeout(() => { btn.textContent = original; btn.classList.remove('copied'); }, 1800);
-  }).catch(() => {
-    prompt('Copiá el link:', url.toString());
-  });
 }
 
 function buscarEquipoLPF(nombre){
@@ -7359,9 +7637,12 @@ document.getElementById('btn-campeon-lpf').addEventListener('click', simularHast
 /* ---------- B METROPOLITANA (tabla única, sin zonas) ---------- */
 async function cargarDatosBMetro(){
   try {
-    const respuesta = await fetch("./data_bmetro.json?t=" + Date.now());
-    if (!respuesta.ok) throw new Error("No se pudo cargar data_bmetro.json");
-    DATA_BMETRO = await respuesta.json();
+    DATA_BMETRO = await cargarEstadoPersistido("/api/estado-bmetro");
+    if (!DATA_BMETRO) {
+      const respuesta = await fetch("./data_bmetro.json?t=" + Date.now());
+      if (!respuesta.ok) throw new Error("No se pudo cargar data_bmetro.json");
+      DATA_BMETRO = await respuesta.json();
+    }
     iniciarBMetro();
   } catch (e) {
     const cont = document.getElementById('vista-bmetro');
@@ -7465,27 +7746,11 @@ function renderTeamCardBMetro(t){
         ${renderRacha(t.ultimos5)}
       </div>
       <div class="tc-share">
-        <button onclick="compartirLinkBMetro('${t.equipo.replace(/'/g, "\\'")}', this)">🔗 Copiar link</button>
-        <button onclick="compartirImagen('${t.equipo.replace(/'/g, "\\'")}', this)">📷 Descargar imagen</button>
+        <button onclick="compartirLink('bmetro', '${t.equipo.replace(/'/g, "\\'")}', this)">🔗 Copiar link</button>
+        <button onclick="compartirFicha('bmetro', '${t.equipo.replace(/'/g, "\\'")}', this)">📤 Compartir</button>
       </div>
     </div>
   `;
-}
-
-function compartirLinkBMetro(nombre, btn){
-  const url = new URL(window.location.href);
-  url.searchParams.delete('equipo');
-  url.searchParams.delete('equipo_lpf');
-  url.searchParams.delete('equipo_copa');
-  url.searchParams.set('equipo_bmetro', nombre);
-  navigator.clipboard.writeText(url.toString()).then(() => {
-    const original = btn.textContent;
-    btn.textContent = '✓ Copiado';
-    btn.classList.add('copied');
-    setTimeout(() => { btn.textContent = original; btn.classList.remove('copied'); }, 1800);
-  }).catch(() => {
-    prompt('Copiá el link:', url.toString());
-  });
 }
 
 function buscarEquipoBMetro(nombre){
@@ -7633,7 +7898,7 @@ async function correrActualizacionBMetro(){
   } finally {
     btn.disabled = false;
     input.disabled = false;
-    btn.textContent = "⟳ Actualizar desde Promiedos";
+    btn.textContent = "⟳ Actualizar Resultados";
     endApiAction();
   }
 }
@@ -7863,9 +8128,12 @@ let zonaFederalR1 = "RA";
 
 async function cargarDatosFederal(){
   try {
-    const respuesta = await fetch("./data_federal_a.json?t=" + Date.now());
-    if (!respuesta.ok) throw new Error("No se pudo cargar data_federal_a.json");
-    DATA_FEDERAL = await respuesta.json();
+    DATA_FEDERAL = await cargarEstadoPersistido("/api/estado-federal");
+    if (!DATA_FEDERAL) {
+      const respuesta = await fetch("./data_federal_a.json?t=" + Date.now());
+      if (!respuesta.ok) throw new Error("No se pudo cargar data_federal_a.json");
+      DATA_FEDERAL = await respuesta.json();
+    }
     iniciarFederal();
   } catch (e) {
     const cont = document.getElementById('vista-federal');
@@ -8126,28 +8394,11 @@ function renderTeamCardFederal(t){
         ${renderRacha(t.ultimos5)}
       </div>
       <div class="tc-share">
-        <button onclick="compartirLinkFederal('${t.equipo.replace(/'/g, "\\'")}', this)">🔗 Copiar link</button>
-        <button onclick="compartirImagen('${t.equipo.replace(/'/g, "\\'")}', this)">📷 Descargar imagen</button>
+        <button onclick="compartirLink('federal', '${t.equipo.replace(/'/g, "\\'")}', this)">🔗 Copiar link</button>
+        <button onclick="compartirFicha('federal', '${t.equipo.replace(/'/g, "\\'")}', this)">📤 Compartir</button>
       </div>
     </div>
   `;
-}
-
-function compartirLinkFederal(nombre, btn){
-  const url = new URL(window.location.href);
-  url.searchParams.delete('equipo');
-  url.searchParams.delete('equipo_lpf');
-  url.searchParams.delete('equipo_copa');
-  url.searchParams.delete('equipo_bmetro');
-  url.searchParams.set('equipo_federal', nombre);
-  navigator.clipboard.writeText(url.toString()).then(() => {
-    const original = btn.textContent;
-    btn.textContent = '✓ Copiado';
-    btn.classList.add('copied');
-    setTimeout(() => { btn.textContent = original; btn.classList.remove('copied'); }, 1800);
-  }).catch(() => {
-    prompt('Copiá el link:', url.toString());
-  });
 }
 
 function buscarEquipoFederal(nombre){
@@ -8287,7 +8538,7 @@ async function correrActualizacionFederal(){
   } finally {
     btn.disabled = false;
     input.disabled = false;
-    btn.textContent = "⟳ Actualizar desde Promiedos";
+    btn.textContent = "⟳ Actualizar Resultados";
     endApiAction();
   }
 }
@@ -8669,9 +8920,12 @@ const RONDAS_COPA = [
 
 async function cargarDatosCopa(){
   try {
-    const respuesta = await fetch("./data_copa.json?t=" + Date.now());
-    if (!respuesta.ok) throw new Error("No se pudo cargar data_copa.json");
-    DATA_COPA = await respuesta.json();
+    DATA_COPA = await cargarEstadoPersistido("/api/estado-copa");
+    if (!DATA_COPA) {
+      const respuesta = await fetch("./data_copa.json?t=" + Date.now());
+      if (!respuesta.ok) throw new Error("No se pudo cargar data_copa.json");
+      DATA_COPA = await respuesta.json();
+    }
     iniciarCopa();
   } catch (e) {
     const cont = document.getElementById('bracket-copa');
@@ -8743,8 +8997,8 @@ function renderTeamCardCopa(t){
     return `<div class="team-card">${cabecera}
       <div class="tc-pos" style="margin-top:12px;">${detalle}</div>
       <div class="tc-share">
-        <button onclick="compartirLinkCopa('${t.equipo.replace(/'/g, "\\'")}', this)">🔗 Copiar link</button>
-        <button onclick="compartirImagen('${t.equipo.replace(/'/g, "\\'")}', this)">📷 Descargar imagen</button>
+        <button onclick="compartirLink('copa', '${t.equipo.replace(/'/g, "\\'")}', this)">🔗 Copiar link</button>
+        <button onclick="compartirFicha('copa', '${t.equipo.replace(/'/g, "\\'")}', this)">📤 Compartir</button>
       </div>
     </div>`;
   }
@@ -8766,23 +9020,10 @@ function renderTeamCardCopa(t){
       <div class="mc-bar-fill directo" style="width:${t['%campeon'] ?? 0}%;"></div>
     </div>
     <div class="tc-share">
-      <button onclick="compartirLinkCopa('${t.equipo.replace(/'/g, "\\'")}', this)">🔗 Copiar link</button>
-      <button onclick="compartirImagen('${t.equipo.replace(/'/g, "\\'")}', this)">📷 Descargar imagen</button>
+      <button onclick="compartirLink('copa', '${t.equipo.replace(/'/g, "\\'")}', this)">🔗 Copiar link</button>
+      <button onclick="compartirFicha('copa', '${t.equipo.replace(/'/g, "\\'")}', this)">📤 Compartir</button>
     </div>
   </div>`;
-}
-
-function compartirLinkCopa(nombre, btn){
-  const url = new URL(window.location.href);
-  url.searchParams.delete('equipo');
-  url.searchParams.delete('equipo_lpf');
-  url.searchParams.set('equipo_copa', nombre);
-  navigator.clipboard.writeText(url.toString()).then(() => {
-    const original = btn.textContent;
-    btn.textContent = '✓ Copiado';
-    btn.classList.add('copied');
-    setTimeout(() => { btn.textContent = original; btn.classList.remove('copied'); }, 1800);
-  }).catch(() => prompt('Copiá el link:', url.toString()));
 }
 
 function buscarEquipoCopa(nombre){
@@ -8964,7 +9205,7 @@ async function correrActualizacionCopa(){
   } finally {
     btn.disabled = false;
     input.disabled = false;
-    btn.textContent = "⟳ Actualizar desde Promiedos";
+    btn.textContent = "⟳ Actualizar Resultados";
     endApiAction();
   }
 }
@@ -9644,6 +9885,17 @@ cargarDatosLibertadores();
 cargarDatosSudamericana();
 cargarDatosBMetro();
 cargarDatosFederal();
+
+// La página, tal como está en el HTML estático, arranca mostrando
+// Primera Nacional (es el vista-* sin display:none y la pestaña con
+// la clase "active" de entrada). Para que la pestaña de arranque sea
+// Liga Profesional en cambio, reusamos setLiga() -- la misma función
+// que ya usa cada click de pestaña -- así se cambian juntos y de
+// forma consistente el panel visible, la pestaña activa, las clases
+// de tema en <body> y el texto del hero, sin duplicar esa lógica acá.
+// Si en algún momento se quiere volver a Nacional por defecto (o
+// pasar a cualquier otra liga), alcanza con cambiar este argumento.
+setLiga('lpf');
 
 // Flechas de navegación para los cuadros (brackets): evitan tener que
 // arrastrar la barra de scroll horizontal para ver las rondas siguientes.

@@ -85,6 +85,28 @@ def save_simulation_output(key: str, competition_slug: str, payload: dict, n_sim
     repository().save_simulation_output(key, competition_slug, payload, n_simulaciones)
 
 
+def simulation_output(key: str) -> dict | None:
+    """Lee el último payload persistido en Supabase para `key` (mismo
+    patrón que ya usaban campeon_apertura_lpf()/playoffs_apertura_lpf()
+    para sus propias claves). Uso genérico: sirve para que los
+    endpoints GET /api/estado-<liga> devuelvan a la página, al cargar,
+    el mismo estado que quedó guardado la última vez que se corrió una
+    simulación o una actualización -- en vez del snapshot estático
+    data*.json, que nunca se reescribe en producción y por eso
+    "revierte" al hacer F5 después de actualizar resultados.
+
+    Devuelve None si todavía no hay nada guardado para esa clave (ej.
+    deploy nuevo contra una base recién sembrada) o si estamos en
+    Pyodide (no hay Supabase desde el navegador) -- el caller debe
+    caer al snapshot estático en ese caso, no romper."""
+    if usando_pyodide():
+        return None
+
+    from db.repository import repository
+
+    return repository().simulation_output(key)
+
+
 # ---------------------------------------------------------------------
 # PLAN_ADDENDUM_ETAPA6_APERTURA_LPF, punto 4: CAMPEON_APERTURA dinámico
 # de LPF, persistido con el mismo patrón que save_simulation_output()/
