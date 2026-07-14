@@ -76,6 +76,23 @@ class CalcularEvolucionTests(unittest.TestCase):
         self.assertEqual(evolucion["Chacarita"][0]["posicion"], 1)
         self.assertEqual(evolucion["Quilmes"][0]["posicion"], 2)
 
+    def test_snapshot_incluye_resultado_del_partido_jugado(self):
+        partidos = [
+            {"jornada": 1, "equipo_local": "Quilmes", "equipo_visitante": "Chacarita",
+             "goles_local": 2, "goles_visitante": 1},
+        ]
+        evolucion = calcular_evolucion(partidos, self.zona_por_club)
+        self.assertEqual(
+            evolucion["Quilmes"][0]["partido"],
+            {"rival": "Chacarita", "local": True, "gf": 2, "gc": 1},
+        )
+        self.assertEqual(
+            evolucion["Chacarita"][0]["partido"],
+            {"rival": "Quilmes", "local": False, "gf": 1, "gc": 2},
+        )
+        # Ferro/Morón no jugaron esta fecha (solo hay partido de zona A).
+        self.assertIsNone(evolucion["Ferro"][0]["partido"])
+
     def test_tamano_por_zona(self):
         self.assertEqual(tamano_por_zona(self.zona_por_club), {"A": 2, "B": 2})
 

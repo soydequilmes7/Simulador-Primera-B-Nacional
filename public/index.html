@@ -4022,12 +4022,37 @@
     border:1px solid var(--line); border-top:none; border-radius: 0 0 var(--radius-sm) var(--radius-sm);
     padding:18px; background: var(--bg-panel);
   }
-  .evolucion-hint{ margin:0 0 12px; font-size:12.5px; color: var(--muted); }
+  .evolucion-picker{
+    border:1px solid var(--line); border-radius: var(--radius-sm); margin-bottom:14px;
+    background: var(--bg-panel); overflow:hidden;
+  }
+  .evolucion-picker-head{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    padding:10px 12px; border-bottom:1px solid var(--line);
+  }
+  .evolucion-picker-title{
+    font-size:11.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color: var(--muted);
+  }
+  .evolucion-picker-search{
+    flex:1; max-width:220px; box-sizing:border-box; padding:6px 10px; border:1px solid var(--line);
+    border-radius: var(--radius-sm); background: var(--bg); color: var(--ink); font-size:13px;
+  }
+  .evolucion-picker-list{
+    max-height:180px; overflow-y:auto; display:flex; flex-wrap:wrap;
+    gap:2px 16px; padding:10px 12px;
+  }
+  .evolucion-picker-item{
+    display:flex; align-items:center; gap:7px; font-size:13px; color: var(--ink-dim);
+    cursor:pointer; padding:3px 0; user-select:none; white-space:nowrap;
+  }
+  .evolucion-picker-item input{ accent-color: var(--ink); cursor:pointer; }
+  .evolucion-picker-item .dot{ width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+  .evolucion-picker-item.oculto{ display:none; }
   .evolucion-chart-wrap{ width:100%; overflow-x:auto; }
-  .evolucion-chart{ width:100%; min-width:760px; height:640px; }
+  .evolucion-chart{ width:100%; min-width:640px; height:520px; }
   .evolucion-status{ margin-top:8px; font-size:12px; color: var(--muted); }
   @media (max-width:600px){
-    .evolucion-chart{ min-width:760px; height:520px; }
+    .evolucion-chart{ min-width:640px; height:420px; }
   }
 </style>
 </head>
@@ -4276,7 +4301,13 @@
       <span class="evolucion-toggle-caret">▼</span>
     </button>
     <div class="evolucion-body" id="evolucion-body-nacional" hidden>
-      <p class="evolucion-hint">Mostrando todos los equipos de la Zona <span id="evolucion-zona-label-nacional">A</span>. Hacé clic en un equipo de la referencia para ocultar/mostrar su línea.</p>
+      <div class="evolucion-picker">
+        <div class="evolucion-picker-head">
+          <span class="evolucion-picker-title">Equipos visibles</span>
+          <input type="text" id="evolucion-buscar-nacional" class="evolucion-picker-search" placeholder="Buscar equipo…" autocomplete="off">
+        </div>
+        <div class="evolucion-picker-list" id="evolucion-picker-list-nacional"></div>
+      </div>
       <div class="evolucion-chart-wrap">
         <div class="evolucion-chart" id="evolucion-chart-nacional"></div>
       </div>
@@ -5890,13 +5921,18 @@ function colorParaEquipo(nombre){
   return EVOLUCION_PALETA[hash % EVOLUCION_PALETA.length];
 }
 
+function cssVar(nombre, porDefecto){
+  if (typeof getComputedStyle === 'undefined') return porDefecto;
+  const valor = getComputedStyle(document.documentElement).getPropertyValue(nombre).trim();
+  return valor || porDefecto;
+}
+
 const EVOLUCION_CONFIG = {
   nacional: {
     endpoint: '/api/evolucion-posiciones-nacional',
     // Zona que se está mostrando ahora mismo (misma que las pestañas
     // Zona A / Zona B de más arriba en la página).
     zonaActiva: () => zonaActual,
-    zonaLabelId: 'evolucion-zona-label-nacional',
     // Mismo criterio que ya usa renderFilasTabla() para "Tabla actual":
     // 1° = ascenso directo, 2° a 8° = reducido, últimos 2 = descenso.
     // Se define acá UNA sola vez para que el gráfico no lo hardcodee.
@@ -5908,88 +5944,84 @@ const EVOLUCION_CONFIG = {
   },
 };
 
-// { nacional: { cargando: bool, datos: {evolucion, zonas} | null, chart: echarts.ECharts | null,
-//               equipos: string[] (equipos de la zona activa que se dibujan) } }
+// { nacional: { cargando, datos: {evolucion, zonas} | null, chart: echarts.ECharts | null,
+//               zona: "A"|"B"|null (zona representada AHORA en el chart),
+//               equiposZona: string[] (orden = tabla actual, todos los de esa zona),
+//               visibles: Set<string> (equipos con la línea tildada/visible),
+//               destacado: string | null (equipo principal a resaltar) } }
 const EVOLUCION_STATE = {};
 
 function estadoEvolucion(liga){
   if (!EVOLUCION_STATE[liga]) {
-    EVOLUCION_STATE[liga] = { cargando: false, datos: null, chart: null, equipos: [] };
+    EVOLUCION_STATE[liga] = {
+      cargando: false, datos: null, chart: null,
+      zona: null, equiposZona: [], visibles: new Set(), destacado: null,
+    };
   }
   return EVOLUCION_STATE[liga];
 }
 
-/**
- * Función pura: a partir de {evolucion, zonas} (tal como lo devuelve el
- * backend) y la lista de equipos a graficar, arma la opción de ECharts
- * completa (ejes, bandas, series, leyenda, tooltip). No toca el DOM.
- */
-const EVOLUCION_NOMBRE_BANDA = { ascenso: 'Ascenso', reducido: 'Reducido', descenso: 'Descenso' };
+function posicionActual(evolucion, equipo){
+  const historial = evolucion[equipo];
+  return historial && historial.length ? historial[historial.length - 1].posicion : Infinity;
+}
 
-function generarDatosEvolucionChart(datos, liga, equiposVisibles){
+/** Grosor/opacidad/sombra por equipo según cuál esté destacado. Devuelve un
+ * array paralelo a `equiposZona`. Función pura -- no toca el gráfico. */
+function generarEstiloSeries(equiposZona, destacado){
+  return equiposZona.map(equipo => {
+    if (!destacado) return { lineStyle: { width: 2 }, opacity: 1 };
+    if (equipo === destacado) {
+      return {
+        lineStyle: { width: 4, shadowBlur: 6, shadowOffsetY: 2, shadowColor: 'rgba(0,0,0,0.28)' },
+        opacity: 1,
+      };
+    }
+    return { lineStyle: { width: 2 }, opacity: 0.62 };
+  });
+}
+
+/**
+ * Función pura: arma la opción COMPLETA de ECharts (todas las líneas de
+ * la zona, visibles u ocultas) a partir de {evolucion, zonas}. La
+ * visibilidad inicial se resuelve con legend.selected -- después, mostrar
+ * u ocultar una línea es una acción de legend (ver alternarVisibilidad),
+ * no un recalculo de esta función ni un setOption(..., true) nuevo.
+ */
+function generarDatosEvolucionChart(datos, liga, equiposZona, visibles, destacado){
   const { evolucion, zonas } = datos;
   const config = EVOLUCION_CONFIG[liga];
-  const totalFechas = Math.max(0, ...equiposVisibles.map(eq => (evolucion[eq] || []).length));
+  const totalFechas = Math.max(0, ...equiposZona.map(eq => (evolucion[eq] || []).length));
   const categorias = Array.from({ length: totalFechas }, (_, i) =>
     i === totalFechas - 1 ? 'Fecha actual' : `Fecha ${i + 1}`
   );
-  const totalEquiposZona = equiposVisibles.length || Math.max(1, ...Object.values(zonas || { _: 1 }));
-
+  const totalEquiposZona = equiposZona.length || Math.max(1, ...Object.values(zonas || { _: 1 }));
   const bandas = config.banda(totalEquiposZona).filter(b => b.hasta >= b.desde);
+  const estilos = generarEstiloSeries(equiposZona, destacado);
 
-  const series = equiposVisibles.map((equipo, idx) => {
+  const series = equiposZona.map((equipo, idx) => {
     const historial = evolucion[equipo] || [];
-    const color = colorParaEquipo(equipo);
-    const data = historial.map(s => ({
-      value: s.posicion,
-      puntos: s.puntos,
-      dg: s.dg,
-      zona: s.zona,
-    }));
-    // Nombre del equipo pegado al PRIMER punto de su línea (Fecha 1), a
-    // la izquierda -- así se lee de un vistazo quién es cada línea sin
-    // depender de una referencia aparte.
-    if (data.length > 0) {
-      data[0] = {
-        ...data[0],
-        label: {
-          show: true,
-          position: 'left',
-          formatter: () => equipo,
-          color,
-          fontWeight: 600,
-          fontSize: 12,
-          fontFamily: "'Plus Jakarta Sans', sans-serif",
-        },
-      };
-    }
     return {
+      id: equipo,
       name: equipo,
       type: 'line',
-      data,
-      color,
+      data: historial.map(s => ({
+        value: s.posicion, puntos: s.puntos, dg: s.dg, zona: s.zona, partido: s.partido,
+      })),
+      color: colorParaEquipo(equipo),
       showSymbol: true,
-      symbolSize: 6,
+      symbolSize: 5,
       smooth: false,
       animationDuration: 700,
       animationDurationUpdate: 250,
+      lineStyle: estilos[idx].lineStyle,
+      opacity: estilos[idx].opacity,
+      // Las bandas de fondo van en UNA sola serie (la primera) para no
+      // repetirlas -- son las mismas franjas de fondo para toda la zona.
       markArea: idx === 0 ? {
         silent: true,
         data: bandas.map(b => [
-          {
-            name: b.nombre,
-            itemStyle: { color: b.color, opacity: 0.08 },
-            label: {
-              show: true,
-              position: 'insideRight',
-              formatter: EVOLUCION_NOMBRE_BANDA[b.nombre] || b.nombre,
-              color: b.color,
-              fontWeight: 700,
-              fontSize: 11,
-            },
-            xAxis: 'min',
-            yAxis: b.desde - 0.5,
-          },
+          { name: b.nombre, itemStyle: { color: b.color, opacity: 0.06 }, xAxis: 'min', yAxis: b.desde - 0.5 },
           { xAxis: 'max', yAxis: b.hasta + 0.5 },
         ]),
       } : undefined,
@@ -5998,23 +6030,45 @@ function generarDatosEvolucionChart(datos, liga, equiposVisibles){
 
   return {
     animationDurationUpdate: 250,
-    grid: { left: 150, right: 110, top: 24, bottom: 46, containLabel: true },
+    grid: { left: 46, right: 20, top: 20, bottom: 72, containLabel: true },
     tooltip: {
-      trigger: 'item',
-      formatter: (p) => {
-        if (!p || !p.data) return '';
-        const fecha = categorias[p.dataIndex] || '';
-        return `<b>${p.seriesName}</b><br>${fecha}<br>` +
-          `Posición: ${p.data.value}°<br>Puntos: ${p.data.puntos}<br>` +
-          `Dif. de gol: ${p.data.dg > 0 ? '+' + p.data.dg : p.data.dg}`;
+      trigger: 'axis',
+      axisPointer: {
+        type: 'line',
+        snap: true,
+        lineStyle: { color: cssVar('--muted', '#7A85A0'), width: 1, type: 'dashed' },
+      },
+      formatter: (params) => {
+        const puntos = (params || []).filter(p => p.data);
+        if (!puntos.length) return '';
+        const fecha = puntos[0].axisValueLabel || puntos[0].axisValue || '';
+        const filas = puntos
+          .sort((a, b) => a.data.value - b.data.value)
+          .map(p => {
+            const d = p.data;
+            const dg = d.dg > 0 ? `+${d.dg}` : d.dg;
+            let partidoTxt = '';
+            if (d.partido) {
+              partidoTxt = `<br><span style="opacity:.7">${d.partido.local ? 'vs' : '@'} ${d.partido.rival}: ${d.partido.gf}-${d.partido.gc}</span>`;
+            }
+            return `<div style="margin-top:6px; line-height:1.4"><b style="color:${p.color}">${p.seriesName}</b><br>` +
+              `${d.value}° · ${d.puntos} pts · DG ${dg}${partidoTxt}</div>`;
+          }).join('');
+        return `<div style="font-weight:700">${fecha}</div>${filas}`;
       },
     },
-    legend: { show: false, data: equiposVisibles },
+    legend: {
+      type: 'scroll',
+      bottom: 30,
+      textStyle: { fontSize: 11, color: cssVar('--ink-dim', '#4C5878') },
+      selected: Object.fromEntries(equiposZona.map(eq => [eq, visibles.has(eq)])),
+      data: equiposZona,
+    },
     xAxis: {
       type: 'category',
       data: categorias,
       boundaryGap: false,
-      axisLabel: { fontSize: 12 },
+      axisLabel: { fontSize: 11 },
     },
     yAxis: {
       type: 'value',
@@ -6023,25 +6077,23 @@ function generarDatosEvolucionChart(datos, liga, equiposVisibles){
       max: totalEquiposZona,
       interval: 1,
       name: 'Posición',
-      axisLabel: { fontSize: 12 },
+      axisLabel: { fontSize: 11 },
     },
     dataZoom: [
-      { type: 'inside', xAxisIndex: 0 },
+      { type: 'inside', xAxisIndex: 0, zoomOnMouseWheel: true, moveOnMouseMove: true, moveOnMouseWheel: false },
       { type: 'slider', xAxisIndex: 0, height: 14, bottom: 8 },
     ],
     series,
   };
 }
 
-/**
- * Efecto de borde: instancia (una sola vez) o actualiza el gráfico de
- * ECharts de la competencia dada, usando lo que generó
- * generarDatosEvolucionChart(). No recalcula nada por su cuenta.
- */
-function renderEvolucionChart(liga){
+/** Efecto de borde: reconstruye el gráfico ENTERO (todas las líneas de la
+ * zona actual). Se llama solo al cargar los datos por primera vez o al
+ * cambiar de zona -- nunca al tildar/destildar un equipo ni al resaltar
+ * uno, que se resuelven con acciones sobre la instancia ya creada. */
+function renderEvolucionChartCompleto(liga){
   const estado = estadoEvolucion(liga);
   const statusEl = document.getElementById(`evolucion-status-${liga}`);
-  if (!estado.datos) return;
   const el = document.getElementById(`evolucion-chart-${liga}`);
   if (!el) return;
   if (typeof echarts === 'undefined') {
@@ -6049,8 +6101,7 @@ function renderEvolucionChart(liga){
     console.error('[evolucion-posiciones] echarts no está definido -- el <script> del CDN no cargó.');
     return;
   }
-
-  const hayDatos = estado.equipos.some(eq => (estado.datos.evolucion[eq] || []).length > 0);
+  const hayDatos = estado.equiposZona.some(eq => (estado.datos.evolucion[eq] || []).length > 0);
   if (!hayDatos) {
     if (statusEl) statusEl.textContent = 'Todavía no hay fechas jugadas para graficar en esta zona.';
     if (estado.chart) estado.chart.clear();
@@ -6058,26 +6109,91 @@ function renderEvolucionChart(liga){
   }
   if (statusEl) statusEl.textContent = '';
 
-  if (!estado.chart) estado.chart = echarts.init(el);
-  const opcion = generarDatosEvolucionChart(estado.datos, liga, estado.equipos);
-  estado.chart.setOption(opcion, true);
+  const chartNuevo = !estado.chart;
+  if (chartNuevo) estado.chart = echarts.init(el);
+  const opcion = generarDatosEvolucionChart(estado.datos, liga, estado.equiposZona, estado.visibles, estado.destacado);
+  estado.chart.setOption(opcion, true); // notMerge: SOLO acá se reconstruye todo
+
+  if (chartNuevo) {
+    // El usuario también puede tildar/destildar clickeando la leyenda
+    // nativa de ECharts -- sincronizamos el picker de arriba con eso.
+    estado.chart.on('legendselectchanged', (e) => {
+      estado.visibles = new Set(Object.keys(e.selected).filter(k => e.selected[k]));
+      sincronizarPickerConLeyenda(liga);
+    });
+  }
 }
 
-/** Recalcula qué equipos mostrar (todos los de la zona activa) y vuelve a
- * pintar el gráfico. Se llama al abrir el acordeón por primera vez y cada
- * vez que se cambia de zona (Zona A / Zona B) con el gráfico ya cargado. */
+/** Aplica únicamente el estilo (grosor/opacidad/sombra) de resaltado,
+ * sin reconstruir el gráfico ni tocar los datos de ninguna serie. */
+function aplicarDestacado(liga){
+  const estado = estadoEvolucion(liga);
+  if (!estado.chart) return;
+  const estilos = generarEstiloSeries(estado.equiposZona, estado.destacado);
+  estado.chart.setOption({
+    series: estado.equiposZona.map((equipo, i) => ({ id: equipo, ...estilos[i] })),
+  });
+}
+
+/** Muestra/oculta una línea puntual sin recrear nada (acción de legend). */
+function alternarVisibilidad(liga, equipo, visible){
+  const estado = estadoEvolucion(liga);
+  if (visible) estado.visibles.add(equipo); else estado.visibles.delete(equipo);
+  if (!estado.chart) return;
+  estado.chart.dispatchAction({ type: visible ? 'legendSelect' : 'legendUnSelect', name: equipo });
+}
+
+function aplicarVisibilidadCompleta(liga){
+  const estado = estadoEvolucion(liga);
+  if (!estado.chart) return;
+  estado.equiposZona.forEach(equipo => {
+    estado.chart.dispatchAction({
+      type: estado.visibles.has(equipo) ? 'legendSelect' : 'legendUnSelect',
+      name: equipo,
+    });
+  });
+}
+
+function calcularDestacado(liga, estado, zona){
+  if (liga === 'nacional' && equipoResaltadoNacional) {
+    const historial = estado.datos.evolucion[equipoResaltadoNacional];
+    if (historial && historial[0] && historial[0].zona === zona) return equipoResaltadoNacional;
+  }
+  return null;
+}
+
+/** Se llama al cargar los datos y cada vez que puede haber cambiado la
+ * zona activa o el equipo resaltado de la página (pestañas Zona A/B,
+ * o "Ver en la tabla" desde el buscador). Solo reconstruye el gráfico
+ * completo si cambió la ZONA; si lo que cambió es el resaltado, aplica
+ * nada más que ese estilo + la visibilidad por defecto asociada. */
 function actualizarZonaEvolucion(liga){
   const estado = estadoEvolucion(liga);
   const config = EVOLUCION_CONFIG[liga];
   if (!estado.datos) return;
   const zona = config.zonaActiva();
-  const { evolucion } = estado.datos;
-  estado.equipos = Object.keys(evolucion)
-    .filter(equipo => evolucion[equipo][0] && evolucion[equipo][0].zona === zona)
-    .sort();
-  const label = document.getElementById(config.zonaLabelId);
-  if (label) label.textContent = zona;
-  renderEvolucionChart(liga);
+  const nuevoDestacado = calcularDestacado(liga, estado, zona);
+
+  if (zona !== estado.zona) {
+    const { evolucion } = estado.datos;
+    estado.zona = zona;
+    estado.equiposZona = Object.keys(evolucion)
+      .filter(equipo => evolucion[equipo][0] && evolucion[equipo][0].zona === zona)
+      .sort((a, b) => posicionActual(evolucion, a) - posicionActual(evolucion, b));
+    estado.destacado = nuevoDestacado;
+    estado.visibles = new Set(estado.destacado ? [estado.destacado] : estado.equiposZona.slice(0, 3));
+    renderPickerEvolucion(liga);
+    renderEvolucionChartCompleto(liga);
+    return;
+  }
+
+  if (nuevoDestacado !== estado.destacado) {
+    estado.destacado = nuevoDestacado;
+    estado.visibles = new Set(nuevoDestacado ? [nuevoDestacado] : estado.equiposZona.slice(0, 3));
+    aplicarVisibilidadCompleta(liga);
+    aplicarDestacado(liga);
+    renderPickerEvolucion(liga);
+  }
 }
 
 async function cargarEvolucion(liga){
@@ -6113,6 +6229,54 @@ async function cargarEvolucion(liga){
   }
 }
 
+/* ---------- Picker de equipos (buscador + tildes) ---------- */
+
+function renderPickerEvolucion(liga){
+  const estado = estadoEvolucion(liga);
+  const cont = document.getElementById(`evolucion-picker-list-${liga}`);
+  if (!cont) return;
+  cont.innerHTML = '';
+  estado.equiposZona.forEach(equipo => {
+    const label = document.createElement('label');
+    label.className = 'evolucion-picker-item';
+    label.dataset.equipo = equipo;
+    label.dataset.buscar = equipo.toLowerCase();
+    const check = document.createElement('input');
+    check.type = 'checkbox';
+    check.checked = estado.visibles.has(equipo);
+    check.addEventListener('change', () => alternarVisibilidad(liga, equipo, check.checked));
+    const dot = document.createElement('span');
+    dot.className = 'dot';
+    dot.style.background = colorParaEquipo(equipo);
+    label.appendChild(check);
+    label.appendChild(dot);
+    label.appendChild(document.createTextNode(equipo));
+    cont.appendChild(label);
+  });
+}
+
+function sincronizarPickerConLeyenda(liga){
+  const estado = estadoEvolucion(liga);
+  const cont = document.getElementById(`evolucion-picker-list-${liga}`);
+  if (!cont) return;
+  cont.querySelectorAll('.evolucion-picker-item').forEach(item => {
+    const check = item.querySelector('input');
+    if (check) check.checked = estado.visibles.has(item.dataset.equipo);
+  });
+}
+
+function initBuscadorPicker(liga){
+  const input = document.getElementById(`evolucion-buscar-${liga}`);
+  const cont = document.getElementById(`evolucion-picker-list-${liga}`);
+  if (!input || !cont) return;
+  input.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+    cont.querySelectorAll('.evolucion-picker-item').forEach(item => {
+      item.classList.toggle('oculto', !!q && !item.dataset.buscar.includes(q));
+    });
+  });
+}
+
 function initEvolucionAcordeon(liga){
   const toggle = document.getElementById(`evolucion-toggle-${liga}`);
   const body = document.getElementById(`evolucion-body-${liga}`);
@@ -6131,6 +6295,8 @@ function initEvolucionAcordeon(liga){
       });
     }
   });
+
+  initBuscadorPicker(liga);
 
   window.addEventListener('resize', () => {
     const estado = estadoEvolucion(liga);

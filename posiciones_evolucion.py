@@ -86,15 +86,32 @@ def _posiciones_por_zona(stats: dict[str, dict]) -> dict[str, int]:
     return posiciones
 
 
+def _partido_por_equipo(partidos: list[dict]) -> dict[str, dict]:
+    """Para una lista de partidos de UNA fecha, arma {equipo: {rival, local,
+    gf, gc}} de cada equipo que jugó esa fecha (lo usa el tooltip del
+    frontend para mostrar el resultado del último partido)."""
+    resultado: dict[str, dict] = {}
+    for p in partidos:
+        local = p["equipo_local"]
+        visitante = p["equipo_visitante"]
+        gl = int(p["goles_local"])
+        gv = int(p["goles_visitante"])
+        resultado[local] = {"rival": visitante, "local": True, "gf": gl, "gc": gv}
+        resultado[visitante] = {"rival": local, "local": False, "gf": gv, "gc": gl}
+    return resultado
+
+
 def calcular_evolucion(
     partidos_jugados: Iterable[dict],
     zona_por_club: dict[str, str],
 ) -> dict[str, list[dict]]:
     """
     Devuelve, para cada equipo, la lista de snapshots {jornada, posicion,
-    puntos, dg, zona} luego de cada fecha en la que se jugó al menos un
-    partido. Las fechas sin partidos (suspendidas, todavía no jugadas)
-    no generan snapshot.
+    puntos, dg, zona, partido} luego de cada fecha en la que se jugó al
+    menos un partido. `partido` es {rival, local, gf, gc} si ESE equipo
+    jugó esa fecha, o None si no le tocaba (fecha libre/interzonal).
+    Las fechas sin ningún partido (suspendidas, todavía no jugadas) no
+    generan snapshot.
     """
     partidos_por_jornada: dict[int, list[dict]] = defaultdict(list)
     for p in partidos_jugados:
@@ -107,9 +124,11 @@ def calcular_evolucion(
     evolucion: dict[str, list[dict]] = {equipo: [] for equipo in zona_por_club}
 
     for jornada in sorted(partidos_por_jornada):
-        for partido in partidos_por_jornada[jornada]:
+        partidos_de_la_fecha = partidos_por_jornada[jornada]
+        for partido in partidos_de_la_fecha:
             _aplicar_partido(stats, partido)
 
+        partido_por_equipo = _partido_por_equipo(partidos_de_la_fecha)
         posiciones = _posiciones_por_zona(stats)
         for equipo, fila in stats.items():
             evolucion[equipo].append({
@@ -118,7 +137,9 @@ def calcular_evolucion(
                 "puntos": fila["puntos"],
                 "dg": fila["dg"],
                 "zona": fila["zona"],
+                "partido": partido_por_equipo.get(equipo),
             })
+
 
     return evolucion
 
