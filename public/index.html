@@ -4022,24 +4022,12 @@
     border:1px solid var(--line); border-top:none; border-radius: 0 0 var(--radius-sm) var(--radius-sm);
     padding:18px; background: var(--bg-panel);
   }
-  .evolucion-controls{ display:flex; flex-direction:column; gap:10px; margin-bottom:14px; }
-  .evolucion-controls input[type="text"]{
-    width:100%; box-sizing:border-box; padding:10px 12px; border:1px solid var(--line);
-    border-radius: var(--radius-sm); background: var(--bg); color: var(--ink); font-size:14px;
-  }
-  .evolucion-chips{ display:flex; flex-wrap:wrap; gap:6px; }
-  .evolucion-chip{
-    display:inline-flex; align-items:center; gap:6px; padding:5px 10px; border-radius:999px;
-    font-size:12px; font-weight:600; color:#fff; cursor:pointer; user-select:none; opacity:1;
-    transition: opacity 200ms ease;
-  }
-  .evolucion-chip.apagado{ opacity:0.35; }
-  .evolucion-chip .x{ opacity:0.8; }
+  .evolucion-hint{ margin:0 0 12px; font-size:12.5px; color: var(--muted); }
   .evolucion-chart-wrap{ width:100%; overflow-x:auto; }
-  .evolucion-chart{ width:100%; min-width:480px; height:380px; }
+  .evolucion-chart{ width:100%; min-width:480px; height:460px; }
   .evolucion-status{ margin-top:8px; font-size:12px; color: var(--muted); }
   @media (max-width:600px){
-    .evolucion-chart{ min-width:640px; height:320px; }
+    .evolucion-chart{ min-width:640px; height:400px; }
   }
 </style>
 </head>
@@ -4288,10 +4276,7 @@
       <span class="evolucion-toggle-caret">▼</span>
     </button>
     <div class="evolucion-body" id="evolucion-body-nacional" hidden>
-      <div class="evolucion-controls">
-        <input type="text" id="evolucion-buscar-nacional" list="team-list" placeholder="Agregar equipo al gráfico…" autocomplete="off">
-        <div class="evolucion-chips" id="evolucion-chips-nacional"></div>
-      </div>
+      <p class="evolucion-hint">Mostrando todos los equipos de la Zona <span id="evolucion-zona-label-nacional">A</span>. Hacé clic en un equipo de la referencia para ocultar/mostrar su línea.</p>
       <div class="evolucion-chart-wrap">
         <div class="evolucion-chart" id="evolucion-chart-nacional"></div>
       </div>
@@ -5894,6 +5879,7 @@ const EVOLUCION_PALETA = [
   '#E4572E', '#1F5EFF', '#2E9E5B', '#C9A227', '#8B5CF6',
   '#EC4899', '#0EA5E9', '#F97316', '#14B8A6', '#A855F7',
   '#DC2626', '#059669', '#7C3AED', '#DB2777', '#0891B2',
+  '#65A30D', '#B45309', '#4F46E5', '#0D9488', '#BE185D',
 ];
 
 function colorParaEquipo(nombre){
@@ -5907,6 +5893,10 @@ function colorParaEquipo(nombre){
 const EVOLUCION_CONFIG = {
   nacional: {
     endpoint: '/api/evolucion-posiciones-nacional',
+    // Zona que se está mostrando ahora mismo (misma que las pestañas
+    // Zona A / Zona B de más arriba en la página).
+    zonaActiva: () => zonaActual,
+    zonaLabelId: 'evolucion-zona-label-nacional',
     // Mismo criterio que ya usa renderFilasTabla() para "Tabla actual":
     // 1° = ascenso directo, 2° a 8° = reducido, últimos 2 = descenso.
     // Se define acá UNA sola vez para que el gráfico no lo hardcodee.
@@ -5919,40 +5909,33 @@ const EVOLUCION_CONFIG = {
 };
 
 // { nacional: { cargando: bool, datos: {evolucion, zonas} | null, chart: echarts.ECharts | null,
-//               seleccionados: Set<string> } }
+//               equipos: string[] (equipos de la zona activa que se dibujan) } }
 const EVOLUCION_STATE = {};
 
 function estadoEvolucion(liga){
   if (!EVOLUCION_STATE[liga]) {
-    EVOLUCION_STATE[liga] = { cargando: false, datos: null, chart: null, seleccionados: new Set() };
+    EVOLUCION_STATE[liga] = { cargando: false, datos: null, chart: null, equipos: [] };
   }
   return EVOLUCION_STATE[liga];
 }
 
 /**
  * Función pura: a partir de {evolucion, zonas} (tal como lo devuelve el
- * backend) y la lista de equipos actualmente visibles, arma la opción de
- * ECharts completa (ejes, bandas, series, tooltip). No toca el DOM.
+ * backend) y la lista de equipos a graficar, arma la opción de ECharts
+ * completa (ejes, bandas, series, leyenda, tooltip). No toca el DOM.
  */
 function generarDatosEvolucionChart(datos, liga, equiposVisibles){
   const { evolucion, zonas } = datos;
   const config = EVOLUCION_CONFIG[liga];
-  const totalFechas = Math.max(0, ...Object.values(evolucion).map(s => s.length));
+  const totalFechas = Math.max(0, ...equiposVisibles.map(eq => (evolucion[eq] || []).length));
   const categorias = Array.from({ length: totalFechas }, (_, i) =>
     i === totalFechas - 1 ? 'Fecha actual' : `Fecha ${i + 1}`
   );
-  const totalEquiposMax = Math.max(1, ...Object.values(zonas || { _: 1 }));
+  const totalEquiposZona = equiposVisibles.length || Math.max(1, ...Object.values(zonas || { _: 1 }));
 
-  const bandas = config.banda(totalEquiposMax).map(b => ({
-    name: b.nombre,
-    itemStyle: { color: b.color, opacity: 0.08 },
-    // markArea con eje Y invertido: yAxis va de arriba (1°) hacia abajo,
-    // el rango se define igual en valores de posición (0.5 a totalEquiposMax+0.5
-    // para que la banda tape la fila completa, no solo el punto).
-    coord: [b.desde - 0.5, b.hasta + 0.5],
-  }));
+  const bandas = config.banda(totalEquiposZona);
 
-  const series = equiposVisibles.map(equipo => {
+  const series = equiposVisibles.map((equipo, idx) => {
     const historial = evolucion[equipo] || [];
     return {
       name: equipo,
@@ -5969,19 +5952,21 @@ function generarDatosEvolucionChart(datos, liga, equiposVisibles){
       smooth: false,
       animationDuration: 700,
       animationDurationUpdate: 250,
-      markArea: equipo === equiposVisibles[0] ? {
+      markArea: idx === 0 ? {
         silent: true,
-        data: bandas.map(b => [
-          { name: b.name, itemStyle: b.itemStyle, xAxis: 'min', yAxis: b.coord[0] },
-          { xAxis: 'max', yAxis: b.coord[1] },
-        ]),
+        data: bandas
+          .filter(b => b.hasta >= b.desde)
+          .map(b => [
+            { name: b.nombre, itemStyle: { color: b.color, opacity: 0.08 }, xAxis: 'min', yAxis: b.desde - 0.5 },
+            { xAxis: 'max', yAxis: b.hasta + 0.5 },
+          ]),
       } : undefined,
     };
   });
 
   return {
     animationDurationUpdate: 250,
-    grid: { left: 44, right: 20, top: 24, bottom: 56, containLabel: true },
+    grid: { left: 44, right: 20, top: 24, bottom: 88, containLabel: true },
     tooltip: {
       trigger: 'item',
       formatter: (p) => {
@@ -5992,7 +5977,12 @@ function generarDatosEvolucionChart(datos, liga, equiposVisibles){
           `Dif. de gol: ${p.data.dg > 0 ? '+' + p.data.dg : p.data.dg}`;
       },
     },
-    legend: { show: false, data: equiposVisibles },
+    legend: {
+      type: 'scroll',
+      bottom: 34,
+      textStyle: { fontSize: 11 },
+      data: equiposVisibles,
+    },
     xAxis: {
       type: 'category',
       data: categorias,
@@ -6003,78 +5993,68 @@ function generarDatosEvolucionChart(datos, liga, equiposVisibles){
       type: 'value',
       inverse: true,
       min: 1,
-      max: totalEquiposMax,
+      max: totalEquiposZona,
       interval: 1,
       name: 'Posición',
       axisLabel: { fontSize: 11 },
     },
     dataZoom: [
       { type: 'inside', xAxisIndex: 0 },
-      { type: 'slider', xAxisIndex: 0, height: 16, bottom: 8 },
+      { type: 'slider', xAxisIndex: 0, height: 14, bottom: 8 },
     ],
     series,
   };
 }
 
-function equiposPorDefecto(liga, datos){
-  const { evolucion, zonas } = datos;
-  if (liga === 'nacional' && equipoResaltadoNacional && evolucion[equipoResaltadoNacional]) {
-    return [equipoResaltadoNacional];
-  }
-  // Sin equipo resaltado: primeros 3 de la zona activa (según posición en
-  // la última fecha con datos), para no arrancar con el gráfico vacío ni
-  // saturado de líneas.
-  const zonaActivaPorLiga = { nacional: () => zonaActual };
-  const zona = zonaActivaPorLiga[liga] ? zonaActivaPorLiga[liga]() : Object.keys(zonas || {})[0];
-  const ultimaPosicion = (equipo) => {
-    const historial = evolucion[equipo];
-    return historial && historial.length ? historial[historial.length - 1].posicion : Infinity;
-  };
-  return Object.keys(evolucion)
-    .filter(equipo => !zona || (evolucion[equipo][0] && evolucion[equipo][0].zona === zona))
-    .sort((a, b) => ultimaPosicion(a) - ultimaPosicion(b))
-    .slice(0, 3);
-}
-
-function renderChipsEvolucion(liga){
-  const estado = estadoEvolucion(liga);
-  const cont = document.getElementById(`evolucion-chips-${liga}`);
-  if (!cont) return;
-  cont.innerHTML = '';
-  Array.from(estado.seleccionados).sort().forEach(equipo => {
-    const chip = document.createElement('span');
-    chip.className = 'evolucion-chip';
-    chip.style.background = colorParaEquipo(equipo);
-    chip.innerHTML = `${equipo} <span class="x">✕</span>`;
-    chip.onclick = () => {
-      estado.seleccionados.delete(equipo);
-      renderChipsEvolucion(liga);
-      renderEvolucionChart(liga);
-    };
-    cont.appendChild(chip);
-  });
-}
-
 /**
  * Efecto de borde: instancia (una sola vez) o actualiza el gráfico de
- * ECharts de la competencia dada, usando lo que devuelve
+ * ECharts de la competencia dada, usando lo que generó
  * generarDatosEvolucionChart(). No recalcula nada por su cuenta.
  */
 function renderEvolucionChart(liga){
   const estado = estadoEvolucion(liga);
+  const statusEl = document.getElementById(`evolucion-status-${liga}`);
   if (!estado.datos) return;
   const el = document.getElementById(`evolucion-chart-${liga}`);
   if (!el || typeof echarts === 'undefined') return;
+
+  const hayDatos = estado.equipos.some(eq => (estado.datos.evolucion[eq] || []).length > 0);
+  if (!hayDatos) {
+    if (statusEl) statusEl.textContent = 'Todavía no hay fechas jugadas para graficar en esta zona.';
+    if (estado.chart) estado.chart.clear();
+    return;
+  }
+  if (statusEl) statusEl.textContent = '';
+
   if (!estado.chart) estado.chart = echarts.init(el);
-  const equiposVisibles = Array.from(estado.seleccionados);
-  const opcion = generarDatosEvolucionChart(estado.datos, liga, equiposVisibles);
+  const opcion = generarDatosEvolucionChart(estado.datos, liga, estado.equipos);
   estado.chart.setOption(opcion, true);
+}
+
+/** Recalcula qué equipos mostrar (todos los de la zona activa) y vuelve a
+ * pintar el gráfico. Se llama al abrir el acordeón por primera vez y cada
+ * vez que se cambia de zona (Zona A / Zona B) con el gráfico ya cargado. */
+function actualizarZonaEvolucion(liga){
+  const estado = estadoEvolucion(liga);
+  const config = EVOLUCION_CONFIG[liga];
+  if (!estado.datos) return;
+  const zona = config.zonaActiva();
+  const { evolucion } = estado.datos;
+  estado.equipos = Object.keys(evolucion)
+    .filter(equipo => evolucion[equipo][0] && evolucion[equipo][0].zona === zona)
+    .sort();
+  const label = document.getElementById(config.zonaLabelId);
+  if (label) label.textContent = zona;
+  renderEvolucionChart(liga);
 }
 
 async function cargarEvolucion(liga){
   const estado = estadoEvolucion(liga);
   const statusEl = document.getElementById(`evolucion-status-${liga}`);
-  if (estado.datos || estado.cargando) return;
+  if (estado.datos || estado.cargando) {
+    actualizarZonaEvolucion(liga);
+    return;
+  }
   estado.cargando = true;
   if (statusEl) statusEl.textContent = 'Cargando evolución de posiciones…';
   try {
@@ -6082,10 +6062,7 @@ async function cargarEvolucion(liga){
     const body = await resp.json();
     if (!resp.ok || body.error) throw new Error(body.error || `Error ${resp.status}`);
     estado.datos = body;
-    estado.seleccionados = new Set(equiposPorDefecto(liga, body));
-    if (statusEl) statusEl.textContent = '';
-    renderChipsEvolucion(liga);
-    renderEvolucionChart(liga);
+    actualizarZonaEvolucion(liga);
   } catch (err) {
     if (statusEl) statusEl.textContent = `No se pudo cargar la evolución de posiciones: ${err.message}`;
   } finally {
@@ -6096,7 +6073,6 @@ async function cargarEvolucion(liga){
 function initEvolucionAcordeon(liga){
   const toggle = document.getElementById(`evolucion-toggle-${liga}`);
   const body = document.getElementById(`evolucion-body-${liga}`);
-  const buscar = document.getElementById(`evolucion-buscar-${liga}`);
   if (!toggle || !body) return;
 
   toggle.addEventListener('click', () => {
@@ -6112,18 +6088,6 @@ function initEvolucionAcordeon(liga){
       });
     }
   });
-
-  if (buscar) {
-    buscar.addEventListener('change', () => {
-      const equipo = buscar.value.trim();
-      buscar.value = '';
-      const estado = estadoEvolucion(liga);
-      if (!equipo || !estado.datos || !estado.datos.evolucion[equipo]) return;
-      estado.seleccionados.add(equipo);
-      renderChipsEvolucion(liga);
-      renderEvolucionChart(liga);
-    });
-  }
 
   window.addEventListener('resize', () => {
     const estado = estadoEvolucion(liga);
@@ -6329,6 +6293,7 @@ function setZone(zona){
   renderTabla(zona);
   renderMC(zona);
   renderEsperada(zona);
+  if (estadoEvolucion('nacional').datos) actualizarZonaEvolucion('nacional');
 }
 
 /* ---------- BUSCADOR DE EQUIPOS ---------- */
