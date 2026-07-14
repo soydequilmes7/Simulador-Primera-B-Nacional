@@ -355,6 +355,32 @@ def evolucion_posiciones_bmetro():
         _lock_bmetro.release_read()
 
 
+@app.get("/api/evolucion-posiciones-primerac")
+def evolucion_posiciones_primerac():
+    """Igual que /api/evolucion-posiciones-nacional pero para Primera C
+    (2 zonas, igual formato que Nacional)."""
+    ocupado = _adquirir_lectura(
+        _lock_primerac,
+        "Hay una actualización de Primera C en curso. Esperá unos segundos y probá de nuevo.",
+    )
+    if ocupado:
+        return ocupado
+    try:
+        with transaction() as repo:
+            tabla_actual = repo.standing_records("primerac")
+            zona_por_club = {fila["equipo"]: fila["zona"] for fila in tabla_actual}
+            partidos_jugados = repo.match_records("primerac", "played")
+        evolucion = calcular_evolucion(partidos_jugados, zona_por_club)
+        return {
+            "evolucion": evolucion,
+            "zonas": tamano_por_zona(zona_por_club),
+        }
+    except Exception as e:
+        return _error_response(e)
+    finally:
+        _lock_primerac.release_read()
+
+
 @app.get("/api/datos-copa")
 def datos_copa():
     """Igual que /api/datos-nacional pero con el cuadro de la Copa

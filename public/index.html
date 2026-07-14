@@ -4010,18 +4010,16 @@
      instancia el mismo markup con un sufijo de id distinto. */
   .evolucion-posiciones{ margin-top: 28px; }
   .evolucion-toggle{
-    width:100%; display:flex; align-items:center; justify-content:space-between; gap:12px;
-    background: var(--bg-panel); border:1px solid var(--line); border-radius: var(--radius-sm);
-    padding:14px 18px; cursor:pointer; font-family:'Plus Jakarta Sans', sans-serif;
-    font-size:15px; font-weight:600; color: var(--ink); text-align:left;
+    display:inline-flex; align-items:center; gap:8px;
+    background: var(--bg-panel); border:1px solid var(--line); border-radius: 999px;
+    padding:9px 18px; cursor:pointer; font-family:'Plus Jakarta Sans', sans-serif;
+    font-size:13px; font-weight:600; color: var(--ink); text-align:left;
   }
   .evolucion-toggle:hover{ border-color: var(--ink-dim); }
-  .evolucion-toggle-text{ display:flex; flex-direction:column; gap:3px; }
-  .evolucion-toggle-sub{ font-size:12px; font-weight:400; color: var(--muted); }
-  .evolucion-toggle-caret{ transition: transform 220ms ease; color: var(--muted); flex-shrink:0; }
+  .evolucion-toggle-caret{ transition: transform 220ms ease; color: var(--muted); font-size:11px; }
   .evolucion-toggle[aria-expanded="true"] .evolucion-toggle-caret{ transform: rotate(180deg); }
   .evolucion-body{
-    border:1px solid var(--line); border-top:none; border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+    border:1px solid var(--line); border-radius: var(--radius-sm); margin-top:14px;
     padding:18px; background: var(--bg-panel);
   }
   .evolucion-picker{
@@ -4298,11 +4296,10 @@
   </section>
 
   <section class="evolucion-posiciones" id="sec-evolucion-nacional">
+    <div class="section-head"><h2>📈 Evolución de posiciones</h2><div class="rule"></div></div>
+    <p class="section-note">Cómo varió la posición de cada equipo, fecha a fecha, a lo largo de la temporada.</p>
     <button type="button" class="evolucion-toggle" id="evolucion-toggle-nacional" aria-expanded="false" aria-controls="evolucion-body-nacional">
-      <span class="evolucion-toggle-text">
-        <span class="evolucion-toggle-label">📈 Evolución de posiciones</span>
-        <span class="evolucion-toggle-sub">Cómo varió la posición de cada equipo, fecha a fecha, a lo largo de la temporada</span>
-      </span>
+      <span class="evolucion-toggle-label">Ver gráfico interactivo</span>
       <span class="evolucion-toggle-caret">▼</span>
     </button>
     <div class="evolucion-body" id="evolucion-body-nacional" hidden>
@@ -4615,11 +4612,10 @@
   </section>
 
   <section class="evolucion-posiciones" id="sec-evolucion-bmetro">
+    <div class="section-head"><h2>📈 Evolución de posiciones</h2><div class="rule"></div></div>
+    <p class="section-note">Cómo varió la posición de cada equipo, fecha a fecha, a lo largo de la temporada.</p>
     <button type="button" class="evolucion-toggle" id="evolucion-toggle-bmetro" aria-expanded="false" aria-controls="evolucion-body-bmetro">
-      <span class="evolucion-toggle-text">
-        <span class="evolucion-toggle-label">📈 Evolución de posiciones</span>
-        <span class="evolucion-toggle-sub">Cómo varió la posición de cada equipo, fecha a fecha, a lo largo de la temporada</span>
-      </span>
+      <span class="evolucion-toggle-label">Ver gráfico interactivo</span>
       <span class="evolucion-toggle-caret">▼</span>
     </button>
     <div class="evolucion-body" id="evolucion-body-bmetro" hidden>
@@ -4958,6 +4954,28 @@
         <thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>GF</th><th>GC</th><th>DG</th></tr></thead>
         <tbody id="tabla-actual-body-primerac"></tbody>
       </table>
+    </div>
+  </section>
+
+  <section class="evolucion-posiciones" id="sec-evolucion-primerac">
+    <div class="section-head"><h2>📈 Evolución de posiciones</h2><div class="rule"></div></div>
+    <p class="section-note">Cómo varió la posición de cada equipo, fecha a fecha, a lo largo de la temporada.</p>
+    <button type="button" class="evolucion-toggle" id="evolucion-toggle-primerac" aria-expanded="false" aria-controls="evolucion-body-primerac">
+      <span class="evolucion-toggle-label">Ver gráfico interactivo</span>
+      <span class="evolucion-toggle-caret">▼</span>
+    </button>
+    <div class="evolucion-body" id="evolucion-body-primerac" hidden>
+      <div class="evolucion-picker">
+        <div class="evolucion-picker-head">
+          <span class="evolucion-picker-title">Equipos visibles</span>
+          <input type="text" id="evolucion-buscar-primerac" class="evolucion-picker-search" placeholder="Buscar equipo…" autocomplete="off">
+        </div>
+        <div class="evolucion-picker-list" id="evolucion-picker-list-primerac"></div>
+      </div>
+      <div class="evolucion-chart-wrap">
+        <div class="evolucion-chart" id="evolucion-chart-primerac"></div>
+      </div>
+      <div class="evolucion-status" id="evolucion-status-primerac"></div>
     </div>
   </section>
 
@@ -5982,6 +6000,22 @@ const EVOLUCION_CONFIG = {
       { nombre: 'ascenso', desde: 1, hasta: 1, color: '#2E9E5B' },
       { nombre: 'reducido', desde: 2, hasta: Math.min(9, totalEquipos - 1), color: '#C9A227' },
       { nombre: 'descenso', desde: Math.max(1, totalEquipos - 1), hasta: totalEquipos, color: '#DC2626' },
+    ]),
+  },
+  primerac: {
+    endpoint: '/api/evolucion-posiciones-primerac',
+    // Zona que se está mostrando ahora mismo (pestañas Zona A / Zona B
+    // propias de Primera C, igual que Nacional).
+    zonaActiva: () => zonaActualPrimeraC,
+    // Mismo criterio que ya usa renderTablaActualPrimeraC(): 1° = puntero
+    // (ascenso directo), 2° a 7° = Reducido. Primera C no tiene descenso
+    // directo -- el último de cada zona juega la desafiliación ante un
+    // equipo del Torneo Promocional Amateur, por eso la banda roja marca
+    // solo esa última posición (no las últimas 2 como en Nacional/BMetro).
+    banda: (totalEquipos) => ([
+      { nombre: 'ascenso', desde: 1, hasta: 1, color: '#2E9E5B' },
+      { nombre: 'reducido', desde: 2, hasta: Math.min(7, totalEquipos - 1), color: '#C9A227' },
+      { nombre: 'descenso', desde: totalEquipos, hasta: totalEquipos, color: '#DC2626' },
     ]),
   },
 };
@@ -7255,6 +7289,7 @@ function setZonePrimeraC(zona){
   renderTablaPrimeraC(zona);
   renderMCPrimeraC(zona);
   renderEsperadaPrimeraC(zona);
+  if (estadoEvolucion('primerac').datos) actualizarZonaEvolucion('primerac');
 }
 
 document.querySelectorAll('#zone-tabs-primerac .zone-tab').forEach(btn => {
