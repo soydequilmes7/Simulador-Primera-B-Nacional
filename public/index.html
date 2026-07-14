@@ -4054,6 +4054,74 @@
   @media (max-width:600px){
     .evolucion-chart{ min-width:640px; height:420px; }
   }
+
+  /* =====================================================================
+     RETOQUES SOLO PARA MÓVIL
+     Todo lo de acá abajo vive dentro de @media (max-width: ...), así que
+     en escritorio el sitio queda pixel a pixel como estaba antes: estas
+     reglas nunca se aplican por encima de esos anchos. El objetivo es
+     mejorar la estética/usabilidad en celular sin tocar ni una línea de
+     las reglas de base (desktop-first) de todo el resto del archivo.
+     ===================================================================== */
+  @media (max-width: 640px){
+
+    /* Achique general de escala SOLO en mobile: usamos CSS zoom (no
+       transform:scale) porque zoom no crea un containing block nuevo,
+       así que los position:fixed (toast, overlays de fondo) no se
+       rompen y siguen anclados al viewport como corresponde. */
+    body{ zoom: 0.9; }
+
+    /* Evita el "zoom" automático que hace Safari/iOS al enfocar un
+       input con font-size menor a 16px: antes, tocar el buscador de
+       equipos, el contador de simulaciones o el campo de "elegí un
+       equipo" hacía que toda la página saltara de tamaño. Con el zoom
+       general de arriba en 0.9, compensamos a 18px (18 * 0.9 ≈ 16.2px
+       de tamaño visual real) para que el umbral de iOS siga sin
+       dispararse. */
+    #team-search, .search-box input,
+    #sim-count, #sim-count-lpf, #sim-count-copa, #sim-count-bmetro,
+    #sim-count-federal, #sim-count-primerac, #sim-count-libertadores, #sim-count-sudamericana,
+    #campeon-equipo, #campeon-equipo-lpf, #campeon-equipo-copa, #campeon-equipo-bmetro,
+    #campeon-equipo-federal, #campeon-equipo-libertadores,
+    .evolucion-picker-search{
+      font-size: 18px;
+    }
+
+    /* Stats del hero (Equipos / Zonas / Ascensos / Descensos): grilla
+       fija de 2 columnas parejas en vez de flex-wrap "flotante", que
+       en pantallas angostas quedaba con tamaños dispares entre filas. */
+    .hero .meta{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
+    .hero .meta div{ min-width:0; width:100%; }
+    body.liga-temporada .hero .meta{ gap:10px; }
+
+    /* Botones de simulación: ancho completo y apilados en vez de
+       amontonados en fila -- mucho más fáciles de tocar con el pulgar
+       y sin riesgo de que un texto largo ("Correr nueva simulación
+       (Clausura + playoffs)") se corte contra el borde de la pantalla. */
+    .btn-row{ flex-direction:column; align-items:stretch; width:100%; gap:8px; }
+    .btn-simular, .btn-actualizar{ width:100%; }
+    .sim-select-row{ justify-content:center; }
+
+    /* "Simulá hasta el título": mismo criterio de apilado táctil. */
+    .campeon-controls{ flex-direction:column; align-items:stretch; }
+    .campeon-controls select, .campeon-controls input,
+    .campeon-controls #campeon-equipo, .campeon-controls #campeon-equipo-lpf,
+    .campeon-controls #campeon-equipo-copa, .campeon-controls #campeon-equipo-bmetro,
+    .campeon-controls #campeon-equipo-federal, .campeon-controls #campeon-equipo-libertadores{
+      width:100%; min-width:0;
+    }
+    .campeon-controls .btn-simular{ width:100%; }
+
+    /* Cards con un poco menos de padding lateral para aprovechar mejor
+       el ancho real de un celular (antes quedaban con mucho aire fijo
+       de 20-24px de cada lado, robándole espacio al contenido). */
+    .copa-card, .ascenso-card, .team-card, .temporada-card,
+    .temporada-copa-argentina-grupo, .campeon-summary{
+      padding-left:16px; padding-right:16px;
+    }
+
+    footer{ padding:44px 16px 0; }
+  }
 </style>
 </head>
 <body>
@@ -6057,6 +6125,11 @@ function generarEstiloSeries(equiposZona, destacado){
   });
 }
 
+/** Detecta touch para el dataZoom del gráfico de evolución (ver más abajo). */
+function esTouch(){
+  return ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+}
+
 /**
  * Función pura: arma la opción COMPLETA de ECharts (todas las líneas de
  * la zona, visibles u ocultas) a partir de {evolucion, zonas}. La
@@ -6158,8 +6231,16 @@ function generarDatosEvolucionChart(datos, liga, equiposZona, visibles, destacad
       name: 'Posición',
       axisLabel: { fontSize: 11 },
     },
+    // El dataZoom 'inside' hace pan con el dedo en touch, lo que le
+    // roba el gesto de swipe vertical a la página (no se puede scrollear
+    // para abajo si el dedo arranca sobre el gráfico). En touch lo
+    // sacamos: el scroll horizontal ya lo resuelve el wrapper con
+    // overflow-x:auto y el slider de abajo. En desktop se mantiene para
+    // poder hacer zoom/pan con el mouse.
     dataZoom: [
-      { type: 'inside', xAxisIndex: 0, zoomOnMouseWheel: true, moveOnMouseMove: true, moveOnMouseWheel: false },
+      ...(esTouch() ? [] : [
+        { type: 'inside', xAxisIndex: 0, zoomOnMouseWheel: true, moveOnMouseMove: true, moveOnMouseWheel: false },
+      ]),
       { type: 'slider', xAxisIndex: 0, height: 14, bottom: 8 },
     ],
     series,
