@@ -6,6 +6,7 @@ import data_access
 import rutas
 from modelos import equipo
 from modelos.equipo import Equipo
+from modelos.promotion_requirements import construir_requisitos_ascenso
 
 class Estadisticas:
 
@@ -435,6 +436,11 @@ class Estadisticas:
                     "puntos": np.full(S, puntos_base[i], dtype=np.int64),
                     "gf": np.full(S, gf_base[i], dtype=np.int64),
                     "gc": np.full(S, gc_base[i], dtype=np.int64),
+                    # Sin partidos pendientes no hay victorias/empates/derrotas
+                    # que sumar de acá en más.
+                    "victorias": np.zeros(S, dtype=np.int64),
+                    "empates": np.zeros(S, dtype=np.int64),
+                    "derrotas": np.zeros(S, dtype=np.int64),
                 }
                 for i, nombre in enumerate(nombres_equipos)
             }
@@ -464,6 +470,15 @@ class Estadisticas:
         puntos_tot[:] = puntos_base[:, None]
         gf_tot[:] = gf_base[:, None]
         gc_tot[:] = gc_base[:, None]
+
+        # Victorias/empates/derrotas de CADA simulación, contando solo los
+        # partidos pendientes que se sortean acá (no arrastran base como
+        # puntos/gf/gc, porque esa base ya está implícita en puntos_base).
+        # Se usan para "¿Qué necesita [Equipo]?": el rendimiento que
+        # necesita el equipo en lo que queda de temporada.
+        victorias_tot = np.zeros((n_equipos, S), dtype=np.int64)
+        empates_tot = np.zeros((n_equipos, S), dtype=np.int64)
+        derrotas_tot = np.zeros((n_equipos, S), dtype=np.int64)
 
         # Tamaño de tanda: cuántas simulaciones procesar juntas para no
         # superar max_elems_por_bloque celdas (M x tanda x 81) de una vez.
@@ -513,6 +528,9 @@ class Estadisticas:
             bloque_puntos = puntos_tot[:, inicio:inicio + s]
             bloque_gf = gf_tot[:, inicio:inicio + s]
             bloque_gc = gc_tot[:, inicio:inicio + s]
+            bloque_victorias = victorias_tot[:, inicio:inicio + s]
+            bloque_empates = empates_tot[:, inicio:inicio + s]
+            bloque_derrotas = derrotas_tot[:, inicio:inicio + s]
 
             np.add.at(bloque_puntos, idx_local, pts_local)
             np.add.at(bloque_puntos, idx_visitante, pts_visitante)
@@ -521,11 +539,25 @@ class Estadisticas:
             np.add.at(bloque_gc, idx_local, goles_visitante)
             np.add.at(bloque_gc, idx_visitante, goles_local)
 
+            gana_local_i = gana_local.astype(np.int64)
+            gana_visitante_i = gana_visitante.astype(np.int64)
+            empate_i = empate.astype(np.int64)
+
+            np.add.at(bloque_victorias, idx_local, gana_local_i)
+            np.add.at(bloque_victorias, idx_visitante, gana_visitante_i)
+            np.add.at(bloque_empates, idx_local, empate_i)
+            np.add.at(bloque_empates, idx_visitante, empate_i)
+            np.add.at(bloque_derrotas, idx_local, gana_visitante_i)
+            np.add.at(bloque_derrotas, idx_visitante, gana_local_i)
+
         return {
             nombre: {
                 "puntos": puntos_tot[i],
                 "gf": gf_tot[i],
                 "gc": gc_tot[i],
+                "victorias": victorias_tot[i],
+                "empates": empates_tot[i],
+                "derrotas": derrotas_tot[i],
             }
             for i, nombre in enumerate(nombres_equipos)
         }
@@ -781,6 +813,14 @@ class Estadisticas:
 
         paso_reporte = max(1, n_simulaciones // 10)
 
+        # Flags por-simulación de "esta simulación terminó en ascenso para
+        # este equipo" (directo o por Reducido). Se usan después del loop,
+        # sin volver a simular nada, para armar "¿Qué necesita [Equipo]?"
+        # (ver modelos/promotion_requirements.py).
+        asciende_flags = {
+            nombre: np.zeros(n_simulaciones, dtype=bool) for nombre in self.equipos
+        }
+
         # Resuelve TODOS los partidos pendientes de TODAS las simulaciones
         # de una sola vez (vectorizado), en vez de hacerlo partido por
         # partido dentro del loop de abajo -- ver el docstring de
@@ -821,9 +861,11 @@ class Estadisticas:
 
             ganador, perdedor, _ = self.jugar_final_ascenso(puntero_a, puntero_b)
             contador[ganador]["ascenso_directo"] += 1
+            asciende_flags[ganador][i] = True
 
             campeon_reducido, _ = self.jugar_reducido(tablas, perdedor)
             contador[campeon_reducido]["ascenso_reducido"] += 1
+            asciende_flags[campeon_reducido][i] = True
 
             descendidos_a = tablas["A"].iloc[-2:]["equipo"].tolist()
             descendidos_b = tablas["B"].iloc[-2:]["equipo"].tolist()
@@ -866,6 +908,32 @@ class Estadisticas:
             tabla_zona = tabla_zona.sort_values("posicion_prom").reset_index(drop=True)
             tabla_zona.index = tabla_zona.index + 1
             tabla_esperada_por_zona[zona] = tabla_zona
+
+        # --- "¿Qué necesita [Equipo]?": objeto por equipo para la ficha ---
+        # Se arma acá, una sola vez, a partir de los arrays por-simulación
+        # que ya calculó _simular_fase_regular_vectorizado() (puntos
+        # finales, victorias/empates/derrotas en lo que quedaba de
+        # temporada) y de asciende_flags (armado arriba, en este mismo
+        # loop). No se vuelve a correr Monte Carlo ni se recalcula nada del
+        # motor de simulación -- ver modelos/promotion_requirements.py.
+        partidos_restantes_por_equipo = {nombre: 0 for nombre in self.equipos}
+        for local, visitante in self._pares_fixture():
+            partidos_restantes_por_equipo[local] += 1
+            partidos_restantes_por_equipo[visitante] += 1
+
+        self.requisitos_ascenso = {
+            nombre: construir_requisitos_ascenso(
+                equipo=nombre,
+                puntos_actuales=self.equipos[nombre].puntos,
+                partidos_restantes=partidos_restantes_por_equipo[nombre],
+                puntos_final_sims=totales_vectorizados[nombre]["puntos"],
+                victorias_restantes_sims=totales_vectorizados[nombre]["victorias"],
+                empates_restantes_sims=totales_vectorizados[nombre]["empates"],
+                derrotas_restantes_sims=totales_vectorizados[nombre]["derrotas"],
+                asciende_sims=asciende_flags[nombre],
+            )
+            for nombre in self.equipos
+        }
 
         print("Monte Carlo terminado.")
         return resumen, tabla_esperada_por_zona

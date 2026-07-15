@@ -138,6 +138,11 @@ def correr_simulacion(n_sims=1000, imprimir=True, guardar_json=True):
             "A": mc_A,
             "B": mc_B
         },
+        # "¿Qué necesita [Equipo]?" -- un objeto por equipo, ya calculado
+        # por Estadisticas.monte_carlo() a partir de las simulaciones
+        # exitosas (ver modelos/promotion_requirements.py). El frontend
+        # solo lo renderiza, no recalcula nada.
+        "requisitos_ascenso": estadisticas_obj.requisitos_ascenso,
         "tabla_esperada": {
             "A": tabla_esperada_mc["A"].to_dict(orient="records"),
             "B": tabla_esperada_mc["B"].to_dict(orient="records")

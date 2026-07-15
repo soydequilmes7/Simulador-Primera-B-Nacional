@@ -1791,6 +1791,26 @@
   .team-card .tc-stat .v{ font-family:'JetBrains Mono'; font-size:17px; font-weight:700; color:var(--ink); }
   .team-card .tc-stat .l{ font-size:9px; letter-spacing:0.06em; text-transform:uppercase; color:var(--muted); margin-top:3px; }
   .team-card .tc-mc-title{ font-family:'JetBrains Mono'; font-size:11px; color:var(--muted); letter-spacing:0.06em; text-transform:uppercase; margin-bottom:10px; }
+
+  /* ---- "¿Qué necesita [Equipo]?" ---- */
+  .tc-req{ margin-top:18px; padding-top:16px; border-top:1px solid var(--line); }
+  .tc-req-metas{ display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin-bottom:14px; }
+  .tc-req-meta{ text-align:center; background:var(--bg-panel-2); border-radius:var(--radius-sm); padding:10px 6px; }
+  .tc-req-meta .v{ font-family:'JetBrains Mono'; font-size:18px; font-weight:700; color:var(--ink); }
+  .tc-req-meta .l{ font-size:9px; letter-spacing:0.05em; text-transform:uppercase; color:var(--muted); margin-top:3px; }
+  .tc-req-sep{ height:1px; background:var(--line); margin:14px 0; }
+  .tc-req-texto{ font-size:12.5px; color:var(--ink-dim); margin:0 0 10px; }
+  .tc-req-combo{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
+  .tc-req-pill{
+    font-family:'JetBrains Mono'; font-size:12px; font-weight:600; color:var(--ink);
+    background:var(--bg-panel-2); border:1px solid var(--line); border-radius:999px;
+    padding:5px 12px;
+  }
+  .tc-req-ppg{ font-size:12.5px; color:var(--ink-dim); margin:0; }
+  .tc-req-ppg b{ color:var(--ink); }
+  .tc-req-resumen{ font-size:12.5px; line-height:1.5; color:var(--ink-dim); margin:0; }
+  .tc-req-vacio{ font-family:'JetBrains Mono'; font-size:11px; color:var(--muted); margin:0; }
+  @media (max-width:480px){ .tc-req-metas{ gap:6px; } .tc-req-meta{ padding:8px 4px; } .tc-req-meta .v{ font-size:16px; } }
   .no-result{ margin-top:18px; text-align:center; color:var(--muted); font-size:13px; font-family:'JetBrains Mono'; }
 
   /* ---- Historial de rachas (últimos 5 partidos) ---- */
@@ -6694,7 +6714,12 @@ function buildTeamIndex(){
         descenso: mcRow['descenso'] ?? 0,
         puntos_prom: espRow['puntos_prom'] ?? '—',
         posicion_prom: espRow['posicion_prom'] ?? '—',
-        ultimos5
+        ultimos5,
+        // "¿Qué necesita [Equipo]?" -- objeto ya calculado por el backend
+        // (Estadisticas.monte_carlo() + modelos/promotion_requirements.py)
+        // a partir de las simulaciones exitosas. Acá solo se lee y se
+        // renderiza, no se recalcula nada.
+        requisitos_ascenso: (DATA.requisitos_ascenso && DATA.requisitos_ascenso[f.equipo]) || null
       };
     });
   });
@@ -6747,6 +6772,7 @@ function renderTeamCard(t){
         <div class="mc-bar-fill reducido" style="left:${t.ascenso_directo}%; width:${t.ascenso_reducido}%; background:${zoneColor}"></div>
       </div>
       <div class="tc-pos">Posición final promedio: <b>${t.posicion_prom}°</b> — Puntos promedio: <b>${t.puntos_prom}</b></div>
+      ${renderRequisitosAscenso(t)}
       <div class="tc-racha">
         <div class="tc-racha-title">Últimos partidos</div>
         ${renderRacha(t.ultimos5)}
@@ -6756,6 +6782,55 @@ function renderTeamCard(t){
         <button onclick="compartirLink('nacional', '${t.equipo.replace(/'/g, "\\'")}', this)">🔗 Copiar link</button>
         <button onclick="compartirFicha('nacional', '${t.equipo.replace(/'/g, "\\'")}', this)">📤 Compartir</button>
       </div>
+    </div>
+  `;
+}
+
+// "¿Qué necesita [Equipo]?" -- lee t.requisitos_ascenso (armado 100% en el
+// backend, ver modelos/promotion_requirements.py) y solo lo renderiza. Si
+// no hay datos (equipo no ascendió en ninguna simulación, o data.json
+// viejo sin la clave todavía), muestra un estado vacío en vez de inventar
+// números.
+function renderRequisitosAscenso(t){
+  const r = t.requisitos_ascenso;
+  const nombre = nombreMostrable(t.equipo);
+
+  if (!r){
+    return `
+      <div class="tc-req">
+        <div class="tc-mc-title">🎯 ¿Qué necesita ${nombre}?</div>
+        <p class="tc-req-vacio">Todavía no hay datos suficientes de las simulaciones para este equipo.</p>
+      </div>
+    `;
+  }
+
+  if (r.targetPoints === null){
+    return `
+      <div class="tc-req">
+        <div class="tc-mc-title">🎯 ¿Qué necesita ${nombre}?</div>
+        <p class="tc-req-vacio">${r.summary}</p>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="tc-req">
+      <div class="tc-mc-title">🎯 ¿Qué necesita ${nombre}?</div>
+      <div class="tc-req-metas">
+        <div class="tc-req-meta"><div class="v">${r.targetPoints}</div><div class="l">Objetivo recomendado</div></div>
+        <div class="tc-req-meta"><div class="v">${r.currentPoints}</div><div class="l">Actualmente</div></div>
+        <div class="tc-req-meta"><div class="v">${r.remainingPoints}</div><div class="l">Restan</div></div>
+      </div>
+      <div class="tc-req-sep"></div>
+      <p class="tc-req-texto">Quedan ${r.matchesRemaining} partido${r.matchesRemaining === 1 ? '' : 's'}. Para alcanzar ese objetivo necesita sumar aproximadamente:</p>
+      <div class="tc-req-combo">
+        <span class="tc-req-pill v">🟢 ${r.averageWins} victoria${r.averageWins === 1 ? '' : 's'}</span>
+        <span class="tc-req-pill e">🟡 ${r.averageDraws} empate${r.averageDraws === 1 ? '' : 's'}</span>
+        <span class="tc-req-pill d">🔴 ${r.averageLosses} derrota${r.averageLosses === 1 ? '' : 's'}</span>
+      </div>
+      <p class="tc-req-ppg">Promedio necesario: <b>${r.requiredPPG.toFixed(2)}</b> puntos por partido</p>
+      <div class="tc-req-sep"></div>
+      <p class="tc-req-resumen">${r.summary}</p>
     </div>
   `;
 }
