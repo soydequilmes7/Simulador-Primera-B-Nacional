@@ -4075,6 +4075,85 @@
     .evolucion-chart{ min-width:640px; height:420px; }
   }
 
+  /* ---- Observatorio del Ascenso (acordeón cerrado por defecto) ----
+     Todo el contenido de adentro se arma una sola vez en JS a partir de
+     DATA.observatorio_ascenso (ya calculado y persistido en el backend
+     al apretar "Actualizar Resultados" -- ver observatorio_ascenso.py y
+     actualizar_resultados.py). Abrir/cerrar acá es puro CSS: no dispara
+     ningún cálculo ni pedido de red. */
+  .observatorio-ascenso{ margin: 10px 0 32px; }
+  .obs-card{
+    border:1px solid var(--line); border-radius: var(--radius); overflow:hidden;
+    background: var(--card-grad, var(--bg-panel)); background-color: var(--bg-panel);
+    box-shadow: var(--card-shadow);
+  }
+  .obs-toggle{
+    width:100%; display:flex; align-items:center; justify-content:space-between; gap:16px;
+    padding:18px 22px; background:none; border:none; cursor:pointer; text-align:left;
+    font-family:'Plus Jakarta Sans', sans-serif;
+  }
+  .obs-toggle:hover{ background: var(--bg-panel-2); }
+  .obs-toggle-title{
+    font-family:'Oswald', sans-serif; text-transform:uppercase; letter-spacing:0.02em;
+    font-size:16px; font-weight:600; color: var(--ink); margin-bottom:4px;
+  }
+  .obs-toggle-sub{ font-size:12.5px; color: var(--ink-dim); max-width:52ch; }
+  .obs-toggle-caret{
+    font-family:'JetBrains Mono', monospace; font-size:12px; color: var(--amber);
+    white-space:nowrap; display:inline-flex; align-items:center; gap:6px; flex-shrink:0;
+  }
+  .obs-toggle-caret .arrow{ display:inline-block; transition: transform 240ms ease; }
+  .obs-toggle[aria-expanded="true"] .obs-toggle-caret .arrow{ transform: rotate(180deg); }
+
+  /* Truco grid-template-rows 0fr -> 1fr: anima el alto real del
+     contenido (a diferencia de max-height, no hace falta adivinar un
+     valor en px) y queda 200-300ms como pide la consigna. */
+  .obs-collapse{ display:grid; grid-template-rows: 0fr; transition: grid-template-rows 260ms ease; }
+  .obs-toggle[aria-expanded="true"] + .obs-collapse{ grid-template-rows: 1fr; }
+  .obs-collapse-inner{ overflow:hidden; }
+  .obs-content{ padding: 2px 22px 22px; }
+
+  .obs-grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(190px,1fr)); gap:10px; margin-bottom:18px; }
+  .obs-stat{
+    border:1px solid var(--line); border-radius: var(--radius-sm); background: var(--bg-panel-2);
+    padding:12px 14px;
+  }
+  .obs-stat-label{
+    font-family:'JetBrains Mono', monospace; font-size:10.5px; letter-spacing:0.05em; text-transform:uppercase;
+    color: var(--muted); display:flex; align-items:center; gap:6px; margin-bottom:8px;
+  }
+  .obs-stat-team{ font-size:14.5px; font-weight:700; color: var(--ink); line-height:1.3; }
+  .obs-stat-value{ font-family:'JetBrains Mono', monospace; font-size:13px; margin-top:3px; font-weight:600; }
+  .obs-stat-value.up{ color: var(--zone-a); }
+  .obs-stat-value.down{ color: var(--danger); }
+  .obs-stat-value.neutral{ color: var(--azul); }
+
+  .obs-top{ margin-bottom:16px; }
+  .obs-top-title{
+    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.05em; text-transform:uppercase;
+    color: var(--muted); margin-bottom:10px;
+  }
+  .obs-top-row{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    padding:8px 12px; border-radius: var(--radius-sm); background: var(--bg-panel-2); margin-bottom:6px;
+    font-size:13px;
+  }
+  .obs-top-row .team{ display:flex; align-items:center; gap:8px; color: var(--ink); font-weight:600; }
+  .obs-top-row .delta{ font-family:'JetBrains Mono', monospace; font-weight:700; flex-shrink:0; }
+  .obs-top-row .delta.up{ color: var(--zone-a); }
+  .obs-top-row .delta.down{ color: var(--danger); }
+
+  .obs-summary{
+    font-size:13px; line-height:1.65; color: var(--ink-dim);
+    border-top:1px solid var(--line); padding-top:14px; margin:0;
+  }
+  .obs-empty{ font-size:13px; color: var(--muted); font-style:italic; margin:4px 0 0; }
+  @media (max-width:480px){
+    .obs-toggle{ padding:16px; }
+    .obs-content{ padding: 2px 16px 18px; }
+    .obs-grid{ grid-template-columns: 1fr 1fr; }
+  }
+
   /* =====================================================================
      RETOQUES SOLO PARA MÓVIL
      Todo lo de acá abajo vive dentro de @media (max-width: ...), así que
@@ -4444,6 +4523,23 @@
       <span><i style="background:var(--danger)"></i> % descenso</span>
     </div>
     <div id="mc-list"></div>
+  </section>
+
+  <section class="observatorio-ascenso" id="sec-observatorio">
+    <div class="obs-card">
+      <button type="button" class="obs-toggle" id="obs-toggle" aria-expanded="false" aria-controls="obs-collapse">
+        <div>
+          <div class="obs-toggle-title">📊 Observatorio del Ascenso</div>
+          <div class="obs-toggle-sub">Analizá cómo cambiaron las probabilidades después de la última actualización.</div>
+        </div>
+        <span class="obs-toggle-caret"><span class="arrow">▼</span> <span class="obs-toggle-caret-label">Ver análisis</span></span>
+      </button>
+      <div class="obs-collapse" id="obs-collapse">
+        <div class="obs-collapse-inner">
+          <div class="obs-content" id="obs-content"></div>
+        </div>
+      </div>
+    </div>
   </section>
 
   <section id="sec-esperada">
@@ -5552,6 +5648,7 @@ function iniciar() {
     renderAscenso();
     renderBracket();
     renderGoleadores();
+    renderObservatorio();
     setZone("A");
 
     TEAM_INDEX = buildTeamIndex();
@@ -6487,6 +6584,129 @@ function initEvolucionAcordeon(liga){
 document.addEventListener('DOMContentLoaded', () => {
   Object.keys(EVOLUCION_CONFIG).forEach(initEvolucionAcordeon);
 });
+
+// ---- Observatorio del Ascenso ----------------------------------------
+// Renderiza únicamente lo que ya viene calculado y persistido desde el
+// backend en DATA.observatorio_ascenso (ver observatorio_ascenso.py y
+// actualizar_resultados.py). Acá no se hace ningún cálculo: solo se
+// arma el HTML a partir del objeto { biggestRise, biggestFall,
+// newFavorite, enteredPlayoffs, leftPlayoffs, topChanges, summary }.
+// Abrir/cerrar el acordeón es puro CSS (ver .obs-collapse en el bloque
+// de estilos) y no dispara ningún render ni pedido de red.
+
+function escapeHtml(valor){
+  return String(valor ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function obsFmtPct(n){
+  const num = Number(n) || 0;
+  const signo = num > 0 ? '+' : '';
+  return `${signo}${num.toFixed(1)}%`;
+}
+
+function obsStatCard(icono, label, cuerpoHtml){
+  return `
+    <div class="obs-stat">
+      <div class="obs-stat-label">${icono} ${escapeHtml(label)}</div>
+      ${cuerpoHtml}
+    </div>`;
+}
+
+function obsEquipoLinea(equipo){
+  return `<div class="obs-stat-team">${escudoHTML(equipo)}${escapeHtml(equipo)}</div>`;
+}
+
+function renderObservatorio(){
+  const cont = document.getElementById('obs-content');
+  if (!cont) return;
+
+  const obs = DATA && DATA.observatorio_ascenso;
+
+  if (!obs) {
+    cont.innerHTML = `<p class="obs-empty">Todavía no hay una actualización anterior con la cual comparar. Este análisis aparece automáticamente después de la próxima vez que se ejecute "Actualizar resultados".</p>`;
+    return;
+  }
+
+  let stats = '';
+
+  if (obs.biggestRise) {
+    stats += obsStatCard('📈', 'Mayor subida',
+      obsEquipoLinea(obs.biggestRise.equipo) +
+      `<div class="obs-stat-value up">${obsFmtPct(obs.biggestRise.delta)}</div>`);
+  }
+  if (obs.biggestFall) {
+    stats += obsStatCard('📉', 'Mayor caída',
+      obsEquipoLinea(obs.biggestFall.equipo) +
+      `<div class="obs-stat-value down">${obsFmtPct(obs.biggestFall.delta)}</div>`);
+  }
+  if (obs.newFavorite) {
+    stats += obsStatCard('👑', 'Nuevo favorito al ascenso',
+      obsEquipoLinea(obs.newFavorite.equipo) +
+      `<div class="obs-stat-value neutral">${Number(obs.newFavorite.probabilidad).toFixed(1)}%</div>`);
+  }
+  if (obs.enteredPlayoffs && obs.enteredPlayoffs.length) {
+    stats += obsStatCard('🎟️', 'Ingresó al Reducido',
+      obs.enteredPlayoffs.map(obsEquipoLinea).join(''));
+  }
+  if (obs.leftPlayoffs && obs.leftPlayoffs.length) {
+    stats += obsStatCard('❌', 'Salió del Reducido',
+      obs.leftPlayoffs.map(obsEquipoLinea).join(''));
+  }
+
+  let top = '';
+  if (obs.topChanges && obs.topChanges.length) {
+    const filas = obs.topChanges.map(c => {
+      const sube = c.delta >= 0;
+      return `
+        <div class="obs-top-row">
+          <span class="team">${escudoHTML(c.equipo)}${escapeHtml(c.equipo)}</span>
+          <span class="delta ${sube ? 'up' : 'down'}">${sube ? '▲' : '▼'} ${obsFmtPct(c.delta)}</span>
+        </div>`;
+    }).join('');
+    top = `
+      <div class="obs-top">
+        <div class="obs-top-title">📊 Top ${obs.topChanges.length} mayores cambios</div>
+        ${filas}
+      </div>`;
+  }
+
+  const resumen = obs.summary
+    ? `<p class="obs-summary">${escapeHtml(obs.summary)}</p>`
+    : '';
+
+  if (!stats && !top && !resumen) {
+    cont.innerHTML = `<p class="obs-empty">No hubo cambios en las probabilidades desde la última actualización.</p>`;
+    return;
+  }
+
+  cont.innerHTML = `
+    <div class="obs-grid">${stats}</div>
+    ${top}
+    ${resumen}
+  `;
+}
+
+function initObservatorioAcordeon(){
+  const toggle = document.getElementById('obs-toggle');
+  const label = toggle ? toggle.querySelector('.obs-toggle-caret-label') : null;
+  if (!toggle) return;
+
+  toggle.addEventListener('click', () => {
+    const abierto = toggle.getAttribute('aria-expanded') === 'true';
+    toggle.setAttribute('aria-expanded', String(!abierto));
+    if (label) label.textContent = abierto ? 'Ver análisis' : 'Ocultar análisis';
+    // Nota: no se recalcula ni se vuelve a pedir nada acá -- el contenido
+    // ya fue renderizado por renderObservatorio() cuando se cargaron los
+    // datos, y abrir/cerrar es solo la animación CSS de grid-template-rows.
+  });
+}
+
+document.addEventListener('DOMContentLoaded', initObservatorioAcordeon);
 
 function renderTabla(zona, equipoDestacado){
   // tabla_actual = posiciones reales de HOY (mismo dato que usa el
