@@ -115,12 +115,25 @@ def _parsear_partido(g):
     equipo_local = g["teams"][0]["name"]
     equipo_visitante = g["teams"][1]["name"]
     estado = g.get("status", {})
-    jugado = estado.get("enum") in ESTADOS_JUGADO_ENUM
+    tiene_estado_jugado = estado.get("enum") in ESTADOS_JUGADO_ENUM
 
     goles_local = goles_visitante = None
-    if jugado and "scores" in g:
-        goles_local = int(g["scores"][0])
-        goles_visitante = int(g["scores"][1])
+    scores = g.get("scores") or []
+    if (
+        tiene_estado_jugado
+        and len(scores) == 2
+        and scores[0] is not None
+        and scores[1] is not None
+    ):
+        goles_local = int(scores[0])
+        goles_visitante = int(scores[1])
+
+    # Un partido solo se considera "jugado" si además tiene los goles
+    # cargados. Promiedos a veces marca aplazados/suspendidos con el
+    # mismo status enum que los finalizados, pero sin scores -- en ese
+    # caso lo tratamos como pendiente (va al fixture), no como jugado
+    # sin goles (ver mismo fix en scraper_promiedos_primerac.py).
+    jugado = tiene_estado_jugado and goles_local is not None and goles_visitante is not None
 
     return {
         "jornada": jornada,

@@ -4,6 +4,8 @@ from __future__ import annotations
 import csv
 import io
 import json
+import re
+import unicodedata
 from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import datetime
@@ -14,6 +16,22 @@ import pandas as pd
 from psycopg.types.json import Jsonb
 
 from db.client import get_connection
+
+
+def _normalizar_nombre_equipo(nombre: str) -> str:
+    """minúsculas, sin tildes, sin puntuación, espacios simples. Mismo
+    criterio que mapeo_equipos_brasileirao.normalizar() / equivalentes,
+    pero vive acá porque _ensure_teams_bulk es el ÚNICO lugar por el
+    que pasan los nombres de equipo de TODAS las competiciones antes
+    de llegar a `teams` -- no todas tienen (todavía) su propio
+    mapeo_equipos_X.py con un resolver_equipo() dedicado."""
+    if not nombre:
+        return ""
+    nfkd = unicodedata.normalize("NFKD", nombre)
+    sin_tildes = "".join(c for c in nfkd if not unicodedata.combining(c))
+    sin_tildes = sin_tildes.lower()
+    sin_tildes = re.sub(r"[^a-z0-9()]+", " ", sin_tildes)
+    return re.sub(r"\s+", " ", sin_tildes).strip()
 
 MATCH_COLUMNS = ["fecha", "jornada", "equipo_local", "equipo_visitante"]
 RESULT_COLUMNS = MATCH_COLUMNS + ["goles_local", "goles_visitante"]
@@ -183,19 +201,56 @@ class SimulatorRepository:
         )
 
     def matches_df(self, competition_slug: str, status: str) -> pd.DataFrame:
+        """NOTA sobre partidos aplazados/suspendidos: la fuente (Promiedos
+        u otra) a veces deja un partido con status = "played" en la base
+        pero goles_local/goles_visitante en NULL -- pasa cuando el
+        scraper vio un estado "finalizado" sin scores cargados todavía
+        (aplazamientos, suspensiones, correcciones de fixture). Un
+        partido así NO está realmente jugado, así que acá se lo trata
+        como tal en ambos sentidos:
+
+          - status == "played": se exige además goles_local y
+            goles_visitante no nulos. Así ningún resultado a medio
+            cargar entra a resultados.csv / a las tablas / al ELO, y
+            pd.to_numeric(...).astype("int64") de más abajo nunca ve un
+            NaN (que es justo lo que tiraba IntCastingNaNError).
+          - status == "pending": además de los partidos con
+            status = "pending" de siempre, se incluyen los "played" sin
+            goles -- si no, esos partidos desaparecerían del fixture
+            pendiente y actualizar_resultados_*.py nunca podría
+            volver a matchearlos cuando la fuente cargue el resultado
+            real más adelante.
+
+        No se toca la fila en la base (no se reescribe status ni se
+        inventan goles): el partido sigue existiendo tal cual está,
+        listo para disputarse/cargarse más adelante. Esto es genérico
+        por competition_slug, así que aplica a Brasileirão y a
+        cualquier liga futura que tenga el mismo problema."""
         season_id = self.season_id(competition_slug)
+        if status == "played":
+            status_filter = "m.status = 'played' and m.goles_local is not null and m.goles_visitante is not null"
+            params = (competition_slug, season_id)
+        elif status == "pending":
+            status_filter = (
+                "(m.status = 'pending' or "
+                "(m.status = 'played' and (m.goles_local is null or m.goles_visitante is null)))"
+            )
+            params = (competition_slug, season_id)
+        else:
+            status_filter = "m.status = %s"
+            params = (competition_slug, season_id, status)
         rows = self._execute(
-            """
+            f"""
             select coalesce(m.fecha, '') as fecha, m.jornada,
                    tl.name as equipo_local, tv.name as equipo_visitante,
                    m.goles_local, m.goles_visitante
             from matches m
             join teams tl on tl.id = m.equipo_local_id
             join teams tv on tv.id = m.equipo_visitante_id
-            where m.competition_slug = %s and m.season_id = %s and m.status = %s
+            where m.competition_slug = %s and m.season_id = %s and {status_filter}
             order by m.jornada nulls last, m.fecha nulls last, m.id
             """,
-            (competition_slug, season_id, status),
+            params,
         )
         columns = RESULT_COLUMNS if status == "played" else MATCH_COLUMNS
         records = []
@@ -326,25 +381,113 @@ class SimulatorRepository:
             records.append(item)
         return records
 
-    def _ensure_teams_bulk(self, names: list[str]) -> dict[str, int]:
+    def _ensure_teams_bulk(self, names: list[str], competition_slug: str | None = None) -> dict[str, int]:
         """Como ensure_team() pero para muchos nombres a la vez -- UN
-        solo viaje a la base en vez de uno por equipo. Mismo INSERT ...
-        ON CONFLICT ... DO UPDATE de siempre, solo que con varias filas
-        de VALUES juntas; RETURNING trae el id tanto de las filas
-        insertadas como de las que ya existían (conflicto)."""
+        solo viaje a la base en vez de uno por equipo.
+
+        ANTES: INSERT ... ON CONFLICT (name) confiaba en que el nombre
+        que trae el scraper coincidiera CARÁCTER A CARÁCTER con el que
+        ya está en `teams`. Como esa comparación es case-sensitive,
+        "Vasco Da Gama" vs. "Vasco da Gama" (o "Bragantino" vs. "Red
+        Bull Bragantino") no chocaban como "ya existe" -- creaban una
+        fila NUEVA, y de ahí salió el bug de nombres duplicados en
+        Brasileirão. Cada liga tenía que blindarse a mano con su propio
+        mapeo_equipos_X.py, y no todas lo tenían (B Metro, LPF y
+        Primera C no tienen ninguno todavía).
+
+        AHORA: antes de insertar nada, para cada nombre entrante se
+        intenta resolver contra un equipo YA EXISTENTE, en este orden:
+          1. Coincidencia exacta en `teams.name`.
+          2. `team_aliases` para esta competition_slug (alias cargados
+             a mano vía scripts/seed_supabase.py / datos/club_aliases.csv).
+          3. Coincidencia normalizada (sin tildes, minúsculas, sin
+             puntuación) contra `teams.name` -- red de seguridad para
+             variantes no anticipadas, como Vasco/Bragantino. Si esto
+             dispara, se imprime un aviso: conviene agregar un alias
+             explícito en `team_aliases` para dejarlo documentado.
+          4. Si tampoco matchea, se lo trata como equipo nuevo -- pero
+             agrupando por nombre normalizado DENTRO del mismo batch,
+             para no crear dos filas nuevas si el mismo batch trae dos
+             variantes de capitalización de un equipo que todavía no
+             existe en la base.
+        """
         nombres_unicos = list(dict.fromkeys(names))  # dedup preservando orden
         if not nombres_unicos:
             return {}
-        placeholders = ", ".join(["(%s)"] * len(nombres_unicos))
-        filas = self._execute(
-            f"""
-            insert into teams (name) values {placeholders}
-            on conflict (name) do update set name = excluded.name
-            returning id, name
-            """,
-            nombres_unicos,
-        )
-        return {fila["name"]: fila["id"] for fila in filas}
+
+        # 1) Equipos ya existentes (exacto y normalizado).
+        filas_existentes = self._execute("select id, name from teams", ())
+        id_por_nombre_exacto = {f["name"]: f["id"] for f in filas_existentes}
+        id_por_nombre_normalizado: dict[str, tuple[int, str]] = {}
+        for f in filas_existentes:
+            id_por_nombre_normalizado.setdefault(_normalizar_nombre_equipo(f["name"]), (f["id"], f["name"]))
+
+        # 2) Alias explícitos para esta competición.
+        alias_a_team: dict[str, tuple[int, str]] = {}
+        if competition_slug:
+            filas_alias = self._execute(
+                """
+                select ta.alias, t.id, t.name
+                from team_aliases ta
+                join teams t on t.id = ta.team_id
+                where ta.competition_slug = %s and ta.alias = any(%s)
+                """,
+                (competition_slug, nombres_unicos),
+            )
+            alias_a_team = {f["alias"]: (f["id"], f["name"]) for f in filas_alias}
+
+        resultado: dict[str, int] = {}
+        nuevos_por_normalizado: dict[str, str] = {}  # normalizado -> primer nombre crudo visto (para insertar)
+        avisos_normalizados = []
+
+        for nombre in nombres_unicos:
+            if nombre in id_por_nombre_exacto:
+                resultado[nombre] = id_por_nombre_exacto[nombre]
+                continue
+            if nombre in alias_a_team:
+                team_id, _canonico = alias_a_team[nombre]
+                resultado[nombre] = team_id
+                continue
+            norm = _normalizar_nombre_equipo(nombre)
+            if norm in id_por_nombre_normalizado:
+                team_id, canonico = id_por_nombre_normalizado[norm]
+                resultado[nombre] = team_id
+                avisos_normalizados.append((nombre, canonico))
+                continue
+            # Equipo genuinamente nuevo (todavía no visto en esta pasada).
+            if norm not in nuevos_por_normalizado:
+                nuevos_por_normalizado[norm] = nombre
+            resultado[nombre] = None  # se completa después del insert
+
+        if avisos_normalizados:
+            detalle = "; ".join(f"{crudo!r} -> {canonico!r}" for crudo, canonico in avisos_normalizados)
+            print(
+                f"[_ensure_teams_bulk] {len(avisos_normalizados)} nombre(s) matchearon solo por "
+                f"normalización (no exacto ni alias): {detalle}. Considerá agregar un alias explícito "
+                f"en team_aliases para dejarlo documentado y no depender de este fallback."
+            )
+
+        if nuevos_por_normalizado:
+            nombres_a_insertar = list(nuevos_por_normalizado.values())
+            placeholders = ", ".join(["(%s)"] * len(nombres_a_insertar))
+            filas_nuevas = self._execute(
+                f"""
+                insert into teams (name) values {placeholders}
+                on conflict (name) do update set name = excluded.name
+                returning id, name
+                """,
+                nombres_a_insertar,
+            )
+            id_por_nombre_nuevo = {f["name"]: f["id"] for f in filas_nuevas}
+            for norm, nombre_crudo in nuevos_por_normalizado.items():
+                team_id = id_por_nombre_nuevo[nombre_crudo]
+                # Cualquier otro nombre crudo del batch que normalice igual
+                # apunta al mismo id recién creado (no crea una segunda fila).
+                for nombre in nombres_unicos:
+                    if resultado.get(nombre) is None and _normalizar_nombre_equipo(nombre) == norm:
+                        resultado[nombre] = team_id
+
+        return resultado
 
     def upsert_standings(self, competition_slug: str, filas: list[dict]) -> None:
         """Antes: 1 round-trip para season_id + 1 para ensure_team +
@@ -356,7 +499,7 @@ class SimulatorRepository:
         if not filas:
             return
         season_id = self.season_id(competition_slug)
-        equipo_id = self._ensure_teams_bulk([fila["equipo"] for fila in filas])
+        equipo_id = self._ensure_teams_bulk([fila["equipo"] for fila in filas], competition_slug)
 
         valores = []
         parametros = []
@@ -416,7 +559,7 @@ class SimulatorRepository:
         for row, _status in partidos:
             nombres_equipos.append(row["equipo_local"])
             nombres_equipos.append(row["equipo_visitante"])
-        equipo_id = self._ensure_teams_bulk(nombres_equipos)
+        equipo_id = self._ensure_teams_bulk(nombres_equipos, competition_slug)
 
         valores = []
         parametros = []
@@ -468,7 +611,7 @@ class SimulatorRepository:
         for match in matches:
             nombres.append(match["equipo_local"])
             nombres.append(match["equipo_visitante"])
-        team_id = self._ensure_teams_bulk(nombres)
+        team_id = self._ensure_teams_bulk(nombres, competition_slug)
 
         team_ids_unicos = list(dict.fromkeys(team_id.values()))
         placeholders = ", ".join(["(%s)"] * len(team_ids_unicos))
@@ -589,8 +732,8 @@ class SimulatorRepository:
         usa (ver arriba), así que la ruta de temporada completa no pasa
         más por acá."""
         season_id = self.season_id(competition_slug)
-        local_id = self.ensure_team(row["equipo_local"])
-        visitante_id = self.ensure_team(row["equipo_visitante"])
+        local_id = self.ensure_team(row["equipo_local"], competition_slug)
+        visitante_id = self.ensure_team(row["equipo_visitante"], competition_slug)
         self._execute(
             """
             insert into matches (
@@ -627,7 +770,7 @@ class SimulatorRepository:
 
     def _add_scorer_goal(self, season_id: int, competition_slug: str, jugador: str, equipo: str, goles: int) -> None:
         player_id = self.ensure_player(jugador)
-        team_id = self.ensure_team(equipo)
+        team_id = self.ensure_team(equipo, competition_slug)
         self._execute(
             """
             insert into scorer_totals (competition_slug, season_id, player_id, team_id, goles, updated_at)
@@ -646,9 +789,9 @@ class SimulatorRepository:
 
     def upsert_cup_match(self, row: dict) -> None:
         season_id = self.season_id("copa")
-        local_id = self.ensure_team(row["equipo_local"]) if row.get("equipo_local") else None
-        visitante_id = self.ensure_team(row["equipo_visitante"]) if row.get("equipo_visitante") else None
-        ganador_id = self.ensure_team(row["ganador"]) if row.get("ganador") else None
+        local_id = self.ensure_team(row["equipo_local"], "copa") if row.get("equipo_local") else None
+        visitante_id = self.ensure_team(row["equipo_visitante"], "copa") if row.get("equipo_visitante") else None
+        ganador_id = self.ensure_team(row["ganador"], "copa") if row.get("ganador") else None
         self._execute(
             """
             insert into cup_matches (
@@ -715,16 +858,12 @@ class SimulatorRepository:
         row = self._execute_one("select payload from simulation_outputs where key = %s", (key,))
         return row["payload"] if row else None
 
-    def ensure_team(self, name: str) -> int:
-        row = self._execute_one(
-            """
-            insert into teams (name) values (%s)
-            on conflict (name) do update set name = excluded.name
-            returning id
-            """,
-            (name,),
-        )
-        return int(row["id"])
+    def ensure_team(self, name: str, competition_slug: str | None = None) -> int:
+        """Versión de un solo nombre. Reusa _ensure_teams_bulk (alias +
+        normalización) en vez de un INSERT ... ON CONFLICT directo, para
+        no tener dos caminos distintos de creación de equipos con
+        distinto nivel de protección contra nombres duplicados."""
+        return self._ensure_teams_bulk([name], competition_slug)[name]
 
     def ensure_player(self, name: str) -> int:
         row = self._execute_one(

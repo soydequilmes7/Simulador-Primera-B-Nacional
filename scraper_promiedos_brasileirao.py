@@ -47,6 +47,7 @@ import urllib.error
 import urllib.request
 
 import rutas
+from mapeo_equipos_brasileirao import resolver_equipo
 
 # Carpeta donde el resto del proyecto guarda los datos (tabla, fixture,
 # resultados, data_brasileirao.json). Se calcula relativa a este archivo
@@ -71,6 +72,16 @@ FIXTURE_CSV = os.path.join(DATOS_DIR, "fixture_brasileirao.csv")
 RESULTADOS_CSV = os.path.join(DATOS_DIR, "resultados_brasileirao.csv")
 
 ESTADOS_JUGADO_ENUM = {3}
+
+_SIN_MATCHEAR = set()
+
+
+def _resolver_nombre_equipo(nombre_promiedos):
+    canonico = resolver_equipo(nombre_promiedos)
+    if canonico is None:
+        _SIN_MATCHEAR.add(nombre_promiedos)
+        return nombre_promiedos
+    return canonico
 
 
 def _get_json(path):
@@ -114,15 +125,28 @@ def _parsear_partido(g):
     except (ValueError, IndexError):
         return None
 
-    equipo_local = g["teams"][0]["name"]
-    equipo_visitante = g["teams"][1]["name"]
+    equipo_local = _resolver_nombre_equipo(g["teams"][0]["name"])
+    equipo_visitante = _resolver_nombre_equipo(g["teams"][1]["name"])
     estado = g.get("status", {})
-    jugado = estado.get("enum") in ESTADOS_JUGADO_ENUM
+    tiene_estado_jugado = estado.get("enum") in ESTADOS_JUGADO_ENUM
 
     goles_local = goles_visitante = None
-    if jugado and "scores" in g:
-        goles_local = int(g["scores"][0])
-        goles_visitante = int(g["scores"][1])
+    scores = g.get("scores") or []
+    if (
+        tiene_estado_jugado
+        and len(scores) == 2
+        and scores[0] is not None
+        and scores[1] is not None
+    ):
+        goles_local = int(scores[0])
+        goles_visitante = int(scores[1])
+
+    # Un partido solo se considera "jugado" si además tiene los goles
+    # cargados. Promiedos a veces marca aplazados/suspendidos con el
+    # mismo status enum que los finalizados, pero sin scores -- en ese
+    # caso lo tratamos como pendiente (va al fixture), no como jugado
+    # sin goles (ver mismo fix en scraper_promiedos_primerac.py).
+    jugado = tiene_estado_jugado and goles_local is not None and goles_visitante is not None
 
     return {
         "jornada": jornada,
@@ -224,6 +248,14 @@ def main():
     print(f"\nListo. {len(partidos)} partidos de liga encontrados (jornadas {jornadas[0]} a {jornadas[-1]}).")
     print(f"  - Jugados    -> {n_jugados} escritos en {RESULTADOS_CSV}")
     print(f"  - Pendientes -> {n_pendientes} escritos en {FIXTURE_CSV}")
+
+    if _SIN_MATCHEAR:
+        print(
+            f"\n⚠️  {len(_SIN_MATCHEAR)} nombre(s) de equipo que trajo Promiedos no matchearon "
+            f"contra EQUIPOS_LOCALES de mapeo_equipos_brasileirao.py, se guardaron tal cual "
+            f"vinieron: {sorted(_SIN_MATCHEAR)}. Agregalos a OVERRIDES en ese archivo antes de "
+            f"correr calcular_tabla_brasileirao.py, o va a volver a romper con un KeyError."
+        )
 
 
 if __name__ == "__main__":

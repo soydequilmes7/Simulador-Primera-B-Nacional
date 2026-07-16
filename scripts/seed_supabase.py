@@ -118,7 +118,7 @@ def seed_scorers(repo):
     print(f"Sembrando goleadores: {len(rows)} filas", flush=True)
     for i, row in enumerate(rows, start=1):
         player_id = repo.ensure_player(row["jugador"])
-        team_id = repo.ensure_team(row["equipo"])
+        team_id = repo.ensure_team(row["equipo"], "nacional")
         season_id = repo.season_id("nacional")
         repo._execute(
             """
@@ -139,7 +139,7 @@ def seed_lpf_averages(repo):
     rows = read_csv("promedios_lpf.csv")
     print(f"Sembrando promedios LPF: {len(rows)} filas", flush=True)
     for row in rows:
-        team_id = repo.ensure_team(row["equipo"])
+        team_id = repo.ensure_team(row["equipo"], "lpf")
         repo._execute(
             """
             insert into lpf_average_history (season_id, team_id, puntos_historicos, partidos_historicos)
@@ -170,7 +170,7 @@ def seed_aliases(repo):
 
 
 def seed_alias_list(repo, competition_slug: str, team_name: str, aliases: list[str]):
-    team_id = repo.ensure_team(team_name)
+    team_id = repo.ensure_team(team_name, competition_slug)
     for alias in aliases:
         repo._execute(
             """
