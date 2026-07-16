@@ -142,6 +142,8 @@ class Handler(SimpleHTTPRequestHandler):
             self._manejar_datos_csv(["tabla_primerac.csv", "fixture_primerac.csv", "resultados_primerac.csv"])
         elif self.path == "/api/evolucion-posiciones-primerac":
             self._manejar_evolucion_posiciones_primerac()
+        elif self.path == "/api/evolucion-posiciones-brasileirao":
+            self._manejar_evolucion_posiciones_brasileirao()
         elif self.path == "/api/datos-brasileirao":
             self._manejar_datos_csv(["tabla_brasileirao.csv", "fixture_brasileirao.csv", "resultados_brasileirao.csv"])
         elif self.path == "/api/datos-libertadores":
@@ -210,6 +212,22 @@ class Handler(SimpleHTTPRequestHandler):
                 tabla_actual = repo.standing_records("primerac")
                 zona_por_club = {fila["equipo"]: fila["zona"] for fila in tabla_actual}
                 partidos_jugados = repo.match_records("primerac", "played")
+            evolucion = calcular_evolucion(partidos_jugados, zona_por_club)
+            self._responder_json(200, {
+                "evolucion": evolucion,
+                "zonas": tamano_por_zona(zona_por_club),
+            })
+        except Exception as e:
+            self._responder_json(*_error_http(e))
+
+    def _manejar_evolucion_posiciones_brasileirao(self):
+        """Igual que _manejar_evolucion_posiciones_bmetro pero para el
+        Brasileirão (una sola zona, 'Unica')."""
+        try:
+            with transaction() as repo:
+                tabla_actual = repo.standing_records("brasileirao")
+                zona_por_club = {fila["equipo"]: fila["zona"] for fila in tabla_actual}
+                partidos_jugados = repo.match_records("brasileirao", "played")
             evolucion = calcular_evolucion(partidos_jugados, zona_por_club)
             self._responder_json(200, {
                 "evolucion": evolucion,

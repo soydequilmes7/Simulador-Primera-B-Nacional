@@ -485,6 +485,20 @@
     background: var(--bg-panel);
     max-width:100%;
   }
+  .region-tabs{
+    display:flex; justify-content:center; gap:8px; padding:10px 16px 0;
+  }
+  .region-tab{
+    font-family:'JetBrains Mono', monospace; font-size:11.5px; font-weight:700;
+    letter-spacing:0.05em; text-transform:uppercase; padding:7px 16px; cursor:pointer;
+    background: var(--bg-panel); border:1px solid var(--line); border-radius:999px;
+    color: var(--muted); transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  }
+  .region-tab:hover{ color: var(--ink-dim); }
+  .region-tab.active{ background: var(--amber-dim); color: var(--amber); border-color: var(--amber); }
+  @media (max-width:600px){
+    .region-tabs{ padding-top:8px; }
+  }
   body.liga-lpf .liga-tabs .group{ border-radius:999px; box-shadow: var(--card-shadow); }
   .liga-tab{
     font-family:'Bebas Neue', sans-serif; font-size:14px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em;
@@ -649,6 +663,15 @@
   tbody tr.descenso td{ color: var(--ink); }
   tbody tr.descenso td:first-child{ color: var(--muted); }
   tbody tr.descenso td:nth-child(2){ color: var(--relegation-text); font-weight:600; }
+
+  /* Cuarta franja de clasificación (Brasileirão: Copa Sudamericana, entre
+     Libertadores-previa y descenso). Con fallback a los tonos de
+     "qualified" para que no rompa si algún tema no llega a definirla. */
+  tbody tr.sudamericana{ background: var(--sudamericana-bg, var(--qualified-bg)); box-shadow: inset 3px 0 0 var(--sudamericana-accent, var(--qualified-accent)); }
+  tbody tr.sudamericana:hover{ background: var(--sudamericana-bg, var(--qualified-bg)); }
+  tbody tr.sudamericana td{ color: var(--ink); }
+  tbody tr.sudamericana td:first-child{ color: var(--muted); }
+  tbody tr.sudamericana td:nth-child(2){ color: var(--sudamericana-text, var(--qualified-text)); font-weight:600; }
 
   /* "Tabla actual" (datos reales del scraper): mismo componente visual
      que la tabla simulada, solo con una etiqueta sutil para distinguirla
@@ -3295,6 +3318,108 @@
     body.liga-primerac #mc-list-primerac .mc-row{ transition:none; }
   }
 
+  /* =====================================================================
+     BRASILEIRÃO SÉRIE A · identidad propia dentro de "Resto de
+     Sudamérica" — verde limão + navy, tomados directo del logo oficial
+     del torneo (public/logos-torneos/brasileirao.png). Mismo criterio
+     que Libertadores/Sudamericana: el esquema queda FIJO en ambos
+     estados del toggle claro/oscuro, no se "aclara" al tocar el
+     sol/luna -- es una identidad de marca, no un tema de la UI local.
+     Sin Reducido ni zonas: tabla única con 4 franjas de clasificación
+     por posición (Libertadores directa/previa, Sudamericana, descenso),
+     de ahí la franja extra tr.sudamericana definida más arriba.
+     ===================================================================== */
+  body.liga-brasileirao,
+  body.dark.liga-brasileirao{
+    --bg: #0A0B18;
+    --bg-panel: rgba(255,255,255,0.045);
+    --bg-panel-2: rgba(255,255,255,0.07);
+    --line: rgba(199,255,0,0.18);
+    --ink: #F1F5E8;
+    --ink-dim: #C7CCE0;
+    --muted: #8A8FB0;
+
+    --amber: #FFE066;
+    --amber-dim: rgba(255,224,102,0.14);
+    --zone-a: #C7FF00;
+    --zone-a-dim: rgba(199,255,0,0.14);
+    --zone-b: #6E8FFF;
+    --zone-b-dim: rgba(110,143,255,0.14);
+    --danger: #FF6B4A;
+    --danger-dim: rgba(255,107,74,0.14);
+    --azul: #6E8FFF;
+    --azul-dim: rgba(110,143,255,0.16);
+
+    --leader-bg: rgba(199,255,0,0.14);
+    --leader-accent: #C7FF00;
+    --leader-text: #E3FF8F;
+    --qualified-bg: rgba(110,143,255,0.14);
+    --qualified-accent: #6E8FFF;
+    --qualified-text: #B7C6FF;
+    --sudamericana-bg: rgba(255,224,102,0.14);
+    --sudamericana-accent: #FFE066;
+    --sudamericana-text: #FFEDAC;
+    --relegation-bg: rgba(255,107,74,0.14);
+    --relegation-accent: #FF6B4A;
+    --relegation-text: #FFB4A0;
+
+    --radius: 18px;
+    --radius-sm: 12px;
+    --card-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    --card-shadow-hover: 0 18px 44px rgba(0,0,0,0.62);
+    --card-grad: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.015) 100%);
+    --hero-bg: linear-gradient(160deg, #0A0B18 0%, #131428 55%, #191A35 100%);
+    --hero-ink: #F1F5E8;
+    --hero-dim: rgba(241,245,232,0.82);
+    --hero-accent: #C7FF00;
+    --tabs-bg: rgba(10,11,24,0.92);
+    --btn-grad: linear-gradient(135deg, #C7FF00 0%, #9FDD00 100%);
+    --btn-ink: #0A0B18;
+    --table-head-bg: rgba(199,255,0,0.05);
+    --hover-lift: translateY(-3px);
+    --bracket-line: #C7FF00;
+    --bracket-line-glow: rgba(199,255,0,0.4);
+
+    background: var(--bg);
+  }
+
+  /* Fondo exclusivo: navy profundo + resplandor verde limão arriba a la
+     derecha y un toque azul abajo a la izquierda (eco de la bandera). */
+  body.liga-brasileirao::before{
+    content:""; position:fixed; inset:0; z-index:-2; pointer-events:none;
+    background:
+      radial-gradient(1000px 600px at 85% -10%, rgba(199,255,0,0.16), transparent 60%),
+      radial-gradient(760px 520px at 2% 106%, rgba(110,143,255,0.12), transparent 62%);
+  }
+
+  body.liga-brasileirao .hero{ border-radius: 0 0 28px 28px; }
+  body.liga-brasileirao .hero::before{
+    content:""; position:absolute; inset:0; pointer-events:none;
+    background: radial-gradient(520px 460px at 50% -140px, rgba(199,255,0,0.18), transparent 70%);
+  }
+  body.liga-brasileirao .hero::after{
+    height:4px;
+    background: linear-gradient(90deg, transparent, #C7FF00 18%, #FFE066 50%, #C7FF00 82%, transparent);
+    opacity:0.9;
+  }
+
+  body.liga-brasileirao .liga-tab.active{
+    background: linear-gradient(135deg, rgba(199,255,0,0.24), rgba(199,255,0,0.08));
+    color:#E3FF8F; box-shadow: inset 0 0 0 1px rgba(199,255,0,0.42);
+  }
+  body.liga-brasileirao .liga-tab:not(.active){ color: var(--muted); }
+  body.liga-brasileirao .liga-tabs .group{ border:1px solid rgba(199,255,0,0.18); background: rgba(255,255,255,0.02); }
+  body.liga-brasileirao .liga-tabs{ border-bottom:1px solid rgba(199,255,0,0.15); }
+
+  body.liga-brasileirao #mc-list-brasileirao{ border-color: rgba(199,255,0,0.2); }
+  body.liga-brasileirao .mc-row .name .pct{ color:#C7FF00; }
+
+  @media (prefers-reduced-motion: reduce){
+    body.liga-brasileirao .hero .meta div,
+    body.liga-brasileirao .btn-simular,
+    body.liga-brasileirao #mc-list-brasileirao .mc-row{ transition:none; }
+  }
+
   /* ---- Escudos de equipos ---- */
   .escudo{ width:24px; height:24px; object-fit:contain; vertical-align:-6px; margin-right:8px; }
   .tc-name .escudo{ width:34px; height:34px; vertical-align:-8px; margin-right:10px; }
@@ -3305,12 +3430,12 @@
      chicos en relación al resto de la interfaz, así que se agrandan un
      poco (misma proporción entre los 4 contextos: tabla/buscador, ficha
      de equipo, cuadros/partidos y marcador de ida-vuelta). */
-  body.liga-bmetro .escudo, body.liga-federal .escudo, body.liga-primerac .escudo, body.liga-libertadores .escudo{ width:29px; height:29px; }
-  body.liga-bmetro .tc-name .escudo, body.liga-federal .tc-name .escudo, body.liga-primerac .tc-name .escudo, body.liga-libertadores .tc-name .escudo{ width:40px; height:40px; }
+  body.liga-bmetro .escudo, body.liga-federal .escudo, body.liga-primerac .escudo, body.liga-libertadores .escudo, body.liga-brasileirao .escudo{ width:29px; height:29px; }
+  body.liga-bmetro .tc-name .escudo, body.liga-federal .tc-name .escudo, body.liga-primerac .tc-name .escudo, body.liga-libertadores .tc-name .escudo, body.liga-brasileirao .tc-name .escudo{ width:40px; height:40px; }
   body.liga-bmetro .match .row .escudo, body.liga-bmetro .copa-card li .escudo, body.liga-bmetro .descenso-card .escudo,
   body.liga-federal .match .row .escudo, body.liga-federal .copa-card li .escudo, body.liga-federal .descenso-card .escudo,
   body.liga-primerac .match .row .escudo, body.liga-primerac .copa-card li .escudo, body.liga-primerac .descenso-card .escudo,
-  body.liga-libertadores .match .row .escudo{ width:24px; height:24px; }
+  body.liga-libertadores .match .row .escudo, body.liga-brasileirao .match .row .escudo{ width:24px; height:24px; }
   body.liga-bmetro .campeon .escudo, body.liga-bmetro .ascenso-score .team .escudo,
   body.liga-federal .campeon .escudo, body.liga-federal .ascenso-score .team .escudo,
   body.liga-primerac .campeon .escudo, body.liga-primerac .ascenso-score .team .escudo{ width:26px; height:26px; }
@@ -4281,6 +4406,8 @@
            onerror="this.remove()">
       <img class="torneo-logo" data-liga="sudamericana" src="logos-torneos/copa-sudamericana.png" alt=""
            onerror="this.remove()">
+      <img class="torneo-logo" data-liga="brasileirao" src="logos-torneos/brasileirao.png" alt=""
+           onerror="this.remove()">
       <img class="torneo-logo" data-liga="temporada" src="logos-torneos/modotorneo.png" alt=""
            onerror="this.remove()">
     </div>
@@ -4350,6 +4477,20 @@
       <div id="last-update-bmetro" class="last-update"></div>
     </div>
 
+    <div class="sim-control" id="sim-control-brasileirao" style="display:none">
+      <div class="sim-select-row">
+        <label for="sim-count-brasileirao">Cantidad de simulaciones</label>
+        <input type="number" id="sim-count-brasileirao" value="1000" min="50" max="5000" step="1">
+        <span class="rango">(50–5000)</span>
+      </div>
+      <div class="btn-row">
+        <button id="btn-simular-brasileirao" class="btn-simular">Correr nueva simulación</button>
+        <button id="btn-actualizar-brasileirao" class="btn-actualizar">Actualizar Resultados</button>
+      </div>
+      <div id="sim-status-brasileirao" class="sim-status"></div>
+      <div id="last-update-brasileirao" class="last-update"></div>
+    </div>
+
     <div class="sim-control" id="sim-control-federal" style="display:none">
       <div class="sim-select-row">
         <label for="sim-count-federal">Cantidad de simulaciones</label>
@@ -4403,8 +4544,13 @@
     </div>
   </div>
 
+  <div class="region-tabs">
+    <button class="region-tab active" id="region-tab-argentina" data-region="argentina">🇦🇷 Argentina</button>
+    <button class="region-tab" id="region-tab-sudamerica" data-region="sudamerica">🌎 Resto de Sudamérica</button>
+  </div>
+
   <div class="liga-tabs">
-    <div class="group">
+    <div class="group" data-region="argentina">
       <button class="liga-tab" data-liga="lpf">Liga Profesional</button>
       <button class="liga-tab" data-liga="copa">Copa Argentina</button>
       <button class="liga-tab active" data-liga="nacional">Primera Nacional</button>
@@ -4414,6 +4560,9 @@
       <button class="liga-tab liga-tab-internacional" data-liga="libertadores">Copa Libertadores</button>
       <button class="liga-tab liga-tab-internacional" data-liga="sudamericana">Copa Sudamericana</button>
       <button class="liga-tab" data-liga="temporada">Modo Temporada</button>
+    </div>
+    <div class="group" data-region="sudamerica" style="display:none">
+      <button class="liga-tab" data-liga="brasileirao">Brasileirão Série A</button>
     </div>
     <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Cambiar entre modo claro y oscuro">
       <span id="theme-toggle-icon" class="icon-svg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span><span id="theme-toggle-label">Oscuro</span>
@@ -4854,6 +5003,109 @@
   </section>
 
   </div><!-- /vista-bmetro -->
+
+  <div id="vista-brasileirao" style="display:none">
+
+  <div class="search-section" id="search-section-brasileirao">
+    <div class="search-box">
+      <input type="text" id="team-search-brasileirao" list="team-list-brasileirao" placeholder="Buscar equipo… (ej: Flamengo, Palmeiras, Corinthians)" autocomplete="off">
+      <datalist id="team-list-brasileirao"></datalist>
+    </div>
+    <div class="search-hint">Escribí el nombre del equipo para ver su tabla, chances de Libertadores, Sudamericana y descenso</div>
+    <div id="search-result-brasileirao"></div>
+  </div>
+
+  <div class="search-section" id="campeon-section-brasileirao">
+    <div class="section-head" style="margin-bottom:14px;">
+      <span class="idx">🏆</span><h2 style="font-size:18px;">Simulá hasta que tu equipo sea campeón</h2><div class="rule"></div>
+    </div>
+    <p class="section-note" style="margin:0 0 16px; text-align:center; max-width:none;">
+      Elegí un equipo: corremos temporadas completas de la fase regular, una tras otra, hasta encontrar la
+      primera en la que termina puntero de la tabla. Te mostramos esa temporada puntual.
+    </p>
+    <div class="campeon-controls">
+      <select id="campeon-equipo-brasileirao"><option value="">Elegí un equipo…</option></select>
+      <button id="btn-campeon-brasileirao" class="btn-simular">🏆 Simular hasta el título</button>
+    </div>
+    <div id="campeon-status-brasileirao" class="sim-status"></div>
+    <div id="campeon-resultado-brasileirao"></div>
+  </div>
+
+  <section id="sec-tabla-actual-brasileirao">
+    <div class="section-head"><span class="idx">01</span><h2>Tabla actual</h2><div class="rule"></div></div>
+    <p class="section-note">Clasificación real en este momento, tal como quedó tras los partidos ya jugados. Tabla única, sin zonas.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>GF</th><th>GC</th><th>DG</th></tr></thead>
+        <tbody id="tabla-actual-body-brasileirao"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="evolucion-posiciones" id="sec-evolucion-brasileirao">
+    <div class="section-head"><h2>📈 Evolução das posições</h2><div class="rule"></div></div>
+    <p class="section-note">Cómo varió la posición de cada equipo, fecha a fecha, a lo largo de la temporada.</p>
+    <button type="button" class="evolucion-toggle" id="evolucion-toggle-brasileirao" aria-expanded="false" aria-controls="evolucion-body-brasileirao">
+      <span class="evolucion-toggle-label">Ver gráfico interactivo</span>
+      <span class="evolucion-toggle-caret">▼</span>
+    </button>
+    <div class="evolucion-body" id="evolucion-body-brasileirao" hidden>
+      <div class="evolucion-picker">
+        <div class="evolucion-picker-head">
+          <span class="evolucion-picker-title">Equipos visibles</span>
+          <input type="text" id="evolucion-buscar-brasileirao" class="evolucion-picker-search" placeholder="Buscar equipo…" autocomplete="off">
+        </div>
+        <div class="evolucion-picker-list" id="evolucion-picker-list-brasileirao"></div>
+      </div>
+      <div class="evolucion-chart-wrap">
+        <div class="evolucion-chart" id="evolucion-chart-brasileirao"></div>
+      </div>
+      <div class="evolucion-status" id="evolucion-status-brasileirao"></div>
+    </div>
+  </section>
+
+  <section id="sec-tabla-brasileirao">
+    <div class="section-head"><span class="idx">02</span><h2>Tabla final simulada</h2><div class="rule"></div></div>
+    <p class="section-note">Resultado de una corrida puntual de la fase regular completa: se completan los partidos pendientes del fixture sobre la base de los resultados ya jugados. Sin Reducido: acá la tabla final ES la clasificación.</p>
+    <div id="brasileirao-campeon-footer" class="campeon-anuncio-wrap"></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>GF</th><th>GC</th><th>DG</th></tr></thead>
+        <tbody id="tabla-brasileirao-body"></tbody>
+      </table>
+    </div>
+    <p class="section-note" style="margin-top:10px; text-align:left;">
+      <span style="display:inline-block; width:10px; height:10px; border-radius:2px; background:var(--zone-a); margin-right:6px; vertical-align:middle;"></span>1° al 4°: Libertadores (fase de grupos).
+      <span style="display:inline-block; width:10px; height:10px; border-radius:2px; background:var(--zone-b); margin-right:6px; vertical-align:middle;"></span>5° y 6°: Libertadores (previa).
+      <span style="display:inline-block; width:10px; height:10px; border-radius:2px; background:var(--amber); margin-right:6px; vertical-align:middle;"></span>7° al 12°: Sudamericana.
+      <span style="display:inline-block; width:10px; height:10px; border-radius:2px; background:var(--danger); margin-right:6px; vertical-align:middle;"></span>Últimos 4: descenso a la Série B.
+    </p>
+  </section>
+
+  <section id="sec-mc-brasileirao">
+    <div class="section-head"><span class="idx">03</span><h2>Probabilidades — Monte Carlo</h2><div class="rule"></div></div>
+    <p class="section-note">Cada barra desglosa el % de simulaciones en que el equipo clasifica a Libertadores (directa o previa) o a Sudamericana. A la derecha, el % de veces que descendió.</p>
+    <div class="legend">
+      <span><i style="background:var(--zone-a)"></i> Libertadores directa</span>
+      <span><i style="background:var(--zone-b)"></i> Libertadores previa</span>
+      <span><i style="background:var(--amber)"></i> Sudamericana</span>
+      <span><i style="background:var(--danger)"></i> % descenso</span>
+    </div>
+    <div id="mc-list-brasileirao"></div>
+  </section>
+
+  <section id="sec-esperada-brasileirao">
+    <div class="section-head"><span class="idx">04</span><h2>Posición final esperada</h2><div class="rule"></div></div>
+    <p class="section-note">Puntos y posición promedio de cada equipo a lo largo de todas las simulaciones.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Equipo</th><th>Pts. prom.</th><th>Pos. prom.</th></tr></thead>
+        <tbody id="esperada-body-brasileirao"></tbody>
+      </table>
+    </div>
+  </section>
+
+  </div><!-- /vista-brasileirao -->
 
   <div id="vista-federal" style="display:none">
 
@@ -6189,6 +6441,21 @@ const EVOLUCION_CONFIG = {
       { nombre: 'descenso', desde: totalEquipos, hasta: totalEquipos, color: '#DC2626' },
     ]),
   },
+  brasileirao: {
+    endpoint: '/api/evolucion-posiciones-brasileirao',
+    // Igual que B Metro: una sola tabla, sin zonas ni pestañas.
+    zonaActiva: (datos) => Object.keys((datos && datos.zonas) || {})[0],
+    // Mismo criterio que claseFilaBrasileirao(): 1-4 Libertadores directa,
+    // 5-6 Libertadores previa, 7-12 Sudamericana, últimos 4 descenso.
+    // Con 4 franjas en vez de 3 -- el sistema de bandas ya es genérico,
+    // no hace falta tocar generarDatosEvolucionChart() para esto.
+    banda: (totalEquipos) => ([
+      { nombre: 'libertadores', desde: 1, hasta: Math.min(4, totalEquipos), color: '#2E9E5B' },
+      { nombre: 'libertadores-previa', desde: 5, hasta: Math.min(6, totalEquipos), color: '#6E8FFF' },
+      { nombre: 'sudamericana', desde: 7, hasta: Math.min(12, totalEquipos), color: '#FFE066' },
+      { nombre: 'descenso', desde: Math.max(1, totalEquipos - 3), hasta: totalEquipos, color: '#FF6B4A' },
+    ]),
+  },
 };
 
 // { nacional: { cargando, datos: {evolucion, zonas} | null, chart: echarts.ECharts | null,
@@ -6970,6 +7237,7 @@ const SHARE_CONFIG = {
   bmetro:    { param: 'equipo_bmetro',   titulo: 'Primera B Metropolitana', data: () => (typeof DATA_BMETRO !== 'undefined' ? DATA_BMETRO : null) },
   federal:   { param: 'equipo_federal',  titulo: 'Torneo Federal A',        data: () => (typeof DATA_FEDERAL !== 'undefined' ? DATA_FEDERAL : null) },
   copa:      { param: 'equipo_copa',     titulo: 'Copa Argentina',          data: () => (typeof DATA_COPA !== 'undefined' ? DATA_COPA : null) },
+  brasileirao: { param: 'equipo_brasileirao', titulo: 'Brasileirão Série A', data: () => (typeof DATA_BRASILEIRAO !== 'undefined' ? DATA_BRASILEIRAO : null) },
 };
 const SHARE_URL_PARAMS = Object.values(SHARE_CONFIG).map(c => c.param);
 
@@ -8988,6 +9256,453 @@ function renderCampeonResultadoBMetro(r){
 document.getElementById('btn-campeon-bmetro').addEventListener('click', simularHastaCampeonBMetro);
 
 /* ============================================================
+   BRASILEIRÃO SÉRIE A (tabla única, sin zonas, sin Reducido)
+   ============================================================ */
+let DATA_BRASILEIRAO = null;
+
+// Cortes de clasificación por posición (calcado de
+// modelos/estadisticas_brasileirao.py: LIBERTADORES_DIRECTA_N=4,
+// LIBERTADORES_PREVIA_N=6, SUDAMERICANA_N=12, DESCENSOS_N=4). Se define
+// UNA sola vez acá y la usan las 3 funciones que pintan filas, para no
+// repetir el corte en cada una.
+const BRASILEIRAO_LIBERTADORES_DIRECTA = 4;
+const BRASILEIRAO_LIBERTADORES_PREVIA = 6;
+const BRASILEIRAO_SUDAMERICANA = 12;
+const BRASILEIRAO_DESCENSOS = 4;
+
+function claseFilaBrasileirao(i, total){
+  const pos = i + 1;
+  if (pos <= BRASILEIRAO_LIBERTADORES_DIRECTA) return 'punta';
+  if (pos <= BRASILEIRAO_LIBERTADORES_PREVIA) return 'reducido';
+  if (pos <= BRASILEIRAO_SUDAMERICANA) return 'sudamericana';
+  if (pos > total - BRASILEIRAO_DESCENSOS) return 'descenso';
+  return '';
+}
+
+function estadoBrasileirao(pos, total){
+  if (pos <= BRASILEIRAO_LIBERTADORES_DIRECTA) return 'libertadores';
+  if (pos <= BRASILEIRAO_LIBERTADORES_PREVIA) return 'previa';
+  if (pos <= BRASILEIRAO_SUDAMERICANA) return 'sudamericana';
+  if (pos > total - BRASILEIRAO_DESCENSOS) return 'descenso';
+  return 'medio';
+}
+
+async function cargarDatosBrasileirao(){
+  try {
+    DATA_BRASILEIRAO = await cargarEstadoPersistido("/api/estado-brasileirao");
+    if (!DATA_BRASILEIRAO) {
+      const respuesta = await fetch("./data_brasileirao.json?t=" + Date.now());
+      if (!respuesta.ok) throw new Error("No se pudo cargar data_brasileirao.json");
+      DATA_BRASILEIRAO = await respuesta.json();
+    }
+    iniciarBrasileirao();
+  } catch (e) {
+    const cont = document.getElementById('vista-brasileirao');
+    if (cont) cont.innerHTML = `<div style="padding:24px 24px 0; max-width:720px; margin:0 auto; text-align:center; color:var(--muted); font-family:'JetBrains Mono'; font-size:13px;">
+      No se pudo cargar data_brasileirao.json todavía (${e.message}). Corré <code>python main_brasileirao.py</code> una vez para generarlo.
+    </div>`;
+  }
+}
+
+function iniciarBrasileirao(){
+  renderTablaActualBrasileirao();
+  renderTablaBrasileirao();
+  renderMCBrasileirao();
+  renderEsperadaBrasileirao();
+  poblarSelectEquiposBrasileirao();
+  TEAM_INDEX_BRASILEIRAO = buildTeamIndexBrasileirao();
+  poblarDatalistBrasileirao(TEAM_INDEX_BRASILEIRAO);
+  const busquedaBrasileirao = document.getElementById('team-search-brasileirao');
+  if (busquedaBrasileirao && busquedaBrasileirao.value) buscarEquipoBrasileirao(busquedaBrasileirao.value);
+  abrirFichaBrasileiraoDesdeUrl();
+  if (document.body.classList.contains('liga-brasileirao')) actualizarHero('brasileirao');
+  if (estadoEvolucion('brasileirao').datos) actualizarZonaEvolucion('brasileirao');
+}
+
+/* ---------- BUSCADOR DE EQUIPOS (BRASILEIRÃO) ---------- */
+let TEAM_INDEX_BRASILEIRAO = {};
+
+function buildTeamIndexBrasileirao(){
+  const index = {};
+  if (!DATA_BRASILEIRAO) return index;
+  const actual = DATA_BRASILEIRAO.tabla_actual || DATA_BRASILEIRAO.tabla;
+  const mc = DATA_BRASILEIRAO.monte_carlo || [];
+  const esperada = DATA_BRASILEIRAO.tabla_esperada || [];
+  const rachas = DATA_BRASILEIRAO.rachas || {};
+  actual.forEach((f, i) => {
+    const mcRow = mc.find(m => m.equipo === f.equipo) || {};
+    const espRow = esperada.find(e => e.equipo === f.equipo) || {};
+    const ultimos5 = [...(rachas[f.equipo] || [])].reverse();
+    const estado = estadoBrasileirao(f.posicion ?? (i + 1), actual.length);
+    index[f.equipo] = {
+      equipo: f.equipo, posicion: f.posicion ?? (i + 1), total: actual.length, estado,
+      puntos: f.puntos, gf: f.gf, gc: f.gc, dg: f.dg,
+      campeon: mcRow['%campeon'] ?? 0,
+      libertadores_directa: mcRow['%libertadores_directa'] ?? 0,
+      libertadores_previa: mcRow['%libertadores_previa'] ?? 0,
+      libertadores_total: mcRow['libertadores_total'] ?? 0,
+      sudamericana: mcRow['%sudamericana'] ?? 0,
+      descenso: mcRow['%descenso'] ?? 0,
+      puntos_prom: espRow['puntos_prom'] ?? '—',
+      posicion_prom: espRow['posicion_prom'] ?? '—',
+      ultimos5
+    };
+  });
+  return index;
+}
+
+function poblarDatalistBrasileirao(index){
+  const dl = document.getElementById('team-list-brasileirao');
+  if (!dl) return;
+  dl.innerHTML = Object.keys(index).sort().map(nombre => `<option value="${nombre}">`).join('');
+}
+
+const BADGE_ESTADO_BRASILEIRAO = {
+  libertadores: { bg: 'var(--leader-bg)',       color: 'var(--leader-accent)',       label: 'LIBERTADORES',          accent: 'var(--leader-accent)' },
+  previa:       { bg: 'var(--qualified-bg)',    color: 'var(--qualified-accent)',    label: 'LIBERTADORES (PREVIA)', accent: 'var(--qualified-accent)' },
+  sudamericana: { bg: 'var(--sudamericana-bg)', color: 'var(--sudamericana-accent)', label: 'SUDAMERICANA',          accent: 'var(--sudamericana-accent)' },
+  descenso:     { bg: 'var(--relegation-bg)',   color: 'var(--relegation-accent)',   label: 'ZONA DESCENSO',         accent: 'var(--relegation-accent)' },
+  medio:        { bg: 'var(--line)',            color: 'var(--muted)',               label: 'MITAD DE TABLA',        accent: 'var(--zone-a)' },
+};
+
+function renderTeamCardBrasileirao(t){
+  const badge = BADGE_ESTADO_BRASILEIRAO[t.estado] || BADGE_ESTADO_BRASILEIRAO.medio;
+  const descClass = t.descenso >= 25 ? 'high' : '';
+  return `
+    <div class="team-card">
+      <div class="tc-head">
+        <div class="tc-name">${escudoHTML(t.equipo)}${nombreMostrable(t.equipo)}</div>
+        <span class="tc-zone" style="background:${badge.bg}; color:${badge.color}">${badge.label}</span>
+      </div>
+      <div class="tc-pos">Posición actual: <b>${t.posicion}°</b> de ${t.total} — <b>${t.puntos}</b> pts (DG ${t.dg > 0 ? '+' + t.dg : t.dg})</div>
+      <div class="tc-grid" style="margin-top:16px;">
+        <div class="tc-stat"><div class="v" style="color:var(--leader-accent)">${fmtPct(t.libertadores_directa)}</div><div class="l">Libertadores directa</div></div>
+        <div class="tc-stat"><div class="v" style="color:var(--qualified-accent)">${fmtPct(t.libertadores_previa)}</div><div class="l">Libertadores previa</div></div>
+        <div class="tc-stat"><div class="v" style="color:var(--sudamericana-accent)">${fmtPct(t.sudamericana)}</div><div class="l">Sudamericana</div></div>
+        <div class="tc-stat"><div class="v ${descClass}" style="${t.descenso >= 25 ? 'color:var(--danger)' : ''}">${fmtPct(t.descenso)}</div><div class="l">Descenso</div></div>
+      </div>
+      <div class="tc-mc-title">Clasifica a Libertadores (directa o previa) en ${fmtPct(t.libertadores_total)} de las simulaciones</div>
+      <div class="mc-bar-track" style="margin-bottom:14px;">
+        <div class="mc-bar-fill directo" style="width:${t.libertadores_directa}%; background:${badge.accent}"></div>
+        <div class="mc-bar-fill reducido" style="left:${t.libertadores_directa}%; width:${t.libertadores_previa}%; background:${badge.accent}"></div>
+      </div>
+      <div class="tc-pos">Terminó campeón en <b>${fmtPct(t.campeon)}</b> de las simulaciones — posición final promedio: <b>${t.posicion_prom}°</b>, puntos promedio: <b>${t.puntos_prom}</b></div>
+      <div class="tc-racha">
+        <div class="tc-racha-title">Últimos partidos</div>
+        ${renderRacha(t.ultimos5)}
+      </div>
+      <div class="tc-share">
+        <button onclick="compartirLink('brasileirao', '${t.equipo.replace(/'/g, "\\'")}', this)">🔗 Copiar link</button>
+        <button onclick="compartirFicha('brasileirao', '${t.equipo.replace(/'/g, "\\'")}', this)">📤 Compartir</button>
+      </div>
+    </div>
+  `;
+}
+
+function buscarEquipoBrasileirao(nombre){
+  const resultDiv = document.getElementById('search-result-brasileirao');
+  if (!resultDiv) return;
+  if (!nombre || !nombre.trim()){
+    resultDiv.innerHTML = "";
+    return;
+  }
+  const index = TEAM_INDEX_BRASILEIRAO;
+  const exacto = index[nombre];
+  if (exacto){
+    resultDiv.innerHTML = renderTeamCardBrasileirao(exacto);
+    return;
+  }
+  const q = nombre.trim().toLowerCase();
+  const coincidencia = Object.values(index).find(t => t.equipo.toLowerCase().includes(q));
+  if (coincidencia){
+    resultDiv.innerHTML = renderTeamCardBrasileirao(coincidencia);
+  } else {
+    resultDiv.innerHTML = `<div class="no-result">No se encontró ningún equipo llamado "${nombre}"</div>`;
+  }
+}
+
+document.getElementById('team-search-brasileirao').addEventListener('input', (e) => buscarEquipoBrasileirao(e.target.value));
+
+let _fichaBrasileiraoDesdeUrlAbierta = false;
+function abrirFichaBrasileiraoDesdeUrl(){
+  if (_fichaBrasileiraoDesdeUrlAbierta) return;
+  const equipoUrl = new URLSearchParams(window.location.search).get('equipo_brasileirao');
+  if (!equipoUrl) return;
+  _fichaBrasileiraoDesdeUrlAbierta = true;
+  setRegion('sudamerica');
+  setLiga('brasileirao');
+  const input = document.getElementById('team-search-brasileirao');
+  if (input) input.value = equipoUrl;
+  buscarEquipoBrasileirao(equipoUrl);
+}
+
+function poblarSelectEquiposBrasileirao(){
+  const sel = document.getElementById('campeon-equipo-brasileirao');
+  if (!sel || !DATA_BRASILEIRAO || !DATA_BRASILEIRAO.tabla) return;
+  const valorPrevio = sel.value;
+  const nombres = DATA_BRASILEIRAO.tabla.map(f => f.equipo).sort();
+  sel.innerHTML = '<option value="">Elegí un equipo…</option>' +
+    nombres.map(n => `<option value="${n}">${n}</option>`).join('');
+  if (valorPrevio && nombres.includes(valorPrevio)) sel.value = valorPrevio;
+}
+
+function leerNSimsBrasileirao(){
+  const input = document.getElementById('sim-count-brasileirao');
+  let n = parseInt(input.value, 10);
+  if (!Number.isFinite(n)) n = 1000;
+  n = Math.max(50, Math.min(5000, n));
+  input.value = n;
+  return n;
+}
+
+async function correrSimulacionBrasileirao(){
+  const btn = document.getElementById('btn-simular-brasileirao');
+  const status = document.getElementById('sim-status-brasileirao');
+  const input = document.getElementById('sim-count-brasileirao');
+  const nSims = leerNSimsBrasileirao();
+
+  if (!beginApiAction(status)) return;
+
+  btn.disabled = true;
+  input.disabled = true;
+  btn.textContent = "Simulando…";
+  status.classList.remove('error', 'ok');
+  status.textContent = `Corriendo ${nSims} simulaciones — puede tardar 1-2 minutos, no cierres esta pestaña.`;
+
+  try {
+    const cuerpo = await ejecutarSimulacion("simular-brasileirao", { n_sims: Number(nSims) }, "/api/simular-brasileirao", status);
+
+    DATA_BRASILEIRAO = cuerpo;
+    iniciarBrasileirao();
+
+    status.classList.add('ok');
+    status.textContent = "✓ Simulación actualizada (" + (DATA_BRASILEIRAO.generado || "") + ")";
+  } catch (e) {
+    setApiErrorStatus(status, "No se pudo correr la simulación", e);
+  } finally {
+    btn.disabled = false;
+    input.disabled = false;
+    btn.textContent = "Correr nueva simulación";
+    endApiAction();
+  }
+}
+
+document.getElementById('btn-simular-brasileirao').addEventListener('click', correrSimulacionBrasileirao);
+
+async function correrActualizacionBrasileirao(){
+  const btn = document.getElementById('btn-actualizar-brasileirao');
+  const status = document.getElementById('sim-status-brasileirao');
+  const lastUpdate = document.getElementById('last-update-brasileirao');
+  const input = document.getElementById('sim-count-brasileirao');
+  const nSims = leerNSimsBrasileirao();
+
+  if (!beginApiAction(status)) return;
+
+  btn.disabled = true;
+  input.disabled = true;
+  btn.textContent = "Buscando resultados…";
+  status.classList.remove('error', 'ok');
+  status.textContent = "Consultando Promiedos y re-simulando si hay partidos nuevos — puede tardar 1-2 minutos.";
+
+  try {
+    const respuesta = await apiFetch(apiUrl("/api/actualizar-brasileirao"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ n_sims: Number(nSims) })
+    });
+    const cuerpo = await respuesta.json().catch(() => ({}));
+    if (!respuesta.ok) throw apiResponseError(respuesta, cuerpo);
+
+    if (cuerpo.actualizado) {
+      DATA_BRASILEIRAO = cuerpo.datos;
+      iniciarBrasileirao();
+      status.classList.add('ok');
+      status.textContent = `✓ Se cargaron ${cuerpo.cargados.length} partido(s) nuevo(s) y se re-simuló.`;
+    } else {
+      if (cuerpo.datos) {
+        DATA_BRASILEIRAO = cuerpo.datos;
+        iniciarBrasileirao();
+      }
+      status.classList.add('ok');
+      status.textContent = "✓ Consultado — no había partidos nuevos jugados todavía.";
+    }
+
+    if (cuerpo.sin_matchear && cuerpo.sin_matchear.length){
+      status.textContent += ` (${cuerpo.sin_matchear.length} partido(s) de Promiedos no se pudieron identificar — revisar mapeo de nombres)`;
+    }
+
+    lastUpdate.textContent = "Última consulta a Promiedos: " + new Date().toLocaleString('es-AR');
+  } catch (e) {
+    setApiErrorStatus(status, "No se pudo actualizar", e);
+  } finally {
+    btn.disabled = false;
+    input.disabled = false;
+    btn.textContent = "Actualizar Resultados";
+    endApiAction();
+  }
+}
+
+document.getElementById('btn-actualizar-brasileirao').addEventListener('click', correrActualizacionBrasileirao);
+
+function renderTablaActualBrasileirao(){
+  const body = document.getElementById('tabla-actual-body-brasileirao');
+  if (!body || !DATA_BRASILEIRAO) return;
+  const filas = DATA_BRASILEIRAO.tabla_actual || DATA_BRASILEIRAO.tabla;
+  body.innerHTML = "";
+  filas.forEach((f, i) => {
+    const tr = document.createElement('tr');
+    const clase = claseFilaBrasileirao(i, filas.length);
+    if (clase) tr.classList.add(clase);
+    tr.innerHTML = `<td>${i+1}</td><td>${escudoHTML(f.equipo)}${nombreMostrable(f.equipo)}</td><td>${f.puntos}</td><td>${f.gf}</td><td>${f.gc}</td><td>${f.dg > 0 ? '+'+f.dg : f.dg}</td>`;
+    body.appendChild(tr);
+  });
+}
+
+function renderTablaBrasileirao(){
+  const body = document.getElementById('tabla-brasileirao-body');
+  if (!body || !DATA_BRASILEIRAO) return;
+  const filas = DATA_BRASILEIRAO.tabla;
+  body.innerHTML = "";
+  filas.forEach((f, i) => {
+    const tr = document.createElement('tr');
+    const clase = claseFilaBrasileirao(i, filas.length);
+    if (clase) tr.classList.add(clase);
+    tr.innerHTML = `<td>${i+1}</td><td>${escudoHTML(f.equipo)}${nombreMostrable(f.equipo)}</td><td>${f.puntos}</td><td>${f.gf}</td><td>${f.gc}</td><td>${f.dg > 0 ? '+'+f.dg : f.dg}</td>`;
+    body.appendChild(tr);
+  });
+  const footer = document.getElementById('brasileirao-campeon-footer');
+  if (footer) footer.innerHTML = campeonAnuncioHTML(DATA_BRASILEIRAO.campeon, '🏆');
+}
+
+function renderMCBrasileirao(){
+  const list = document.getElementById('mc-list-brasileirao');
+  if (!list || !DATA_BRASILEIRAO || !DATA_BRASILEIRAO.monte_carlo) return;
+  list.innerHTML = "";
+  DATA_BRASILEIRAO.monte_carlo.forEach((f, i) => {
+    const row = document.createElement('div');
+    row.className = 'mc-row';
+    const directa = f['%libertadores_directa'];
+    const previa = f['%libertadores_previa'];
+    const sudamericana = f['%sudamericana'];
+    const descClass = f['%descenso'] >= 25 ? 'high' : '';
+    row.innerHTML = `
+      <div class="pos">${i+1}</div>
+      <div>
+        <div class="name"><span>${escudoHTML(f.equipo)}${nombreMostrable(f.equipo)}</span><span class="pct" style="color:var(--zone-a)">${fmtPct(f.libertadores_total)} Libertadores</span></div>
+        <div class="mc-bar-track">
+          <div class="mc-bar-fill directo" style="width:${directa}%; background:var(--zone-a)"></div>
+          <div class="mc-bar-fill reducido" style="left:${directa}%; width:${previa}%; background:var(--zone-b)"></div>
+        </div>
+        <div class="mc-sub">
+          <span><i class="dot" style="background:var(--zone-a)"></i>${fmtPct(directa)} directa</span>
+          <span><i class="dot" style="background:var(--zone-b)"></i>${fmtPct(previa)} previa</span>
+          <span><i class="dot" style="background:var(--amber)"></i>${fmtPct(sudamericana)} Sudamericana</span>
+        </div>
+      </div>
+      <div class="mc-desc">
+        <div class="desc-pct ${descClass}">${fmtPct(f['%descenso'])}</div>
+        <div class="desc-lbl">descenso</div>
+        <div class="desc-bar-track"><div class="desc-bar-fill" style="width:${Math.min(f['%descenso'], 100)}%"></div></div>
+      </div>
+    `;
+    list.appendChild(row);
+  });
+}
+
+function renderEsperadaBrasileirao(){
+  const body = document.getElementById('esperada-body-brasileirao');
+  if (!body || !DATA_BRASILEIRAO || !DATA_BRASILEIRAO.tabla_esperada) return;
+  body.innerHTML = "";
+  DATA_BRASILEIRAO.tabla_esperada.forEach((f, i) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${i+1}</td><td>${escudoHTML(f.equipo)}${nombreMostrable(f.equipo)}</td><td>${f.puntos_prom}</td><td>${f.posicion_prom}</td>`;
+    body.appendChild(tr);
+  });
+}
+
+/* ---------- BRASILEIRÃO: SIMULAR HASTA EL TÍTULO ---------- */
+async function simularHastaCampeonBrasileirao(){
+  const btn = document.getElementById('btn-campeon-brasileirao');
+  const sel = document.getElementById('campeon-equipo-brasileirao');
+  const status = document.getElementById('campeon-status-brasileirao');
+  const resultado = document.getElementById('campeon-resultado-brasileirao');
+  const equipo = sel.value;
+
+  status.classList.remove('error', 'ok');
+
+  if (!equipo){
+    status.classList.add('error');
+    status.textContent = "Elegí un equipo primero.";
+    return;
+  }
+
+  if (!beginApiAction(status)) return;
+
+  btn.disabled = true;
+  sel.disabled = true;
+  btn.textContent = "Simulando…";
+  status.textContent = `Corriendo temporadas hasta que ${equipo} sea campeón — puede tardar unos segundos.`;
+  resultado.innerHTML = "";
+
+  try {
+    const cuerpo = await ejecutarSimulacion("simular-campeon-brasileirao", { equipo }, "/api/simular-campeon-brasileirao", status);
+
+    if (!cuerpo.logrado) {
+      status.classList.add('error');
+      status.textContent = `No se logró el título de ${equipo} en ${cuerpo.max_intentos} intentos simulados. Probá de nuevo — el azar puede variar.`;
+      return;
+    }
+
+    renderCampeonResultadoBrasileirao(cuerpo);
+    status.classList.add('ok');
+    status.textContent = `✓ Encontrado en el intento N° ${cuerpo.intentos}`;
+  } catch (e) {
+    setApiErrorStatus(status, "No se pudo simular", e);
+  } finally {
+    btn.disabled = false;
+    sel.disabled = false;
+    btn.textContent = "🏆 Simular hasta el título";
+    endApiAction();
+  }
+}
+
+function renderCampeonResultadoBrasileirao(r){
+  const cont = document.getElementById('campeon-resultado-brasileirao');
+
+  function filasHTML(filas){
+    let html = "";
+    filas.forEach((f, i) => {
+      const clase = claseFilaBrasileirao(i, filas.length);
+      const esObjetivo = f.equipo === r.equipo;
+      html += `<tr class="${clase}"${esObjetivo ? ' style="box-shadow: inset 3px 0 0 var(--amber);"' : ''}>
+        <td>${i + 1}</td><td>${escudoHTML(f.equipo)}${nombreMostrable(f.equipo)}${esObjetivo ? ' 🏆' : ''}</td><td>${f.puntos}</td><td>${f.gf}</td><td>${f.gc}</td><td>${f.dg > 0 ? '+' + f.dg : f.dg}</td>
+      </tr>`;
+    });
+    return html;
+  }
+
+  const tablaHTML = `
+    <div style="margin-top:14px;">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>GF</th><th>GC</th><th>DG</th></tr></thead>
+          <tbody>${filasHTML(r.tabla)}</tbody>
+        </table>
+      </div>
+    </div>
+  `;
+
+  cont.innerHTML = `
+    <div class="campeon-summary">🏆 <b>${r.equipo}</b> sale campeón en esta temporada simulada
+      (intento N° ${r.intentos} de una búsqueda al azar entre distintas temporadas posibles)</div>
+    ${tablaHTML}
+  `;
+}
+
+document.getElementById('btn-campeon-brasileirao').addEventListener('click', simularHastaCampeonBrasileirao);
+
+
+/* ============================================================
    FEDERAL A
    ============================================================ */
 let DATA_FEDERAL;
@@ -9590,6 +10305,15 @@ const HERO_TEXTOS = {
     ascensosLbl: "Ascensos por edición",
     descensosLbl: "Descensos por edición",
   },
+  brasileirao: {
+    eyebrow: () => `SIMULAÇÃO MONTE CARLO — <span id="hero-n">${(DATA_BRASILEIRAO && DATA_BRASILEIRAO.n_simulaciones) || 0}</span> RODADAS`,
+    titulo: "BRASILEIRÃO SÉRIE A",
+    sub: "Temporada regular en tabla única, ida y vuelta contra los otros 19, con el mismo modelo Poisson ajustado por forma reciente y corrección Dixon-Coles. Sin Reducido: la tabla final define directo quién juega la Libertadores (directa y previa), la Sudamericana y quién desciende a la Série B.",
+    equiposLbl: "Equipos",
+    zonasLbl: "Libertadores",
+    ascensosLbl: "Sudamericana",
+    descensosLbl: "Descensos",
+  },
   libertadores: {
     eyebrow: () => `SIMULACIÓN MONTE CARLO — <span id="hero-n">${(DATA_LIBERTADORES && DATA_LIBERTADORES.n_simulaciones) || 0}</span> CORRIDAS`,
     titulo: "COPA LIBERTADORES",
@@ -9671,6 +10395,11 @@ function actualizarHero(liga){
     document.getElementById('meta-zonas').textContent = 2;
     document.getElementById('meta-ascensos').textContent = 2;
     document.getElementById('meta-descensos').textContent = 2;
+  } else if (liga === 'brasileirao'){
+    document.getElementById('meta-equipos').textContent = (DATA_BRASILEIRAO && DATA_BRASILEIRAO.tabla.length) || 20;
+    document.getElementById('meta-zonas').textContent = 6; // 4 directa + 2 previa
+    document.getElementById('meta-ascensos').textContent = 6; // 7° al 12°
+    document.getElementById('meta-descensos').textContent = 4;
   } else if (liga === 'temporada'){
     // Equipos/Competencias/Ascensos/Descensos por temporada salen de la
     // última corrida real (TEMPORADA_META_CACHE), no son un dato fijo de
@@ -9696,6 +10425,7 @@ function setLiga(liga){
   document.getElementById('vista-libertadores').style.display = liga === 'libertadores' ? '' : 'none';
   document.getElementById('vista-sudamericana').style.display = liga === 'sudamericana' ? '' : 'none';
   document.getElementById('vista-bmetro').style.display = liga === 'bmetro' ? '' : 'none';
+  document.getElementById('vista-brasileirao').style.display = liga === 'brasileirao' ? '' : 'none';
   document.getElementById('vista-federal').style.display = liga === 'federal' ? '' : 'none';
   document.getElementById('vista-primerac').style.display = liga === 'primerac' ? '' : 'none';
   document.getElementById('vista-temporada').style.display = liga === 'temporada' ? '' : 'none';
@@ -9703,6 +10433,7 @@ function setLiga(liga){
   document.getElementById('sim-control-lpf').style.display = liga === 'lpf' ? '' : 'none';
   document.getElementById('sim-control-copa').style.display = liga === 'copa' ? '' : 'none';
   document.getElementById('sim-control-bmetro').style.display = liga === 'bmetro' ? '' : 'none';
+  document.getElementById('sim-control-brasileirao').style.display = liga === 'brasileirao' ? '' : 'none';
   document.getElementById('sim-control-federal').style.display = liga === 'federal' ? '' : 'none';
   document.getElementById('sim-control-primerac').style.display = liga === 'primerac' ? '' : 'none';
   document.getElementById('sim-control-libertadores').style.display = liga === 'libertadores' ? '' : 'none';
@@ -9713,6 +10444,7 @@ function setLiga(liga){
   document.body.classList.toggle('liga-libertadores', liga === 'libertadores');
   document.body.classList.toggle('liga-sudamericana', liga === 'sudamericana');
   document.body.classList.toggle('liga-bmetro', liga === 'bmetro');
+  document.body.classList.toggle('liga-brasileirao', liga === 'brasileirao');
   document.body.classList.toggle('liga-federal', liga === 'federal');
   document.body.classList.toggle('liga-primerac', liga === 'primerac');
   document.body.classList.toggle('liga-temporada', liga === 'temporada');
@@ -9722,6 +10454,29 @@ function setLiga(liga){
   refreshAllBracketNavs();
   refreshAllBracketLines();
 }
+
+/* ---------- REGIONES (Argentina / Resto de Sudamérica) ---------- */
+// Cada botón de región muestra/oculta el .group de pestañas
+// correspondiente dentro de .liga-tabs. Si la liga activa no pertenece
+// a la región elegida, se cambia automáticamente a la primera de esa
+// región (así nunca queda una vista vieja mostrada con una pestaña de
+// otra región marcada como activa).
+function setRegion(region){
+  document.querySelectorAll('.region-tab').forEach(b => b.classList.toggle('active', b.dataset.region === region));
+  document.querySelectorAll('.liga-tabs .group').forEach(g => {
+    g.style.display = g.dataset.region === region ? '' : 'none';
+  });
+  const ligaActivaEnRegion = document.querySelector(`.liga-tabs .group[data-region="${region}"] .liga-tab.active`);
+  if (!ligaActivaEnRegion) {
+    const primera = document.querySelector(`.liga-tabs .group[data-region="${region}"] .liga-tab`);
+    if (primera) setLiga(primera.dataset.liga);
+  }
+  ajustarOffsetLigaTabs();
+}
+
+document.querySelectorAll('.region-tab').forEach(btn => {
+  btn.addEventListener('click', () => setRegion(btn.dataset.region));
+});
 
 function ajustarOffsetLigaTabs(){
   const ligaTabs = document.querySelector('.liga-tabs');
@@ -10755,6 +11510,7 @@ cargarDatosCopa();
 cargarDatosLibertadores();
 cargarDatosSudamericana();
 cargarDatosBMetro();
+cargarDatosBrasileirao();
 cargarDatosFederal();
 
 // La página, tal como está en el HTML estático, arranca mostrando

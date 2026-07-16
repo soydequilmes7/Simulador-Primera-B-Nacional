@@ -390,6 +390,32 @@ def evolucion_posiciones_primerac():
         _lock_primerac.release_read()
 
 
+@app.get("/api/evolucion-posiciones-brasileirao")
+def evolucion_posiciones_brasileirao():
+    """Igual que /api/evolucion-posiciones-bmetro pero para el
+    Brasileirão (una sola zona, 'Unica')."""
+    ocupado = _adquirir_lectura(
+        _lock_brasileirao,
+        "Hay una actualización del Brasileirão en curso. Esperá unos segundos y probá de nuevo.",
+    )
+    if ocupado:
+        return ocupado
+    try:
+        with transaction() as repo:
+            tabla_actual = repo.standing_records("brasileirao")
+            zona_por_club = {fila["equipo"]: fila["zona"] for fila in tabla_actual}
+            partidos_jugados = repo.match_records("brasileirao", "played")
+        evolucion = calcular_evolucion(partidos_jugados, zona_por_club)
+        return {
+            "evolucion": evolucion,
+            "zonas": tamano_por_zona(zona_por_club),
+        }
+    except Exception as e:
+        return _error_response(e)
+    finally:
+        _lock_brasileirao.release_read()
+
+
 @app.get("/api/datos-copa")
 def datos_copa():
     """Igual que /api/datos-nacional pero con el cuadro de la Copa
