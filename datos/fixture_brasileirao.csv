@@ -1,1 +1,199 @@
 fecha,jornada,equipo_local,equipo_visitante
+,4,Bahia,Chapecoense
+,4,Botafogo,Vitória
+,19,Vitória,Vasco Da Gama
+,19,Botafogo,Santos
+,19,Mirassol,Grêmio
+,19,Fluminense,Bragantino
+,19,Atlético Mineiro,Bahia
+,19,Coritiba,Palmeiras
+,19,Chapecoense,Flamengo
+,19,Internacional,Cruzeiro
+,19,São Paulo,Athletico Paranaense
+,19,Corinthians,Remo
+,20,Athletico Paranaense,Internacional
+,20,Santos,Chapecoense
+,20,Vasco Da Gama,Mirassol
+,20,Bahia,Corinthians
+,20,Cruzeiro,Botafogo
+,20,Grêmio,Fluminense
+,20,Bragantino,Coritiba
+,20,Flamengo,São Paulo
+,20,Remo,Vitória
+,20,Palmeiras,Atlético Mineiro
+,21,Internacional,Flamengo
+,21,Mirassol,Remo
+,21,Vitória,Palmeiras
+,21,Fluminense,Bahia
+,21,Corinthians,Athletico Paranaense
+,21,Coritiba,Cruzeiro
+,22,Grêmio,São Paulo
+,22,Remo,Atlético Mineiro
+,22,Coritiba,Chapecoense
+,22,Botafogo,Fluminense
+,22,Cruzeiro,Mirassol
+,22,Bahia,Vasco Da Gama
+,22,Palmeiras,Internacional
+,22,Bragantino,Corinthians
+,22,Santos,Athletico Paranaense
+,22,Flamengo,Vitória
+,23,Atlético Mineiro,Grêmio
+,23,Fluminense,Palmeiras
+,23,Athletico Paranaense,Bragantino
+,23,São Paulo,Coritiba
+,23,Chapecoense,Bahia
+,23,Vasco Da Gama,Santos
+,23,Vitória,Botafogo
+,23,Mirassol,Flamengo
+,23,Corinthians,Cruzeiro
+,23,Internacional,Remo
+,24,Fluminense,Remo
+,24,Internacional,Atlético Mineiro
+,24,Cruzeiro,Flamengo
+,24,Vitória,Bahia
+,24,Palmeiras,Vasco Da Gama
+,24,Bragantino,Grêmio
+,24,Chapecoense,São Paulo
+,24,Santos,Mirassol
+,24,Coritiba,Corinthians
+,24,Botafogo,Athletico Paranaense
+,25,Vasco Da Gama,Cruzeiro
+,25,Flamengo,Botafogo
+,25,Bahia,Internacional
+,25,Remo,Coritiba
+,25,Atlético Mineiro,Vitória
+,25,Athletico Paranaense,Fluminense
+,25,Grêmio,Chapecoense
+,25,Mirassol,Palmeiras
+,25,Corinthians,Santos
+,25,São Paulo,Bragantino
+,26,Remo,Flamengo
+,26,Vitória,Grêmio
+,26,Coritiba,Mirassol
+,26,Internacional,Santos
+,26,Cruzeiro,Athletico Paranaense
+,26,Bragantino,Bahia
+,26,São Paulo,Atlético Mineiro
+,26,Corinthians,Chapecoense
+,26,Botafogo,Palmeiras
+,26,Fluminense,Vasco Da Gama
+,27,Chapecoense,Internacional
+,27,Bahia,Remo
+,27,Coritiba,Athletico Paranaense
+,27,Grêmio,Vasco Da Gama
+,27,Atlético Mineiro,Fluminense
+,27,Mirassol,Vitória
+,27,Palmeiras,São Paulo
+,27,Santos,Cruzeiro
+,27,Botafogo,Bragantino
+,27,Flamengo,Corinthians
+,28,Remo,Santos
+,28,Vitória,Cruzeiro
+,28,Athletico Paranaense,Bahia
+,28,Grêmio,Palmeiras
+,28,Atlético Mineiro,Chapecoense
+,28,Mirassol,Botafogo
+,28,Corinthians,Fluminense
+,28,São Paulo,Internacional
+,28,Vasco Da Gama,Coritiba
+,28,Flamengo,Bragantino
+,29,Remo,Grêmio
+,29,Vitória,Chapecoense
+,29,Athletico Paranaense,Atlético Mineiro
+,29,Internacional,Corinthians
+,29,Cruzeiro,São Paulo
+,29,Bragantino,Mirassol
+,29,Palmeiras,Bahia
+,29,Santos,Flamengo
+,29,Fluminense,Coritiba
+,29,Botafogo,Vasco Da Gama
+,30,Chapecoense,Athletico Paranaense
+,30,Bahia,Mirassol
+,30,Coritiba,Botafogo
+,30,Grêmio,Internacional
+,30,Atlético Mineiro,Santos
+,30,Bragantino,Cruzeiro
+,30,Palmeiras,Corinthians
+,30,São Paulo,Vitória
+,30,Vasco Da Gama,Remo
+,30,Flamengo,Fluminense
+,31,Remo,Bragantino
+,31,Bahia,Flamengo
+,31,Athletico Paranaense,Palmeiras
+,31,Grêmio,Cruzeiro
+,31,Atlético Mineiro,Coritiba
+,31,Mirassol,Internacional
+,31,Corinthians,Vitória
+,31,São Paulo,Vasco Da Gama
+,31,Botafogo,Chapecoense
+,31,Fluminense,Santos
+,32,Chapecoense,Fluminense
+,32,Vitória,Athletico Paranaense
+,32,Internacional,Botafogo
+,32,Coritiba,Grêmio
+,32,Cruzeiro,Remo
+,32,Mirassol,São Paulo
+,32,Palmeiras,Bragantino
+,32,Santos,Bahia
+,32,Vasco Da Gama,Corinthians
+,32,Flamengo,Atlético Mineiro
+,33,Remo,Botafogo
+,33,Bahia,São Paulo
+,33,Coritiba,Vitória
+,33,Grêmio,Athletico Paranaense
+,33,Atlético Mineiro,Cruzeiro
+,33,Bragantino,Chapecoense
+,33,Corinthians,Mirassol
+,33,Santos,Palmeiras
+,33,Vasco Da Gama,Flamengo
+,33,Fluminense,Internacional
+,34,Vitória,Fluminense
+,34,Chapecoense,Mirassol
+,34,Athletico Paranaense,Vasco Da Gama
+,34,Internacional,Coritiba
+,34,Cruzeiro,Bahia
+,34,Bragantino,Santos
+,34,Palmeiras,Remo
+,34,São Paulo,Corinthians
+,34,Botafogo,Atlético Mineiro
+,34,Flamengo,Grêmio
+,35,Remo,Chapecoense
+,35,Vitória,Bragantino
+,35,Coritiba,Santos
+,35,Grêmio,Bahia
+,35,Cruzeiro,Palmeiras
+,35,Mirassol,Atlético Mineiro
+,35,Corinthians,Botafogo
+,35,São Paulo,Fluminense
+,35,Vasco Da Gama,Internacional
+,35,Flamengo,Athletico Paranaense
+,36,Chapecoense,Cruzeiro
+,36,Bahia,Coritiba
+,36,Athletico Paranaense,Remo
+,36,Internacional,Vitória
+,36,Atlético Mineiro,Corinthians
+,36,Bragantino,Vasco Da Gama
+,36,Palmeiras,Flamengo
+,36,Santos,Grêmio
+,36,Botafogo,São Paulo
+,36,Fluminense,Mirassol
+,37,Chapecoense,Palmeiras
+,37,Vitória,Santos
+,37,Coritiba,Flamengo
+,37,Internacional,Bragantino
+,37,Atlético Mineiro,Vasco Da Gama
+,37,Mirassol,Athletico Paranaense
+,37,Corinthians,Grêmio
+,37,São Paulo,Remo
+,37,Botafogo,Bahia
+,37,Fluminense,Cruzeiro
+,38,Remo,Corinthians
+,38,Grêmio,Mirassol
+,38,Cruzeiro,Internacional
+,38,Athletico Paranaense,São Paulo
+,38,Bahia,Atlético Mineiro
+,38,Bragantino,Fluminense
+,38,Palmeiras,Coritiba
+,38,Santos,Botafogo
+,38,Vasco Da Gama,Vitória
+,38,Flamengo,Chapecoense
