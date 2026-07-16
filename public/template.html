@@ -2443,6 +2443,11 @@
   body.liga-bmetro .torneo-logo[data-liga="bmetro"]{ display:block; }
   body.liga-federal .torneo-logo[data-liga="federal"]{ display:block; }
   body.liga-primerac .torneo-logo[data-liga="primerac"]{ display:block; }
+  body.liga-brasileirao .torneo-logo[data-liga="brasileirao"]{
+    display:block; width:132px; height:132px; padding:18px;
+    box-shadow: 0 0 0 6px rgba(199,255,0,0.10), 0 10px 30px rgba(0,0,0,0.6), 0 0 40px rgba(199,255,0,0.32);
+  }
+  body.liga-brasileirao .torneo-logo-wrap{ margin-bottom:22px; }
   body.liga-temporada .torneo-logo[data-liga="temporada"]{
     display:block; width:136px; height:136px; padding:20px;
     box-shadow:
@@ -3414,6 +3419,37 @@
   body.liga-brasileirao #mc-list-brasileirao{ border-color: rgba(199,255,0,0.2); }
   body.liga-brasileirao .mc-row .name .pct{ color:#C7FF00; }
 
+  /* ---- Select "Elegí un equipo": píldora verde limão sobre panel oscuro,
+     coherente con el resto de la identidad de esta liga ---- */
+  body.liga-brasileirao #campeon-equipo-brasileirao{
+    font-family:'JetBrains Mono'; font-size:13px; font-weight:600; color: var(--ink);
+    background: var(--bg-panel); border:1px solid rgba(199,255,0,0.32); border-radius:999px;
+    padding:10px 18px; outline:none; min-width:220px;
+    transition: border-color 0.15s, box-shadow 0.15s, opacity 0.15s;
+  }
+  body.liga-brasileirao #campeon-equipo-brasileirao:hover:not(:disabled){ border-color:#C7FF00; }
+  body.liga-brasileirao #campeon-equipo-brasileirao:focus{
+    border-color:#C7FF00; box-shadow: 0 0 0 3px rgba(199,255,0,0.22);
+  }
+  body.liga-brasileirao #campeon-equipo-brasileirao:disabled{ cursor:wait; opacity:0.5; }
+  body.liga-brasileirao #campeon-equipo-brasileirao option{ background:#12132A; color:#F1F5E8; }
+
+  /* ---- Input "Cantidad de simulaciones": mismo tratamiento que el
+     resto de los sim-count-*, con el foco en verde limão ---- */
+  body.liga-brasileirao #sim-count-brasileirao{
+    font-family:'JetBrains Mono'; font-size:13px; font-weight:600; color: var(--ink);
+    background: var(--bg-panel); border:1px solid rgba(199,255,0,0.32); border-radius: var(--radius-sm);
+    padding:8px 10px; width:88px; text-align:center; outline:none;
+    transition: border-color 0.15s, box-shadow 0.15s, opacity 0.15s;
+  }
+  body.liga-brasileirao #sim-count-brasileirao:hover:not(:disabled){ border-color:#C7FF00; }
+  body.liga-brasileirao #sim-count-brasileirao:focus{
+    border-color:#C7FF00; box-shadow: 0 0 0 3px rgba(199,255,0,0.22);
+  }
+  body.liga-brasileirao #sim-count-brasileirao:disabled{ cursor:wait; opacity:0.5; }
+  body.liga-brasileirao #sim-count-brasileirao::-webkit-inner-spin-button,
+  body.liga-brasileirao #sim-count-brasileirao::-webkit-outer-spin-button{ opacity:0.6; }
+
   @media (prefers-reduced-motion: reduce){
     body.liga-brasileirao .hero .meta div,
     body.liga-brasileirao .btn-simular,
@@ -4284,8 +4320,9 @@
     #team-search, .search-box input,
     #sim-count, #sim-count-lpf, #sim-count-copa, #sim-count-bmetro,
     #sim-count-federal, #sim-count-primerac, #sim-count-libertadores, #sim-count-sudamericana,
+    #sim-count-brasileirao,
     #campeon-equipo, #campeon-equipo-lpf, #campeon-equipo-copa, #campeon-equipo-bmetro,
-    #campeon-equipo-federal, #campeon-equipo-libertadores,
+    #campeon-equipo-federal, #campeon-equipo-libertadores, #campeon-equipo-brasileirao,
     .evolucion-picker-search{
       font-size: 18px;
     }
@@ -5685,7 +5722,7 @@ function setApiActionsDisabled(disabled){
   document.querySelectorAll('.btn-simular, .btn-actualizar').forEach(btn => {
     btn.disabled = disabled;
   });
-  document.querySelectorAll('#sim-count, #sim-count-lpf, #sim-count-copa, #sim-count-bmetro, #sim-count-federal, #sim-count-primerac, #sim-count-libertadores, #sim-count-sudamericana, #campeon-equipo, #campeon-equipo-lpf, #campeon-equipo-copa, #campeon-equipo-bmetro, #campeon-equipo-federal, #campeon-equipo-primerac, #campeon-equipo-libertadores, #campeon-equipo-sudamericana').forEach(control => {
+  document.querySelectorAll('#sim-count, #sim-count-lpf, #sim-count-copa, #sim-count-bmetro, #sim-count-federal, #sim-count-primerac, #sim-count-libertadores, #sim-count-sudamericana, #sim-count-brasileirao, #campeon-equipo, #campeon-equipo-lpf, #campeon-equipo-copa, #campeon-equipo-bmetro, #campeon-equipo-federal, #campeon-equipo-primerac, #campeon-equipo-libertadores, #campeon-equipo-sudamericana, #campeon-equipo-brasileirao').forEach(control => {
     control.disabled = disabled;
   });
 }
@@ -9588,7 +9625,7 @@ function renderMCBrasileirao(){
     row.innerHTML = `
       <div class="pos">${i+1}</div>
       <div>
-        <div class="name"><span>${escudoHTML(f.equipo)}${nombreMostrable(f.equipo)}</span><span class="pct" style="color:var(--zone-a)">${fmtPct(f.libertadores_total)} Libertadores</span></div>
+        <div class="name"><span>${escudoHTML(f.equipo)}${nombreMostrable(f.equipo)}</span><span class="pct" style="color:var(--zone-a)">${fmtPct(f['%campeon'])} campeón</span></div>
         <div class="mc-bar-track">
           <div class="mc-bar-fill directo" style="width:${directa}%; background:var(--zone-a)"></div>
           <div class="mc-bar-fill reducido" style="left:${directa}%; width:${previa}%; background:var(--zone-b)"></div>

@@ -212,7 +212,17 @@ def obtener_partidos_jugados_brasileirao():
     el formato que espera actualizar_resultados_brasileirao.py. Esta API
     de Promiedos no expone goleadores acá (vienen en un campo aparte
     dentro de cada gol de "teams"), así que esas claves quedan vacías
-    por ahora."""
+    por ahora.
+
+    IMPORTANTE: a diferencia de bmetro/nacional (donde el fixture local
+    YA es el calendario real), acá el fixture local lo arma
+    scripts/generar_fixture_brasileirao.py con un round-robin genérico
+    (ver su docstring), no el calendario real de la CBF. Por eso hace
+    falta viajar "jornada" y "fecha_hora" (reales, de Promiedos) hasta
+    actualizar_resultados_brasileirao.py -- si no, ese script termina
+    usando la jornada sintética del fixture local para partidos reales,
+    y cualquier cosa que dependa del orden cronológico (el gráfico de
+    evolución de posiciones) sale mezclado."""
     jugados = [p for p in obtener_partidos_brasileirao(verbose=False) if p["jugado"]]
     return [
         {
@@ -222,6 +232,8 @@ def obtener_partidos_jugados_brasileirao():
             "goles_visitante": p["goles_visitante"],
             "goleadores_local": {},
             "goleadores_visitante": {},
+            "jornada": p["jornada"],
+            "fecha_hora": p["fecha_hora"],
         }
         for p in jugados
     ]

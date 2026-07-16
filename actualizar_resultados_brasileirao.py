@@ -79,9 +79,17 @@ def actualizar(n_sims=1000, correr_simulacion_fn=None, imprimir=True):
         if clave in indice_fixture:
             idx = indice_fixture[clave]
             fila_fixture = fixture[idx]
+            # OJO: el fixture local (fila_fixture) es un round-robin
+            # GENÉRICO (ver scripts/generar_fixture_brasileirao.py), no
+            # el calendario real de la CBF -- su "jornada" no tiene
+            # ninguna relación con cuándo se jugó el partido de verdad.
+            # Preferimos siempre la jornada/fecha que vino de Promiedos
+            # (p["jornada"]/p["fecha_hora"]), y solo caemos al fixture
+            # local si por algún motivo el scraper no la trajo (versión
+            # vieja del scraper, etc.) para no romper.
             resultado_cargado = {
-                "fecha": fila_fixture.get("fecha", ""),
-                "jornada": fila_fixture.get("jornada", ""),
+                "fecha": p.get("fecha_hora") or fila_fixture.get("fecha", ""),
+                "jornada": p.get("jornada") if p.get("jornada") is not None else fila_fixture.get("jornada", ""),
                 "equipo_local": p["equipo_local"],
                 "equipo_visitante": p["equipo_visitante"],
                 "goles_local": p["goles_local"],
