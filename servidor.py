@@ -31,9 +31,11 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from main import correr_simulacion, simular_hasta_campeon
 from main_lpf import correr_simulacion_lpf, simular_hasta_campeon_lpf
 from main_primerac import correr_simulacion as correr_simulacion_primerac, simular_hasta_campeon as simular_hasta_campeon_primerac
+from main_brasileirao import correr_simulacion_brasileirao, simular_hasta_campeon_brasileirao
 from actualizar_resultados import actualizar
 from actualizar_resultados_lpf import actualizar as actualizar_lpf
 from actualizar_resultados_primerac import actualizar as actualizar_primerac
+from actualizar_resultados_brasileirao import actualizar as actualizar_brasileirao
 from main_copa import correr_simulacion_copa, simular_hasta_campeon_copa
 from actualizar_resultados_copa import actualizar as actualizar_copa
 from main_bmetro import correr_simulacion_bmetro, simular_hasta_ascenso_bmetro
@@ -68,6 +70,8 @@ PYSIM_SOURCE_FILES = [
     "fixture_generator.py",
     "main_primerac.py",
     "modelos/estadisticas_primerac.py",
+    "main_brasileirao.py",
+    "modelos/estadisticas_brasileirao.py",
     "main_libertadores.py",
     "modelos/estadisticas_libertadores.py",
     "main_sudamericana.py",
@@ -138,6 +142,8 @@ class Handler(SimpleHTTPRequestHandler):
             self._manejar_datos_csv(["tabla_primerac.csv", "fixture_primerac.csv", "resultados_primerac.csv"])
         elif self.path == "/api/evolucion-posiciones-primerac":
             self._manejar_evolucion_posiciones_primerac()
+        elif self.path == "/api/datos-brasileirao":
+            self._manejar_datos_csv(["tabla_brasileirao.csv", "fixture_brasileirao.csv", "resultados_brasileirao.csv"])
         elif self.path == "/api/datos-libertadores":
             self._manejar_datos_locales(["libertadores_cuadro.csv", "libertadores_elo.csv"])
         elif self.path == "/api/datos-sudamericana":
@@ -234,6 +240,8 @@ class Handler(SimpleHTTPRequestHandler):
                 self._responder_json(200, {"files": league_csv_files("federal_a")})
             elif "primerac" in nombres[0]:
                 self._responder_json(200, {"files": league_csv_files("primerac")})
+            elif "brasileirao" in nombres[0]:
+                self._responder_json(200, {"files": league_csv_files("brasileirao")})
             else:
                 self._responder_json(500, {"error": f"Dataset no soportado: {nombres}"})
         except Exception as e:
@@ -264,6 +272,12 @@ class Handler(SimpleHTTPRequestHandler):
             self._manejar_actualizar_primerac()
         elif self.path == "/api/simular-campeon-primerac":
             self._manejar_simular_campeon_primerac()
+        elif self.path == "/api/simular-brasileirao":
+            self._manejar_simular_brasileirao()
+        elif self.path == "/api/actualizar-brasileirao":
+            self._manejar_actualizar_brasileirao()
+        elif self.path == "/api/simular-campeon-brasileirao":
+            self._manejar_simular_campeon_brasileirao()
         elif self.path == "/api/simular-copa":
             self._manejar_simular_copa()
         elif self.path == "/api/actualizar-copa":
@@ -406,6 +420,92 @@ class Handler(SimpleHTTPRequestHandler):
             self._responder_json(200, resultado)
         except Exception as e:
             print(f">>> ERROR al actualizar Primera C: {e}")
+            self._responder_json(*_error_http(e))
+        finally:
+            lock_simulacion.release()
+
+    def _manejar_simular_brasileirao(self):
+        """Corre una simulación completa del Brasileirão Série A (fase
+        regular + clasificación por posición + Monte Carlo) pedida desde
+        el selector de liga de la web, con el n_sims del body. Sin
+        Reducido: la tabla final ES la clasificación."""
+        n_sims = self._leer_n_sims()
+        if not lock_simulacion.acquire(blocking=False):
+            self._responder_json(409, {"error": "Ya hay una simulación corriendo, esperá a que termine"})
+            return
+        try:
+            print(f"\n>>> Corriendo nueva simulación del Brasileirão pedida desde la web ({n_sims} corridas)...")
+            datos = correr_simulacion_brasileirao(imprimir=True, n_sims=n_sims)
+            print(">>> Simulación del Brasileirão terminada y data_brasileirao.json actualizado.\n")
+            self._responder_json(200, datos)
+        except Exception as e:
+            print(f">>> ERROR al simular Brasileirão: {e}")
+            self._responder_json(*_error_http(e))
+        finally:
+            lock_simulacion.release()
+
+    def _manejar_actualizar_brasileirao(self):
+        """Scrapea Promiedos (Brasileirão) y, si hay partidos nuevos,
+        actualiza los CSV y re-simula con correr_simulacion_brasileirao."""
+        n_sims = self._leer_n_sims()
+        if not lock_simulacion.acquire(blocking=False):
+            self._responder_json(409, {"error": "Ya hay una simulación/actualización corriendo, esperá a que termine"})
+            return
+        try:
+            print(f"\n>>> Actualización Brasileirão pedida desde la web (Promiedos), {n_sims} corridas si hay partidos nuevos...")
+            resultado = actualizar_brasileirao(n_sims=n_sims, correr_simulacion_fn=correr_simulacion_brasileirao, imprimir=True)
+            print(">>> Actualización Brasileirão terminada.\n")
+            self._responder_json(200, resultado)
+        except Exception as e:
+            print(f">>> ERROR al actualizar Brasileirão: {e}")
+            self._responder_json(*_error_http(e))
+        finally:
+            lock_simulacion.release()
+
+    def _manejar_simular_campeon_brasileirao(self):
+        """Corre simular_hasta_campeon_brasileirao() del equipo pedido
+        desde la web y devuelve esa temporada completa hasta que ese
+        equipo salga campeón. No toca data_brasileirao.json: es una
+        corrida aparte."""
+        if not lock_simulacion.acquire(blocking=False):
+            self._responder_json(409, {"error": "Ya hay una simulación corriendo, esperá a que termine"})
+            return
+        try:
+            largo = int(self.headers.get("Content-Length", 0))
+            cuerpo_raw = self.rfile.read(largo) if largo > 0 else b"{}"
+            datos = json.loads(cuerpo_raw) if cuerpo_raw else {}
+
+            equipo_objetivo = str(datos.get("equipo", "")).strip()
+            if not equipo_objetivo:
+                self._responder_json(400, {"error": "Falta indicar el equipo"})
+                return
+
+            try:
+                max_intentos = int(datos.get("max_intentos", MAX_INTENTOS_CAMPEON_DEFAULT))
+            except (ValueError, TypeError):
+                max_intentos = MAX_INTENTOS_CAMPEON_DEFAULT
+            max_intentos = max(MAX_INTENTOS_CAMPEON_MIN, min(MAX_INTENTOS_CAMPEON_MAX, max_intentos))
+
+            print(f"\n>>> Simulando hasta el campeonato de {equipo_objetivo} (Brasileirão) pedido desde la web ({max_intentos} intentos máx)...")
+            resultado = simular_hasta_campeon_brasileirao(equipo_objetivo, max_intentos=max_intentos, imprimir=True)
+
+            if resultado is None:
+                print(f">>> No se logró el campeonato de {equipo_objetivo} en {max_intentos} intentos.\n")
+                self._responder_json(200, {
+                    "logrado": False,
+                    "equipo": equipo_objetivo,
+                    "max_intentos": max_intentos,
+                })
+                return
+
+            print(f">>> {equipo_objetivo} salió campeón en el intento {resultado['intentos']}.\n")
+            self._responder_json(200, {"logrado": True, **resultado})
+        except ValueError as e:
+            self._responder_json(400, {"error": str(e)})
+        except json.JSONDecodeError:
+            self._responder_json(400, {"error": "Body inválido"})
+        except Exception as e:
+            print(f">>> ERROR al simular hasta campeón Brasileirão: {e}")
             self._responder_json(*_error_http(e))
         finally:
             lock_simulacion.release()

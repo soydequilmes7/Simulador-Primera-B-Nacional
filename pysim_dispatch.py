@@ -8,16 +8,21 @@ disco) de las ligas y copas: correr_simulacion / simular_hasta_campeon
 correr_simulacion_copa / simular_hasta_campeon_copa (Copa Argentina),
 correr_simulacion_bmetro / simular_hasta_ascenso_bmetro (B Metro),
 correr_simulacion_federal / simular_hasta_ascenso_federal (Federal A),
-correr_simulacion_primerac / simular_hasta_ascenso_primerac (Primera C)
-y correr_simulacion_libertadores / simular_hasta_campeon_libertadores
-(Copa Libertadores). Arma el mismo dict de respuesta que antes armaba
-cada endpoint de api/index.py, para que:
+correr_simulacion_primerac / simular_hasta_ascenso_primerac (Primera C),
+correr_simulacion_brasileirao / simular_hasta_campeon_brasileirao
+(Brasileirão Série A) y correr_simulacion_libertadores /
+simular_hasta_campeon_libertadores (Copa Libertadores). Arma el mismo
+dict de respuesta que antes armaba cada endpoint de api/index.py, para que:
 
 - api/index.py lo use en /api/simular, /api/simular-lpf,
   /api/simular-campeon, /api/simular-campeon-lpf, /api/simular-copa,
   /api/simular-campeon-copa, /api/simular-bmetro,
-  /api/simular-campeon-bmetro, /api/simular-libertadores y
-  /api/simular-campeon-libertadores.
+  /api/simular-campeon-bmetro, /api/simular-federal,
+  /api/simular-campeon-federal, /api/simular-primerac,
+  /api/simular-campeon-primerac, /api/simular-brasileirao,
+  /api/simular-campeon-brasileirao, /api/simular-libertadores,
+  /api/simular-campeon-libertadores, /api/simular-sudamericana y
+  /api/simular-campeon-sudamericana.
 - El Web Worker con Pyodide (public/js/sim-worker.js) llame exactamente
   las mismas funciones dentro del navegador, sin reimplementar el
   wrapping en JS.
@@ -34,6 +39,7 @@ from main_copa import correr_simulacion_copa, simular_hasta_campeon_copa
 from main_bmetro import correr_simulacion_bmetro, simular_hasta_ascenso_bmetro
 from main_federal import correr_simulacion_federal, simular_hasta_ascenso_federal
 from main_primerac import correr_simulacion as correr_simulacion_primerac, simular_hasta_campeon as simular_hasta_ascenso_primerac
+from main_brasileirao import correr_simulacion_brasileirao, simular_hasta_campeon_brasileirao
 from main_libertadores import correr_simulacion_libertadores, simular_hasta_campeon_libertadores
 from main_sudamericana import correr_simulacion_sudamericana, simular_hasta_campeon_sudamericana
 
@@ -98,6 +104,15 @@ def simular_campeon_primerac(equipo_objetivo, max_intentos):
     return _envolver_hasta_campeon(resultado, equipo_objetivo, max_intentos)
 
 
+def simular_brasileirao(n_sims):
+    return correr_simulacion_brasileirao(n_sims=n_sims, imprimir=False, guardar_json=False)
+
+
+def simular_campeon_brasileirao(equipo_objetivo, max_intentos):
+    resultado = simular_hasta_campeon_brasileirao(equipo_objetivo, max_intentos=max_intentos, imprimir=False)
+    return _envolver_hasta_campeon(resultado, equipo_objetivo, max_intentos)
+
+
 def simular_libertadores(n_sims):
     return correr_simulacion_libertadores(imprimir=False, guardar_json=False, n_sims=n_sims)
 
@@ -129,6 +144,8 @@ _TAREAS = {
     "simular-campeon-federal": lambda kwargs: simular_campeon_federal(kwargs["equipo"], kwargs["max_intentos"]),
     "simular-primerac": lambda kwargs: simular_primerac(kwargs["n_sims"]),
     "simular-campeon-primerac": lambda kwargs: simular_campeon_primerac(kwargs["equipo"], kwargs["max_intentos"]),
+    "simular-brasileirao": lambda kwargs: simular_brasileirao(kwargs["n_sims"]),
+    "simular-campeon-brasileirao": lambda kwargs: simular_campeon_brasileirao(kwargs["equipo"], kwargs["max_intentos"]),
     "simular-libertadores": lambda kwargs: simular_libertadores(kwargs["n_sims"]),
     "simular-campeon-libertadores": lambda kwargs: simular_campeon_libertadores(kwargs["equipo"], kwargs["max_intentos"]),
     "simular-sudamericana": lambda kwargs: simular_sudamericana(kwargs["n_sims"]),

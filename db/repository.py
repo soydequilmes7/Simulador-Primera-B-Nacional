@@ -39,6 +39,7 @@ COMPETITIONS = {
     "bmetro": CompetitionSpec("bmetro", "Primera B Metropolitana"),
     "federal_a": CompetitionSpec("federal_a", "Federal A"),
     "primerac": CompetitionSpec("primerac", "Primera C"),
+    "brasileirao": CompetitionSpec("brasileirao", "Brasileirão Série A"),
     "copa": CompetitionSpec("copa", "Copa Argentina"),
 }
 
@@ -48,6 +49,7 @@ TABLE_FILE_SLUGS = {
     "tabla_bmetro.csv": "bmetro",
     "tabla_federal_a.csv": "federal_a",
     "tabla_primerac.csv": "primerac",
+    "tabla_brasileirao.csv": "brasileirao",
 }
 
 
@@ -752,6 +754,7 @@ LEAGUE_FILE_SPECS = {
     "bmetro": ("tabla_bmetro.csv", "fixture_bmetro.csv", "resultados_bmetro.csv"),
     "federal_a": ("tabla_federal_a.csv", "fixture_federal_a.csv", "resultados_federal_a.csv"),
     "primerac": ("tabla_primerac.csv", "fixture_primerac.csv", "resultados_primerac.csv"),
+    "brasileirao": ("tabla_brasileirao.csv", "fixture_brasileirao.csv", "resultados_brasileirao.csv"),
 }
 
 
@@ -782,6 +785,8 @@ def bootstrap_league_from_csv(competition_slug: str) -> bool:
 def league_csv_files(competition_slug: str) -> dict[str, str]:
     if competition_slug == "primerac":
         bootstrap_league_from_csv("primerac")
+    if competition_slug == "brasileirao":
+        bootstrap_league_from_csv("brasileirao")
 
     repo = repository()
     resultados, fixture, tabla = repo.league_data(competition_slug)
@@ -805,6 +810,7 @@ def league_csv_files(competition_slug: str) -> dict[str, str]:
         "bmetro": ("tabla_bmetro.csv", "fixture_bmetro.csv", "resultados_bmetro.csv"),
         "federal_a": ("tabla_federal_a.csv", "fixture_federal_a.csv", "resultados_federal_a.csv"),
         "primerac": ("tabla_primerac.csv", "fixture_primerac.csv", "resultados_primerac.csv"),
+        "brasileirao": ("tabla_brasileirao.csv", "fixture_brasileirao.csv", "resultados_brasileirao.csv"),
     }
     tabla_name, fixture_name, resultados_name = prefixes[competition_slug]
     return {

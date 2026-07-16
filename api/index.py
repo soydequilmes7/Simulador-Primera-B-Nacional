@@ -49,6 +49,8 @@ from actualizar_resultados_federal import actualizar as actualizar_federal
 from main_federal import correr_simulacion_federal
 from actualizar_resultados_primerac import actualizar as actualizar_primerac
 from main_primerac import correr_simulacion as correr_simulacion_primerac
+from actualizar_resultados_brasileirao import actualizar as actualizar_brasileirao
+from main_brasileirao import correr_simulacion_brasileirao
 
 # Archivos de código fuente que necesita el simulador corriendo en el
 # navegador (Pyodide/Web Worker, ver public/js/sim-worker.js). Se sirven
@@ -72,6 +74,8 @@ PYSIM_SOURCE_FILES = [
     "fixture_generator.py",
     "main_primerac.py",
     "modelos/estadisticas_primerac.py",
+    "main_brasileirao.py",
+    "modelos/estadisticas_brasileirao.py",
     "main_libertadores.py",
     "modelos/estadisticas_libertadores.py",
     "main_sudamericana.py",
@@ -182,6 +186,7 @@ _lock_copa = ReadWriteLock()
 _lock_bmetro = ReadWriteLock()
 _lock_federal = ReadWriteLock()
 _lock_primerac = ReadWriteLock()
+_lock_brasileirao = ReadWriteLock()
 _lock_libertadores = ReadWriteLock()
 _lock_sudamericana = ReadWriteLock()
 
@@ -207,6 +212,10 @@ class SimularFederalBody(BaseModel):
 
 
 class SimularPrimeraCBody(BaseModel):
+    n_sims: int = 1000
+
+
+class SimularBrasileiraoBody(BaseModel):
     n_sims: int = 1000
 
 
@@ -476,6 +485,24 @@ def datos_primerac():
         _lock_primerac.release_read()
 
 
+@app.get("/api/datos-brasileirao")
+def datos_brasileirao():
+    """Igual que /api/datos-bmetro pero con los CSV del Brasileirão
+    Série A (tabla única, sin zonas, fixture, resultados)."""
+    ocupado = _adquirir_lectura(
+        _lock_brasileirao,
+        "Hay una actualización del Brasileirão en curso. Esperá unos segundos y probá de nuevo.",
+    )
+    if ocupado:
+        return ocupado
+    try:
+        return {"files": league_csv_files("brasileirao")}
+    except Exception as e:
+        return _error_response(e)
+    finally:
+        _lock_brasileirao.release_read()
+
+
 def _archivos_datos_locales(nombres: list[str]) -> dict[str, str]:
     """A diferencia de las demás competencias (Supabase, vía
     league_csv_files/cup_csv_files), Libertadores y Sudamericana no
@@ -572,6 +599,11 @@ def estado_federal():
 @app.get("/api/estado-primerac")
 def estado_primerac():
     return _estado_persistido("primerac")
+
+
+@app.get("/api/estado-brasileirao")
+def estado_brasileirao():
+    return _estado_persistido("brasileirao")
 
 
 @app.get("/api/estado-copa")
@@ -933,6 +965,29 @@ def simular_primerac_endpoint(body: SimularPrimeraCBody = SimularPrimeraCBody())
         _lock_primerac.release_read()
 
 
+@app.post("/api/simular-brasileirao")
+def simular_brasileirao_endpoint(body: SimularBrasileiraoBody = SimularBrasileiraoBody()):
+    """Corre la simulación completa del Brasileirão Série A (fase regular
+    + clasificación por posición: Libertadores directa/previa,
+    Sudamericana, descenso) + Monte Carlo, y devuelve el resultado
+    directo. Sin Reducido: acá la tabla final ES la clasificación."""
+    n_sims = _clamp_n_sims(body.n_sims)
+
+    ocupado = _adquirir_lectura(
+        _lock_brasileirao,
+        "Hay una actualización del Brasileirão en curso. Esperá unos segundos y probá de nuevo.",
+    )
+    if ocupado:
+        return ocupado
+    try:
+        datos = pysim_dispatch.simular_brasileirao(n_sims)
+        return datos
+    except Exception as e:
+        return _error_response(e)
+    finally:
+        _lock_brasileirao.release_read()
+
+
 @app.post("/api/actualizar-primerac")
 def actualizar_primerac_endpoint(body: SimularPrimeraCBody = SimularPrimeraCBody()):
     """Scrapea Promiedos (Primera C) y, si hay partidos nuevos, actualiza
@@ -952,6 +1007,27 @@ def actualizar_primerac_endpoint(body: SimularPrimeraCBody = SimularPrimeraCBody
         return _error_response(e)
     finally:
         _lock_primerac.release_write()
+
+
+@app.post("/api/actualizar-brasileirao")
+def actualizar_brasileirao_endpoint(body: SimularBrasileiraoBody = SimularBrasileiraoBody()):
+    """Scrapea Promiedos (Brasileirão) y, si hay partidos nuevos,
+    actualiza fixture/resultados/tabla y re-simula."""
+    n_sims = _clamp_n_sims(body.n_sims)
+
+    ocupado = _adquirir_escritura(
+        _lock_brasileirao,
+        "Hay simulaciones o una actualización del Brasileirão en curso. Esperá unos segundos y probá de nuevo.",
+    )
+    if ocupado:
+        return ocupado
+    try:
+        resultado = actualizar_brasileirao(n_sims=n_sims, correr_simulacion_fn=correr_simulacion_brasileirao, imprimir=False)
+        return resultado
+    except Exception as e:
+        return _error_response(e)
+    finally:
+        _lock_brasileirao.release_write()
 
 
 @app.post("/api/simular-campeon-primerac")
@@ -978,6 +1054,32 @@ def simular_campeon_primerac_endpoint(body: SimularCampeonBody):
         return _error_response(e)
     finally:
         _lock_primerac.release_read()
+
+
+@app.post("/api/simular-campeon-brasileirao")
+def simular_campeon_brasileirao_endpoint(body: SimularCampeonBody):
+    """Corre simular_hasta_campeon_brasileirao() del equipo pedido y
+    devuelve esa temporada completa hasta que el equipo salga campeón."""
+    equipo_objetivo = body.equipo.strip()
+    if not equipo_objetivo:
+        return JSONResponse(status_code=400, content={"error": "Falta indicar el equipo"})
+
+    max_intentos = _clamp_max_intentos(body.max_intentos)
+
+    ocupado = _adquirir_lectura(
+        _lock_brasileirao,
+        "Hay una actualización del Brasileirão en curso. Esperá unos segundos y probá de nuevo.",
+    )
+    if ocupado:
+        return ocupado
+    try:
+        return pysim_dispatch.simular_campeon_brasileirao(equipo_objetivo, max_intentos)
+    except ValueError as e:
+        return JSONResponse(status_code=400, content={"error": str(e)})
+    except Exception as e:
+        return _error_response(e)
+    finally:
+        _lock_brasileirao.release_read()
 
 
 @app.post("/api/simular-libertadores")
