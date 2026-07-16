@@ -42,6 +42,11 @@ LEAGUE_FILES = {
         "fixture": "fixture_primerac.csv",
         "resultados": "resultados_primerac.csv",
     },
+    "brasileirao": {
+        "tabla": "tabla_brasileirao.csv",
+        "fixture": "fixture_brasileirao.csv",
+        "resultados": "resultados_brasileirao.csv",
+    },
 }
 
 
