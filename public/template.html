@@ -253,11 +253,22 @@
     line-height: 1.5;
     padding-bottom: 80px;
     overflow-x: clip;
+    position:relative;
     transition: background 0.45s ease, color 0.45s ease;
+  }
+  /* Textura extremadamente sutil: un noise casi imperceptible superpuesto
+     al fondo plano, para que la página no se sienta como un rectángulo de
+     color liso. Vive en un pseudo-elemento fijo detrás de todo el
+     contenido, así no interfiere con el layout ni con el scroll. */
+  body::before{
+    content:"";
+    position:fixed; inset:0; z-index:-1; pointer-events:none;
+    opacity:0.035; mix-blend-mode:overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
   }
   ::selection{ background: var(--amber); color: #fff; }
 
-  .display{ font-family:'Oswald', sans-serif; text-transform:uppercase; letter-spacing:0.04em; }
+  .display{ font-family:'Bebas Neue', sans-serif; text-transform:uppercase; letter-spacing:0.04em; }
   .mono{ font-family:'JetBrains Mono', monospace; }
 
   a{ color: var(--azul); }
@@ -271,6 +282,20 @@
     background: var(--hero-bg);
     color: var(--hero-ink);
     transition: background 0.45s ease;
+  }
+  /* Elemento decorativo extremadamente sutil: una red de nodos conectados
+     que evoca el modelo de simulación estadística sin competir con el
+     contenido. z-index negativo para pintarse detrás del texto (el hero
+     ya es un stacking context via position:relative). */
+  .hero-mesh{
+    position:absolute; inset:0; z-index:-1;
+    width:100%; height:100%;
+    color: var(--hero-ink);
+    opacity:0.045;
+    pointer-events:none;
+  }
+  @media (prefers-reduced-motion: reduce), (max-width:600px){
+    .hero-mesh{ opacity:0.03; }
   }
   /* LPF: brillo celeste discreto + trama sutil. Nacional: banda plana. */
   body.liga-lpf .hero::before{
@@ -294,7 +319,7 @@
   .hero .eyebrow{
     font-family:'JetBrains Mono', monospace;
     font-size: 12px;
-    letter-spacing: 0.3em;
+    letter-spacing: 0.26em;
     color: var(--hero-dim);
     margin-bottom: 18px;
     opacity:0;
@@ -304,13 +329,14 @@
   .hero h1{
     font-size: clamp(34px, 7vw, 64px);
     font-weight: 700;
-    letter-spacing: 0.01em;
+    letter-spacing: 0.005em;
+    line-height: 1.02;
     color: var(--hero-ink);
     opacity:0;
     animation: fade-in 0.7s ease forwards 0.25s;
   }
   body.liga-lpf .hero h1{
-    text-shadow: 0 0 28px rgba(79,195,247,0.35);
+    text-shadow: 0 0 20px rgba(79,195,247,0.24);
     animation: flicker-in 0.8s ease forwards 0.3s;
   }
   .hero h1 span{ color: var(--hero-accent); }
@@ -329,49 +355,66 @@
     animation: fade-in 0.8s ease forwards 0.5s;
   }
   .hero .meta{
-    margin-top: 28px;
-    display:flex; justify-content:center; gap: 14px; flex-wrap:wrap;
+    margin-top: 30px;
+    display:flex; justify-content:center; gap: 12px; flex-wrap:wrap;
     opacity:0;
     animation: fade-in 0.8s ease forwards 0.7s;
   }
   .hero .meta div{
     text-align:center;
-    padding: 10px 18px;
-    border: 1px solid rgba(255,255,255,0.25);
+    padding: 13px 20px;
+    border: 1px solid rgba(255,255,255,0.16);
     border-radius: var(--radius-sm);
     min-width: 108px;
-    transition: background 0.2s ease, transform 0.2s ease;
+    transition: background 0.25s cubic-bezier(0.22,1,0.36,1), transform 0.25s cubic-bezier(0.22,1,0.36,1), border-color 0.25s ease;
   }
   body.liga-lpf .hero .meta div{
-    background: rgba(255,255,255,0.07);
+    background: rgba(255,255,255,0.06);
     backdrop-filter: blur(4px);
-    border-color: rgba(255,255,255,0.18);
+    border-color: rgba(255,255,255,0.14);
   }
-  body.liga-lpf .hero .meta div:hover{ background: rgba(255,255,255,0.13); transform: var(--hover-lift); }
-  .hero .meta .num{ font-family:'JetBrains Mono'; font-size:22px; color:var(--hero-accent); font-weight:700; }
+  body.liga-lpf .hero .meta div:hover{ background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.22); transform: var(--hover-lift); }
+  .hero .meta .num{ font-family:'JetBrains Mono'; font-size:22px; color:var(--hero-accent); font-weight:700; line-height:1; }
   body.liga-lpf .hero .meta .num{ color:#FFD86B; }
-  .hero .meta .lbl{ font-size:11px; color:var(--hero-dim); letter-spacing:0.08em; text-transform:uppercase; margin-top:2px; }
+  .hero .meta .lbl{ font-size:11px; color:var(--hero-dim); letter-spacing:0.07em; text-transform:uppercase; margin-top:5px; }
 
   .sim-control{ margin-top:30px; display:flex; flex-direction:column; align-items:center; gap:10px; }
   .btn-simular{
     font-family:'JetBrains Mono'; font-size:13px; font-weight:600; letter-spacing:0.04em;
     color: var(--btn-ink); background: var(--btn-grad); border:none; border-radius: var(--radius-sm);
     padding: 12px 26px; cursor:pointer;
-    transition: filter 0.15s, transform 0.15s, box-shadow 0.2s;
+    display:inline-flex; align-items:center; gap:9px; justify-content:center;
+    box-shadow: 0 1px 0 rgba(255,255,255,0.05) inset;
+    transition: filter 0.25s cubic-bezier(0.22,1,0.36,1), transform 0.25s cubic-bezier(0.22,1,0.36,1), box-shadow 0.25s cubic-bezier(0.22,1,0.36,1);
+  }
+  .btn-simular::before{
+    content:""; width:13px; height:13px; flex-shrink:0;
+    background-color: currentColor;
+    -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polygon points='6 3 20 12 6 21 6 3'/></svg>") center / contain no-repeat;
+    mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polygon points='6 3 20 12 6 21 6 3'/></svg>") center / contain no-repeat;
   }
   body.liga-lpf .btn-simular{ box-shadow: 0 6px 18px rgba(14,134,212,0.35); border-radius: 999px; }
-  .btn-simular:hover:not(:disabled){ filter:brightness(1.1); transform: var(--hover-lift); }
-  .btn-simular:active:not(:disabled){ transform:scale(0.98); }
+  .btn-simular:hover:not(:disabled){ filter:brightness(1.08); transform: translateY(-2px); box-shadow: 0 10px 22px rgba(0,0,0,0.22); }
+  body.liga-lpf .btn-simular:hover:not(:disabled){ box-shadow: 0 12px 26px rgba(14,134,212,0.42); }
+  .btn-simular:active:not(:disabled){ transform: translateY(0) scale(0.98); transition-duration:0.1s; }
   .btn-simular:disabled{ cursor:wait; filter:grayscale(0.4) brightness(0.9); }
   .btn-row{ display:flex; gap:10px; flex-wrap:wrap; justify-content:center; }
   .btn-actualizar{
     font-family:'JetBrains Mono'; font-size:13px; font-weight:600; letter-spacing:0.04em;
     color: #fff; background: transparent; border:1px solid rgba(255,255,255,0.55); border-radius: var(--radius-sm);
-    padding: 12px 26px; cursor:pointer; transition: background 0.15s, transform 0.15s, border-color 0.15s;
+    padding: 12px 26px; cursor:pointer;
+    display:inline-flex; align-items:center; gap:9px; justify-content:center;
+    transition: background 0.25s cubic-bezier(0.22,1,0.36,1), transform 0.25s cubic-bezier(0.22,1,0.36,1), border-color 0.25s ease, box-shadow 0.25s cubic-bezier(0.22,1,0.36,1);
+  }
+  .btn-actualizar::before{
+    content:""; width:13px; height:13px; flex-shrink:0;
+    background-color: currentColor;
+    -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 2v6h-6'/><path d='M3 12a9 9 0 0 1 15-6.7L21 8'/><path d='M3 22v-6h6'/><path d='M21 12a9 9 0 0 1-15 6.7L3 16'/></svg>") center / contain no-repeat;
+    mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 2v6h-6'/><path d='M3 12a9 9 0 0 1 15-6.7L21 8'/><path d='M3 22v-6h6'/><path d='M21 12a9 9 0 0 1-15 6.7L3 16'/></svg>") center / contain no-repeat;
   }
   body.liga-lpf .btn-actualizar{ border-radius: 999px; border-color: rgba(79,195,247,0.6); color:#9BDCFF; }
-  .btn-actualizar:hover:not(:disabled){ background: rgba(255,255,255,0.12); border-color:#fff; }
-  .btn-actualizar:active:not(:disabled){ transform:scale(0.98); }
+  .btn-actualizar:hover:not(:disabled){ background: rgba(255,255,255,0.12); border-color:#fff; transform: translateY(-2px); box-shadow: 0 8px 18px rgba(0,0,0,0.18); }
+  .btn-actualizar:active:not(:disabled){ transform: translateY(0) scale(0.98); transition-duration:0.1s; }
   .btn-actualizar:disabled{ cursor:wait; opacity:0.5; }
   .sim-select-row{ display:flex; align-items:center; gap:8px; }
   .sim-select-row label{ font-family:'JetBrains Mono'; font-size:11px; color:var(--hero-dim); letter-spacing:0.04em; text-transform:uppercase; }
@@ -429,8 +472,10 @@
     border-radius: 999px; padding:8px 14px; cursor:pointer;
     transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease, transform 0.15s ease;
   }
-  .theme-toggle:hover{ color: var(--amber); border-color: var(--amber); }
+  .theme-toggle:hover{ color: var(--amber); border-color: var(--amber); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
   .theme-toggle:active{ transform: translateY(-50%) scale(0.96); }
+  .icon-svg{ display:inline-flex; align-items:center; }
+  .icon-svg svg{ width:14px; height:14px; display:block; }
   @media (max-width:600px){
     .theme-toggle{ position:static; transform:none; order:2; }
     .liga-tabs{ flex-wrap:wrap; }
@@ -442,15 +487,16 @@
   }
   body.liga-lpf .liga-tabs .group{ border-radius:999px; box-shadow: var(--card-shadow); }
   .liga-tab{
-    font-family:'Oswald', sans-serif; font-size:14px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em;
+    font-family:'Bebas Neue', sans-serif; font-size:14px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em;
     padding: 11px 26px; cursor:pointer; background:transparent; border:none; color:var(--muted);
-    transition: background 0.25s ease, color 0.25s ease;
-    min-width:0;
+    transition: background 0.25s cubic-bezier(0.22,1,0.36,1), color 0.25s ease, box-shadow 0.25s ease;
+    min-width:0; position:relative;
   }
-  .liga-tab.active{ background: var(--amber-dim); color: var(--amber); }
+  .liga-tab.active{ background: var(--amber-dim); color: var(--amber); box-shadow: inset 0 -2px 0 var(--amber); }
   body.liga-lpf .liga-tab.active{
     background: linear-gradient(135deg, #114BB4, #0E86D4);
     color:#fff;
+    box-shadow: none;
   }
   .liga-tab:not(.active):hover{ color: var(--ink-dim); background: var(--bg-panel-2); }
 
@@ -486,7 +532,7 @@
   .descenso-card{
     border:1px solid var(--danger); border-radius: var(--radius); padding:16px 26px;
     background: var(--danger-dim);
-    font-family:'Oswald'; text-transform:uppercase; letter-spacing:0.02em; font-size:17px; color: var(--danger);
+    font-family:'Bebas Neue'; text-transform:uppercase; letter-spacing:0.02em; font-size:17px; color: var(--danger);
     display:flex; align-items:center; gap:10px;
     box-shadow: var(--card-shadow);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -534,7 +580,7 @@
   .section-head{ display:flex; align-items:baseline; gap:12px; margin-bottom:22px; }
   .section-head .idx{ font-family:'JetBrains Mono'; color:var(--muted); font-size:13px; }
   body.liga-lpf .section-head .idx{ color: var(--amber); font-weight:700; }
-  .section-head h2{ font-family:'Oswald'; text-transform:uppercase; letter-spacing:0.03em; font-size:24px; font-weight:600; color: var(--ink); }
+  .section-head h2{ font-family:'Bebas Neue'; text-transform:uppercase; letter-spacing:0.03em; font-size:24px; font-weight:600; color: var(--ink); }
   .section-head .rule{ flex:1; height:1px; background: var(--line); }
   body.liga-lpf .section-head .rule{ background: linear-gradient(90deg, var(--line), transparent); }
   .section-note{ color:var(--ink-dim); font-size:14px; margin-bottom:22px; max-width:65ch; }
@@ -550,7 +596,7 @@
     box-shadow: var(--card-shadow);
   }
   .faq summary{
-    list-style:none; cursor:pointer; padding:16px 0; font-family:'Oswald', sans-serif;
+    list-style:none; cursor:pointer; padding:16px 0; font-family:'Bebas Neue', sans-serif;
     text-transform:uppercase; letter-spacing:0.02em; font-size:15px; color:var(--ink);
     display:flex; justify-content:space-between; align-items:center; gap:12px;
   }
@@ -570,15 +616,15 @@
   .table-wrap:hover{ box-shadow: var(--card-shadow-hover); }
   table{ width:100%; border-collapse:collapse; font-size:14px; }
   thead th{
-    font-family:'JetBrains Mono'; font-size:11px; letter-spacing:0.06em; text-transform:uppercase;
-    color: var(--ink-dim); text-align:right; padding:10px 12px;
+    font-family:'JetBrains Mono'; font-size:11px; letter-spacing:0.07em; text-transform:uppercase;
+    color: var(--ink-dim); text-align:right; padding:12px 14px;
     background: var(--table-head-bg);
     border-bottom:1px solid var(--line);
   }
   thead th:first-child, thead th:nth-child(2){ text-align:left; }
-  tbody td{ padding:9px 12px; text-align:right; border-bottom:1px solid var(--line); font-family:'JetBrains Mono'; font-size:13px; color: var(--ink-dim); }
+  tbody td{ padding:11px 14px; text-align:right; border-bottom:1px solid var(--line); font-family:'JetBrains Mono'; font-size:13px; color: var(--ink-dim); }
   tbody td:first-child{ text-align:left; color:var(--muted); width:32px; }
-  tbody td:nth-child(2){ text-align:left; font-family:'Inter'; font-weight:500; color:var(--ink); }
+  tbody td:nth-child(2){ text-align:left; font-family:'Inter'; font-weight:600; letter-spacing:0.001em; color:var(--ink); }
   tbody tr{ transition: background 0.15s ease; }
   tbody tr:hover{ background: var(--bg-panel-2); }
   tbody tr:last-child td{ border-bottom:none; }
@@ -1027,7 +1073,7 @@
   }
   .temporada-dashboard-title{
     position:relative;
-    font-family:'Oswald'; text-transform:uppercase; letter-spacing:0.02em;
+    font-family:'Bebas Neue'; text-transform:uppercase; letter-spacing:0.02em;
     font-size:clamp(24px,4.4vw,34px); font-weight:600; color: var(--hero-ink);
     text-shadow: 0 2px 30px rgba(155,110,255,0.3);
   }
@@ -1070,7 +1116,7 @@
     color: var(--hero-dim); margin-bottom:8px; display:flex; align-items:center; justify-content:center; gap:6px;
   }
   .temporada-metric-card .val{
-    font-family:'Oswald'; font-size:17px; font-weight:600; color: var(--hero-ink);
+    font-family:'Bebas Neue'; font-size:17px; font-weight:600; color: var(--hero-ink);
     display:flex; align-items:center; justify-content:center; gap:7px; line-height:1.25;
   }
   .temporada-metric-card .val img.escudo{ width:20px; height:20px; }
@@ -1202,7 +1248,7 @@
   }
   .temporada-ficha-head{ display:flex; align-items:center; gap:14px; }
   .temporada-ficha-head img.escudo{ width:48px; height:48px; }
-  .temporada-ficha-head .nombre{ font-family:'Oswald'; font-size:22px; font-weight:600; color:var(--ink); text-transform:uppercase; letter-spacing:0.01em; }
+  .temporada-ficha-head .nombre{ font-family:'Bebas Neue'; font-size:22px; font-weight:600; color:var(--ink); text-transform:uppercase; letter-spacing:0.01em; }
   .temporada-ficha-head .comp{
     font-family:'JetBrains Mono'; font-size:11px; letter-spacing:0.06em; text-transform:uppercase;
     color:var(--tc-color, var(--muted)); margin-top:3px; display:flex; align-items:center; gap:6px;
@@ -1327,7 +1373,7 @@
   #temporada-detalle-competencia:has(#bracket-temporada-libertadores) .section-note{ color:var(--muted); }
   #temporada-detalle-competencia:has(#bracket-temporada-libertadores) .campeon-anuncio{
     margin-top:32px; padding:28px 20px 8px; border-top:1px solid rgba(212,175,55,0.3);
-    font-family:'Poppins', sans-serif; font-weight:800; font-size:26px;
+    font-family:'Bebas Neue', sans-serif; font-weight:800; font-size:26px;
     color:#C9A227; text-shadow: 0 0 30px rgba(212,175,55,0.35); letter-spacing:0.01em; text-align:center;
   }
   #temporada-detalle-competencia:has(#bracket-temporada-libertadores) .campeon-anuncio .escudo{
@@ -1391,7 +1437,7 @@
   #temporada-detalle-competencia:has(#bracket-temporada-sudamericana) .section-note{ color:var(--muted); }
   #temporada-detalle-competencia:has(#bracket-temporada-sudamericana) .campeon-anuncio{
     margin-top:32px; padding:28px 20px 8px; border-top:1px solid rgba(31,94,255,0.32);
-    font-family:'Poppins', sans-serif; font-weight:800; font-size:26px;
+    font-family:'Bebas Neue', sans-serif; font-weight:800; font-size:26px;
     color:#3E7BFF; text-shadow: 0 0 30px rgba(31,94,255,0.3); letter-spacing:0.01em; text-align:center;
   }
   #temporada-detalle-competencia:has(#bracket-temporada-sudamericana) .campeon-anuncio .escudo{
@@ -1645,7 +1691,7 @@
     font-size:10px; color:var(--muted); text-align:center; letter-spacing:0.02em;
   }
   .final-col .campeon{
-    margin-top:14px; font-family:'Oswald'; color:var(--amber); font-size:16px;
+    margin-top:14px; font-family:'Bebas Neue'; color:var(--amber); font-size:16px;
     text-transform:uppercase; letter-spacing:0.02em; text-align:center;
   }
   /* Cartel del campeón como pie de página del cuadro completo, en vez de
@@ -1657,7 +1703,7 @@
   .campeon-anuncio-wrap:empty{ display:none; }
   .campeon-anuncio{
     margin-top:18px; padding-top:16px; border-top:1px dashed var(--line);
-    font-family:'Oswald'; color:var(--amber); font-size:18px;
+    font-family:'Bebas Neue'; color:var(--amber); font-size:18px;
     text-transform:uppercase; letter-spacing:0.03em; text-align:center;
   }
 
@@ -1707,21 +1753,26 @@
   .legend i{ width:10px; height:10px; border-radius:2px; display:inline-block; }
 
   /* ---------- SEARCH ---------- */
-  .search-section{ padding: 36px 24px 0; max-width: 720px; margin: 0 auto; }
+  .search-section{ padding: 36px 24px 0; max-width: 640px; margin: 0 auto; }
   .search-box{ position:relative; }
   .search-box input{
     width:100%; background: var(--bg-panel); border:1px solid var(--line); border-radius: var(--radius);
-    padding: 14px 16px 14px 42px; color: var(--ink); font-family:'Inter'; font-size:14px;
+    padding: 15px 18px 15px 44px; color: var(--ink); font-family:'Inter'; font-size:14px;
     outline:none; transition: border-color 0.2s ease, box-shadow 0.2s ease;
     box-shadow: var(--card-shadow);
   }
   body.liga-lpf .search-box input{ border-radius:999px; }
   .search-box input:focus{ border-color: var(--azul); box-shadow: 0 0 0 3px var(--azul-dim); }
-  .search-box input::placeholder{ color: var(--muted); }
+  .search-box input::placeholder{ color: var(--muted); font-weight:400; }
   .search-box::before{
-    content:"⌕"; position:absolute; left:15px; top:50%; transform:translateY(-50%) scaleX(1.3);
-    color: var(--muted); font-size:18px; pointer-events:none;
+    content:""; position:absolute; left:17px; top:50%; transform:translateY(-50%);
+    width:16px; height:16px; pointer-events:none;
+    background-color: var(--muted);
+    -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='11' r='7'/><path d='m21 21-4.3-4.3'/></svg>") center / contain no-repeat;
+    mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='11' r='7'/><path d='m21 21-4.3-4.3'/></svg>") center / contain no-repeat;
+    transition: background-color 0.2s ease;
   }
+  .search-box:focus-within::before{ background-color: var(--azul); }
   .search-hint{ font-family:'JetBrains Mono'; font-size:11px; color:var(--muted); margin-top:8px; text-align:center; }
 
   /* ---------- SIMULAR HASTA CAMPEÓN ---------- */
@@ -1778,7 +1829,7 @@
   }
   .team-card:hover{ box-shadow: var(--card-shadow-hover); }
   .team-card .tc-head{ display:flex; align-items:baseline; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-bottom:16px; }
-  .team-card .tc-name{ font-family:'Oswald'; font-size:22px; text-transform:uppercase; letter-spacing:0.02em; color: var(--ink); }
+  .team-card .tc-name{ font-family:'Bebas Neue'; font-size:22px; text-transform:uppercase; letter-spacing:0.02em; color: var(--ink); }
   .team-card .tc-zone{ font-family:'JetBrains Mono'; font-size:11px; letter-spacing:0.08em; padding:4px 10px; border-radius: var(--radius-sm); }
   .team-card .tc-pos{ font-family:'JetBrains Mono'; font-size:12px; color:var(--ink-dim); }
   .team-card .tc-pos b{ color:var(--ink); }
@@ -2345,19 +2396,22 @@
      oficial de la competición activa (Nacional, LPF, Copa o B Metro).
      El aro toma el acento de cada tema (--hero-accent) para integrarse
      con la identidad visual de esa pestaña en vez de verse pegado. */
-  .torneo-logo-wrap{ display:flex; justify-content:center; margin-bottom:18px; position:relative; z-index:1; min-height:0; }
+  .torneo-logo-wrap{ display:flex; justify-content:center; margin-bottom:16px; position:relative; z-index:1; min-height:0; }
   .torneo-logo{
-    /* Fondo blanco sólido (no vidrio): varios escudos de torneo tienen
-       colores oscuros que se perdían contra el hero navy con el fondo
-       traslúcido anterior. Blanco opaco garantiza contraste siempre.
-       Tamaño unificado para las 6 ligas (se tomó como referencia el
-       tamaño que antes tenían sólo B Metro/Federal A, más grande que
-       el resto, para que no haya escudos de torneo que se vean chicos). */
-    display:none; width:116px; height:116px; object-fit:contain; padding:16px;
+    /* Badge del escudo: un disco muy sutilmente degradado (no blanco
+       plano) con un aro fino de doble capa, en vez del círculo blanco
+       tipo favicon-ampliado de la versión anterior. El leve degradé y
+       el aro interior de 1px conservan el contraste que necesitan los
+       escudos oscuros sin que el badge compita con el resto del hero. */
+    display:none; width:100px; height:100px; object-fit:contain; padding:15px;
     border-radius:50%;
-    background: #FFFFFF;
-    border: 2px solid var(--hero-accent);
-    box-shadow: 0 8px 22px rgba(0,0,0,0.32), 0 0 0 4px rgba(255,255,255,0.08) inset;
+    background: radial-gradient(circle at 32% 28%, #FFFFFF 0%, #F3F5F8 72%, #E9EBF1 100%);
+    border: 1px solid rgba(255,255,255,0.9);
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.6) inset,
+      0 10px 24px rgba(0,0,0,0.28),
+      0 0 0 1px color-mix(in srgb, var(--hero-accent) 55%, transparent),
+      0 0 0 5px color-mix(in srgb, var(--hero-accent) 12%, transparent);
     opacity:0; animation: fade-in 0.6s ease forwards;
   }
   body.liga-nacional .torneo-logo[data-liga="nacional"],
@@ -2367,10 +2421,14 @@
   body.liga-federal .torneo-logo[data-liga="federal"]{ display:block; }
   body.liga-primerac .torneo-logo[data-liga="primerac"]{ display:block; }
   body.liga-temporada .torneo-logo[data-liga="temporada"]{
-    display:block; width:156px; height:156px; padding:22px;
-    box-shadow: 0 0 0 6px rgba(124,77,255,0.1), 0 10px 30px rgba(0,0,0,0.6), 0 0 46px rgba(124,77,255,0.35);
+    display:block; width:136px; height:136px; padding:20px;
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.6) inset,
+      0 10px 28px rgba(0,0,0,0.55),
+      0 0 0 1px rgba(124,77,255,0.5),
+      0 0 40px rgba(124,77,255,0.28);
   }
-  body.liga-temporada .torneo-logo-wrap{ margin-bottom:26px; }
+  body.liga-temporada .torneo-logo-wrap{ margin-bottom:24px; }
 
   /* Filas de tabla del Federal A: clasifica a la fase siguiente / posible
      mejor 5° (zonas de 9) / desciende (Reválida 1ª Etapa, según la lista
@@ -2380,7 +2438,7 @@
   #tabla-federal-pf-body tr.quinto-posible td{ background: color-mix(in srgb, var(--amber) 10%, transparent); }
   #tabla-federal-r1-body tr.desciende td{ background: color-mix(in srgb, var(--danger) 10%, transparent); }
   @media (max-width:700px){
-    .torneo-logo{ width:92px; height:92px; padding:13px; }
+    .torneo-logo{ width:80px; height:80px; padding:12px; }
   }
 
   /* ---- Tipografía del hero: más aire, jerarquía más clara ---- */
@@ -2392,16 +2450,16 @@
   /* ---- Tarjetas de estadísticas: blancas, flotando sobre el turquesa,
      con número dorado y texto gris (en vez de los badges translúcidos
      que usan las otras ligas sobre su hero oscuro) ---- */
-  body.liga-bmetro .hero .meta{ gap:16px; margin-top:34px; }
+  body.liga-bmetro .hero .meta{ gap:14px; margin-top:34px; }
   body.liga-bmetro .hero .meta div{
     background:#FFFFFF; border:none; border-radius:20px;
-    padding:14px 22px; min-width:118px;
-    box-shadow: 0 10px 26px rgba(10,60,68,0.18);
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    padding:15px 24px; min-width:118px;
+    box-shadow: 0 8px 20px rgba(10,60,68,0.13);
+    transition: transform 0.25s cubic-bezier(0.22,1,0.36,1), box-shadow 0.25s cubic-bezier(0.22,1,0.36,1);
   }
   body.liga-bmetro .hero .meta div:hover{
-    transform: translateY(-4px);
-    box-shadow: 0 16px 34px rgba(10,60,68,0.24);
+    transform: translateY(-3px);
+    box-shadow: 0 14px 28px rgba(10,60,68,0.19);
   }
   body.liga-bmetro .hero .meta .num{ color:#B39B5E; font-size:23px; }
   body.liga-bmetro .hero .meta .lbl{ color:#5B6B72; }
@@ -2525,15 +2583,15 @@
   /* ---- Tipografía propia: Plus Jakarta Sans para texto/UI y Space Grotesk
      para títulos y cifras — una pareja moderna y deportiva, bien distinta
      del Oswald + Inter + JetBrains Mono que usan las otras 3 ligas. ---- */
-  body.liga-bmetro{ font-family:'Plus Jakarta Sans', sans-serif; }
+  body.liga-bmetro{ font-family:'Inter', sans-serif; }
   body.liga-bmetro input,
   body.liga-bmetro button,
-  body.liga-bmetro select{ font-family:'Plus Jakarta Sans', sans-serif; }
+  body.liga-bmetro select{ font-family:'Inter', sans-serif; }
   body.liga-bmetro .display,
   body.liga-bmetro .hero h1,
   body.liga-bmetro .section-head h2,
   body.liga-bmetro .team-card .tc-name{
-    font-family:'Space Grotesk', sans-serif; text-transform:none; letter-spacing:0.01em; font-weight:700;
+    font-family:'Bebas Neue', sans-serif; text-transform:none; letter-spacing:0.01em; font-weight:700;
   }
   body.liga-bmetro .mono,
   body.liga-bmetro tbody td,
@@ -2548,9 +2606,9 @@
   body.liga-bmetro #campeon-equipo-bmetro,
   body.liga-bmetro #sim-count-bmetro,
   body.liga-bmetro .match .row span:last-child{
-    font-family:'Space Grotesk', sans-serif;
+    font-family:'JetBrains Mono', monospace;
   }
-  body.liga-bmetro .eyebrow{ font-family:'Space Grotesk', sans-serif; font-weight:600; }
+  body.liga-bmetro .eyebrow{ font-family:'JetBrains Mono', monospace; font-weight:600; }
 
   /* ---- Select "Elegí un equipo": mismas reglas de color que en Copa,
      para que las opciones se lean bien en ambos modos con la paleta propia. ---- */
@@ -2640,7 +2698,7 @@
     --fed-border: rgba(255,255,255,0.14);
     --fed-border-hover: rgba(79,179,166,0.6);
 
-    font-family:'Manrope', sans-serif;
+    font-family:'Inter', sans-serif;
     background: var(--bg);
   }
   body.dark.liga-federal{
@@ -2714,11 +2772,11 @@
      para cifras y etiquetas técnicas. */
   body.liga-federal input,
   body.liga-federal button,
-  body.liga-federal select{ font-family:'Manrope', sans-serif; }
+  body.liga-federal select{ font-family:'Inter', sans-serif; }
   body.liga-federal .display,
   body.liga-federal .hero h1,
   body.liga-federal .section-head h2{
-    font-family:'Anton', sans-serif; font-weight:400;
+    font-family:'Bebas Neue', sans-serif; font-weight:400;
     text-transform:uppercase; letter-spacing:0.03em;
   }
   body.liga-federal .mono,
@@ -2737,7 +2795,7 @@
   body.liga-federal #sim-count-federal,
   body.liga-federal .mc-row .pos,
   body.liga-federal .mc-row .name .pct{
-    font-family:'Space Grotesk', sans-serif;
+    font-family:'JetBrains Mono', monospace;
   }
 
   /* ---- HERO: banda mineral negra→petróleo con guía topográfica y filo
@@ -2841,7 +2899,7 @@
     border:1px solid rgba(255,255,255,0.14); border-radius:2px;
     background: rgba(255,255,255,0.03);
   }
-  body.liga-federal .liga-tab{ font-family:'Anton', sans-serif; font-weight:400; letter-spacing:0.06em; }
+  body.liga-federal .liga-tab{ font-family:'Bebas Neue', sans-serif; font-weight:400; letter-spacing:0.06em; }
   body.liga-federal .liga-tab.active{
     background: linear-gradient(160deg, #123044, #0A1C2A);
     color:#FFFFFF; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.22);
@@ -3096,7 +3154,7 @@
   /* ---- Input de simulaciones: línea fina + foco dorado, sin el fondo
      translúcido pensado para hero oscuro ---- */
   body.liga-primerac #sim-count-primerac{
-    font-family:'Poppins'; font-size:13px; font-weight:600; color:#2A2620;
+    font-family:'JetBrains Mono'; font-size:13px; font-weight:600; color:#2A2620;
     background:#FFFFFF; border:1px solid #DED6BE; border-radius:999px;
     padding:10px 16px; width:96px; text-align:center; outline:none;
     transition: border-color 0.15s ease, box-shadow 0.15s ease;
@@ -3126,9 +3184,9 @@
 
   /* ---- Encabezados de sección: sin mayúsculas forzadas (look editorial,
      más elegante) + numeral dorado ---- */
-  body.liga-primerac .section-head .idx{ color: var(--amber); font-weight:700; font-family:'Poppins'; }
+  body.liga-primerac .section-head .idx{ color: var(--amber); font-weight:700; font-family:'JetBrains Mono'; }
   body.liga-primerac .section-head h2{
-    font-family:'Poppins'; text-transform:none; letter-spacing:0; font-weight:600;
+    font-family:'Bebas Neue'; text-transform:none; letter-spacing:0; font-weight:600;
   }
   body.liga-primerac .section-head .rule{ background: linear-gradient(90deg, var(--line), transparent); }
 
@@ -3136,11 +3194,11 @@
      filete dorado — en vez de las filas-card separadas de B Metro ---- */
   body.liga-primerac .table-wrap{ box-shadow: var(--card-shadow); border-color: var(--line); }
   body.liga-primerac thead th{
-    font-family:'Poppins'; font-weight:600; font-size:10px; letter-spacing:0.08em;
+    font-family:'JetBrains Mono'; font-weight:600; font-size:10px; letter-spacing:0.08em;
     border-bottom: 2px solid var(--amber-dim);
   }
-  body.liga-primerac tbody td{ font-family:'Poppins'; font-weight:400; }
-  body.liga-primerac tbody td:nth-child(2){ font-family:'Poppins'; font-weight:500; }
+  body.liga-primerac tbody td{ font-family:'JetBrains Mono'; font-weight:400; }
+  body.liga-primerac tbody td:nth-child(2){ font-family:'Inter'; font-weight:500; }
   body.liga-primerac tbody tr.punta td:nth-child(2){ color: var(--leader-text); font-weight:700; }
 
   /* ---- Cards genéricas (match, ascenso, team-card, faq, mc-row): borde
@@ -3165,14 +3223,14 @@
   body.liga-primerac .final-col .campeon,
   body.liga-primerac .campeon-anuncio{ color: var(--amber); }
   body.liga-primerac #campeon-section-primerac{ border-radius: var(--radius); padding-bottom:28px; }
-  body.liga-primerac .team-card .tc-name{ font-family:'Poppins'; text-transform:none; letter-spacing:0; font-weight:600; }
+  body.liga-primerac .team-card .tc-name{ font-family:'Bebas Neue'; text-transform:none; letter-spacing:0; font-weight:600; }
   body.liga-primerac .team-card .tc-stat{ background: var(--bg-panel-2); }
   body.liga-primerac .racha-badge.v{ background: var(--amber); }
 
   /* ---- Select "Elegí un equipo" e input de búsqueda: línea fina hueso,
      foco dorado, tipografía Poppins ---- */
   body.liga-primerac #campeon-equipo-primerac{
-    font-family:'Poppins'; font-weight:500; color: var(--ink);
+    font-family:'Inter'; font-weight:500; color: var(--ink);
     background: var(--bg-panel); border:1px solid var(--line); border-radius:999px;
     padding:10px 18px;
   }
@@ -3182,7 +3240,7 @@
   body.dark.liga-primerac #campeon-equipo-primerac option{ background:#2B2620; color:#F3EFE5; }
   body.liga-primerac .search-box input{ border-radius:999px; }
   body.liga-primerac .search-box input:focus{ border-color: var(--amber); box-shadow: 0 0 0 3px var(--amber-dim); }
-  body.liga-primerac .search-hint{ font-family:'Poppins'; }
+  body.liga-primerac .search-hint{ font-family:'JetBrains Mono'; }
 
   /* ---- Bracket del Torneo Reducido: líneas de cuadro doradas, ya
      resuelto por --bracket-line/--bracket-line-glow ---- */
@@ -3190,24 +3248,24 @@
 
   /* ---- Monte Carlo: barra "directo" en dorado sólido, "reducido" en
      dorado atenuado (ya resuelto por currentColor/--zone-a via JS) ---- */
-  body.liga-primerac .mc-row .name .pct{ font-family:'Poppins'; }
-  body.liga-primerac .legend{ font-family:'Poppins'; }
+  body.liga-primerac .mc-row .name .pct{ font-family:'JetBrains Mono'; }
+  body.liga-primerac .legend{ font-family:'Inter'; }
 
   /* ---- FAQ ---- */
-  body.liga-primerac .faq summary{ font-family:'Poppins'; text-transform:none; letter-spacing:0; font-weight:600; }
+  body.liga-primerac .faq summary{ font-family:'Bebas Neue'; text-transform:none; letter-spacing:0; font-weight:600; }
   body.liga-primerac .faq summary::after{ color: var(--amber); }
 
   /* ---- Tipografía propia: Poppins en absolutamente todo el alcance de
      esta liga — títulos, UI, tablas, cifras — para diferenciarse del
      Oswald + Inter + JetBrains Mono (y del resto de fuentes) que usan
      las otras 5 categorías. ---- */
-  body.liga-primerac{ font-family:'Poppins', sans-serif; }
+  body.liga-primerac{ font-family:'Inter', sans-serif; }
   body.liga-primerac input,
   body.liga-primerac button,
-  body.liga-primerac select{ font-family:'Poppins', sans-serif; }
+  body.liga-primerac select{ font-family:'Inter', sans-serif; }
   body.liga-primerac .display,
   body.liga-primerac .hero h1{
-    font-family:'Poppins', sans-serif; text-transform:none; letter-spacing:0; font-weight:700;
+    font-family:'Bebas Neue', sans-serif; text-transform:none; letter-spacing:0; font-weight:700;
   }
   body.liga-primerac .mono,
   body.liga-primerac .eyebrow,
@@ -3224,7 +3282,7 @@
   body.liga-primerac .mc-row .pos,
   body.liga-primerac .mc-row .name .pct,
   body.liga-primerac .campeon-summary{
-    font-family:'Poppins', sans-serif;
+    font-family:'JetBrains Mono', monospace;
   }
 
   @media (max-width:600px){
@@ -4075,85 +4133,6 @@
     .evolucion-chart{ min-width:640px; height:420px; }
   }
 
-  /* ---- Observatorio del Ascenso (acordeón cerrado por defecto) ----
-     Todo el contenido de adentro se arma una sola vez en JS a partir de
-     DATA.observatorio_ascenso (ya calculado y persistido en el backend
-     al apretar "Actualizar Resultados" -- ver observatorio_ascenso.py y
-     actualizar_resultados.py). Abrir/cerrar acá es puro CSS: no dispara
-     ningún cálculo ni pedido de red. */
-  .observatorio-ascenso{ margin: 10px 0 32px; }
-  .obs-card{
-    border:1px solid var(--line); border-radius: var(--radius); overflow:hidden;
-    background: var(--card-grad, var(--bg-panel)); background-color: var(--bg-panel);
-    box-shadow: var(--card-shadow);
-  }
-  .obs-toggle{
-    width:100%; display:flex; align-items:center; justify-content:space-between; gap:16px;
-    padding:18px 22px; background:none; border:none; cursor:pointer; text-align:left;
-    font-family:'Plus Jakarta Sans', sans-serif;
-  }
-  .obs-toggle:hover{ background: var(--bg-panel-2); }
-  .obs-toggle-title{
-    font-family:'Oswald', sans-serif; text-transform:uppercase; letter-spacing:0.02em;
-    font-size:16px; font-weight:600; color: var(--ink); margin-bottom:4px;
-  }
-  .obs-toggle-sub{ font-size:12.5px; color: var(--ink-dim); max-width:52ch; }
-  .obs-toggle-caret{
-    font-family:'JetBrains Mono', monospace; font-size:12px; color: var(--amber);
-    white-space:nowrap; display:inline-flex; align-items:center; gap:6px; flex-shrink:0;
-  }
-  .obs-toggle-caret .arrow{ display:inline-block; transition: transform 240ms ease; }
-  .obs-toggle[aria-expanded="true"] .obs-toggle-caret .arrow{ transform: rotate(180deg); }
-
-  /* Truco grid-template-rows 0fr -> 1fr: anima el alto real del
-     contenido (a diferencia de max-height, no hace falta adivinar un
-     valor en px) y queda 200-300ms como pide la consigna. */
-  .obs-collapse{ display:grid; grid-template-rows: 0fr; transition: grid-template-rows 260ms ease; }
-  .obs-toggle[aria-expanded="true"] + .obs-collapse{ grid-template-rows: 1fr; }
-  .obs-collapse-inner{ overflow:hidden; }
-  .obs-content{ padding: 2px 22px 22px; }
-
-  .obs-grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(190px,1fr)); gap:10px; margin-bottom:18px; }
-  .obs-stat{
-    border:1px solid var(--line); border-radius: var(--radius-sm); background: var(--bg-panel-2);
-    padding:12px 14px;
-  }
-  .obs-stat-label{
-    font-family:'JetBrains Mono', monospace; font-size:10.5px; letter-spacing:0.05em; text-transform:uppercase;
-    color: var(--muted); display:flex; align-items:center; gap:6px; margin-bottom:8px;
-  }
-  .obs-stat-team{ font-size:14.5px; font-weight:700; color: var(--ink); line-height:1.3; }
-  .obs-stat-value{ font-family:'JetBrains Mono', monospace; font-size:13px; margin-top:3px; font-weight:600; }
-  .obs-stat-value.up{ color: var(--zone-a); }
-  .obs-stat-value.down{ color: var(--danger); }
-  .obs-stat-value.neutral{ color: var(--azul); }
-
-  .obs-top{ margin-bottom:16px; }
-  .obs-top-title{
-    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.05em; text-transform:uppercase;
-    color: var(--muted); margin-bottom:10px;
-  }
-  .obs-top-row{
-    display:flex; align-items:center; justify-content:space-between; gap:10px;
-    padding:8px 12px; border-radius: var(--radius-sm); background: var(--bg-panel-2); margin-bottom:6px;
-    font-size:13px;
-  }
-  .obs-top-row .team{ display:flex; align-items:center; gap:8px; color: var(--ink); font-weight:600; }
-  .obs-top-row .delta{ font-family:'JetBrains Mono', monospace; font-weight:700; flex-shrink:0; }
-  .obs-top-row .delta.up{ color: var(--zone-a); }
-  .obs-top-row .delta.down{ color: var(--danger); }
-
-  .obs-summary{
-    font-size:13px; line-height:1.65; color: var(--ink-dim);
-    border-top:1px solid var(--line); padding-top:14px; margin:0;
-  }
-  .obs-empty{ font-size:13px; color: var(--muted); font-style:italic; margin:4px 0 0; }
-  @media (max-width:480px){
-    .obs-toggle{ padding:16px; }
-    .obs-content{ padding: 2px 16px 18px; }
-    .obs-grid{ grid-template-columns: 1fr 1fr; }
-  }
-
   /* =====================================================================
      RETOQUES SOLO PARA MÓVIL
      Todo lo de acá abajo vive dentro de @media (max-width: ...), así que
@@ -4226,6 +4205,31 @@
 <body>
 
   <div class="hero">
+    <svg class="hero-mesh" viewBox="0 0 800 400" aria-hidden="true" preserveAspectRatio="xMidYMid slice">
+      <g fill="none" stroke="currentColor" stroke-width="1">
+        <path d="M60 320 C160 260 210 180 300 150 C400 116 470 210 560 170 C640 136 690 60 760 40"/>
+        <path d="M20 90 C120 140 190 60 280 100 C380 146 430 60 540 110 C620 146 700 100 780 150"/>
+        <line x1="60" y1="320" x2="150" y2="260"/>
+        <line x1="150" y1="260" x2="300" y2="150"/>
+        <line x1="300" y1="150" x2="440" y2="200"/>
+        <line x1="440" y1="200" x2="560" y2="170"/>
+        <line x1="560" y1="170" x2="700" y2="90"/>
+        <line x1="150" y1="260" x2="90" y2="150"/>
+        <line x1="300" y1="150" x2="380" y2="70"/>
+        <line x1="560" y1="170" x2="620" y2="260"/>
+      </g>
+      <g fill="currentColor">
+        <circle cx="60" cy="320" r="3.5"/>
+        <circle cx="150" cy="260" r="3"/>
+        <circle cx="300" cy="150" r="4"/>
+        <circle cx="440" cy="200" r="3"/>
+        <circle cx="560" cy="170" r="3.5"/>
+        <circle cx="700" cy="90" r="3"/>
+        <circle cx="90" cy="150" r="2.5"/>
+        <circle cx="380" cy="70" r="3"/>
+        <circle cx="620" cy="260" r="2.5"/>
+      </g>
+    </svg>
     <div class="coauthors">
       <a href="https://x.com/monti3dev" target="_blank" rel="noopener noreferrer" title="@monti3dev en X" aria-label="@monti3dev en X">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
@@ -4297,8 +4301,8 @@
         <span class="rango">(50–5000)</span>
       </div>
       <div class="btn-row">
-        <button id="btn-simular" class="btn-simular">▶ Correr nueva simulación</button>
-        <button id="btn-actualizar" class="btn-actualizar">⟳ Actualizar Resultados</button>
+        <button id="btn-simular" class="btn-simular">Correr nueva simulación</button>
+        <button id="btn-actualizar" class="btn-actualizar">Actualizar Resultados</button>
       </div>
       <div id="sim-status" class="sim-status"></div>
       <div id="last-update" class="last-update"></div>
@@ -4311,8 +4315,8 @@
         <span class="rango">(50–5000)</span>
       </div>
       <div class="btn-row">
-        <button id="btn-simular-lpf" class="btn-simular">▶ Correr nueva simulación (Clausura + playoffs)</button>
-        <button id="btn-actualizar-lpf" class="btn-actualizar">⟳ Actualizar Resultados</button>
+        <button id="btn-simular-lpf" class="btn-simular">Correr nueva simulación (Clausura + playoffs)</button>
+        <button id="btn-actualizar-lpf" class="btn-actualizar">Actualizar Resultados</button>
       </div>
       <div id="sim-status-lpf" class="sim-status"></div>
       <div id="last-update-lpf" class="last-update"></div>
@@ -4325,8 +4329,8 @@
         <span class="rango">(50–5000)</span>
       </div>
       <div class="btn-row">
-        <button id="btn-simular-copa" class="btn-simular">▶ Correr nueva simulación del cuadro</button>
-        <button id="btn-actualizar-copa" class="btn-actualizar">⟳ Actualizar Resultados</button>
+        <button id="btn-simular-copa" class="btn-simular">Correr nueva simulación del cuadro</button>
+        <button id="btn-actualizar-copa" class="btn-actualizar">Actualizar Resultados</button>
       </div>
       <div id="sim-status-copa" class="sim-status"></div>
       <div id="last-update-copa" class="last-update"></div>
@@ -4339,8 +4343,8 @@
         <span class="rango">(50–5000)</span>
       </div>
       <div class="btn-row">
-        <button id="btn-simular-bmetro" class="btn-simular">▶ Correr nueva simulación</button>
-        <button id="btn-actualizar-bmetro" class="btn-actualizar">⟳ Actualizar Resultados</button>
+        <button id="btn-simular-bmetro" class="btn-simular">Correr nueva simulación</button>
+        <button id="btn-actualizar-bmetro" class="btn-actualizar">Actualizar Resultados</button>
       </div>
       <div id="sim-status-bmetro" class="sim-status"></div>
       <div id="last-update-bmetro" class="last-update"></div>
@@ -4353,8 +4357,8 @@
         <span class="rango">(50–5000)</span>
       </div>
       <div class="btn-row">
-        <button id="btn-simular-federal" class="btn-simular">▶ Correr nueva simulación</button>
-        <button id="btn-actualizar-federal" class="btn-actualizar">⟳ Actualizar Resultados</button>
+        <button id="btn-simular-federal" class="btn-simular">Correr nueva simulación</button>
+        <button id="btn-actualizar-federal" class="btn-actualizar">Actualizar Resultados</button>
       </div>
       <div id="sim-status-federal" class="sim-status"></div>
       <div id="last-update-federal" class="last-update"></div>
@@ -4367,8 +4371,8 @@
         <span class="rango">(50–5000)</span>
       </div>
       <div class="btn-row">
-        <button id="btn-simular-primerac" class="btn-simular">▶ Correr nueva simulación</button>
-        <button id="btn-actualizar-primerac" class="btn-actualizar">⟳ Actualizar Resultados</button>
+        <button id="btn-simular-primerac" class="btn-simular">Correr nueva simulación</button>
+        <button id="btn-actualizar-primerac" class="btn-actualizar">Actualizar Resultados</button>
       </div>
       <div id="sim-status-primerac" class="sim-status"></div>
       <div id="last-update-primerac" class="last-update"></div>
@@ -4381,7 +4385,7 @@
         <span class="rango">(50–5000)</span>
       </div>
       <div class="btn-row">
-        <button id="btn-simular-libertadores" class="btn-simular">🔄 Nueva simulación</button>
+        <button id="btn-simular-libertadores" class="btn-simular">Nueva simulación</button>
       </div>
       <div id="sim-status-libertadores" class="sim-status"></div>
     </div>
@@ -4393,7 +4397,7 @@
         <span class="rango">(50–5000)</span>
       </div>
       <div class="btn-row">
-        <button id="btn-simular-sudamericana" class="btn-simular">🔄 Nueva simulación</button>
+        <button id="btn-simular-sudamericana" class="btn-simular">Nueva simulación</button>
       </div>
       <div id="sim-status-sudamericana" class="sim-status"></div>
     </div>
@@ -4412,7 +4416,7 @@
       <button class="liga-tab" data-liga="temporada">Modo Temporada</button>
     </div>
     <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Cambiar entre modo claro y oscuro">
-      <span id="theme-toggle-icon">🌙</span><span id="theme-toggle-label">Oscuro</span>
+      <span id="theme-toggle-icon" class="icon-svg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span><span id="theme-toggle-label">Oscuro</span>
     </button>
   </div>
 
@@ -4523,23 +4527,6 @@
       <span><i style="background:var(--danger)"></i> % descenso</span>
     </div>
     <div id="mc-list"></div>
-  </section>
-
-  <section class="observatorio-ascenso" id="sec-observatorio">
-    <div class="obs-card">
-      <button type="button" class="obs-toggle" id="obs-toggle" aria-expanded="false" aria-controls="obs-collapse">
-        <div>
-          <div class="obs-toggle-title">📊 Observatorio del Ascenso</div>
-          <div class="obs-toggle-sub">Analizá cómo cambiaron las probabilidades después de la última actualización.</div>
-        </div>
-        <span class="obs-toggle-caret"><span class="arrow">▼</span> <span class="obs-toggle-caret-label">Ver análisis</span></span>
-      </button>
-      <div class="obs-collapse" id="obs-collapse">
-        <div class="obs-collapse-inner">
-          <div class="obs-content" id="obs-content"></div>
-        </div>
-      </div>
-    </div>
   </section>
 
   <section id="sec-esperada">
@@ -5017,7 +5004,7 @@
         quién desciende, quién clasifica a las copas internacionales, quién clasifica
         a la próxima Copa Argentina y quién sale campeón de cada copa. 
       </p>
-      <button id="btn-simular-temporada" class="btn-simular">▶ Simular la temporada completa</button>
+      <button id="btn-simular-temporada" class="btn-simular">Simular la temporada completa</button>
       <button id="btn-reiniciar-temporada" class="btn-actualizar" style="display:none;">↺ Volver a empezar desde datos reales</button>
       <div id="temporada-ronda-info" style="display:none; color:var(--muted); font-family:'JetBrains Mono'; font-size:12px; margin-top:8px;"></div>
       <div id="temporada-status" class="sim-status"></div>
@@ -5648,7 +5635,6 @@ function iniciar() {
     renderAscenso();
     renderBracket();
     renderGoleadores();
-    renderObservatorio();
     setZone("A");
 
     TEAM_INDEX = buildTeamIndex();
@@ -5706,7 +5692,7 @@ async function correrSimulacion(){
     } finally {
         btn.disabled = false;
         input.disabled = false;
-        btn.textContent = "▶ Correr nueva simulación";
+        btn.textContent = "Correr nueva simulación";
         endApiAction();
     }
 }
@@ -5779,7 +5765,7 @@ async function correrActualizacion(){
     } finally {
         btn.disabled = false;
         input.disabled = false;
-        btn.textContent = "⟳ Actualizar Resultados";
+        btn.textContent = "Actualizar Resultados";
         endApiAction();
     }
 }
@@ -6584,129 +6570,6 @@ function initEvolucionAcordeon(liga){
 document.addEventListener('DOMContentLoaded', () => {
   Object.keys(EVOLUCION_CONFIG).forEach(initEvolucionAcordeon);
 });
-
-// ---- Observatorio del Ascenso ----------------------------------------
-// Renderiza únicamente lo que ya viene calculado y persistido desde el
-// backend en DATA.observatorio_ascenso (ver observatorio_ascenso.py y
-// actualizar_resultados.py). Acá no se hace ningún cálculo: solo se
-// arma el HTML a partir del objeto { biggestRise, biggestFall,
-// newFavorite, enteredPlayoffs, leftPlayoffs, topChanges, summary }.
-// Abrir/cerrar el acordeón es puro CSS (ver .obs-collapse en el bloque
-// de estilos) y no dispara ningún render ni pedido de red.
-
-function escapeHtml(valor){
-  return String(valor ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
-
-function obsFmtPct(n){
-  const num = Number(n) || 0;
-  const signo = num > 0 ? '+' : '';
-  return `${signo}${num.toFixed(1)}%`;
-}
-
-function obsStatCard(icono, label, cuerpoHtml){
-  return `
-    <div class="obs-stat">
-      <div class="obs-stat-label">${icono} ${escapeHtml(label)}</div>
-      ${cuerpoHtml}
-    </div>`;
-}
-
-function obsEquipoLinea(equipo){
-  return `<div class="obs-stat-team">${escudoHTML(equipo)}${escapeHtml(equipo)}</div>`;
-}
-
-function renderObservatorio(){
-  const cont = document.getElementById('obs-content');
-  if (!cont) return;
-
-  const obs = DATA && DATA.observatorio_ascenso;
-
-  if (!obs) {
-    cont.innerHTML = `<p class="obs-empty">Todavía no hay una actualización anterior con la cual comparar. Este análisis aparece automáticamente después de la próxima vez que se ejecute "Actualizar resultados".</p>`;
-    return;
-  }
-
-  let stats = '';
-
-  if (obs.biggestRise) {
-    stats += obsStatCard('📈', 'Mayor subida',
-      obsEquipoLinea(obs.biggestRise.equipo) +
-      `<div class="obs-stat-value up">${obsFmtPct(obs.biggestRise.delta)}</div>`);
-  }
-  if (obs.biggestFall) {
-    stats += obsStatCard('📉', 'Mayor caída',
-      obsEquipoLinea(obs.biggestFall.equipo) +
-      `<div class="obs-stat-value down">${obsFmtPct(obs.biggestFall.delta)}</div>`);
-  }
-  if (obs.newFavorite) {
-    stats += obsStatCard('👑', 'Nuevo favorito al ascenso',
-      obsEquipoLinea(obs.newFavorite.equipo) +
-      `<div class="obs-stat-value neutral">${Number(obs.newFavorite.probabilidad).toFixed(1)}%</div>`);
-  }
-  if (obs.enteredPlayoffs && obs.enteredPlayoffs.length) {
-    stats += obsStatCard('🎟️', 'Ingresó al Reducido',
-      obs.enteredPlayoffs.map(obsEquipoLinea).join(''));
-  }
-  if (obs.leftPlayoffs && obs.leftPlayoffs.length) {
-    stats += obsStatCard('❌', 'Salió del Reducido',
-      obs.leftPlayoffs.map(obsEquipoLinea).join(''));
-  }
-
-  let top = '';
-  if (obs.topChanges && obs.topChanges.length) {
-    const filas = obs.topChanges.map(c => {
-      const sube = c.delta >= 0;
-      return `
-        <div class="obs-top-row">
-          <span class="team">${escudoHTML(c.equipo)}${escapeHtml(c.equipo)}</span>
-          <span class="delta ${sube ? 'up' : 'down'}">${sube ? '▲' : '▼'} ${obsFmtPct(c.delta)}</span>
-        </div>`;
-    }).join('');
-    top = `
-      <div class="obs-top">
-        <div class="obs-top-title">📊 Top ${obs.topChanges.length} mayores cambios</div>
-        ${filas}
-      </div>`;
-  }
-
-  const resumen = obs.summary
-    ? `<p class="obs-summary">${escapeHtml(obs.summary)}</p>`
-    : '';
-
-  if (!stats && !top && !resumen) {
-    cont.innerHTML = `<p class="obs-empty">No hubo cambios en las probabilidades desde la última actualización.</p>`;
-    return;
-  }
-
-  cont.innerHTML = `
-    <div class="obs-grid">${stats}</div>
-    ${top}
-    ${resumen}
-  `;
-}
-
-function initObservatorioAcordeon(){
-  const toggle = document.getElementById('obs-toggle');
-  const label = toggle ? toggle.querySelector('.obs-toggle-caret-label') : null;
-  if (!toggle) return;
-
-  toggle.addEventListener('click', () => {
-    const abierto = toggle.getAttribute('aria-expanded') === 'true';
-    toggle.setAttribute('aria-expanded', String(!abierto));
-    if (label) label.textContent = abierto ? 'Ver análisis' : 'Ocultar análisis';
-    // Nota: no se recalcula ni se vuelve a pedir nada acá -- el contenido
-    // ya fue renderizado por renderObservatorio() cuando se cargaron los
-    // datos, y abrir/cerrar es solo la animación CSS de grid-template-rows.
-  });
-}
-
-document.addEventListener('DOMContentLoaded', initObservatorioAcordeon);
 
 function renderTabla(zona, equipoDestacado){
   // tabla_actual = posiciones reales de HOY (mismo dato que usa el
@@ -7802,7 +7665,7 @@ async function correrSimulacionPrimeraC(){
   } finally {
     btn.disabled = false;
     input.disabled = false;
-    btn.textContent = "▶ Correr nueva simulación";
+    btn.textContent = "Correr nueva simulación";
     endApiAction();
   }
 }
@@ -7858,7 +7721,7 @@ async function correrActualizacionPrimeraC(){
   } finally {
     btn.disabled = false;
     input.disabled = false;
-    btn.textContent = "⟳ Actualizar Resultados";
+    btn.textContent = "Actualizar Resultados";
     endApiAction();
   }
 }
@@ -8308,7 +8171,7 @@ async function correrSimulacionLPF(){
   } finally {
     btn.disabled = false;
     input.disabled = false;
-    btn.textContent = "▶ Correr nueva simulación (Clausura + playoffs)";
+    btn.textContent = "Correr nueva simulación (Clausura + playoffs)";
     endApiAction();
   }
 }
@@ -8364,7 +8227,7 @@ async function correrActualizacionLPF(){
   } finally {
     btn.disabled = false;
     input.disabled = false;
-    btn.textContent = "⟳ Actualizar Resultados";
+    btn.textContent = "Actualizar Resultados";
     endApiAction();
   }
 }
@@ -8828,7 +8691,7 @@ async function correrSimulacionBMetro(){
   } finally {
     btn.disabled = false;
     input.disabled = false;
-    btn.textContent = "▶ Correr nueva simulación";
+    btn.textContent = "Correr nueva simulación";
     endApiAction();
   }
 }
@@ -8885,7 +8748,7 @@ async function correrActualizacionBMetro(){
   } finally {
     btn.disabled = false;
     input.disabled = false;
-    btn.textContent = "⟳ Actualizar Resultados";
+    btn.textContent = "Actualizar Resultados";
     endApiAction();
   }
 }
@@ -9488,7 +9351,7 @@ async function correrSimulacionFederal(){
   } finally {
     btn.disabled = false;
     input.disabled = false;
-    btn.textContent = "▶ Correr nueva simulación";
+    btn.textContent = "Correr nueva simulación";
     endApiAction();
   }
 }
@@ -9544,7 +9407,7 @@ async function correrActualizacionFederal(){
   } finally {
     btn.disabled = false;
     input.disabled = false;
-    btn.textContent = "⟳ Actualizar Resultados";
+    btn.textContent = "Actualizar Resultados";
     endApiAction();
   }
 }
@@ -9667,7 +9530,7 @@ const HERO_TEXTOS = {
   temporada: {
     eyebrow: () => `TODAS LAS COMPETENCIAS — UNA SOLA CORRIDA`,
     titulo: "MODO TEMPORADA",
-    sub: "Las 8 competencias juntas: quién sale campeón, quién asciende, quién desciende y quién clasifica a copas internacionales, todo en una sola corrida.",
+    sub: "Las 8 competencias en una sola corrida: quién sale campeón, quién asciende, quién desciende y quién se mete en las copas internacionales.",
     equiposLbl: "Equipos",
     zonasLbl: "Competencias",
     ascensosLbl: "Ascensos por temporada",
@@ -9676,7 +9539,7 @@ const HERO_TEXTOS = {
   nacional: {
     eyebrow: () => `SIMULACIÓN MONTE CARLO — <span id="hero-n">${(DATA && DATA.n_simulaciones) || 0}</span> CORRIDAS`,
     titulo: "PRIMERA NACIONAL",
-    sub: "Probabilidades de ascenso y descenso calculadas simulando la temporada completa hasta cinco mil veces con un modelo Poisson ajustado por forma reciente y corrección Dixon-Coles.",
+    sub: "Simulamos la temporada completa hasta cinco mil veces con un modelo Poisson ajustado por forma reciente y corrección Dixon-Coles, para estimar quién asciende y quién desciende.",
     equiposLbl: "Equipos",
     zonasLbl: "Zonas",
     ascensosLbl: "Ascensos por edición",
@@ -9685,7 +9548,7 @@ const HERO_TEXTOS = {
   copa: {
     eyebrow: () => `SIMULACIÓN MONTE CARLO — <span id="hero-n">${(DATA_COPA && DATA_COPA.n_simulaciones) || 0}</span> CORRIDAS`,
     titulo: "COPA ARGENTINA",
-    sub: "Cuadro real de 64 equipos: los cruces ya jugados quedan fijos y los pendientes se simulan a partido único en cancha neutral con el mismo modelo Poisson — alargue y penales incluidos.",
+    sub: "Partimos del cuadro real de 64 equipos: los cruces ya jugados quedan fijos y el resto se simula a partido único en cancha neutral con el mismo modelo Poisson, alargue y penales incluidos.",
     equiposLbl: "Equipos",
     zonasLbl: "Zonas",
     ascensosLbl: "Rondas",
@@ -9694,7 +9557,7 @@ const HERO_TEXTOS = {
   lpf: {
     eyebrow: () => `SIMULACIÓN MONTE CARLO — <span id="hero-n">${(DATA_LPF && DATA_LPF.n_simulaciones) || 0}</span> CORRIDAS`,
     titulo: "LIGA PROFESIONAL",
-    sub: "Apertura 2026 ya jugado (dato real) + Clausura simulado con el mismo modelo Poisson — playoffs cruzados, Tabla Anual, copas internacionales y Trofeo de Campeones.",
+    sub: "El Apertura 2026 ya jugado, dato real, más el Clausura simulado con el mismo modelo Poisson: playoffs cruzados, Tabla Anual, copas internacionales y Trofeo de Campeones.",
     equiposLbl: "Equipos",
     zonasLbl: "Zonas",
     ascensosLbl: "Playoffs (equipos)",
@@ -9703,7 +9566,7 @@ const HERO_TEXTOS = {
   bmetro: {
     eyebrow: () => `SIMULACIÓN MONTE CARLO — <span id="hero-n">${(DATA_BMETRO && DATA_BMETRO.n_simulaciones) || 0}</span> CORRIDAS`,
     titulo: "PRIMERA B METROPOLITANA",
-    sub: "Temporada regular simulada con el mismo modelo Poisson ajustado por forma reciente y corrección Dixon-Coles: 1 ascenso directo (puntero) + 1 por el Torneo Reducido, tabla única sin zonas.",
+    sub: "Temporada regular simulada con el modelo Poisson ajustado por forma reciente y corrección Dixon-Coles: un ascenso directo para el puntero y otro por el Torneo Reducido, en tabla única sin zonas.",
     equiposLbl: "Equipos",
     zonasLbl: "Zonas",
     ascensosLbl: "Ascensos por edición",
@@ -9712,7 +9575,7 @@ const HERO_TEXTOS = {
   federal: {
     eyebrow: () => `SIMULACIÓN MONTE CARLO — <span id="hero-n">${(DATA_FEDERAL && DATA_FEDERAL.n_simulaciones) || 0}</span> CORRIDAS`,
     titulo: "TORNEO FEDERAL A",
-    sub: "Primera Fase (4 zonas) + Segunda Fase (2 zonas) simuladas con el mismo modelo Poisson, seguidas del camino al 1° ascenso y las 6 etapas de la Reválida, todo a eliminación directa ida y vuelta.",
+    sub: "Primera Fase de 4 zonas y Segunda Fase de 2, simuladas con el mismo modelo Poisson, seguidas del camino al primer ascenso y las 6 etapas de la Reválida, todo a eliminación directa ida y vuelta.",
     equiposLbl: "Equipos",
     zonasLbl: "Zonas",
     ascensosLbl: "Ascensos por edición",
@@ -9877,7 +9740,9 @@ function aplicarTema(tema){
   document.body.classList.toggle('dark', tema === 'dark');
   const icon = document.getElementById('theme-toggle-icon');
   const label = document.getElementById('theme-toggle-label');
-  if (icon) icon.textContent = tema === 'dark' ? '☀️' : '🌙';
+  const ICON_SUN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>';
+  const ICON_MOON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+  if (icon) icon.innerHTML = tema === 'dark' ? ICON_SUN : ICON_MOON;
   if (label) label.textContent = tema === 'dark' ? 'Claro' : 'Oscuro';
   try { localStorage.setItem('tema-app', tema); } catch (e) {}
 }
@@ -10163,7 +10028,7 @@ async function correrSimulacionCopa(){
   } finally {
     btn.disabled = false;
     input.disabled = false;
-    btn.textContent = "▶ Correr nueva simulación del cuadro";
+    btn.textContent = "Correr nueva simulación del cuadro";
     endApiAction();
   }
 }
@@ -10211,7 +10076,7 @@ async function correrActualizacionCopa(){
   } finally {
     btn.disabled = false;
     input.disabled = false;
-    btn.textContent = "⟳ Actualizar Resultados";
+    btn.textContent = "Actualizar Resultados";
     endApiAction();
   }
 }
@@ -10273,7 +10138,7 @@ document.getElementById('btn-campeon-copa').addEventListener('click', simularHas
    partido único) salvo la final, y el cuadro se dibuja "enfrentado"
    (4 Octavos + 2 Cuartos + 1 Semifinal de cada lado, Final en el medio
    -- ver bracketLibertadoresHTML/buildBracketLinesLibertadores más
-   abajo) en vez de en columnas sueltas. El botón "🔄 Nueva simulación"
+   abajo) en vez de en columnas sueltas. El botón "Nueva simulación"
    corre primero en el navegador (Pyodide, vía ejecutarSimulacion) y si
    no está disponible cae a /api/simular-libertadores en servidor.py
    (correr_simulacion_libertadores() de main_libertadores.py) -- ver
@@ -10386,7 +10251,7 @@ async function correrSimulacionLibertadores(){
   } finally {
     btn.disabled = false;
     input.disabled = false;
-    btn.textContent = "🔄 Nueva simulación";
+    btn.textContent = "Nueva simulación";
     endApiAction();
   }
 }
@@ -10489,7 +10354,7 @@ async function correrSimulacionSudamericana(){
   } finally {
     btn.disabled = false;
     input.disabled = false;
-    btn.textContent = "🔄 Nueva simulación";
+    btn.textContent = "Nueva simulación";
     endApiAction();
   }
 }
@@ -13234,7 +13099,7 @@ async function correrTemporada(){
     setApiErrorStatus(status, "No se pudo simular la temporada", e);
   } finally {
     btn.disabled = false;
-    btn.textContent = ESTADO_TEMPORADA_LOCAL ? "▶ Simular la temporada siguiente (local)" : "▶ Simular la temporada completa";
+    btn.textContent = ESTADO_TEMPORADA_LOCAL ? "Simular la temporada siguiente (local)" : "Simular la temporada completa";
     endApiAction();
   }
 }
@@ -13251,7 +13116,7 @@ function reiniciarTemporada(){
   renderPalmaresSelecciones();
   TEMPORADA_META_CACHE = null;
   aplicarMetaTemporada();
-  document.getElementById('btn-simular-temporada').textContent = "▶ Simular la temporada completa";
+  document.getElementById('btn-simular-temporada').textContent = "Simular la temporada completa";
   document.getElementById('btn-reiniciar-temporada').style.display = 'none';
   document.getElementById('temporada-ronda-info').style.display = 'none';
   const status = document.getElementById('temporada-status');
