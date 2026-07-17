@@ -3338,7 +3338,67 @@
      por posición (Libertadores directa/previa, Sudamericana, descenso),
      de ahí la franja extra tr.sudamericana definida más arriba.
      ===================================================================== */
-  body.liga-brasileirao,
+  /* Antes esta liga tenía un único esquema fijo (igual en claro/oscuro,
+     mismo criterio que Libertadores/Sudamericana). Ahora tiene modo
+     claro real: el hero (banda de marca, verde limão sobre navy) se
+     mantiene IGUAL en los dos modos -- es la identidad visual del
+     torneo, no un color de UI -- pero el resto de la página (paneles,
+     tablas, tarjetas) sí cambia con el toggle. Mismos tonos de acento
+     en ambos modos (solo se oscurecen un poco en modo claro para tener
+     contraste legible sobre blanco -- el verde limão puro casi no se
+     lee como texto/borde sobre fondo claro). */
+  body.liga-brasileirao{
+    --bg: linear-gradient(180deg, #F6FFE0 0%, #EEFFC2 100%);
+    --bg-panel: #FFFFFF;
+    --bg-panel-2: #F3FFDA;
+    --line: #D8EDA0;
+    --ink: #14170A;
+    --ink-dim: #3A3F24;
+    --muted: #7C8468;
+
+    --amber: #B88A00;
+    --amber-dim: #FFF3C4;
+    --zone-a: #5A8A00;
+    --zone-a-dim: #EAFFB8;
+    --zone-b: #2A46C9;
+    --zone-b-dim: #E1E7FC;
+    --danger: #D4432B;
+    --danger-dim: #FBE0D8;
+    --azul: #2A46C9;
+    --azul-dim: #E1E7FC;
+
+    --leader-bg: #EAFFB8;
+    --leader-accent: #5A8A00;
+    --leader-text: #3A5900;
+    --qualified-bg: #E1E7FC;
+    --qualified-accent: #2A46C9;
+    --qualified-text: #182C8C;
+    --sudamericana-bg: #FFF3C4;
+    --sudamericana-accent: #B88A00;
+    --sudamericana-text: #6E5200;
+    --relegation-bg: #FBE0D8;
+    --relegation-accent: #D4432B;
+    --relegation-text: #8C2A18;
+
+    --radius: 18px;
+    --radius-sm: 12px;
+    --card-shadow: 0 6px 22px rgba(90,138,0,0.10);
+    --card-shadow-hover: 0 14px 34px rgba(90,138,0,0.18);
+    --card-grad: linear-gradient(180deg, #FFFFFF 0%, #FAFFF0 100%);
+    --hero-bg: linear-gradient(160deg, #0A0B18 0%, #131428 55%, #191A35 100%);
+    --hero-ink: #F1F5E8;
+    --hero-dim: rgba(241,245,232,0.82);
+    --hero-accent: #C7FF00;
+    --tabs-bg: rgba(255,255,255,0.92);
+    --btn-grad: linear-gradient(135deg, #C7FF00 0%, #9FDD00 100%);
+    --btn-ink: #0A0B18;
+    --table-head-bg: #F3FFDA;
+    --hover-lift: translateY(-3px);
+    --bracket-line: #5A8A00;
+    --bracket-line-glow: rgba(90,138,0,0.24);
+
+    background: var(--bg);
+  }
   body.dark.liga-brasileirao{
     --bg: #0A0B18;
     --bg-panel: rgba(255,255,255,0.045);
@@ -3413,15 +3473,19 @@
   }
 
   body.liga-brasileirao .liga-tab.active{
+    background: linear-gradient(135deg, rgba(90,138,0,0.16), rgba(90,138,0,0.05));
+    color:#3A5900; box-shadow: inset 0 0 0 1px rgba(90,138,0,0.32);
+  }
+  body.dark.liga-brasileirao .liga-tab.active{
     background: linear-gradient(135deg, rgba(199,255,0,0.24), rgba(199,255,0,0.08));
     color:#E3FF8F; box-shadow: inset 0 0 0 1px rgba(199,255,0,0.42);
   }
   body.liga-brasileirao .liga-tab:not(.active){ color: var(--muted); }
-  body.liga-brasileirao .liga-tabs .group{ border:1px solid rgba(199,255,0,0.18); background: rgba(255,255,255,0.02); }
+  body.liga-brasileirao .liga-tabs .group{ border:1px solid var(--line); background: var(--bg-panel-2); }
   body.liga-brasileirao .liga-tabs{ border-bottom:1px solid rgba(199,255,0,0.15); }
 
-  body.liga-brasileirao #mc-list-brasileirao{ border-color: rgba(199,255,0,0.2); }
-  body.liga-brasileirao .mc-row .name .pct{ color:#C7FF00; }
+  body.liga-brasileirao #mc-list-brasileirao{ border-color: var(--line); }
+  body.liga-brasileirao .mc-row .name .pct{ color: var(--zone-a); }
 
   /* ---- Select "Elegí un equipo": píldora verde limão sobre panel oscuro,
      coherente con el resto de la identidad de esta liga ---- */
@@ -3436,7 +3500,8 @@
     border-color:#C7FF00; box-shadow: 0 0 0 3px rgba(199,255,0,0.22);
   }
   body.liga-brasileirao #campeon-equipo-brasileirao:disabled{ cursor:wait; opacity:0.5; }
-  body.liga-brasileirao #campeon-equipo-brasileirao option{ background:#12132A; color:#F1F5E8; }
+  body.liga-brasileirao #campeon-equipo-brasileirao option{ background:#FFFFFF; color:#14170A; }
+  body.dark.liga-brasileirao #campeon-equipo-brasileirao option{ background:#12132A; color:#F1F5E8; }
 
   /* ---- Input "Cantidad de simulaciones": mismo tratamiento que el
      resto de los sim-count-*, con el foco en verde limão ---- */
@@ -3490,7 +3555,65 @@
      equipo -- para que se sienta como un paquete gráfico coherente de
      principio a fin, no una plantilla genérica con colores cambiados.
      ===================================================================== */
-  body.liga-ligapro,
+  /* Antes esta liga tenía un único esquema fijo (igual en claro/oscuro,
+     mismo criterio que Libertadores/Sudamericana). Ahora tiene modo
+     claro real: el hero (banda de marca, oro/rojo/azul sobre negro)
+     se mantiene IGUAL en los dos modos -- es la identidad visual del
+     torneo, no un color de UI -- pero el resto de la página (paneles,
+     tablas, tarjetas) sí cambia con el toggle. Mismos tonos de acento
+     en ambos modos, solo cambia el fondo/contraste alrededor. */
+  body.liga-ligapro{
+    --bg: linear-gradient(180deg, #FFFCF2 0%, #FFF6DC 100%);
+    --bg-panel: #FFFFFF;
+    --bg-panel-2: #FFF6DC;
+    --line: #EDDBA0;
+    --ink: #201C0A;
+    --ink-dim: #4E472C;
+    --muted: #8C8468;
+
+    --amber: #B8860A;
+    --amber-dim: #FFF0BE;
+    --zone-a: #B8860A;
+    --zone-a-dim: #FFF0BE;
+    --zone-b: #2A46C9;
+    --zone-b-dim: #E1E7FC;
+    --danger: #D42B1F;
+    --danger-dim: #FBDCD8;
+    --azul: #2A46C9;
+    --azul-dim: #E1E7FC;
+
+    --leader-bg: #FFF0BE;
+    --leader-accent: #B8860A;
+    --leader-text: #6E5206;
+    --qualified-bg: #E1E7FC;
+    --qualified-accent: #2A46C9;
+    --qualified-text: #182C8C;
+    --sudamericana-bg: #EAF0FF;
+    --sudamericana-accent: #4A62D6;
+    --sudamericana-text: #2A3C9E;
+    --relegation-bg: #FBDCD8;
+    --relegation-accent: #D42B1F;
+    --relegation-text: #8C1D14;
+
+    --radius: 18px;
+    --radius-sm: 12px;
+    --card-shadow: 0 6px 22px rgba(184,134,10,0.10);
+    --card-shadow-hover: 0 14px 34px rgba(184,134,10,0.18);
+    --card-grad: linear-gradient(180deg, #FFFFFF 0%, #FFFBF0 100%);
+    --hero-bg: linear-gradient(160deg, #08080A 0%, #14110A 50%, #0A0D1C 100%);
+    --hero-ink: #F7F4EC;
+    --hero-dim: rgba(247,244,236,0.84);
+    --hero-accent: #F6C200;
+    --tabs-bg: rgba(255,255,255,0.92);
+    --btn-grad: linear-gradient(135deg, #F6C200 0%, #D9A700 100%);
+    --btn-ink: #100C00;
+    --table-head-bg: #FFF6DC;
+    --hover-lift: translateY(-3px);
+    --bracket-line: #B8860A;
+    --bracket-line-glow: rgba(184,134,10,0.24);
+
+    background: var(--bg);
+  }
   body.dark.liga-ligapro{
     --bg: #08080A;
     --bg-panel: rgba(255,255,255,0.05);
@@ -3571,15 +3694,19 @@
   }
 
   body.liga-ligapro .liga-tab.active{
+    background: linear-gradient(135deg, rgba(184,134,10,0.16), rgba(184,134,10,0.05));
+    color:#6E5206; box-shadow: inset 0 0 0 1px rgba(184,134,10,0.32);
+  }
+  body.dark.liga-ligapro .liga-tab.active{
     background: linear-gradient(135deg, rgba(246,194,0,0.26), rgba(246,194,0,0.09));
     color:#FFDE66; box-shadow: inset 0 0 0 1px rgba(246,194,0,0.46);
   }
   body.liga-ligapro .liga-tab:not(.active){ color: var(--muted); }
-  body.liga-ligapro .liga-tabs .group{ border:1px solid rgba(246,194,0,0.2); background: rgba(255,255,255,0.025); }
+  body.liga-ligapro .liga-tabs .group{ border:1px solid var(--line); background: var(--bg-panel-2); }
   body.liga-ligapro .liga-tabs{ border-bottom:1px solid rgba(246,194,0,0.16); }
 
-  body.liga-ligapro #mc-list-ligapro{ border-color: rgba(246,194,0,0.22); }
-  body.liga-ligapro .mc-row .name .pct{ color:#F6C200; }
+  body.liga-ligapro #mc-list-ligapro{ border-color: var(--line); }
+  body.liga-ligapro .mc-row .name .pct{ color: var(--amber); }
 
   /* Cada título de sección lleva la misma cinta tricolor pegada al
      costado, en miniatura -- el sello que repite el hero por toda la
@@ -3627,7 +3754,8 @@
     border-color:#F6C200; box-shadow: 0 0 0 3px rgba(246,194,0,0.24);
   }
   body.liga-ligapro #campeon-equipo-ligapro:disabled{ cursor:wait; opacity:0.5; }
-  body.liga-ligapro #campeon-equipo-ligapro option{ background:#0E0F1F; color:#F7F4EC; }
+  body.liga-ligapro #campeon-equipo-ligapro option{ background:#FFFFFF; color:#201C0A; }
+  body.dark.liga-ligapro #campeon-equipo-ligapro option{ background:#0E0F1F; color:#F7F4EC; }
 
   /* ---- Subtítulo de zona arriba de cada una de las 4 tablas (Fase
      Inicial / Hexagonal Campeón / Cuadrangular Sudamericana / Hexagonal
