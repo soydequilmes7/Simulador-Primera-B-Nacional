@@ -3613,6 +3613,22 @@
   body.liga-ligapro #sim-count-ligapro::-webkit-inner-spin-button,
   body.liga-ligapro #sim-count-ligapro::-webkit-outer-spin-button{ opacity:0.6; }
 
+  /* ---- Select "Elegí un equipo…" de "Simulá hasta que tu equipo sea
+     campeón": mismo trato dorado que el resto de los controles de esta
+     liga (antes se quedaba con el look default del navegador). ---- */
+  body.liga-ligapro #campeon-equipo-ligapro{
+    font-family:'JetBrains Mono'; font-size:13px; font-weight:600; color: var(--ink);
+    background: var(--bg-panel); border:1px solid rgba(246,194,0,0.34); border-radius:999px;
+    padding:10px 18px; outline:none; min-width:220px;
+    transition: border-color 0.15s, box-shadow 0.15s, opacity 0.15s;
+  }
+  body.liga-ligapro #campeon-equipo-ligapro:hover:not(:disabled){ border-color:#F6C200; }
+  body.liga-ligapro #campeon-equipo-ligapro:focus{
+    border-color:#F6C200; box-shadow: 0 0 0 3px rgba(246,194,0,0.24);
+  }
+  body.liga-ligapro #campeon-equipo-ligapro:disabled{ cursor:wait; opacity:0.5; }
+  body.liga-ligapro #campeon-equipo-ligapro option{ background:#0E0F1F; color:#F7F4EC; }
+
   /* ---- Subtítulo de zona arriba de cada una de las 4 tablas (Fase
      Inicial / Hexagonal Campeón / Cuadrangular Sudamericana / Hexagonal
      Descenso) -- solo en esta liga, así que vive acá en vez de en el
@@ -4506,9 +4522,9 @@
     #team-search, .search-box input,
     #sim-count, #sim-count-lpf, #sim-count-copa, #sim-count-bmetro,
     #sim-count-federal, #sim-count-primerac, #sim-count-libertadores, #sim-count-sudamericana,
-    #sim-count-brasileirao,
+    #sim-count-brasileirao, #sim-count-ligapro,
     #campeon-equipo, #campeon-equipo-lpf, #campeon-equipo-copa, #campeon-equipo-bmetro,
-    #campeon-equipo-federal, #campeon-equipo-libertadores, #campeon-equipo-brasileirao,
+    #campeon-equipo-federal, #campeon-equipo-libertadores, #campeon-equipo-brasileirao, #campeon-equipo-ligapro,
     .evolucion-picker-search{
       font-size: 18px;
     }
@@ -6037,7 +6053,7 @@ function setApiActionsDisabled(disabled){
   document.querySelectorAll('.btn-simular, .btn-actualizar').forEach(btn => {
     btn.disabled = disabled;
   });
-  document.querySelectorAll('#sim-count, #sim-count-lpf, #sim-count-copa, #sim-count-bmetro, #sim-count-federal, #sim-count-primerac, #sim-count-libertadores, #sim-count-sudamericana, #sim-count-brasileirao, #sim-count-ligapro, #campeon-equipo, #campeon-equipo-lpf, #campeon-equipo-copa, #campeon-equipo-bmetro, #campeon-equipo-federal, #campeon-equipo-primerac, #campeon-equipo-libertadores, #campeon-equipo-sudamericana, #campeon-equipo-brasileirao').forEach(control => {
+  document.querySelectorAll('#sim-count, #sim-count-lpf, #sim-count-copa, #sim-count-bmetro, #sim-count-federal, #sim-count-primerac, #sim-count-libertadores, #sim-count-sudamericana, #sim-count-brasileirao, #sim-count-ligapro, #campeon-equipo, #campeon-equipo-lpf, #campeon-equipo-copa, #campeon-equipo-bmetro, #campeon-equipo-federal, #campeon-equipo-primerac, #campeon-equipo-libertadores, #campeon-equipo-sudamericana, #campeon-equipo-brasileirao, #campeon-equipo-ligapro').forEach(control => {
     control.disabled = disabled;
   });
 }
