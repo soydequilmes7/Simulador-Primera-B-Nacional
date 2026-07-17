@@ -61,6 +61,7 @@ PYSIM_SOURCE_FILES = [
     "pysim_dispatch.py",
     "modelos/equipo.py",
     "modelos/estadisticas.py",
+    "modelos/promotion_requirements.py",
     "modelos/estadisticas_lpf.py",
     "main_copa.py",
     "modelos/estadisticas_copa.py",

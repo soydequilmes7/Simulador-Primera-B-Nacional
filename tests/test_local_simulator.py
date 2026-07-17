@@ -1,4 +1,8 @@
 import unittest
+import os
+import subprocess
+import sys
+import tempfile
 from pathlib import Path
 from unittest.mock import patch
 
@@ -6,7 +10,37 @@ import pandas as pd
 
 import data_access
 import pysim_dispatch
+from api.index import PYSIM_SOURCE_FILES as API_PYSIM_SOURCE_FILES
 from modelos.estadisticas import Estadisticas
+from servidor import PYSIM_SOURCE_FILES as LOCAL_PYSIM_SOURCE_FILES
+
+
+ROOT = Path(__file__).resolve().parent.parent
+
+
+class PyodideSourceBundleTests(unittest.TestCase):
+    def test_api_and_local_server_publish_the_same_importable_bundle(self):
+        self.assertEqual(API_PYSIM_SOURCE_FILES, LOCAL_PYSIM_SOURCE_FILES)
+
+        with tempfile.TemporaryDirectory() as tmp:
+            bundle_root = Path(tmp)
+            for relative_name in API_PYSIM_SOURCE_FILES:
+                source_path = ROOT / relative_name
+                target_path = bundle_root / relative_name
+                target_path.parent.mkdir(parents=True, exist_ok=True)
+                target_path.write_text(source_path.read_text(encoding="utf-8"), encoding="utf-8")
+
+            env = os.environ.copy()
+            env["PYTHONDONTWRITEBYTECODE"] = "1"
+            completed = subprocess.run(
+                [sys.executable, "-c", "import pysim_dispatch"],
+                cwd=bundle_root,
+                env=env,
+                capture_output=True,
+                text=True,
+            )
+
+        self.assertEqual(completed.returncode, 0, completed.stderr)
 
 
 class EmptyResultsValidationTests(unittest.TestCase):
