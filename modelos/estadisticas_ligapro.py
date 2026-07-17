@@ -343,8 +343,20 @@ class EstadisticasLigaPro(Estadisticas):
             resultado = self.simular_temporada_ligapro()
             clasif = self.clasificar_zonas_ligapro(resultado)
 
-            tabla_final_hexagonal = resultado["hexagonal_campeon"]
-            for posicion, fila in enumerate(tabla_final_hexagonal.itertuples(), start=1):
+            # Tabla ANUAL de la temporada: los 3 grupos de la Fase Final ya
+            # vienen ordenados internamente por puntos/desempate, y el
+            # grupo en sí ya define el orden relativo entre grupos (estar
+            # en el Hexagonal Campeón, aunque sea último, siempre ubica
+            # mejor que cualquier equipo del Cuadrangular Sudamericana o
+            # el Hexagonal Descenso) -- así que concatenarlos en ese orden
+            # y numerar 1..16 da la posición final real de la temporada
+            # para los 16 equipos, no solo para los 6 del Campeón.
+            tabla_anual_sim = pd.concat([
+                resultado["hexagonal_campeon"],
+                resultado["cuadrangular_sudamericana"],
+                resultado["hexagonal_descenso"],
+            ], ignore_index=True)
+            for posicion, fila in enumerate(tabla_anual_sim.itertuples(), start=1):
                 contador[fila.equipo]["puntos_total"] += fila.puntos
                 contador[fila.equipo]["posicion_total"] += posicion
 
@@ -385,10 +397,10 @@ class EstadisticasLigaPro(Estadisticas):
         for nombre, datos in contador.items():
             filas_tabla.append({
                 "equipo": nombre,
-                "puntos_prom_hexagonal": round(datos["puntos_total"] / n_simulaciones, 1),
-                "posicion_prom_hexagonal": round(datos["posicion_total"] / n_simulaciones, 1),
+                "puntos_prom_anual": round(datos["puntos_total"] / n_simulaciones, 1),
+                "posicion_prom_anual": round(datos["posicion_total"] / n_simulaciones, 1),
             })
-        tabla_esperada = pd.DataFrame(filas_tabla).sort_values("posicion_prom_hexagonal").reset_index(drop=True)
+        tabla_esperada = pd.DataFrame(filas_tabla).sort_values("posicion_prom_anual").reset_index(drop=True)
         tabla_esperada.index = tabla_esperada.index + 1
 
         print("Monte Carlo LigaPro terminado.")
