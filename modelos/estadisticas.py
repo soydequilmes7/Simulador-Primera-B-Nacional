@@ -63,11 +63,16 @@ class Estadisticas:
             if columnas_faltantes:
                 raise ValueError(f"{nombre}.csv no tiene las columnas: {columnas_faltantes}")
 
-        # Tipos: las columnas numéricas de resultados no pueden tener texto
-        columnas_numericas_resultados = ["jornada", "goles_local", "goles_visitante"]
-        for col in columnas_numericas_resultados:
-            if not pd.api.types.is_numeric_dtype(self.resultados[col]):
-                raise TypeError(f"resultados.csv: la columna '{col}' debería ser numérica")
+        # Tipos: las columnas numéricas de resultados no pueden tener texto.
+        # Un CSV que solo contiene el encabezado (temporada todavía sin
+        # partidos jugados) produce columnas ``object`` en pandas aunque no
+        # contenga ningún valor inválido. En ese caso no hay tipos que
+        # validar y el motor ya sabe arrancar con ratings genéricos.
+        if not self.resultados.empty:
+            columnas_numericas_resultados = ["jornada", "goles_local", "goles_visitante"]
+            for col in columnas_numericas_resultados:
+                if not pd.api.types.is_numeric_dtype(self.resultados[col]):
+                    raise TypeError(f"resultados.csv: la columna '{col}' debería ser numérica")
 
         # resultados.csv solo debe tener partidos jugados: goles_local/visitante no pueden faltar
         if self.resultados[["goles_local", "goles_visitante"]].isnull().any().any():
