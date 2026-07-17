@@ -94,7 +94,7 @@ N_SIMULACIONES_LPF = 500
 # Mismos límites que usaba servidor.py: evitan que un valor mal formado
 # o abusivo tumbe la función o la haga correr durante horas.
 N_SIMULACIONES_MIN = 50
-N_SIMULACIONES_MAX = 5000
+N_SIMULACIONES_MAX = 10000
 
 # Límites para "simular hasta que un equipo ascienda" (/api/simular-campeon),
 # iguales a los que usaba servidor.py.

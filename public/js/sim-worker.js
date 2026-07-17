@@ -145,34 +145,34 @@ async function ejecutar(tarea, payload) {
   let kwargs;
   switch (tarea) {
     case "simular":
-      kwargs = { n_sims: clamp(payload.n_sims, 50, 5000, 500) };
+      kwargs = { n_sims: clamp(payload.n_sims, 50, 10000, 500) };
       break;
     case "simular-lpf":
-      kwargs = { n_sims: clamp(payload.n_sims, 50, 5000, 500) };
+      kwargs = { n_sims: clamp(payload.n_sims, 50, 10000, 500) };
       break;
     case "simular-copa":
-      kwargs = { n_sims: clamp(payload.n_sims, 50, 5000, 500) };
+      kwargs = { n_sims: clamp(payload.n_sims, 50, 10000, 500) };
       break;
     case "simular-bmetro":
-      kwargs = { n_sims: clamp(payload.n_sims, 50, 5000, 500) };
+      kwargs = { n_sims: clamp(payload.n_sims, 50, 10000, 500) };
       break;
     case "simular-federal":
-      kwargs = { n_sims: clamp(payload.n_sims, 50, 5000, 500) };
+      kwargs = { n_sims: clamp(payload.n_sims, 50, 10000, 500) };
       break;
     case "simular-primerac":
-      kwargs = { n_sims: clamp(payload.n_sims, 50, 5000, 500) };
+      kwargs = { n_sims: clamp(payload.n_sims, 50, 10000, 500) };
       break;
     case "simular-brasileirao":
-      kwargs = { n_sims: clamp(payload.n_sims, 50, 5000, 1000) };
+      kwargs = { n_sims: clamp(payload.n_sims, 50, 10000, 1000) };
       break;
     case "simular-ligapro":
-      kwargs = { n_sims: clamp(payload.n_sims, 50, 5000, 1000) };
+      kwargs = { n_sims: clamp(payload.n_sims, 50, 10000, 1000) };
       break;
     case "simular-libertadores":
-      kwargs = { n_sims: clamp(payload.n_sims, 50, 5000, 1000) };
+      kwargs = { n_sims: clamp(payload.n_sims, 50, 10000, 1000) };
       break;
     case "simular-sudamericana":
-      kwargs = { n_sims: clamp(payload.n_sims, 50, 5000, 1000) };
+      kwargs = { n_sims: clamp(payload.n_sims, 50, 10000, 1000) };
       break;
     case "simular-campeon":
     case "simular-campeon-lpf":
