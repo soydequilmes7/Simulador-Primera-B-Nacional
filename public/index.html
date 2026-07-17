@@ -10055,6 +10055,32 @@ const LIGAPRO_GRUPO_META = {
 // mismo corte de colores que ya usan las notas del HTML (1-6 leader,
 // 7-10 qualified, 11-16 relegation) a modo de vista previa de a qué
 // grupo de la Fase Final clasificaría cada uno si la fase terminara hoy.
+// Liga Pro Ecuador usa un par de nombres "pelados" (Universidad Católica,
+// Leones) que en datos/tabla_ligapro.csv y fixture_ligapro.csv son
+// inambiguos (siempre el club ecuatoriano, es la única liga donde
+// aparecen), pero que en el diccionario ESCUDOS global YA estaban
+// tomados por otro club de otro país/categoría:
+//   - "Universidad Católica" -> universidadcatolica.png (la CHILENA, por
+//     el pool internacional de Libertadores/Sudamericana).
+//   - "Leones" -> leones.png (Leones de Rosario, de Primera C).
+// No se puede arreglar cambiando esas entradas de ESCUDOS sin romper el
+// cuadro de Libertadores o la tabla de Primera C, que sí dependen de esos
+// nombres planos apuntando a ESE club. Se resuelve acá, antes de llamar
+// al escudoHTML() genérico, sin tocar el diccionario compartido.
+const ESCUDO_OVERRIDE_LIGAPRO = {
+  'Universidad Católica': 'unversidadcatolicaecu', // ya existe en public/escudos/ (con el typo real del archivo)
+  'Universidad Catolica': 'unversidadcatolicaecu',
+  // TODO: falta subir public/escudos/leones_ecu.png (escudo real del
+  // Leones ecuatoriano) -- mientras tanto se oculta en vez de mostrar el
+  // de Rosario, que es un club distinto.
+  'Leones': 'leones_ecu',
+};
+function escudoHTMLLigaPro(nombre){
+  const slug = ESCUDO_OVERRIDE_LIGAPRO[nombre];
+  if (slug) return `<img class="escudo" src="escudos/${slug}.png" alt="" onerror="this.remove()">`;
+  return escudoHTML(nombre);
+}
+
 function claseFaseInicialLigaPro(i){
   const pos = i + 1;
   if (pos <= 6) return 'punta';
@@ -10064,7 +10090,7 @@ function claseFaseInicialLigaPro(i){
 
 function filaTablaLigaProHTML(f, i, clase){
   const pos = f.posicion ?? (i + 1);
-  return `<tr${clase ? ` class="${clase}"` : ''}><td>${pos}</td><td>${escudoHTML(f.equipo)}${nombreMostrable(f.equipo)}</td><td>${f.puntos}</td><td>${f.gf}</td><td>${f.gc}</td><td>${f.dg > 0 ? '+' + f.dg : f.dg}</td></tr>`;
+  return `<tr${clase ? ` class="${clase}"` : ''}><td>${pos}</td><td>${escudoHTMLLigaPro(f.equipo)}${nombreMostrable(f.equipo)}</td><td>${f.puntos}</td><td>${f.gf}</td><td>${f.gc}</td><td>${f.dg > 0 ? '+' + f.dg : f.dg}</td></tr>`;
 }
 
 async function cargarDatosLigaPro(){
@@ -10181,7 +10207,7 @@ function renderMCLigaPro(){
     row.innerHTML = `
       <div class="pos">${i + 1}</div>
       <div>
-        <div class="name"><span>${escudoHTML(f.equipo)}${nombreMostrable(f.equipo)}</span><span class="pct">${fmtPct(f['%campeon'])} campeón</span></div>
+        <div class="name"><span>${escudoHTMLLigaPro(f.equipo)}${nombreMostrable(f.equipo)}</span><span class="pct">${fmtPct(f['%campeon'])} campeón</span></div>
         <div class="mc-bar-track">
           <div class="mc-bar-fill directo" style="width:${lib}%; background:var(--leader-accent)"></div>
           <div class="mc-bar-fill reducido" style="left:${lib}%; width:${sud}%; background:var(--qualified-accent)"></div>
@@ -10208,7 +10234,7 @@ function renderEsperadaLigaPro(){
   body.innerHTML = "";
   DATA_LIGAPRO.tabla_esperada.forEach((f, i) => {
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${i + 1}</td><td>${escudoHTML(f.equipo)}${nombreMostrable(f.equipo)}</td><td>${f.puntos_prom_hexagonal}</td><td>${f.posicion_prom_hexagonal}</td>`;
+    tr.innerHTML = `<td>${i + 1}</td><td>${escudoHTMLLigaPro(f.equipo)}${nombreMostrable(f.equipo)}</td><td>${f.puntos_prom_hexagonal}</td><td>${f.posicion_prom_hexagonal}</td>`;
     body.appendChild(tr);
   });
 }
@@ -10281,7 +10307,7 @@ function renderTeamCardLigaPro(t){
   return `
     <div class="team-card">
       <div class="tc-head">
-        <div class="tc-name">${escudoHTML(t.equipo)}${nombreMostrable(t.equipo)}</div>
+        <div class="tc-name">${escudoHTMLLigaPro(t.equipo)}${nombreMostrable(t.equipo)}</div>
         <span class="tc-zone" style="background:${badge.bg}; color:${badge.color}">${badge.label}</span>
       </div>
       <div class="tc-pos">Posición actual: <b>${t.posicion}°</b> en ${zonaLbl} — <b>${t.puntos}</b> pts (DG ${t.dg > 0 ? '+' + t.dg : t.dg})</div>
