@@ -32,7 +32,7 @@ from main import correr_simulacion, simular_hasta_campeon
 from main_lpf import correr_simulacion_lpf, simular_hasta_campeon_lpf
 from main_primerac import correr_simulacion as correr_simulacion_primerac, simular_hasta_campeon as simular_hasta_campeon_primerac
 from main_brasileirao import correr_simulacion_brasileirao, simular_hasta_campeon_brasileirao
-from main_ligapro import correr_simulacion_ligapro
+from main_ligapro import correr_simulacion_ligapro, simular_hasta_campeon_ligapro
 from actualizar_resultados import actualizar
 from actualizar_resultados_lpf import actualizar as actualizar_lpf
 from actualizar_resultados_primerac import actualizar as actualizar_primerac
@@ -326,6 +326,8 @@ class Handler(SimpleHTTPRequestHandler):
             self._manejar_simular_campeon_brasileirao()
         elif self.path == "/api/simular-ligapro":
             self._manejar_simular_ligapro()
+        elif self.path == "/api/simular-campeon-ligapro":
+            self._manejar_simular_campeon_ligapro()
         elif self.path == "/api/actualizar-ligapro":
             self._manejar_actualizar_ligapro()
         elif self.path == "/api/simular-copa":
@@ -597,6 +599,54 @@ class Handler(SimpleHTTPRequestHandler):
             self._responder_json(200, resultado)
         except Exception as e:
             print(f">>> ERROR al actualizar LigaPro: {e}")
+            self._responder_json(*_error_http(e))
+        finally:
+            lock_simulacion.release()
+
+    def _manejar_simular_campeon_ligapro(self):
+        """Corre simular_hasta_campeon_ligapro() del equipo pedido desde
+        la web (Fase Inicial + Fase Final completas cada intento, hasta
+        que salga 1° del Hexagonal Campeón) y devuelve esa temporada
+        completa. No toca data_ligapro.json: es una corrida aparte."""
+        if not lock_simulacion.acquire(blocking=False):
+            self._responder_json(409, {"error": "Ya hay una simulación corriendo, esperá a que termine"})
+            return
+        try:
+            largo = int(self.headers.get("Content-Length", 0))
+            cuerpo_raw = self.rfile.read(largo) if largo > 0 else b"{}"
+            datos = json.loads(cuerpo_raw) if cuerpo_raw else {}
+
+            equipo_objetivo = str(datos.get("equipo", "")).strip()
+            if not equipo_objetivo:
+                self._responder_json(400, {"error": "Falta indicar el equipo"})
+                return
+
+            try:
+                max_intentos = int(datos.get("max_intentos", MAX_INTENTOS_CAMPEON_DEFAULT))
+            except (ValueError, TypeError):
+                max_intentos = MAX_INTENTOS_CAMPEON_DEFAULT
+            max_intentos = max(MAX_INTENTOS_CAMPEON_MIN, min(MAX_INTENTOS_CAMPEON_MAX, max_intentos))
+
+            print(f"\n>>> Simulando hasta el campeonato de {equipo_objetivo} (LigaPro) pedido desde la web ({max_intentos} intentos máx)...")
+            resultado = simular_hasta_campeon_ligapro(equipo_objetivo, max_intentos=max_intentos, imprimir=True)
+
+            if resultado is None:
+                print(f">>> No se logró el campeonato de {equipo_objetivo} en {max_intentos} intentos.\n")
+                self._responder_json(200, {
+                    "logrado": False,
+                    "equipo": equipo_objetivo,
+                    "max_intentos": max_intentos,
+                })
+                return
+
+            print(f">>> {equipo_objetivo} salió campeón en el intento {resultado['intentos']}.\n")
+            self._responder_json(200, {"logrado": True, **resultado})
+        except ValueError as e:
+            self._responder_json(400, {"error": str(e)})
+        except json.JSONDecodeError:
+            self._responder_json(400, {"error": "Body inválido"})
+        except Exception as e:
+            print(f">>> ERROR al simular hasta campeón LigaPro: {e}")
             self._responder_json(*_error_http(e))
         finally:
             lock_simulacion.release()

@@ -1102,6 +1102,33 @@ def simular_ligapro_endpoint(body: SimularLigaProBody = SimularLigaProBody()):
         _lock_ligapro.release_read()
 
 
+@app.post("/api/simular-campeon-ligapro")
+def simular_campeon_ligapro_endpoint(body: SimularCampeonBody):
+    """Corre simular_hasta_campeon_ligapro() del equipo pedido (Fase
+    Inicial + Fase Final completas cada intento, hasta que salga 1° del
+    Hexagonal Campeón) y devuelve esa temporada completa."""
+    equipo_objetivo = body.equipo.strip()
+    if not equipo_objetivo:
+        return JSONResponse(status_code=400, content={"error": "Falta indicar el equipo"})
+
+    max_intentos = _clamp_max_intentos(body.max_intentos)
+
+    ocupado = _adquirir_lectura(
+        _lock_ligapro,
+        "Hay una actualización de LigaPro en curso. Esperá unos segundos y probá de nuevo.",
+    )
+    if ocupado:
+        return ocupado
+    try:
+        return pysim_dispatch.simular_campeon_ligapro(equipo_objetivo, max_intentos)
+    except ValueError as e:
+        return JSONResponse(status_code=400, content={"error": str(e)})
+    except Exception as e:
+        return _error_response(e)
+    finally:
+        _lock_ligapro.release_read()
+
+
 @app.post("/api/actualizar-primerac")
 def actualizar_primerac_endpoint(body: SimularPrimeraCBody = SimularPrimeraCBody()):
     """Scrapea Promiedos (Primera C) y, si hay partidos nuevos, actualiza

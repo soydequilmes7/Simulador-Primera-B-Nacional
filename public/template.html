@@ -5358,6 +5358,22 @@
     <div id="search-result-ligapro"></div>
   </div>
 
+  <div class="search-section" id="campeon-section-ligapro">
+    <div class="section-head" style="margin-bottom:14px;">
+      <span class="idx">🏆</span><h2 style="font-size:18px;">Simulá hasta que tu equipo sea campeón</h2><div class="rule"></div>
+    </div>
+    <p class="section-note" style="margin:0 0 16px; text-align:center; max-width:none;">
+      Elegí un equipo: corremos temporadas completas (Fase Inicial + Fase Final), una tras otra, hasta encontrar la
+      primera en la que termina 1° del Hexagonal Campeón. Te mostramos esa temporada puntual.
+    </p>
+    <div class="campeon-controls">
+      <select id="campeon-equipo-ligapro"><option value="">Elegí un equipo…</option></select>
+      <button id="btn-campeon-ligapro" class="btn-simular">🏆 Simular hasta el título</button>
+    </div>
+    <div id="campeon-status-ligapro" class="sim-status"></div>
+    <div id="campeon-resultado-ligapro"></div>
+  </div>
+
   <section id="sec-tabla-actual-ligapro">
     <div class="section-head"><span class="idx">01</span><h2>Tabla actual</h2><div class="rule"></div></div>
     <p class="section-note">Clasificación real en este momento, tal como quedó tras los partidos ya jugados. Mientras dura la Fase Inicial es una tabla única de los 16 equipos; una vez resuelta esa fase pasa a mostrar los 3 grupos de la Fase Final por separado.</p>
@@ -10150,6 +10166,7 @@ function iniciarLigaPro(){
   renderFaseFinalLigaPro();
   renderMCLigaPro();
   renderEsperadaLigaPro();
+  poblarSelectEquiposLigaPro();
   TEAM_INDEX_LIGAPRO = buildTeamIndexLigaPro();
   poblarDatalistLigaPro(TEAM_INDEX_LIGAPRO);
   const busquedaLigaPro = document.getElementById('team-search-ligapro');
@@ -10505,6 +10522,119 @@ async function correrActualizacionLigaPro(){
 }
 
 document.getElementById('btn-actualizar-ligapro').addEventListener('click', correrActualizacionLigaPro);
+
+function poblarSelectEquiposLigaPro(){
+  const sel = document.getElementById('campeon-equipo-ligapro');
+  if (!sel || !DATA_LIGAPRO || !DATA_LIGAPRO.tabla_actual) return;
+  const valorPrevio = sel.value;
+  const nombres = DATA_LIGAPRO.tabla_actual.map(f => f.equipo).sort();
+  sel.innerHTML = '<option value="">Elegí un equipo…</option>' +
+    nombres.map(n => `<option value="${n}">${n}</option>`).join('');
+  if (valorPrevio && nombres.includes(valorPrevio)) sel.value = valorPrevio;
+}
+
+/* ---------- LIGAPRO: SIMULAR HASTA EL TÍTULO ---------- */
+// Cada uno de los 3 grupos de la Fase Final tiene su propia franja: en
+// el Hexagonal Campeón, 1° es el campeón (punta) y 2°-3° también van a
+// Libertadores (reducido); 4°-6° a Sudamericana. En el Cuadrangular
+// Sudamericana, el 1° saca el cupo que le queda a Sudamericana. En el
+// Hexagonal Descenso, los últimos 2 bajan. Mismos cortes que
+// clasificar_zonas_ligapro() en el backend (LIBERTADORES_HEXAGONAL_N=3,
+// DESCENSOS_N=2), no hardcodeados de nuevo con otro criterio.
+function claseFilaGrupoLigaPro(grupo, i){
+  if (grupo === 'hexagonal_campeon'){
+    if (i === 0) return 'punta';
+    if (i <= 2) return 'reducido';
+    return 'sudamericana';
+  }
+  if (grupo === 'cuadrangular_sudamericana'){
+    return i === 0 ? 'sudamericana' : '';
+  }
+  if (grupo === 'hexagonal_descenso'){
+    return i >= 4 ? 'descenso' : '';
+  }
+  return '';
+}
+
+async function simularHastaCampeonLigaPro(){
+  const btn = document.getElementById('btn-campeon-ligapro');
+  const sel = document.getElementById('campeon-equipo-ligapro');
+  const status = document.getElementById('campeon-status-ligapro');
+  const resultado = document.getElementById('campeon-resultado-ligapro');
+  const equipo = sel.value;
+
+  status.classList.remove('error', 'ok');
+
+  if (!equipo){
+    status.classList.add('error');
+    status.textContent = "Elegí un equipo primero.";
+    return;
+  }
+
+  if (!beginApiAction(status)) return;
+
+  btn.disabled = true;
+  sel.disabled = true;
+  btn.textContent = "Simulando…";
+  status.textContent = `Corriendo temporadas hasta que ${equipo} sea campeón — puede tardar unos segundos.`;
+  resultado.innerHTML = "";
+
+  try {
+    const cuerpo = await ejecutarSimulacion("simular-campeon-ligapro", { equipo }, "/api/simular-campeon-ligapro", status);
+
+    if (!cuerpo.logrado) {
+      status.classList.add('error');
+      status.textContent = `No se logró el título de ${equipo} en ${cuerpo.max_intentos} intentos simulados. Probá de nuevo — el azar puede variar.`;
+      return;
+    }
+
+    renderCampeonResultadoLigaPro(cuerpo);
+    status.classList.add('ok');
+    status.textContent = `✓ Encontrado en el intento N° ${cuerpo.intentos}`;
+  } catch (e) {
+    setApiErrorStatus(status, "No se pudo simular", e);
+  } finally {
+    btn.disabled = false;
+    sel.disabled = false;
+    btn.textContent = "🏆 Simular hasta el título";
+    endApiAction();
+  }
+}
+
+function renderCampeonResultadoLigaPro(r){
+  const cont = document.getElementById('campeon-resultado-ligapro');
+
+  function filasHTML(filas, grupo){
+    return filas.map((f, i) => {
+      const clase = claseFilaGrupoLigaPro(grupo, i);
+      const esObjetivo = f.equipo === r.equipo;
+      return `<tr${clase ? ` class="${clase}"` : ''}${esObjetivo ? ' style="box-shadow: inset 3px 0 0 var(--amber);"' : ''}>
+        <td>${i + 1}</td><td>${escudoHTMLLigaPro(f.equipo)}${nombreMostrable(f.equipo)}${esObjetivo ? ' 🏆' : ''}</td><td>${f.puntos}</td><td>${f.gf}</td><td>${f.gc}</td><td>${f.dg > 0 ? '+' + f.dg : f.dg}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  function tablaHTML(titulo, filas, grupo){
+    return `
+      <div class="ligapro-grupo-titulo"><i style="background:var(--amber)"></i>${titulo}</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>GF</th><th>GC</th><th>DG</th></tr></thead>
+          <tbody>${filasHTML(filas, grupo)}</tbody>
+        </table>
+      </div>`;
+  }
+
+  cont.innerHTML = `
+    <div class="campeon-summary">🏆 <b>${r.equipo}</b> sale campeón en esta temporada simulada
+      (intento N° ${r.intentos} de una búsqueda al azar entre distintas temporadas posibles)</div>
+    ${tablaHTML('Hexagonal Campeón', r.hexagonal_campeon, 'hexagonal_campeon')}
+    ${tablaHTML('Cuadrangular Sudamericana', r.cuadrangular_sudamericana, 'cuadrangular_sudamericana')}
+    ${tablaHTML('Hexagonal Descenso', r.hexagonal_descenso, 'hexagonal_descenso')}
+  `;
+}
+
+document.getElementById('btn-campeon-ligapro').addEventListener('click', simularHastaCampeonLigaPro);
 
 
 /* ============================================================

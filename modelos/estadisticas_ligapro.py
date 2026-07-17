@@ -299,16 +299,31 @@ class EstadisticasLigaPro(Estadisticas):
     # Monte Carlo
     # ------------------------------------------------------------------
     def monte_carlo_ligapro(self, n_simulaciones=1000):
-        """Monte Carlo simple (no vectorizado): cada simulación resuelve
-        Fase Inicial + Fase Final completas desde cero. A diferencia de
-        Brasileirão/B Metro, acá no se pudo reusar
-        _simular_fase_regular_vectorizado() tal cual porque el fixture de
-        la Fase Final depende del resultado de la Fase Inicial de CADA
-        simulación individual (no es un fixture fijo de antemano) -- si
-        n_simulaciones empieza a pesar en producción, se puede vectorizar
-        en dos pasadas (vectorizar la Fase Inicial, agrupar en 3 zonas
-        por simulación, y vectorizar cada Fase Final por separado), pero
-        eso queda para una siguiente iteración."""
+        """Monte Carlo vectorizado. Mismo patrón que ya usa monte_carlo()
+        (Nacional/Primera C/Federal A) para la final de ascenso/Reducido:
+        el bloque GRANDE de partidos se resuelve vectorizado una sola vez
+        para las n_simulaciones juntas, y el resto (más liviano) se
+        resuelve por simulación con el motor partido-por-partido de
+        siempre, arrancando de esos totales ya vectorizados.
+
+        Acá el bloque grande es la Fase Inicial (16 equipos, ~240
+        partidos si la temporada recién arranca) -- o, si la temporada
+        real YA se dividió en los 3 grupos de la Fase Final (zona real
+        de tabla_ligapro.csv distinta de FaseInicial), directamente la
+        Fase Final, tratada igual que un Brasileirão/B Metro de 3 zonas
+        fijas. Lo que queda afuera de la vectorización es la Fase Final
+        cuando arranca DESDE la Fase Inicial (72 partidos repartidos en
+        3 grupos chicos: Hexagonal Campeón 6, Cuadrangular 4, Hexagonal
+        Descenso 6) -- ahí el agrupamiento de equipos cambia según el
+        resultado de Fase Inicial de CADA simulación individual, así que
+        no hay un fixture fijo de antemano para vectorizar directo (para
+        lograrlo haría falta un motor vectorizado indexado por "slot de
+        posición" en vez de por equipo, bastante más trabajo para una
+        porción que ya es la minoría de los partidos de la temporada).
+        De los ~312 partidos totales de una temporada que arranca en
+        Fase Inicial, esto vectoriza ~240 (77%) y deja ~72 (23%) como
+        loop liviano -- el mismo trade-off que ya acepta el resto del
+        proyecto entre motor vectorizado y partidos de playoff/desempate."""
         print(f"\nCorriendo Monte Carlo LigaPro ({n_simulaciones} simulaciones)...")
 
         estado_inicial = {
@@ -318,7 +333,7 @@ class EstadisticasLigaPro(Estadisticas):
             for nombre, e in self.equipos.items()
         }
         fixture_original = self.fixture.copy()
-        en_fase_inicial_original = self._en_fase_inicial()
+        en_fase_inicial = self._en_fase_inicial()
 
         contador = {
             nombre: {
@@ -328,20 +343,64 @@ class EstadisticasLigaPro(Estadisticas):
             for nombre in self.equipos
         }
 
+        # Paso vectorizado: resuelve TODOS los partidos pendientes de la
+        # fase que corresponda (Fase Inicial, o directo Fase Final si la
+        # temporada real ya está dividida) para las n_simulaciones de una
+        # sola vez -- ver _simular_fase_regular_vectorizado() en la clase
+        # base para el detalle de cómo.
+        totales_vectorizados = self._simular_fase_regular_vectorizado(n_simulaciones)
+
         paso_reporte = max(1, n_simulaciones // 10)
 
         for i in range(n_simulaciones):
-            # Restaurar el estado de arranque antes de cada simulación.
-            for nombre, datos in estado_inicial.items():
-                self.equipos[nombre].puntos = datos["puntos"]
-                self.equipos[nombre].goles_favor = datos["gf"]
-                self.equipos[nombre].goles_contra = datos["gc"]
-                self.equipos[nombre].zona = datos["zona"]
-            self.fixture = fixture_original.copy()
-            self._pares_fixture_cache = None
+            if en_fase_inicial:
+                # _dividir_en_grupos_fase_final() de la iteración anterior
+                # dejó self.equipos[...].zona en Hexagonal Campeón/
+                # Cuadrangular/Hexagonal Descenso -- hay que devolverla a
+                # FaseInicial ANTES de _armar_tabla_final() de abajo, o
+                # esta iteración agruparía por la zona de la simulación
+                # pasada en vez de por FaseInicial.
+                for nombre, datos in estado_inicial.items():
+                    self.equipos[nombre].zona = datos["zona"]
 
-            resultado = self.simular_temporada_ligapro()
-            clasif = self.clasificar_zonas_ligapro(resultado)
+            totales_i = {
+                nombre: {
+                    "puntos": int(datos["puntos"][i]),
+                    "gf": int(datos["gf"][i]),
+                    "gc": int(datos["gc"][i]),
+                }
+                for nombre, datos in totales_vectorizados.items()
+            }
+            tablas_zona = self._armar_tabla_final(totales_i)
+
+            if en_fase_inicial:
+                tabla_fase_inicial = tablas_zona[ZONA_FASE_INICIAL]
+
+                # A partir de acá, la Fase Final (chica) sí se resuelve
+                # partido por partido -- igual que jugar_final_ascenso()/
+                # jugar_reducido() en el Monte Carlo de Nacional.
+                self._sincronizar_equipos_desde_tabla(tabla_fase_inicial)
+                grupos = self._dividir_en_grupos_fase_final(tabla_fase_inicial)
+                self.fixture = self._generar_fixture_fase_final(grupos)
+                self._pares_fixture_cache = None
+                tablas_ff_zona = self.simular_fase_regular()
+                tablas_ff = {
+                    "hexagonal_campeon": tablas_ff_zona[ZONA_HEXAGONAL_CAMPEON],
+                    "cuadrangular_sudamericana": tablas_ff_zona[ZONA_CUADRANGULAR_SUDAMERICANA],
+                    "hexagonal_descenso": tablas_ff_zona[ZONA_HEXAGONAL_DESCENSO],
+                }
+            else:
+                # La temporada real ya está dividida en los 3 grupos: el
+                # paso vectorizado de arriba YA simuló la Fase Final
+                # directo (mismo caso que Brasileirão/B Metro, 3 zonas
+                # fijas), no hace falta resolver nada más por simulación.
+                tablas_ff = {
+                    "hexagonal_campeon": tablas_zona[ZONA_HEXAGONAL_CAMPEON],
+                    "cuadrangular_sudamericana": tablas_zona[ZONA_CUADRANGULAR_SUDAMERICANA],
+                    "hexagonal_descenso": tablas_zona[ZONA_HEXAGONAL_DESCENSO],
+                }
+
+            clasif = self.clasificar_zonas_ligapro(tablas_ff)
 
             # Tabla ANUAL de la temporada: los 3 grupos de la Fase Final ya
             # vienen ordenados internamente por puntos/desempate, y el
@@ -352,9 +411,9 @@ class EstadisticasLigaPro(Estadisticas):
             # y numerar 1..16 da la posición final real de la temporada
             # para los 16 equipos, no solo para los 6 del Campeón.
             tabla_anual_sim = pd.concat([
-                resultado["hexagonal_campeon"],
-                resultado["cuadrangular_sudamericana"],
-                resultado["hexagonal_descenso"],
+                tablas_ff["hexagonal_campeon"],
+                tablas_ff["cuadrangular_sudamericana"],
+                tablas_ff["hexagonal_descenso"],
             ], ignore_index=True)
             for posicion, fila in enumerate(tabla_anual_sim.itertuples(), start=1):
                 contador[fila.equipo]["puntos_total"] += fila.puntos
