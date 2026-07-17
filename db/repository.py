@@ -58,6 +58,7 @@ COMPETITIONS = {
     "federal_a": CompetitionSpec("federal_a", "Federal A"),
     "primerac": CompetitionSpec("primerac", "Primera C"),
     "brasileirao": CompetitionSpec("brasileirao", "Brasileirão Série A"),
+    "ligapro": CompetitionSpec("ligapro", "LigaPro Serie A"),
     "copa": CompetitionSpec("copa", "Copa Argentina"),
 }
 
@@ -68,6 +69,7 @@ TABLE_FILE_SLUGS = {
     "tabla_federal_a.csv": "federal_a",
     "tabla_primerac.csv": "primerac",
     "tabla_brasileirao.csv": "brasileirao",
+    "tabla_ligapro.csv": "ligapro",
 }
 
 
@@ -261,7 +263,15 @@ class SimulatorRepository:
             records.append(item)
         df = _records_to_df(records, columns)
         for col in ("jornada", "goles_local", "goles_visitante"):
-            if col in df.columns and not df.empty:
+            if col in df.columns:
+                # OJO: antes esto tenía "and not df.empty", agregado para
+                # evitar IntCastingNaNError con partidos a medio cargar
+                # (goles en NULL). Pero un DataFrame VACIO (0 partidos
+                # jugados, ej. arranque de temporada de LigaPro) no tiene
+                # ningún NaN que castear mal -- el guard solo lograba que
+                # "jornada" se quedara en dtype object en vez de int64, y
+                # eso es lo que rompía validar_datos() con
+                # "la columna 'jornada' debería ser numérica".
                 df[col] = pd.to_numeric(df[col], errors="coerce").astype("int64")
         return df
 
@@ -894,6 +904,7 @@ LEAGUE_FILE_SPECS = {
     "federal_a": ("tabla_federal_a.csv", "fixture_federal_a.csv", "resultados_federal_a.csv"),
     "primerac": ("tabla_primerac.csv", "fixture_primerac.csv", "resultados_primerac.csv"),
     "brasileirao": ("tabla_brasileirao.csv", "fixture_brasileirao.csv", "resultados_brasileirao.csv"),
+    "ligapro": ("tabla_ligapro.csv", "fixture_ligapro.csv", "resultados_ligapro.csv"),
 }
 
 
@@ -926,6 +937,8 @@ def league_csv_files(competition_slug: str) -> dict[str, str]:
         bootstrap_league_from_csv("primerac")
     if competition_slug == "brasileirao":
         bootstrap_league_from_csv("brasileirao")
+    if competition_slug == "ligapro":
+        bootstrap_league_from_csv("ligapro")
 
     repo = repository()
     resultados, fixture, tabla = repo.league_data(competition_slug)
@@ -950,6 +963,7 @@ def league_csv_files(competition_slug: str) -> dict[str, str]:
         "federal_a": ("tabla_federal_a.csv", "fixture_federal_a.csv", "resultados_federal_a.csv"),
         "primerac": ("tabla_primerac.csv", "fixture_primerac.csv", "resultados_primerac.csv"),
         "brasileirao": ("tabla_brasileirao.csv", "fixture_brasileirao.csv", "resultados_brasileirao.csv"),
+        "ligapro": ("tabla_ligapro.csv", "fixture_ligapro.csv", "resultados_ligapro.csv"),
     }
     tabla_name, fixture_name, resultados_name = prefixes[competition_slug]
     return {

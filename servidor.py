@@ -32,10 +32,12 @@ from main import correr_simulacion, simular_hasta_campeon
 from main_lpf import correr_simulacion_lpf, simular_hasta_campeon_lpf
 from main_primerac import correr_simulacion as correr_simulacion_primerac, simular_hasta_campeon as simular_hasta_campeon_primerac
 from main_brasileirao import correr_simulacion_brasileirao, simular_hasta_campeon_brasileirao
+from main_ligapro import correr_simulacion_ligapro
 from actualizar_resultados import actualizar
 from actualizar_resultados_lpf import actualizar as actualizar_lpf
 from actualizar_resultados_primerac import actualizar as actualizar_primerac
 from actualizar_resultados_brasileirao import actualizar as actualizar_brasileirao
+from actualizar_resultados_ligapro import actualizar as actualizar_ligapro
 from main_copa import correr_simulacion_copa, simular_hasta_campeon_copa
 from actualizar_resultados_copa import actualizar as actualizar_copa
 from main_bmetro import correr_simulacion_bmetro, simular_hasta_ascenso_bmetro
@@ -72,6 +74,8 @@ PYSIM_SOURCE_FILES = [
     "modelos/estadisticas_primerac.py",
     "main_brasileirao.py",
     "modelos/estadisticas_brasileirao.py",
+    "main_ligapro.py",
+    "modelos/estadisticas_ligapro.py",
     "main_libertadores.py",
     "modelos/estadisticas_libertadores.py",
     "main_sudamericana.py",
@@ -146,6 +150,10 @@ class Handler(SimpleHTTPRequestHandler):
             self._manejar_evolucion_posiciones_brasileirao()
         elif self.path == "/api/datos-brasileirao":
             self._manejar_datos_csv(["tabla_brasileirao.csv", "fixture_brasileirao.csv", "resultados_brasileirao.csv"])
+        elif self.path == "/api/evolucion-posiciones-ligapro":
+            self._manejar_evolucion_posiciones_ligapro()
+        elif self.path == "/api/datos-ligapro":
+            self._manejar_datos_csv(["tabla_ligapro.csv", "fixture_ligapro.csv", "resultados_ligapro.csv"])
         elif self.path == "/api/datos-libertadores":
             self._manejar_datos_locales(["libertadores_cuadro.csv", "libertadores_elo.csv"])
         elif self.path == "/api/datos-sudamericana":
@@ -236,6 +244,24 @@ class Handler(SimpleHTTPRequestHandler):
         except Exception as e:
             self._responder_json(*_error_http(e))
 
+    def _manejar_evolucion_posiciones_ligapro(self):
+        """Igual que _manejar_evolucion_posiciones_brasileirao pero para
+        LigaPro Serie A. La zona de cada equipo puede ser "FaseInicial" o,
+        una vez resuelta esa fase, alguno de los 3 grupos de Fase Final --
+        calcular_evolucion()/tamano_por_zona() ya son genéricos por zona."""
+        try:
+            with transaction() as repo:
+                tabla_actual = repo.standing_records("ligapro")
+                zona_por_club = {fila["equipo"]: fila["zona"] for fila in tabla_actual}
+                partidos_jugados = repo.match_records("ligapro", "played")
+            evolucion = calcular_evolucion(partidos_jugados, zona_por_club)
+            self._responder_json(200, {
+                "evolucion": evolucion,
+                "zonas": tamano_por_zona(zona_por_club),
+            })
+        except Exception as e:
+            self._responder_json(*_error_http(e))
+
     def _manejar_datos_locales(self, nombres):
         """A diferencia de _manejar_datos_csv (Supabase), Libertadores y
         Sudamericana no pasan por la base: leen directo de datos/*.csv
@@ -260,6 +286,8 @@ class Handler(SimpleHTTPRequestHandler):
                 self._responder_json(200, {"files": league_csv_files("primerac")})
             elif "brasileirao" in nombres[0]:
                 self._responder_json(200, {"files": league_csv_files("brasileirao")})
+            elif "ligapro" in nombres[0]:
+                self._responder_json(200, {"files": league_csv_files("ligapro")})
             else:
                 self._responder_json(500, {"error": f"Dataset no soportado: {nombres}"})
         except Exception as e:
@@ -296,6 +324,10 @@ class Handler(SimpleHTTPRequestHandler):
             self._manejar_actualizar_brasileirao()
         elif self.path == "/api/simular-campeon-brasileirao":
             self._manejar_simular_campeon_brasileirao()
+        elif self.path == "/api/simular-ligapro":
+            self._manejar_simular_ligapro()
+        elif self.path == "/api/actualizar-ligapro":
+            self._manejar_actualizar_ligapro()
         elif self.path == "/api/simular-copa":
             self._manejar_simular_copa()
         elif self.path == "/api/actualizar-copa":
@@ -524,6 +556,47 @@ class Handler(SimpleHTTPRequestHandler):
             self._responder_json(400, {"error": "Body inválido"})
         except Exception as e:
             print(f">>> ERROR al simular hasta campeón Brasileirão: {e}")
+            self._responder_json(*_error_http(e))
+        finally:
+            lock_simulacion.release()
+
+    def _manejar_simular_ligapro(self):
+        """Corre una simulación completa de LigaPro Serie A (Fase Inicial
+        + Fase Final con Hexagonal Campeón / Cuadrangular Sudamericana /
+        Hexagonal Descenso, con arrastre de puntos + Monte Carlo) pedida
+        desde el selector de liga de la web, con el n_sims del body."""
+        n_sims = self._leer_n_sims()
+        if not lock_simulacion.acquire(blocking=False):
+            self._responder_json(409, {"error": "Ya hay una simulación corriendo, esperá a que termine"})
+            return
+        try:
+            print(f"\n>>> Corriendo nueva simulación de LigaPro pedida desde la web ({n_sims} corridas)...")
+            datos = correr_simulacion_ligapro(imprimir=True, n_sims=n_sims)
+            print(">>> Simulación de LigaPro terminada y data_ligapro.json actualizado.\n")
+            self._responder_json(200, datos)
+        except Exception as e:
+            print(f">>> ERROR al simular LigaPro: {e}")
+            self._responder_json(*_error_http(e))
+        finally:
+            lock_simulacion.release()
+
+    def _manejar_actualizar_ligapro(self):
+        """Scrapea ligapro.ec y, si hay partidos nuevos, actualiza los CSV
+        y re-simula con correr_simulacion_ligapro. Ver la limitación
+        documentada en actualizar_resultados_ligapro.py sobre la
+        transición Fase Inicial -> Fase Final (no se persiste
+        automáticamente acá)."""
+        n_sims = self._leer_n_sims()
+        if not lock_simulacion.acquire(blocking=False):
+            self._responder_json(409, {"error": "Ya hay una simulación/actualización corriendo, esperá a que termine"})
+            return
+        try:
+            print(f"\n>>> Actualización LigaPro pedida desde la web (ligapro.ec), {n_sims} corridas si hay partidos nuevos...")
+            resultado = actualizar_ligapro(n_sims=n_sims, correr_simulacion_fn=correr_simulacion_ligapro, imprimir=True)
+            print(">>> Actualización LigaPro terminada.\n")
+            self._responder_json(200, resultado)
+        except Exception as e:
+            print(f">>> ERROR al actualizar LigaPro: {e}")
             self._responder_json(*_error_http(e))
         finally:
             lock_simulacion.release()

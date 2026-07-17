@@ -10,7 +10,9 @@ correr_simulacion_bmetro / simular_hasta_ascenso_bmetro (B Metro),
 correr_simulacion_federal / simular_hasta_ascenso_federal (Federal A),
 correr_simulacion_primerac / simular_hasta_ascenso_primerac (Primera C),
 correr_simulacion_brasileirao / simular_hasta_campeon_brasileirao
-(Brasileirão Série A) y correr_simulacion_libertadores /
+(Brasileirão Série A), correr_simulacion_ligapro (LigaPro Serie A,
+Ecuador -- sin "hasta campeón" todavía, no está en el alcance de este
+paso) y correr_simulacion_libertadores /
 simular_hasta_campeon_libertadores (Copa Libertadores). Arma el mismo
 dict de respuesta que antes armaba cada endpoint de api/index.py, para que:
 
@@ -40,6 +42,7 @@ from main_bmetro import correr_simulacion_bmetro, simular_hasta_ascenso_bmetro
 from main_federal import correr_simulacion_federal, simular_hasta_ascenso_federal
 from main_primerac import correr_simulacion as correr_simulacion_primerac, simular_hasta_campeon as simular_hasta_ascenso_primerac
 from main_brasileirao import correr_simulacion_brasileirao, simular_hasta_campeon_brasileirao
+from main_ligapro import correr_simulacion_ligapro
 from main_libertadores import correr_simulacion_libertadores, simular_hasta_campeon_libertadores
 from main_sudamericana import correr_simulacion_sudamericana, simular_hasta_campeon_sudamericana
 
@@ -113,6 +116,10 @@ def simular_campeon_brasileirao(equipo_objetivo, max_intentos):
     return _envolver_hasta_campeon(resultado, equipo_objetivo, max_intentos)
 
 
+def simular_ligapro(n_sims):
+    return correr_simulacion_ligapro(n_sims=n_sims, imprimir=False, guardar_json=False)
+
+
 def simular_libertadores(n_sims):
     return correr_simulacion_libertadores(imprimir=False, guardar_json=False, n_sims=n_sims)
 
@@ -146,6 +153,7 @@ _TAREAS = {
     "simular-campeon-primerac": lambda kwargs: simular_campeon_primerac(kwargs["equipo"], kwargs["max_intentos"]),
     "simular-brasileirao": lambda kwargs: simular_brasileirao(kwargs["n_sims"]),
     "simular-campeon-brasileirao": lambda kwargs: simular_campeon_brasileirao(kwargs["equipo"], kwargs["max_intentos"]),
+    "simular-ligapro": lambda kwargs: simular_ligapro(kwargs["n_sims"]),
     "simular-libertadores": lambda kwargs: simular_libertadores(kwargs["n_sims"]),
     "simular-campeon-libertadores": lambda kwargs: simular_campeon_libertadores(kwargs["equipo"], kwargs["max_intentos"]),
     "simular-sudamericana": lambda kwargs: simular_sudamericana(kwargs["n_sims"]),

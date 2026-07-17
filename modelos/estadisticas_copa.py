@@ -28,8 +28,30 @@ RONDAS = ["32avos", "16avos", "octavos", "cuartos", "semis", "final"]
 LLAVES_POR_RONDA = {"32avos": 32, "16avos": 16, "octavos": 8,
                     "cuartos": 4, "semis": 2, "final": 1}
 
-# Rating genérico para equipos sin datos (categorías menores): claramente
-# más débiles que el promedio de Primera, pero no regalados.
+# ---------------------------------------------------------------------
+# Calibración entre divisiones
+# ---------------------------------------------------------------------
+# calcular_ratings() (en estadisticas.py) normaliza el ataque/defensa de
+# cada equipo CONTRA EL PROMEDIO DE SU PROPIA LIGA: un equipo con
+# ataque=1.0 en LPF es "el promedio de la LPF", y un equipo con
+# ataque=1.0 en Nacional es "el promedio de Nacional" -- dos escalas
+# distintas que antes se enfrentaban tal cual en la Copa, como si un
+# equipo del medio de la tabla de Nacional fuera tan fuerte como uno del
+# medio de tabla de Primera. Estos factores devuelven los ratings de
+# Nacional a la escala de Primera (que queda como referencia, factor
+# 1.0, por ser la liga con más partidos y datos más confiables) antes de
+# que entren al motor de la Copa. Los números son una estimación de la
+# brecha real de nivel entre ambas divisiones; se pueden recalibrar con
+# datos de cruces históricos Primera-vs-Nacional (Copa Argentina, extinta
+# Copa de la Superliga, etc.) si se quiere mayor precisión.
+FACTOR_ATAQUE_NACIONAL = 0.78    # ~22% menos gol a favor que un equipo equivalente de Primera
+FACTOR_DEFENSA_NACIONAL = 1.25   # ~25% más gol en contra que un equipo equivalente de Primera
+
+# Rating genérico para equipos sin datos (categorías menores a Nacional:
+# Federal A, Primera C, etc.): deliberadamente por debajo del piso de
+# Nacional ya calibrado arriba (0.78/1.25), para conservar el orden
+# Primera > Nacional > ascenso. No regalados, pero claramente más
+# débiles que el promedio de Primera.
 ATAQUE_ASCENSO = 0.70
 DEFENSA_ASCENSO = 1.35
 
@@ -113,9 +135,22 @@ class EstadisticasCopa(Estadisticas):
             nacional.crear_equipos()
             nacional.calcular_estadisticas()
             nacional.calcular_ratings()
+
+            # Recalibrar de la escala de Nacional a la escala de Primera
+            # (ver comentario de FACTOR_ATAQUE_NACIONAL/FACTOR_DEFENSA_NACIONAL
+            # más arriba) antes de que estos ratings se mezclen con los de
+            # LPF en el motor de la Copa.
+            for equipo in nacional.equipos.values():
+                equipo.ataque_local = round(equipo.ataque_local * FACTOR_ATAQUE_NACIONAL, 3)
+                equipo.ataque_visitante = round(equipo.ataque_visitante * FACTOR_ATAQUE_NACIONAL, 3)
+                equipo.defensa_local = round(equipo.defensa_local * FACTOR_DEFENSA_NACIONAL, 3)
+                equipo.defensa_visitante = round(equipo.defensa_visitante * FACTOR_DEFENSA_NACIONAL, 3)
+
             # No pisamos LPF: si un nombre está en ambas, gana Primera.
             for nombre, equipo in nacional.equipos.items():
                 ratings.setdefault(nombre, equipo)
+            print(f"  Ratings de Nacional recalibrados a escala de Primera "
+                  f"(x{FACTOR_ATAQUE_NACIONAL} ataque, x{FACTOR_DEFENSA_NACIONAL} defensa).")
         except Exception as e:
             print(f"  (aviso: no se pudieron cargar ratings de Nacional: {e})")
 

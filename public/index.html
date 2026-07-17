@@ -2444,10 +2444,14 @@
   body.liga-federal .torneo-logo[data-liga="federal"]{ display:block; }
   body.liga-primerac .torneo-logo[data-liga="primerac"]{ display:block; }
   body.liga-brasileirao .torneo-logo[data-liga="brasileirao"]{
-    display:block; width:132px; height:132px; padding:18px;
+    display:block; width:100px; height:100px; padding:15px 8px 1px;
     box-shadow: 0 0 0 6px rgba(199,255,0,0.10), 0 10px 30px rgba(0,0,0,0.6), 0 0 40px rgba(199,255,0,0.32);
   }
-  body.liga-brasileirao .torneo-logo-wrap{ margin-bottom:22px; }
+  body.liga-ligapro .torneo-logo[data-liga="ligapro"]{
+    display:block; width:104px; height:104px; padding:10px;
+    background: radial-gradient(circle at 32% 28%, #2A2A2A 0%, #101010 72%, #050505 100%);
+    box-shadow: 0 0 0 6px rgba(245,197,24,0.14), 0 10px 30px rgba(0,0,0,0.65), 0 0 40px rgba(245,197,24,0.30);
+  }
   body.liga-temporada .torneo-logo[data-liga="temporada"]{
     display:block; width:136px; height:136px; padding:20px;
     box-shadow:
@@ -3456,6 +3460,153 @@
     body.liga-brasileirao #mc-list-brasileirao .mc-row{ transition:none; }
   }
 
+  /* =====================================================================
+     LIGAPRO SERIE A (ECUADOR) · identidad propia dentro de "Resto de
+     Sudamérica" — negro + dorado/rojo/azul, tomados directo del escudo
+     oficial del torneo (public/logos-torneos/ligapro.png: las 3 medias
+     lunas doradas, roja y azul entrelazadas sobre fondo negro, colores
+     de la bandera ecuatoriana). Mismo criterio que Brasileirão: esquema
+     FIJO en ambos estados del toggle claro/oscuro (identidad de marca,
+     no un tema de la UI local).
+     Formato de 2 fases con 3 grupos en la Fase Final (a diferencia de
+     Brasileirão, acá SÍ hay que resolver 4 tablas: Fase Inicial de
+     referencia + Hexagonal Campeón / Cuadrangular Sudamericana /
+     Hexagonal Descenso), por eso el dorado (--leader-accent) marca el
+     Hexagonal Campeón, el azul (--qualified-accent) la Sudamericana y el
+     rojo (--relegation-accent) el descenso -- los 3 colores del escudo,
+     cada uno mapeado al grupo que clasifica a lo que su color evoca. */
+  body.liga-ligapro,
+  body.dark.liga-ligapro{
+    --bg: #0A0A0A;
+    --bg-panel: rgba(255,255,255,0.045);
+    --bg-panel-2: rgba(255,255,255,0.07);
+    --line: rgba(245,197,24,0.18);
+    --ink: #F5F0DE;
+    --ink-dim: #CFC9B8;
+    --muted: #8F8A78;
+
+    --amber: #F5C518;
+    --amber-dim: rgba(245,197,24,0.14);
+    --zone-a: #F5C518;
+    --zone-a-dim: rgba(245,197,24,0.14);
+    --zone-b: #6E85FF;
+    --zone-b-dim: rgba(110,133,255,0.14);
+    --danger: #FF5A4E;
+    --danger-dim: rgba(255,90,78,0.14);
+    --azul: #6E85FF;
+    --azul-dim: rgba(110,133,255,0.16);
+
+    --leader-bg: rgba(245,197,24,0.14);
+    --leader-accent: #F5C518;
+    --leader-text: #FFE28A;
+    --qualified-bg: rgba(110,133,255,0.14);
+    --qualified-accent: #6E85FF;
+    --qualified-text: #B9C4FF;
+    --sudamericana-bg: rgba(110,133,255,0.14);
+    --sudamericana-accent: #6E85FF;
+    --sudamericana-text: #B9C4FF;
+    --relegation-bg: rgba(255,90,78,0.14);
+    --relegation-accent: #FF5A4E;
+    --relegation-text: #FFB4AC;
+
+    --radius: 18px;
+    --radius-sm: 12px;
+    --card-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    --card-shadow-hover: 0 18px 44px rgba(0,0,0,0.62);
+    --card-grad: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.015) 100%);
+    --hero-bg: linear-gradient(160deg, #0A0A0A 0%, #161611 55%, #1C1B12 100%);
+    --hero-ink: #F5F0DE;
+    --hero-dim: rgba(245,240,222,0.82);
+    --hero-accent: #F5C518;
+    --tabs-bg: rgba(10,10,10,0.92);
+    --btn-grad: linear-gradient(135deg, #F5C518 0%, #D9A400 100%);
+    --btn-ink: #100E00;
+    --table-head-bg: rgba(245,197,24,0.05);
+    --hover-lift: translateY(-3px);
+    --bracket-line: #F5C518;
+    --bracket-line-glow: rgba(245,197,24,0.4);
+
+    background: var(--bg);
+  }
+
+  /* Fondo exclusivo: negro profundo + resplandor dorado arriba a la
+     derecha, rojo abajo a la izquierda y un toque azul al centro — eco
+     de las 3 medias lunas entrelazadas del escudo. */
+  body.liga-ligapro::before{
+    content:""; position:fixed; inset:0; z-index:-2; pointer-events:none;
+    background:
+      radial-gradient(1000px 600px at 85% -10%, rgba(245,197,24,0.16), transparent 60%),
+      radial-gradient(760px 520px at 2% 106%, rgba(255,90,78,0.12), transparent 62%),
+      radial-gradient(700px 480px at 60% 50%, rgba(110,133,255,0.08), transparent 65%);
+  }
+
+  body.liga-ligapro .hero{ border-radius: 0 0 28px 28px; }
+  body.liga-ligapro .hero::before{
+    content:""; position:absolute; inset:0; pointer-events:none;
+    background: radial-gradient(520px 460px at 50% -140px, rgba(245,197,24,0.18), transparent 70%);
+  }
+  body.liga-ligapro .hero::after{
+    height:4px;
+    background: linear-gradient(90deg, #FF5A4E 0%, #F5C518 35%, #F5C518 65%, #6E85FF 100%);
+    opacity:0.9;
+  }
+
+  body.liga-ligapro .liga-tab.active{
+    background: linear-gradient(135deg, rgba(245,197,24,0.24), rgba(245,197,24,0.08));
+    color:#FFE28A; box-shadow: inset 0 0 0 1px rgba(245,197,24,0.42);
+  }
+  body.liga-ligapro .liga-tab:not(.active){ color: var(--muted); }
+  body.liga-ligapro .liga-tabs .group{ border:1px solid rgba(245,197,24,0.18); background: rgba(255,255,255,0.02); }
+  body.liga-ligapro .liga-tabs{ border-bottom:1px solid rgba(245,197,24,0.15); }
+
+  body.liga-ligapro #mc-list-ligapro{ border-color: rgba(245,197,24,0.2); }
+  body.liga-ligapro .mc-row .name .pct{ color:#F5C518; }
+
+  /* ---- Input "Cantidad de simulaciones": mismo tratamiento que el
+     resto de los sim-count-*, con el foco en dorado ---- */
+  body.liga-ligapro #sim-count-ligapro{
+    font-family:'JetBrains Mono'; font-size:13px; font-weight:600; color: var(--ink);
+    background: var(--bg-panel); border:1px solid rgba(245,197,24,0.32); border-radius: var(--radius-sm);
+    padding:8px 10px; width:88px; text-align:center; outline:none;
+    transition: border-color 0.15s, box-shadow 0.15s, opacity 0.15s;
+  }
+  body.liga-ligapro #sim-count-ligapro:hover:not(:disabled){ border-color:#F5C518; }
+  body.liga-ligapro #sim-count-ligapro:focus{
+    border-color:#F5C518; box-shadow: 0 0 0 3px rgba(245,197,24,0.22);
+  }
+  body.liga-ligapro #sim-count-ligapro:disabled{ cursor:wait; opacity:0.5; }
+  body.liga-ligapro #sim-count-ligapro::-webkit-inner-spin-button,
+  body.liga-ligapro #sim-count-ligapro::-webkit-outer-spin-button{ opacity:0.6; }
+
+  /* ---- Subtítulo de zona arriba de cada una de las 4 tablas (Fase
+     Inicial / Hexagonal Campeón / Cuadrangular Sudamericana / Hexagonal
+     Descenso) -- solo en esta liga, así que vive acá en vez de en el
+     bloque genérico de tablas. ---- */
+  body.liga-ligapro .ligapro-grupo-titulo{
+    display:flex; align-items:center; gap:8px; margin:26px 0 8px;
+    font-family:'JetBrains Mono', monospace; font-size:12.5px; font-weight:700;
+    letter-spacing:0.06em; text-transform:uppercase; color: var(--ink-dim);
+  }
+  body.liga-ligapro .ligapro-grupo-titulo:first-of-type{ margin-top:6px; }
+  body.liga-ligapro .ligapro-grupo-titulo i{
+    display:inline-block; width:10px; height:10px; border-radius:3px; flex:none;
+  }
+  body.liga-ligapro .ligapro-zona-badge{
+    display:inline-block; padding:2px 9px; border-radius:999px;
+    font-family:'JetBrains Mono', monospace; font-size:10.5px; font-weight:700;
+    letter-spacing:0.04em; text-transform:uppercase; white-space:nowrap;
+  }
+
+  @media (max-width:600px){
+    body.liga-ligapro::before, body.liga-ligapro::after{ width:260px; height:260px; }
+    body.liga-ligapro .hero{ padding-top:56px; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    body.liga-ligapro .hero .meta div,
+    body.liga-ligapro .btn-simular,
+    body.liga-ligapro #mc-list-ligapro .mc-row{ transition:none; }
+  }
+
   /* ---- Escudos de equipos ---- */
   .escudo{ width:24px; height:24px; object-fit:contain; vertical-align:-6px; margin-right:8px; }
   .tc-name .escudo{ width:34px; height:34px; vertical-align:-8px; margin-right:10px; }
@@ -4445,6 +4596,8 @@
            onerror="this.remove()">
       <img class="torneo-logo" data-liga="brasileirao" src="logos-torneos/brasileirao.png" alt=""
            onerror="this.remove()">
+      <img class="torneo-logo" data-liga="ligapro" src="logos-torneos/ligapro.png" alt=""
+           onerror="this.remove()">
       <img class="torneo-logo" data-liga="temporada" src="logos-torneos/modotorneo.png" alt=""
            onerror="this.remove()">
     </div>
@@ -4528,6 +4681,20 @@
       <div id="last-update-brasileirao" class="last-update"></div>
     </div>
 
+    <div class="sim-control" id="sim-control-ligapro" style="display:none">
+      <div class="sim-select-row">
+        <label for="sim-count-ligapro">Cantidad de simulaciones</label>
+        <input type="number" id="sim-count-ligapro" value="1000" min="50" max="5000" step="1">
+        <span class="rango">(50–5000)</span>
+      </div>
+      <div class="btn-row">
+        <button id="btn-simular-ligapro" class="btn-simular">Correr nueva simulación</button>
+        <button id="btn-actualizar-ligapro" class="btn-actualizar">Actualizar Resultados</button>
+      </div>
+      <div id="sim-status-ligapro" class="sim-status"></div>
+      <div id="last-update-ligapro" class="last-update"></div>
+    </div>
+
     <div class="sim-control" id="sim-control-federal" style="display:none">
       <div class="sim-select-row">
         <label for="sim-count-federal">Cantidad de simulaciones</label>
@@ -4600,6 +4767,7 @@
     </div>
     <div class="group" data-region="sudamerica" style="display:none">
       <button class="liga-tab" data-liga="brasileirao">Brasileirão Série A</button>
+      <button class="liga-tab" data-liga="ligapro">LigaPro Serie A</button>
     </div>
     <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Cambiar entre modo claro y oscuro">
       <span id="theme-toggle-icon" class="icon-svg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span><span id="theme-toggle-label">Oscuro</span>
@@ -5143,6 +5311,102 @@
   </section>
 
   </div><!-- /vista-brasileirao -->
+
+  <div id="vista-ligapro" style="display:none">
+
+  <div class="search-section" id="search-section-ligapro">
+    <div class="search-box">
+      <input type="text" id="team-search-ligapro" list="team-list-ligapro" placeholder="Buscar equipo… (ej: Barcelona, Emelec, LDU Quito)" autocomplete="off">
+      <datalist id="team-list-ligapro"></datalist>
+    </div>
+    <div class="search-hint">Escribí el nombre del equipo para ver su tabla, chances de Libertadores, Sudamericana y descenso</div>
+    <div id="search-result-ligapro"></div>
+  </div>
+
+  <section id="sec-tabla-actual-ligapro">
+    <div class="section-head"><span class="idx">01</span><h2>Tabla actual</h2><div class="rule"></div></div>
+    <p class="section-note">Clasificación real en este momento, tal como quedó tras los partidos ya jugados. Mientras dura la Fase Inicial es una tabla única de los 16 equipos; una vez resuelta esa fase pasa a mostrar los 3 grupos de la Fase Final por separado.</p>
+    <div id="tabla-actual-ligapro-grupos"></div>
+  </section>
+
+  <section id="sec-tabla-ligapro">
+    <div class="section-head"><span class="idx">02</span><h2>Fase Final simulada</h2><div class="rule"></div></div>
+    <p class="section-note">Resultado de una corrida puntual de la temporada completa: se completa la Fase Inicial (si falta) y, con esa tabla, se arma y simula la Fase Final — Hexagonal Campeón, Cuadrangular Sudamericana y Hexagonal Descenso — arrastrando los puntos de la Fase Inicial.</p>
+    <div id="ligapro-campeon-footer" class="campeon-anuncio-wrap"></div>
+
+    <div id="ligapro-fase-inicial-wrap" style="display:none">
+      <div class="ligapro-grupo-titulo"><i style="background:var(--muted)"></i>Fase Inicial — tabla final (referencia)</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>GF</th><th>GC</th><th>DG</th></tr></thead>
+          <tbody id="tabla-fase-inicial-body-ligapro"></tbody>
+        </table>
+      </div>
+      <p class="section-note" style="margin-top:8px; text-align:left;">
+        <span style="display:inline-block; width:10px; height:10px; border-radius:2px; background:var(--leader-accent); margin-right:6px; vertical-align:middle;"></span>1° al 6°: clasifican al Hexagonal Campeón.
+        <span style="display:inline-block; width:10px; height:10px; border-radius:2px; background:var(--qualified-accent); margin-right:6px; vertical-align:middle;"></span>7° al 10°: Cuadrangular Sudamericana.
+        <span style="display:inline-block; width:10px; height:10px; border-radius:2px; background:var(--relegation-accent); margin-right:6px; vertical-align:middle;"></span>11° al 16°: Hexagonal Descenso.
+      </p>
+    </div>
+
+    <div class="ligapro-grupo-titulo"><i style="background:var(--leader-accent)"></i>Hexagonal Campeón <span class="ligapro-zona-badge" style="background:var(--leader-bg); color:var(--leader-accent)">1°–6° Fase Inicial</span></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>GF</th><th>GC</th><th>DG</th></tr></thead>
+        <tbody id="tabla-hexagonal-campeon-body-ligapro"></tbody>
+      </table>
+    </div>
+    <p class="section-note" style="margin-top:8px; text-align:left;">
+      <span style="display:inline-block; width:10px; height:10px; border-radius:2px; background:var(--leader-accent); margin-right:6px; vertical-align:middle;"></span>1° al 3°: Copa Libertadores 2027 (Ecuador 1/2/3 — el 4° cupo sale de la Copa Ecuador, no simulada acá).
+      <span style="display:inline-block; width:10px; height:10px; border-radius:2px; background:var(--qualified-accent); margin-right:6px; vertical-align:middle;"></span>4° al 6°: Copa Sudamericana 2027 (Ecuador 1/2/3). El campeón (1°) juega además la Supercopa Ecuador 2027.
+    </p>
+
+    <div class="ligapro-grupo-titulo"><i style="background:var(--qualified-accent)"></i>Cuadrangular Sudamericana <span class="ligapro-zona-badge" style="background:var(--qualified-bg); color:var(--qualified-accent)">7°–10° Fase Inicial</span></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>GF</th><th>GC</th><th>DG</th></tr></thead>
+        <tbody id="tabla-cuadrangular-sudamericana-body-ligapro"></tbody>
+      </table>
+    </div>
+    <p class="section-note" style="margin-top:8px; text-align:left;">
+      <span style="display:inline-block; width:10px; height:10px; border-radius:2px; background:var(--qualified-accent); margin-right:6px; vertical-align:middle;"></span>1°: Copa Sudamericana 2027 (Ecuador 4).
+    </p>
+
+    <div class="ligapro-grupo-titulo"><i style="background:var(--relegation-accent)"></i>Hexagonal Descenso <span class="ligapro-zona-badge" style="background:var(--relegation-bg); color:var(--relegation-accent)">11°–16° Fase Inicial</span></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>GF</th><th>GC</th><th>DG</th></tr></thead>
+        <tbody id="tabla-hexagonal-descenso-body-ligapro"></tbody>
+      </table>
+    </div>
+    <p class="section-note" style="margin-top:8px; text-align:left;">
+      <span style="display:inline-block; width:10px; height:10px; border-radius:2px; background:var(--relegation-accent); margin-right:6px; vertical-align:middle;"></span>Últimos 2: descenso a la Serie B.
+    </p>
+  </section>
+
+  <section id="sec-mc-ligapro">
+    <div class="section-head"><span class="idx">03</span><h2>Probabilidades — Monte Carlo</h2><div class="rule"></div></div>
+    <p class="section-note">Cada barra desglosa el % de simulaciones en que el equipo clasifica a Libertadores o a Sudamericana (por cualquiera de los 2 caminos: Hexagonal Campeón o Cuadrangular). A la derecha, el % de veces que descendió.</p>
+    <div class="legend">
+      <span><i style="background:var(--leader-accent)"></i> Libertadores</span>
+      <span><i style="background:var(--qualified-accent)"></i> Sudamericana</span>
+      <span><i style="background:var(--danger)"></i> % descenso</span>
+    </div>
+    <div id="mc-list-ligapro"></div>
+  </section>
+
+  <section id="sec-esperada-ligapro">
+    <div class="section-head"><span class="idx">04</span><h2>Posición final esperada (Hexagonal Campeón)</h2><div class="rule"></div></div>
+    <p class="section-note">Puntos y posición promedio de cada equipo dentro del Hexagonal Campeón, a lo largo de todas las simulaciones en que clasificó a ese grupo (0 en las simulaciones en que no clasificó).</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Equipo</th><th>Pts. prom.</th><th>Pos. prom.</th></tr></thead>
+        <tbody id="esperada-body-ligapro"></tbody>
+      </table>
+    </div>
+  </section>
+
+  </div><!-- /vista-ligapro -->
 
   <div id="vista-federal" style="display:none">
 
@@ -5722,7 +5986,7 @@ function setApiActionsDisabled(disabled){
   document.querySelectorAll('.btn-simular, .btn-actualizar').forEach(btn => {
     btn.disabled = disabled;
   });
-  document.querySelectorAll('#sim-count, #sim-count-lpf, #sim-count-copa, #sim-count-bmetro, #sim-count-federal, #sim-count-primerac, #sim-count-libertadores, #sim-count-sudamericana, #sim-count-brasileirao, #campeon-equipo, #campeon-equipo-lpf, #campeon-equipo-copa, #campeon-equipo-bmetro, #campeon-equipo-federal, #campeon-equipo-primerac, #campeon-equipo-libertadores, #campeon-equipo-sudamericana, #campeon-equipo-brasileirao').forEach(control => {
+  document.querySelectorAll('#sim-count, #sim-count-lpf, #sim-count-copa, #sim-count-bmetro, #sim-count-federal, #sim-count-primerac, #sim-count-libertadores, #sim-count-sudamericana, #sim-count-brasileirao, #sim-count-ligapro, #campeon-equipo, #campeon-equipo-lpf, #campeon-equipo-copa, #campeon-equipo-bmetro, #campeon-equipo-federal, #campeon-equipo-primerac, #campeon-equipo-libertadores, #campeon-equipo-sudamericana, #campeon-equipo-brasileirao').forEach(control => {
     control.disabled = disabled;
   });
 }
@@ -7275,6 +7539,7 @@ const SHARE_CONFIG = {
   federal:   { param: 'equipo_federal',  titulo: 'Torneo Federal A',        data: () => (typeof DATA_FEDERAL !== 'undefined' ? DATA_FEDERAL : null) },
   copa:      { param: 'equipo_copa',     titulo: 'Copa Argentina',          data: () => (typeof DATA_COPA !== 'undefined' ? DATA_COPA : null) },
   brasileirao: { param: 'equipo_brasileirao', titulo: 'Brasileirão Série A', data: () => (typeof DATA_BRASILEIRAO !== 'undefined' ? DATA_BRASILEIRAO : null) },
+  ligapro:   { param: 'equipo_ligapro',   titulo: 'LigaPro Serie A',         data: () => (typeof DATA_LIGAPRO !== 'undefined' ? DATA_LIGAPRO : null) },
 };
 const SHARE_URL_PARAMS = Object.values(SHARE_CONFIG).map(c => c.param);
 
@@ -9740,6 +10005,448 @@ document.getElementById('btn-campeon-brasileirao').addEventListener('click', sim
 
 
 /* ============================================================
+   LIGAPRO SERIE A (ECUADOR)
+   ============================================================
+   A diferencia de Brasileirão (tabla única todo el año), LigaPro tiene
+   dos fases: Fase Inicial (tabla única, zona "FaseInicial") y Fase
+   Final (arrastrando puntos, dividida en 3 grupos: Hexagonal Campeón,
+   Cuadrangular Sudamericana y Hexagonal Descenso -- ver
+   modelos/estadisticas_ligapro.py). El JSON que arma main_ligapro.py
+   trae "tabla_actual" (16 equipos, con columna "zona" que dice en cuál
+   de las 4 posibles está cada uno ahora) más "tabla_fase_inicial" /
+   "hexagonal_campeon" / "cuadrangular_sudamericana" /
+   "hexagonal_descenso" (el resultado de la última corrida completa).
+   No tiene "Simular hasta el título" (no estaba en el plan original) ni
+   sección de evolución de posiciones (el frontend todavía no maneja el
+   cambio de zona a mitad de temporada en ese gráfico -- el endpoint
+   /api/evolucion-posiciones-ligapro ya existe en el backend por si se
+   suma más adelante). */
+let DATA_LIGAPRO = null;
+let TEAM_INDEX_LIGAPRO = {};
+
+// Mismos nombres de zona que usa el backend (modelos/estadisticas_ligapro.py)
+const LIGAPRO_ZONA_FASE_INICIAL = "FaseInicial";
+const LIGAPRO_ZONA_HEXAGONAL_CAMPEON = "Hexagonal Campeón";
+const LIGAPRO_ZONA_CUADRANGULAR_SUDAMERICANA = "Cuadrangular Sudamericana";
+const LIGAPRO_ZONA_HEXAGONAL_DESCENSO = "Hexagonal Descenso";
+
+// Metadata de cada grupo de la Fase Final: color de acento, badge de
+// "de dónde salió" y la función que decide qué fila resaltar (mismo
+// criterio que usan las secciones de nota ya escritas en el HTML).
+const LIGAPRO_GRUPO_META = {
+  [LIGAPRO_ZONA_HEXAGONAL_CAMPEON]: {
+    accentVar: 'var(--leader-accent)', bgVar: 'var(--leader-bg)',
+    badge: '1°–6° Fase Inicial',
+    clase: (i) => i < 3 ? 'punta' : (i < 6 ? 'reducido' : ''),
+  },
+  [LIGAPRO_ZONA_CUADRANGULAR_SUDAMERICANA]: {
+    accentVar: 'var(--qualified-accent)', bgVar: 'var(--qualified-bg)',
+    badge: '7°–10° Fase Inicial',
+    clase: (i) => i === 0 ? 'reducido' : '',
+  },
+  [LIGAPRO_ZONA_HEXAGONAL_DESCENSO]: {
+    accentVar: 'var(--relegation-accent)', bgVar: 'var(--relegation-bg)',
+    badge: '11°–16° Fase Inicial',
+    clase: (i, total) => i >= total - 2 ? 'descenso' : '',
+  },
+};
+
+// Fila #i (0-indexed) de la tabla única de 16 durante la Fase Inicial:
+// mismo corte de colores que ya usan las notas del HTML (1-6 leader,
+// 7-10 qualified, 11-16 relegation) a modo de vista previa de a qué
+// grupo de la Fase Final clasificaría cada uno si la fase terminara hoy.
+function claseFaseInicialLigaPro(i){
+  const pos = i + 1;
+  if (pos <= 6) return 'punta';
+  if (pos <= 10) return 'reducido';
+  return 'descenso';
+}
+
+function filaTablaLigaProHTML(f, i, clase){
+  const pos = f.posicion ?? (i + 1);
+  return `<tr${clase ? ` class="${clase}"` : ''}><td>${pos}</td><td>${escudoHTML(f.equipo)}${nombreMostrable(f.equipo)}</td><td>${f.puntos}</td><td>${f.gf}</td><td>${f.gc}</td><td>${f.dg > 0 ? '+' + f.dg : f.dg}</td></tr>`;
+}
+
+async function cargarDatosLigaPro(){
+  try {
+    DATA_LIGAPRO = await cargarEstadoPersistido("/api/estado-ligapro");
+    if (!DATA_LIGAPRO) {
+      const respuesta = await fetch("./data_ligapro.json?t=" + Date.now());
+      if (!respuesta.ok) throw new Error("No se pudo cargar data_ligapro.json");
+      DATA_LIGAPRO = await respuesta.json();
+    }
+    iniciarLigaPro();
+  } catch (e) {
+    const cont = document.getElementById('vista-ligapro');
+    if (cont) cont.innerHTML = `<div style="padding:24px 24px 0; max-width:720px; margin:0 auto; text-align:center; color:var(--muted); font-family:'JetBrains Mono'; font-size:13px;">
+      No se pudo cargar data_ligapro.json todavía (${e.message}). Corré <code>python main_ligapro.py</code> una vez para generarlo.
+    </div>`;
+  }
+}
+
+function iniciarLigaPro(){
+  renderTablaActualLigaPro();
+  renderFaseFinalLigaPro();
+  renderMCLigaPro();
+  renderEsperadaLigaPro();
+  TEAM_INDEX_LIGAPRO = buildTeamIndexLigaPro();
+  poblarDatalistLigaPro(TEAM_INDEX_LIGAPRO);
+  const busquedaLigaPro = document.getElementById('team-search-ligapro');
+  if (busquedaLigaPro && busquedaLigaPro.value) buscarEquipoLigaPro(busquedaLigaPro.value);
+  abrirFichaLigaProDesdeUrl();
+  if (document.body.classList.contains('liga-ligapro')) actualizarHero('ligapro');
+}
+
+/* ---------- 01. TABLA ACTUAL (tabla única o 3 grupos, según la fase) ---------- */
+function renderTablaActualLigaPro(){
+  const cont = document.getElementById('tabla-actual-ligapro-grupos');
+  if (!cont || !DATA_LIGAPRO) return;
+  const filas = DATA_LIGAPRO.tabla_actual || [];
+  const zonas = [...new Set(filas.map(f => f.zona))];
+
+  if (zonas.length <= 1) {
+    // Sigue todo en Fase Inicial: una sola tabla de 16, con vista previa
+    // de a qué grupo clasificaría cada uno si la fase terminara hoy.
+    cont.innerHTML = `
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>GF</th><th>GC</th><th>DG</th></tr></thead>
+          <tbody>${filas.map((f, i) => filaTablaLigaProHTML(f, i, claseFaseInicialLigaPro(i))).join('')}</tbody>
+        </table>
+      </div>
+      <p class="section-note" style="margin-top:8px; text-align:left;">
+        <span style="display:inline-block; width:10px; height:10px; border-radius:2px; background:var(--leader-accent); margin-right:6px; vertical-align:middle;"></span>1° al 6°: clasificarían al Hexagonal Campeón.
+        <span style="display:inline-block; width:10px; height:10px; border-radius:2px; background:var(--qualified-accent); margin-right:6px; vertical-align:middle;"></span>7° al 10°: Cuadrangular Sudamericana.
+        <span style="display:inline-block; width:10px; height:10px; border-radius:2px; background:var(--relegation-accent); margin-right:6px; vertical-align:middle;"></span>11° al 16°: Hexagonal Descenso.
+      </p>`;
+    return;
+  }
+
+  // Ya se dividió en los 3 grupos de la Fase Final: una tabla por zona.
+  const orden = [LIGAPRO_ZONA_HEXAGONAL_CAMPEON, LIGAPRO_ZONA_CUADRANGULAR_SUDAMERICANA, LIGAPRO_ZONA_HEXAGONAL_DESCENSO];
+  cont.innerHTML = orden.filter(z => zonas.includes(z)).map(zona => {
+    const grupo = filas.filter(f => f.zona === zona).sort((a, b) => a.posicion - b.posicion);
+    const meta = LIGAPRO_GRUPO_META[zona];
+    return `
+      <div class="ligapro-grupo-titulo"><i style="background:${meta.accentVar}"></i>${zona} <span class="ligapro-zona-badge" style="background:${meta.bgVar}; color:${meta.accentVar}">${meta.badge}</span></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>GF</th><th>GC</th><th>DG</th></tr></thead>
+          <tbody>${grupo.map((f, i) => filaTablaLigaProHTML(f, i, meta.clase(i, grupo.length))).join('')}</tbody>
+        </table>
+      </div>`;
+  }).join('');
+}
+
+/* ---------- 02. FASE FINAL SIMULADA (Fase Inicial de referencia + 3 grupos) ---------- */
+function renderGrupoFinalLigaPro(bodyId, filas, claseFn){
+  const body = document.getElementById(bodyId);
+  if (!body || !filas) return;
+  body.innerHTML = filas.map((f, i) => filaTablaLigaProHTML(f, i, claseFn(i, filas.length))).join('');
+}
+
+function renderFaseFinalLigaPro(){
+  if (!DATA_LIGAPRO) return;
+
+  const wrapFI = document.getElementById('ligapro-fase-inicial-wrap');
+  if (DATA_LIGAPRO.tabla_fase_inicial && DATA_LIGAPRO.tabla_fase_inicial.length) {
+    wrapFI.style.display = '';
+    renderGrupoFinalLigaPro('tabla-fase-inicial-body-ligapro', DATA_LIGAPRO.tabla_fase_inicial, claseFaseInicialLigaPro);
+  } else {
+    wrapFI.style.display = 'none';
+  }
+
+  const metaHC = LIGAPRO_GRUPO_META[LIGAPRO_ZONA_HEXAGONAL_CAMPEON];
+  const metaCS = LIGAPRO_GRUPO_META[LIGAPRO_ZONA_CUADRANGULAR_SUDAMERICANA];
+  const metaHD = LIGAPRO_GRUPO_META[LIGAPRO_ZONA_HEXAGONAL_DESCENSO];
+  renderGrupoFinalLigaPro('tabla-hexagonal-campeon-body-ligapro', DATA_LIGAPRO.hexagonal_campeon, metaHC.clase);
+  renderGrupoFinalLigaPro('tabla-cuadrangular-sudamericana-body-ligapro', DATA_LIGAPRO.cuadrangular_sudamericana, metaCS.clase);
+  renderGrupoFinalLigaPro('tabla-hexagonal-descenso-body-ligapro', DATA_LIGAPRO.hexagonal_descenso, metaHD.clase);
+
+  const footer = document.getElementById('ligapro-campeon-footer');
+  if (footer) footer.innerHTML = campeonAnuncioHTML(DATA_LIGAPRO.campeon, '🏆');
+}
+
+/* ---------- 03. MONTE CARLO ---------- */
+function renderMCLigaPro(){
+  const list = document.getElementById('mc-list-ligapro');
+  if (!list || !DATA_LIGAPRO || !DATA_LIGAPRO.monte_carlo) return;
+  list.innerHTML = "";
+  DATA_LIGAPRO.monte_carlo.forEach((f, i) => {
+    const row = document.createElement('div');
+    row.className = 'mc-row';
+    const lib = f['%libertadores'];
+    const sud = f['%sudamericana'];
+    const descClass = f['%descenso'] >= 25 ? 'high' : '';
+    row.innerHTML = `
+      <div class="pos">${i + 1}</div>
+      <div>
+        <div class="name"><span>${escudoHTML(f.equipo)}${nombreMostrable(f.equipo)}</span><span class="pct">${fmtPct(f['%campeon'])} campeón</span></div>
+        <div class="mc-bar-track">
+          <div class="mc-bar-fill directo" style="width:${lib}%; background:var(--leader-accent)"></div>
+          <div class="mc-bar-fill reducido" style="left:${lib}%; width:${sud}%; background:var(--qualified-accent)"></div>
+        </div>
+        <div class="mc-sub">
+          <span><i class="dot" style="background:var(--leader-accent)"></i>${fmtPct(lib)} Libertadores</span>
+          <span><i class="dot" style="background:var(--qualified-accent)"></i>${fmtPct(sud)} Sudamericana</span>
+        </div>
+      </div>
+      <div class="mc-desc">
+        <div class="desc-pct ${descClass}">${fmtPct(f['%descenso'])}</div>
+        <div class="desc-lbl">descenso</div>
+        <div class="desc-bar-track"><div class="desc-bar-fill" style="width:${Math.min(f['%descenso'], 100)}%"></div></div>
+      </div>
+    `;
+    list.appendChild(row);
+  });
+}
+
+/* ---------- 04. POSICIÓN FINAL ESPERADA (Hexagonal Campeón) ---------- */
+function renderEsperadaLigaPro(){
+  const body = document.getElementById('esperada-body-ligapro');
+  if (!body || !DATA_LIGAPRO || !DATA_LIGAPRO.tabla_esperada) return;
+  body.innerHTML = "";
+  DATA_LIGAPRO.tabla_esperada.forEach((f, i) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${i + 1}</td><td>${escudoHTML(f.equipo)}${nombreMostrable(f.equipo)}</td><td>${f.puntos_prom_hexagonal}</td><td>${f.posicion_prom_hexagonal}</td>`;
+    body.appendChild(tr);
+  });
+}
+
+/* ---------- BUSCADOR DE EQUIPOS (LIGAPRO) ---------- */
+const BADGE_ESTADO_LIGAPRO = {
+  libertadores: { bg: 'var(--leader-bg)',     color: 'var(--leader-accent)',     label: 'LIBERTADORES' },
+  sudamericana: { bg: 'var(--qualified-bg)',  color: 'var(--qualified-accent)',  label: 'SUDAMERICANA' },
+  hexagonal:    { bg: 'var(--leader-bg)',     color: 'var(--leader-accent)',     label: 'ZONA HEXAGONAL CAMPEÓN' },
+  cuadrangular: { bg: 'var(--qualified-bg)',  color: 'var(--qualified-accent)',  label: 'ZONA CUADRANGULAR SUDAMERICANA' },
+  descenso:     { bg: 'var(--relegation-bg)', color: 'var(--relegation-accent)', label: 'ZONA DESCENSO' },
+  medio:        { bg: 'var(--line)',          color: 'var(--muted)',             label: 'MITAD DE TABLA' },
+};
+
+// Determina la "etiqueta" de un equipo según su zona ACTUAL: mientras
+// dura la Fase Inicial es sólo una proyección (según su posición en la
+// tabla única); una vez dividida la Fase Final, refleja el grupo real
+// (y, dentro del Hexagonal Campeón, si esa posición da o no cupo).
+function estadoLigaPro(f){
+  const zona = f.zona, pos = f.posicion;
+  if (zona === LIGAPRO_ZONA_FASE_INICIAL){
+    if (pos <= 6) return 'hexagonal';
+    if (pos <= 10) return 'cuadrangular';
+    return 'descenso';
+  }
+  if (zona === LIGAPRO_ZONA_HEXAGONAL_CAMPEON) return pos <= 3 ? 'libertadores' : (pos <= 6 ? 'sudamericana' : 'medio');
+  if (zona === LIGAPRO_ZONA_CUADRANGULAR_SUDAMERICANA) return pos === 1 ? 'sudamericana' : 'medio';
+  if (zona === LIGAPRO_ZONA_HEXAGONAL_DESCENSO) return 'descenso';
+  return 'medio';
+}
+
+function buildTeamIndexLigaPro(){
+  const index = {};
+  if (!DATA_LIGAPRO) return index;
+  const actual = DATA_LIGAPRO.tabla_actual || [];
+  const mc = DATA_LIGAPRO.monte_carlo || [];
+  const esperada = DATA_LIGAPRO.tabla_esperada || [];
+  const rachas = DATA_LIGAPRO.rachas || {};
+  actual.forEach(f => {
+    const mcRow = mc.find(m => m.equipo === f.equipo) || {};
+    const espRow = esperada.find(e => e.equipo === f.equipo) || {};
+    const ultimos5 = [...(rachas[f.equipo] || [])].reverse();
+    index[f.equipo] = {
+      equipo: f.equipo, zona: f.zona, posicion: f.posicion,
+      puntos: f.puntos, gf: f.gf, gc: f.gc, dg: f.dg,
+      estado: estadoLigaPro(f),
+      campeon: mcRow['%campeon'] ?? 0,
+      libertadores: mcRow['%libertadores'] ?? 0,
+      sudamericana: mcRow['%sudamericana'] ?? 0,
+      descenso: mcRow['%descenso'] ?? 0,
+      puntos_prom: espRow['puntos_prom_hexagonal'] ?? '—',
+      posicion_prom: espRow['posicion_prom_hexagonal'] ?? '—',
+      ultimos5
+    };
+  });
+  return index;
+}
+
+function poblarDatalistLigaPro(index){
+  const dl = document.getElementById('team-list-ligapro');
+  if (!dl) return;
+  dl.innerHTML = Object.keys(index).sort().map(nombre => `<option value="${nombre}">`).join('');
+}
+
+function renderTeamCardLigaPro(t){
+  const badge = BADGE_ESTADO_LIGAPRO[t.estado] || BADGE_ESTADO_LIGAPRO.medio;
+  const descClass = t.descenso >= 25 ? 'high' : '';
+  const zonaLbl = t.zona === LIGAPRO_ZONA_FASE_INICIAL ? 'la Fase Inicial' : `el ${t.zona}`;
+  const tieneEsperada = t.posicion_prom !== '—';
+  return `
+    <div class="team-card">
+      <div class="tc-head">
+        <div class="tc-name">${escudoHTML(t.equipo)}${nombreMostrable(t.equipo)}</div>
+        <span class="tc-zone" style="background:${badge.bg}; color:${badge.color}">${badge.label}</span>
+      </div>
+      <div class="tc-pos">Posición actual: <b>${t.posicion}°</b> en ${zonaLbl} — <b>${t.puntos}</b> pts (DG ${t.dg > 0 ? '+' + t.dg : t.dg})</div>
+      <div class="tc-grid" style="margin-top:16px;">
+        <div class="tc-stat"><div class="v" style="color:var(--leader-accent)">${fmtPct(t.libertadores)}</div><div class="l">Libertadores</div></div>
+        <div class="tc-stat"><div class="v" style="color:var(--qualified-accent)">${fmtPct(t.sudamericana)}</div><div class="l">Sudamericana</div></div>
+        <div class="tc-stat"><div class="v" style="color:var(--zone-a)">${fmtPct(t.campeon)}</div><div class="l">Campeón</div></div>
+        <div class="tc-stat"><div class="v ${descClass}" style="${t.descenso >= 25 ? 'color:var(--danger)' : ''}">${fmtPct(t.descenso)}</div><div class="l">Descenso</div></div>
+      </div>
+      <div class="tc-mc-title">Clasifica a Libertadores o Sudamericana en ${fmtPct(t.libertadores + t.sudamericana)} de las simulaciones</div>
+      <div class="mc-bar-track" style="margin-bottom:14px;">
+        <div class="mc-bar-fill directo" style="width:${t.libertadores}%; background:var(--leader-accent)"></div>
+        <div class="mc-bar-fill reducido" style="left:${t.libertadores}%; width:${t.sudamericana}%; background:var(--qualified-accent)"></div>
+      </div>
+      <div class="tc-pos">Terminó campeón en <b>${fmtPct(t.campeon)}</b> de las simulaciones${tieneEsperada ? ` — posición promedio en el Hexagonal Campeón: <b>${t.posicion_prom}°</b>, puntos promedio: <b>${t.puntos_prom}</b>` : ''}</div>
+      <div class="tc-racha">
+        <div class="tc-racha-title">Últimos partidos</div>
+        ${renderRacha(t.ultimos5)}
+      </div>
+      <div class="tc-share">
+        <button onclick="compartirLink('ligapro', '${t.equipo.replace(/'/g, "\\'")}', this)">🔗 Copiar link</button>
+        <button onclick="compartirFicha('ligapro', '${t.equipo.replace(/'/g, "\\'")}', this)">📤 Compartir</button>
+      </div>
+    </div>
+  `;
+}
+
+function buscarEquipoLigaPro(nombre){
+  const resultDiv = document.getElementById('search-result-ligapro');
+  if (!resultDiv) return;
+  if (!nombre || !nombre.trim()){
+    resultDiv.innerHTML = "";
+    return;
+  }
+  const index = TEAM_INDEX_LIGAPRO;
+  const exacto = index[nombre];
+  if (exacto){
+    resultDiv.innerHTML = renderTeamCardLigaPro(exacto);
+    return;
+  }
+  const q = nombre.trim().toLowerCase();
+  const coincidencia = Object.values(index).find(t => t.equipo.toLowerCase().includes(q));
+  if (coincidencia){
+    resultDiv.innerHTML = renderTeamCardLigaPro(coincidencia);
+  } else {
+    resultDiv.innerHTML = `<div class="no-result">No se encontró ningún equipo llamado "${nombre}"</div>`;
+  }
+}
+
+document.getElementById('team-search-ligapro').addEventListener('input', (e) => buscarEquipoLigaPro(e.target.value));
+
+let _fichaLigaProDesdeUrlAbierta = false;
+function abrirFichaLigaProDesdeUrl(){
+  if (_fichaLigaProDesdeUrlAbierta) return;
+  const equipoUrl = new URLSearchParams(window.location.search).get('equipo_ligapro');
+  if (!equipoUrl) return;
+  _fichaLigaProDesdeUrlAbierta = true;
+  setRegion('sudamerica');
+  setLiga('ligapro');
+  const input = document.getElementById('team-search-ligapro');
+  if (input) input.value = equipoUrl;
+  buscarEquipoLigaPro(equipoUrl);
+}
+
+/* ---------- SIMULAR / ACTUALIZAR (LIGAPRO) ---------- */
+function leerNSimsLigaPro(){
+  const input = document.getElementById('sim-count-ligapro');
+  let n = parseInt(input.value, 10);
+  if (!Number.isFinite(n)) n = 1000;
+  n = Math.max(50, Math.min(5000, n));
+  input.value = n;
+  return n;
+}
+
+async function correrSimulacionLigaPro(){
+  const btn = document.getElementById('btn-simular-ligapro');
+  const status = document.getElementById('sim-status-ligapro');
+  const input = document.getElementById('sim-count-ligapro');
+  const nSims = leerNSimsLigaPro();
+
+  if (!beginApiAction(status)) return;
+
+  btn.disabled = true;
+  input.disabled = true;
+  btn.textContent = "Simulando…";
+  status.classList.remove('error', 'ok');
+  status.textContent = `Corriendo ${nSims} simulaciones — puede tardar 1-2 minutos, no cierres esta pestaña.`;
+
+  try {
+    const cuerpo = await ejecutarSimulacion("simular-ligapro", { n_sims: Number(nSims) }, "/api/simular-ligapro", status);
+
+    DATA_LIGAPRO = cuerpo;
+    iniciarLigaPro();
+
+    status.classList.add('ok');
+    status.textContent = "✓ Simulación actualizada (" + (DATA_LIGAPRO.generado || "") + ")";
+  } catch (e) {
+    setApiErrorStatus(status, "No se pudo correr la simulación", e);
+  } finally {
+    btn.disabled = false;
+    input.disabled = false;
+    btn.textContent = "Correr nueva simulación";
+    endApiAction();
+  }
+}
+
+document.getElementById('btn-simular-ligapro').addEventListener('click', correrSimulacionLigaPro);
+
+async function correrActualizacionLigaPro(){
+  const btn = document.getElementById('btn-actualizar-ligapro');
+  const status = document.getElementById('sim-status-ligapro');
+  const lastUpdate = document.getElementById('last-update-ligapro');
+  const input = document.getElementById('sim-count-ligapro');
+  const nSims = leerNSimsLigaPro();
+
+  if (!beginApiAction(status)) return;
+
+  btn.disabled = true;
+  input.disabled = true;
+  btn.textContent = "Buscando resultados…";
+  status.classList.remove('error', 'ok');
+  status.textContent = "Consultando ligapro.ec y re-simulando si hay partidos nuevos — puede tardar 1-2 minutos.";
+
+  try {
+    const respuesta = await apiFetch(apiUrl("/api/actualizar-ligapro"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ n_sims: Number(nSims) })
+    });
+    const cuerpo = await respuesta.json().catch(() => ({}));
+    if (!respuesta.ok) throw apiResponseError(respuesta, cuerpo);
+
+    if (cuerpo.actualizado) {
+      DATA_LIGAPRO = cuerpo.datos;
+      iniciarLigaPro();
+      status.classList.add('ok');
+      status.textContent = `✓ Se cargaron ${cuerpo.cargados.length} partido(s) nuevo(s) y se re-simuló.`;
+    } else {
+      if (cuerpo.datos) {
+        DATA_LIGAPRO = cuerpo.datos;
+        iniciarLigaPro();
+      }
+      status.classList.add('ok');
+      status.textContent = "✓ Consultado — no había partidos nuevos jugados todavía.";
+    }
+
+    if (cuerpo.sin_matchear && cuerpo.sin_matchear.length){
+      status.textContent += ` (${cuerpo.sin_matchear.length} partido(s) de ligapro.ec no se pudieron identificar — revisar mapeo de nombres)`;
+    }
+
+    lastUpdate.textContent = "Última consulta a ligapro.ec: " + new Date().toLocaleString('es-AR');
+  } catch (e) {
+    setApiErrorStatus(status, "No se pudo actualizar", e);
+  } finally {
+    btn.disabled = false;
+    input.disabled = false;
+    btn.textContent = "Actualizar Resultados";
+    endApiAction();
+  }
+}
+
+document.getElementById('btn-actualizar-ligapro').addEventListener('click', correrActualizacionLigaPro);
+
+
+/* ============================================================
    FEDERAL A
    ============================================================ */
 let DATA_FEDERAL;
@@ -10351,6 +11058,15 @@ const HERO_TEXTOS = {
     ascensosLbl: "Sudamericana",
     descensosLbl: "Descensos",
   },
+  ligapro: {
+    eyebrow: () => `SIMULACIÓN MONTE CARLO — <span id="hero-n">${(DATA_LIGAPRO && DATA_LIGAPRO.n_simulaciones) || 0}</span> CORRIDAS`,
+    titulo: "LIGAPRO SERIE A",
+    sub: "Fase Inicial de 16 equipos a todos contra todos (30 fechas) y, arrastrando esos puntos, Fase Final dividida en Hexagonal Campeón, Cuadrangular Sudamericana y Hexagonal Descenso — mismo modelo Poisson ajustado por forma reciente y corrección Dixon-Coles.",
+    equiposLbl: "Equipos",
+    zonasLbl: "Libertadores",
+    ascensosLbl: "Sudamericana",
+    descensosLbl: "Descensos",
+  },
   libertadores: {
     eyebrow: () => `SIMULACIÓN MONTE CARLO — <span id="hero-n">${(DATA_LIBERTADORES && DATA_LIBERTADORES.n_simulaciones) || 0}</span> CORRIDAS`,
     titulo: "COPA LIBERTADORES",
@@ -10437,6 +11153,11 @@ function actualizarHero(liga){
     document.getElementById('meta-zonas').textContent = 6; // 4 directa + 2 previa
     document.getElementById('meta-ascensos').textContent = 6; // 7° al 12°
     document.getElementById('meta-descensos').textContent = 4;
+  } else if (liga === 'ligapro'){
+    document.getElementById('meta-equipos').textContent = (DATA_LIGAPRO && DATA_LIGAPRO.tabla_actual && DATA_LIGAPRO.tabla_actual.length) || 16;
+    document.getElementById('meta-zonas').textContent = 3; // Ecuador 1/2/3 vía Hexagonal
+    document.getElementById('meta-ascensos').textContent = 4; // Ecuador 1/2/3 Hexagonal + Ecuador 4 Cuadrangular
+    document.getElementById('meta-descensos').textContent = (DATA_LIGAPRO && DATA_LIGAPRO.descensos && DATA_LIGAPRO.descensos.length) || 2;
   } else if (liga === 'temporada'){
     // Equipos/Competencias/Ascensos/Descensos por temporada salen de la
     // última corrida real (TEMPORADA_META_CACHE), no son un dato fijo de
@@ -10463,6 +11184,7 @@ function setLiga(liga){
   document.getElementById('vista-sudamericana').style.display = liga === 'sudamericana' ? '' : 'none';
   document.getElementById('vista-bmetro').style.display = liga === 'bmetro' ? '' : 'none';
   document.getElementById('vista-brasileirao').style.display = liga === 'brasileirao' ? '' : 'none';
+  document.getElementById('vista-ligapro').style.display = liga === 'ligapro' ? '' : 'none';
   document.getElementById('vista-federal').style.display = liga === 'federal' ? '' : 'none';
   document.getElementById('vista-primerac').style.display = liga === 'primerac' ? '' : 'none';
   document.getElementById('vista-temporada').style.display = liga === 'temporada' ? '' : 'none';
@@ -10471,6 +11193,7 @@ function setLiga(liga){
   document.getElementById('sim-control-copa').style.display = liga === 'copa' ? '' : 'none';
   document.getElementById('sim-control-bmetro').style.display = liga === 'bmetro' ? '' : 'none';
   document.getElementById('sim-control-brasileirao').style.display = liga === 'brasileirao' ? '' : 'none';
+  document.getElementById('sim-control-ligapro').style.display = liga === 'ligapro' ? '' : 'none';
   document.getElementById('sim-control-federal').style.display = liga === 'federal' ? '' : 'none';
   document.getElementById('sim-control-primerac').style.display = liga === 'primerac' ? '' : 'none';
   document.getElementById('sim-control-libertadores').style.display = liga === 'libertadores' ? '' : 'none';
@@ -10482,6 +11205,7 @@ function setLiga(liga){
   document.body.classList.toggle('liga-sudamericana', liga === 'sudamericana');
   document.body.classList.toggle('liga-bmetro', liga === 'bmetro');
   document.body.classList.toggle('liga-brasileirao', liga === 'brasileirao');
+  document.body.classList.toggle('liga-ligapro', liga === 'ligapro');
   document.body.classList.toggle('liga-federal', liga === 'federal');
   document.body.classList.toggle('liga-primerac', liga === 'primerac');
   document.body.classList.toggle('liga-temporada', liga === 'temporada');
@@ -11548,6 +12272,7 @@ cargarDatosLibertadores();
 cargarDatosSudamericana();
 cargarDatosBMetro();
 cargarDatosBrasileirao();
+cargarDatosLigaPro();
 cargarDatosFederal();
 
 // La página, tal como está en el HTML estático, arranca mostrando

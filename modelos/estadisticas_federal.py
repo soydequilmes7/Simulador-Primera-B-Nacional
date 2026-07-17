@@ -43,6 +43,7 @@ import pandas as pd
 import data_access
 import rutas
 from modelos.estadisticas import Estadisticas
+from modelos.motor_vectorizado import muestrear_marcador_dixon_coles
 
 ZONAS_PRIMERA_FASE = ("1", "2", "3", "4")
 ZONA_DIEZ = "1"  # única zona de 10 clubes; las demás (2, 3, 4) son de 9
@@ -253,8 +254,6 @@ class EstadisticasFederal(Estadisticas):
 
         Devuelve (puntos, gf, gc), cada uno (n_slots, S)."""
         M = len(idx_local)
-        k = self._RANGO_GOLES
-        fact = self._FACTORIALES
         max_goles = self._MAX_GOLES
         n_marcadores = (max_goles + 1) * (max_goles + 1)
 
@@ -263,7 +262,6 @@ class EstadisticasFederal(Estadisticas):
         gc_tot = np.zeros((n_slots, S), dtype=np.int64)
 
         tanda = max(1, min(S, max_elems_por_bloque // max(1, M * n_marcadores)))
-        RHO = -0.1
         K_SHOCK = self.K_SHOCK_PARTIDO
 
         for inicio in range(0, S, tanda):
@@ -276,23 +274,17 @@ class EstadisticasFederal(Estadisticas):
             lambda_local = ll_base * shock_local
             lambda_visitante = lv_base * shock_visitante
 
-            p_x = (lambda_local[..., None] ** k) * np.exp(-lambda_local)[..., None] / fact
-            p_y = (lambda_visitante[..., None] ** k) * np.exp(-lambda_visitante)[..., None] / fact
-            probs = p_x[..., :, None] * p_y[..., None, :]
-
-            probs[..., 0, 0] *= 1 - lambda_local * lambda_visitante * RHO
-            probs[..., 1, 0] *= 1 + lambda_visitante * RHO
-            probs[..., 0, 1] *= 1 + lambda_local * RHO
-            probs[..., 1, 1] *= 1 - RHO
-
-            flat = probs.reshape(M, s, n_marcadores)
-            flat = flat / flat.sum(axis=-1, keepdims=True)
-            cumulativo = np.cumsum(flat, axis=-1)
-            r = np.random.random((M, s, 1))
-            idx_marcador = (cumulativo < r).sum(axis=-1)
-
-            goles_local = idx_marcador // (max_goles + 1)
-            goles_visitante = idx_marcador % (max_goles + 1)
+            # Muestreo marginal + rejection sampling exacto (ver
+            # modelos/motor_vectorizado.py::muestrear_marcador_dixon_coles):
+            # reemplaza el tensor conjunto (M,s,9,9) de 81 celdas por
+            # marginales O(9) independientes y una corrección puntual solo
+            # en las 4 celdas que Dixon-Coles afecta (0-0, 1-0, 0-1, 1-1),
+            # bajando el pico de memoria de la tanda ~3.65x a costa de un
+            # ~1.7x en tiempo (loop de rejection) -- estadísticamente
+            # equivalente, validado contra la pmf exacta de 81 celdas.
+            goles_local, goles_visitante = muestrear_marcador_dixon_coles(
+                lambda_local, lambda_visitante, np.random
+            )
 
             gana_local = goles_local > goles_visitante
             gana_visitante = goles_local < goles_visitante

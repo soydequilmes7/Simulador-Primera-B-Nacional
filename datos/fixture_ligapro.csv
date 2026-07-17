@@ -1,0 +1,241 @@
+fecha,jornada,equipo_local,equipo_visitante
+,1,Aucas,Universidad Católica
+,1,Barcelona,Técnico Universitario
+,1,Delfín,Orense
+,1,Deportivo Cuenca,Mushuc Runa
+,1,Emelec,Manta
+,1,Guayaquil City,Macará
+,1,Independiente del Valle,Libertad
+,1,LDU Quito,Leones
+,2,Técnico Universitario,Aucas
+,2,Orense,Universidad Católica
+,2,Mushuc Runa,Barcelona
+,2,Manta,Delfín
+,2,Macará,Deportivo Cuenca
+,2,Libertad,Emelec
+,2,Leones,Guayaquil City
+,2,LDU Quito,Independiente del Valle
+,3,Aucas,Orense
+,3,Técnico Universitario,Mushuc Runa
+,3,Universidad Católica,Manta
+,3,Barcelona,Macará
+,3,Delfín,Libertad
+,3,Deportivo Cuenca,Leones
+,3,Emelec,LDU Quito
+,3,Guayaquil City,Independiente del Valle
+,4,Mushuc Runa,Aucas
+,4,Manta,Orense
+,4,Macará,Técnico Universitario
+,4,Libertad,Universidad Católica
+,4,Leones,Barcelona
+,4,LDU Quito,Delfín
+,4,Independiente del Valle,Deportivo Cuenca
+,4,Guayaquil City,Emelec
+,5,Aucas,Manta
+,5,Mushuc Runa,Macará
+,5,Orense,Libertad
+,5,Técnico Universitario,Leones
+,5,Universidad Católica,LDU Quito
+,5,Barcelona,Independiente del Valle
+,5,Delfín,Guayaquil City
+,5,Deportivo Cuenca,Emelec
+,6,Macará,Aucas
+,6,Libertad,Manta
+,6,Leones,Mushuc Runa
+,6,LDU Quito,Orense
+,6,Independiente del Valle,Técnico Universitario
+,6,Guayaquil City,Universidad Católica
+,6,Emelec,Barcelona
+,6,Deportivo Cuenca,Delfín
+,7,Aucas,Libertad
+,7,Macará,Leones
+,7,Manta,LDU Quito
+,7,Mushuc Runa,Independiente del Valle
+,7,Orense,Guayaquil City
+,7,Técnico Universitario,Emelec
+,7,Universidad Católica,Deportivo Cuenca
+,7,Barcelona,Delfín
+,8,Leones,Aucas
+,8,LDU Quito,Libertad
+,8,Independiente del Valle,Macará
+,8,Guayaquil City,Manta
+,8,Emelec,Mushuc Runa
+,8,Deportivo Cuenca,Orense
+,8,Delfín,Técnico Universitario
+,8,Barcelona,Universidad Católica
+,9,Aucas,LDU Quito
+,9,Leones,Independiente del Valle
+,9,Libertad,Guayaquil City
+,9,Macará,Emelec
+,9,Manta,Deportivo Cuenca
+,9,Mushuc Runa,Delfín
+,9,Orense,Barcelona
+,9,Técnico Universitario,Universidad Católica
+,10,Independiente del Valle,Aucas
+,10,Guayaquil City,LDU Quito
+,10,Emelec,Leones
+,10,Deportivo Cuenca,Libertad
+,10,Delfín,Macará
+,10,Barcelona,Manta
+,10,Universidad Católica,Mushuc Runa
+,10,Técnico Universitario,Orense
+,11,Aucas,Guayaquil City
+,11,Independiente del Valle,Emelec
+,11,LDU Quito,Deportivo Cuenca
+,11,Leones,Delfín
+,11,Libertad,Barcelona
+,11,Macará,Universidad Católica
+,11,Manta,Técnico Universitario
+,11,Mushuc Runa,Orense
+,12,Emelec,Aucas
+,12,Deportivo Cuenca,Guayaquil City
+,12,Delfín,Independiente del Valle
+,12,Barcelona,LDU Quito
+,12,Universidad Católica,Leones
+,12,Técnico Universitario,Libertad
+,12,Orense,Macará
+,12,Mushuc Runa,Manta
+,13,Aucas,Deportivo Cuenca
+,13,Emelec,Delfín
+,13,Guayaquil City,Barcelona
+,13,Independiente del Valle,Universidad Católica
+,13,LDU Quito,Técnico Universitario
+,13,Leones,Orense
+,13,Libertad,Mushuc Runa
+,13,Macará,Manta
+,14,Delfín,Aucas
+,14,Barcelona,Deportivo Cuenca
+,14,Universidad Católica,Emelec
+,14,Técnico Universitario,Guayaquil City
+,14,Orense,Independiente del Valle
+,14,Mushuc Runa,LDU Quito
+,14,Manta,Leones
+,14,Macará,Libertad
+,15,Aucas,Barcelona
+,15,Delfín,Universidad Católica
+,15,Deportivo Cuenca,Técnico Universitario
+,15,Emelec,Orense
+,15,Guayaquil City,Mushuc Runa
+,15,Independiente del Valle,Manta
+,15,LDU Quito,Macará
+,15,Leones,Libertad
+,16,Universidad Católica,Aucas
+,16,Técnico Universitario,Barcelona
+,16,Orense,Delfín
+,16,Mushuc Runa,Deportivo Cuenca
+,16,Manta,Emelec
+,16,Macará,Guayaquil City
+,16,Libertad,Independiente del Valle
+,16,Leones,LDU Quito
+,17,Aucas,Técnico Universitario
+,17,Universidad Católica,Orense
+,17,Barcelona,Mushuc Runa
+,17,Delfín,Manta
+,17,Deportivo Cuenca,Macará
+,17,Emelec,Libertad
+,17,Guayaquil City,Leones
+,17,Independiente del Valle,LDU Quito
+,18,Orense,Aucas
+,18,Mushuc Runa,Técnico Universitario
+,18,Manta,Universidad Católica
+,18,Macará,Barcelona
+,18,Libertad,Delfín
+,18,Leones,Deportivo Cuenca
+,18,LDU Quito,Emelec
+,18,Independiente del Valle,Guayaquil City
+,19,Aucas,Mushuc Runa
+,19,Orense,Manta
+,19,Técnico Universitario,Macará
+,19,Universidad Católica,Libertad
+,19,Barcelona,Leones
+,19,Delfín,LDU Quito
+,19,Deportivo Cuenca,Independiente del Valle
+,19,Emelec,Guayaquil City
+,20,Manta,Aucas
+,20,Macará,Mushuc Runa
+,20,Libertad,Orense
+,20,Leones,Técnico Universitario
+,20,LDU Quito,Universidad Católica
+,20,Independiente del Valle,Barcelona
+,20,Guayaquil City,Delfín
+,20,Emelec,Deportivo Cuenca
+,21,Aucas,Macará
+,21,Manta,Libertad
+,21,Mushuc Runa,Leones
+,21,Orense,LDU Quito
+,21,Técnico Universitario,Independiente del Valle
+,21,Universidad Católica,Guayaquil City
+,21,Barcelona,Emelec
+,21,Delfín,Deportivo Cuenca
+,22,Libertad,Aucas
+,22,Leones,Macará
+,22,LDU Quito,Manta
+,22,Independiente del Valle,Mushuc Runa
+,22,Guayaquil City,Orense
+,22,Emelec,Técnico Universitario
+,22,Deportivo Cuenca,Universidad Católica
+,22,Delfín,Barcelona
+,23,Aucas,Leones
+,23,Libertad,LDU Quito
+,23,Macará,Independiente del Valle
+,23,Manta,Guayaquil City
+,23,Mushuc Runa,Emelec
+,23,Orense,Deportivo Cuenca
+,23,Técnico Universitario,Delfín
+,23,Universidad Católica,Barcelona
+,24,LDU Quito,Aucas
+,24,Independiente del Valle,Leones
+,24,Guayaquil City,Libertad
+,24,Emelec,Macará
+,24,Deportivo Cuenca,Manta
+,24,Delfín,Mushuc Runa
+,24,Barcelona,Orense
+,24,Universidad Católica,Técnico Universitario
+,25,Aucas,Independiente del Valle
+,25,LDU Quito,Guayaquil City
+,25,Leones,Emelec
+,25,Libertad,Deportivo Cuenca
+,25,Macará,Delfín
+,25,Manta,Barcelona
+,25,Mushuc Runa,Universidad Católica
+,25,Orense,Técnico Universitario
+,26,Guayaquil City,Aucas
+,26,Emelec,Independiente del Valle
+,26,Deportivo Cuenca,LDU Quito
+,26,Delfín,Leones
+,26,Barcelona,Libertad
+,26,Universidad Católica,Macará
+,26,Técnico Universitario,Manta
+,26,Orense,Mushuc Runa
+,27,Aucas,Emelec
+,27,Guayaquil City,Deportivo Cuenca
+,27,Independiente del Valle,Delfín
+,27,LDU Quito,Barcelona
+,27,Leones,Universidad Católica
+,27,Libertad,Técnico Universitario
+,27,Macará,Orense
+,27,Manta,Mushuc Runa
+,28,Deportivo Cuenca,Aucas
+,28,Delfín,Emelec
+,28,Barcelona,Guayaquil City
+,28,Universidad Católica,Independiente del Valle
+,28,Técnico Universitario,LDU Quito
+,28,Orense,Leones
+,28,Mushuc Runa,Libertad
+,28,Manta,Macará
+,29,Aucas,Delfín
+,29,Deportivo Cuenca,Barcelona
+,29,Emelec,Universidad Católica
+,29,Guayaquil City,Técnico Universitario
+,29,Independiente del Valle,Orense
+,29,LDU Quito,Mushuc Runa
+,29,Leones,Manta
+,29,Libertad,Macará
+,30,Barcelona,Aucas
+,30,Universidad Católica,Delfín
+,30,Técnico Universitario,Deportivo Cuenca
+,30,Orense,Emelec
+,30,Mushuc Runa,Guayaquil City
+,30,Manta,Independiente del Valle
+,30,Macará,LDU Quito
+,30,Libertad,Leones

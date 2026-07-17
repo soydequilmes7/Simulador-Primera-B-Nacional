@@ -51,6 +51,8 @@ from actualizar_resultados_primerac import actualizar as actualizar_primerac
 from main_primerac import correr_simulacion as correr_simulacion_primerac
 from actualizar_resultados_brasileirao import actualizar as actualizar_brasileirao
 from main_brasileirao import correr_simulacion_brasileirao
+from actualizar_resultados_ligapro import actualizar as actualizar_ligapro
+from main_ligapro import correr_simulacion_ligapro
 
 # Archivos de código fuente que necesita el simulador corriendo en el
 # navegador (Pyodide/Web Worker, ver public/js/sim-worker.js). Se sirven
@@ -76,6 +78,8 @@ PYSIM_SOURCE_FILES = [
     "modelos/estadisticas_primerac.py",
     "main_brasileirao.py",
     "modelos/estadisticas_brasileirao.py",
+    "main_ligapro.py",
+    "modelos/estadisticas_ligapro.py",
     "main_libertadores.py",
     "modelos/estadisticas_libertadores.py",
     "main_sudamericana.py",
@@ -187,6 +191,7 @@ _lock_bmetro = ReadWriteLock()
 _lock_federal = ReadWriteLock()
 _lock_primerac = ReadWriteLock()
 _lock_brasileirao = ReadWriteLock()
+_lock_ligapro = ReadWriteLock()
 _lock_libertadores = ReadWriteLock()
 _lock_sudamericana = ReadWriteLock()
 
@@ -216,6 +221,10 @@ class SimularPrimeraCBody(BaseModel):
 
 
 class SimularBrasileiraoBody(BaseModel):
+    n_sims: int = 1000
+
+
+class SimularLigaProBody(BaseModel):
     n_sims: int = 1000
 
 
@@ -416,6 +425,36 @@ def evolucion_posiciones_brasileirao():
         _lock_brasileirao.release_read()
 
 
+@app.get("/api/evolucion-posiciones-ligapro")
+def evolucion_posiciones_ligapro():
+    """Igual que /api/evolucion-posiciones-brasileirao pero para LigaPro
+    Serie A. A diferencia de Brasileirão (una sola zona todo el
+    campeonato), acá la zona de cada equipo puede ser "FaseInicial" o,
+    una vez resuelta esa fase, alguno de los 3 grupos de Fase Final --
+    calcular_evolucion()/tamano_por_zona() ya son genéricos por zona, así
+    que no hace falta ningún caso especial."""
+    ocupado = _adquirir_lectura(
+        _lock_ligapro,
+        "Hay una actualización de LigaPro en curso. Esperá unos segundos y probá de nuevo.",
+    )
+    if ocupado:
+        return ocupado
+    try:
+        with transaction() as repo:
+            tabla_actual = repo.standing_records("ligapro")
+            zona_por_club = {fila["equipo"]: fila["zona"] for fila in tabla_actual}
+            partidos_jugados = repo.match_records("ligapro", "played")
+        evolucion = calcular_evolucion(partidos_jugados, zona_por_club)
+        return {
+            "evolucion": evolucion,
+            "zonas": tamano_por_zona(zona_por_club),
+        }
+    except Exception as e:
+        return _error_response(e)
+    finally:
+        _lock_ligapro.release_read()
+
+
 @app.get("/api/datos-copa")
 def datos_copa():
     """Igual que /api/datos-nacional pero con el cuadro de la Copa
@@ -529,6 +568,26 @@ def datos_brasileirao():
         _lock_brasileirao.release_read()
 
 
+@app.get("/api/datos-ligapro")
+def datos_ligapro():
+    """Igual que /api/datos-brasileirao pero con los CSV de LigaPro Serie
+    A (Ecuador): tabla, fixture y resultados, con la columna "zona"
+    reflejando FaseInicial o, si ya se resolvió esa fase, alguno de los
+    3 grupos de Fase Final."""
+    ocupado = _adquirir_lectura(
+        _lock_ligapro,
+        "Hay una actualización de LigaPro en curso. Esperá unos segundos y probá de nuevo.",
+    )
+    if ocupado:
+        return ocupado
+    try:
+        return {"files": league_csv_files("ligapro")}
+    except Exception as e:
+        return _error_response(e)
+    finally:
+        _lock_ligapro.release_read()
+
+
 def _archivos_datos_locales(nombres: list[str]) -> dict[str, str]:
     """A diferencia de las demás competencias (Supabase, vía
     league_csv_files/cup_csv_files), Libertadores y Sudamericana no
@@ -630,6 +689,11 @@ def estado_primerac():
 @app.get("/api/estado-brasileirao")
 def estado_brasileirao():
     return _estado_persistido("brasileirao")
+
+
+@app.get("/api/estado-ligapro")
+def estado_ligapro():
+    return _estado_persistido("ligapro")
 
 
 @app.get("/api/estado-copa")
@@ -1014,6 +1078,30 @@ def simular_brasileirao_endpoint(body: SimularBrasileiraoBody = SimularBrasileir
         _lock_brasileirao.release_read()
 
 
+@app.post("/api/simular-ligapro")
+def simular_ligapro_endpoint(body: SimularLigaProBody = SimularLigaProBody()):
+    """Corre la simulación completa de LigaPro Serie A: Fase Inicial
+    (todos contra todos, 30 fechas) seguida de la Fase Final con split
+    automático en Hexagonal Campeón / Cuadrangular Sudamericana /
+    Hexagonal Descenso, con arrastre de puntos, + Monte Carlo. Devuelve
+    el resultado directo."""
+    n_sims = _clamp_n_sims(body.n_sims)
+
+    ocupado = _adquirir_lectura(
+        _lock_ligapro,
+        "Hay una actualización de LigaPro en curso. Esperá unos segundos y probá de nuevo.",
+    )
+    if ocupado:
+        return ocupado
+    try:
+        datos = pysim_dispatch.simular_ligapro(n_sims)
+        return datos
+    except Exception as e:
+        return _error_response(e)
+    finally:
+        _lock_ligapro.release_read()
+
+
 @app.post("/api/actualizar-primerac")
 def actualizar_primerac_endpoint(body: SimularPrimeraCBody = SimularPrimeraCBody()):
     """Scrapea Promiedos (Primera C) y, si hay partidos nuevos, actualiza
@@ -1054,6 +1142,29 @@ def actualizar_brasileirao_endpoint(body: SimularBrasileiraoBody = SimularBrasil
         return _error_response(e)
     finally:
         _lock_brasileirao.release_write()
+
+
+@app.post("/api/actualizar-ligapro")
+def actualizar_ligapro_endpoint(body: SimularLigaProBody = SimularLigaProBody()):
+    """Scrapea ligapro.ec y, si hay partidos nuevos, actualiza
+    fixture/resultados/tabla y re-simula. Ver la limitación documentada
+    en actualizar_resultados_ligapro.py sobre la transición Fase Inicial
+    -> Fase Final (no se persiste automáticamente en este endpoint)."""
+    n_sims = _clamp_n_sims(body.n_sims)
+
+    ocupado = _adquirir_escritura(
+        _lock_ligapro,
+        "Hay simulaciones o una actualización de LigaPro en curso. Esperá unos segundos y probá de nuevo.",
+    )
+    if ocupado:
+        return ocupado
+    try:
+        resultado = actualizar_ligapro(n_sims=n_sims, correr_simulacion_fn=correr_simulacion_ligapro, imprimir=False)
+        return resultado
+    except Exception as e:
+        return _error_response(e)
+    finally:
+        _lock_ligapro.release_write()
 
 
 @app.post("/api/simular-campeon-primerac")
