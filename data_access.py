@@ -73,6 +73,15 @@ def lpf_average_history_df() -> pd.DataFrame:
     return repository().lpf_average_history_df()
 
 
+def dimayor_average_history_df() -> pd.DataFrame:
+    if usando_pyodide():
+        return pd.read_csv(_csv_path("promedios_dimayor.csv"))
+
+    from db.repository import repository
+
+    return repository().dimayor_average_history_df()
+
+
 def cup_records() -> list[dict]:
     if usando_pyodide():
         with open(_csv_path("copa_argentina.csv"), encoding="utf-8") as f:

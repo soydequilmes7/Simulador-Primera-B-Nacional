@@ -61,6 +61,7 @@ import data_access
 import rutas
 from modelos.estadisticas import Estadisticas
 from fixture_generator import generar_fixture_ida_vuelta
+from calcular_tabla_dimayor import construir_tabla_apertura
 
 ZONA_CLAUSURA = "Clausura"
 ZONA_CUADRANGULAR_A = "Cuadrangular A"
@@ -86,6 +87,12 @@ class EstadisticasDimayor(Estadisticas):
         print("Leyendo datos de Liga BetPlay Dimayor (Torneo Clausura)...")
 
         self.resultados, self.fixture, self.tabla = data_access.league_data("dimayor")
+
+        # Tabla de promedios (Art. 32 del reglamento DIMAYOR vigente):
+        # puntos por partido de los últimos ~3 años. A diferencia de LPF,
+        # Colombia desciende DIRECTO a los 2 peores promedios -- sin el
+        # sistema doble de la tabla anual de Argentina.
+        self.promedios_historicos = data_access.dimayor_average_history_df()
 
         print(f"Resultados: {len(self.resultados)}")
         print(f"Fixture: {len(self.fixture)}")
@@ -234,6 +241,60 @@ class EstadisticasDimayor(Estadisticas):
     # ------------------------------------------------------------------
     # Simulación de la temporada completa (Clausura + Cuadrangulares + Final)
     # ------------------------------------------------------------------
+    # ------------------------------------------------------------------
+    # Tabla de promedios (descenso) -- Art. 32 del reglamento DIMAYOR:
+    # "Los dos equipos con el promedio más bajo en los tres últimos años
+    # descienden a la Categoría B." Solo cuenta la fase de todos-contra-
+    # todos de cada semestre (Apertura/Clausura, o "Liga BetPlay I/II");
+    # los cuadrangulares y la final NO suman para el promedio.
+    # ------------------------------------------------------------------
+    def _partidos_2026_dimayor_por_equipo(self):
+        """Partidos jugados en 2026 (Apertura, ya terminado, + Clausura,
+        jugado o pendiente) por equipo -- se suman a los históricos de
+        promedios_dimayor.csv (2024+2025 completos). Los partidos
+        pendientes del Clausura se simulan pero cuentan igual para el
+        promedio real de la temporada, mismo criterio que usa LPF para
+        su Clausura."""
+        apertura_pj = pd.DataFrame(construir_tabla_apertura()).set_index("equipo")["partidos_jugados"]
+        clausura_pj = pd.concat([
+            self.fixture["equipo_local"], self.fixture["equipo_visitante"],
+            self.resultados["equipo_local"], self.resultados["equipo_visitante"],
+        ]).value_counts()
+        return apertura_pj + clausura_pj.reindex(apertura_pj.index).fillna(0)
+
+    def calcular_tabla_promedios(self, tabla_fase_regular_clausura):
+        """Tabla de promedios: puntos por partido jugado en las últimas
+        ~3 temporadas (2024 + 2025 completos, más el 2026 en curso:
+        Apertura ya jugado + la fase de todos-contra-todos del Clausura
+        que se le pase -- real si ya terminó, con partidos simulados si
+        todavía está en curso). Los recién ascendidos (0 históricos en
+        promedios_dimayor.csv) solo computan desde su propio ascenso,
+        igual que LPF. NO incluye cuadrangulares ni la final: esas fases
+        no cuentan para el promedio, por reglamento."""
+        apertura = pd.DataFrame(construir_tabla_apertura())
+        partidos_2026 = self._partidos_2026_dimayor_por_equipo()
+
+        prom = self.promedios_historicos.merge(
+            apertura[["equipo", "puntos"]].rename(columns={"puntos": "puntos_apertura"}),
+            on="equipo",
+        )
+        prom = prom.merge(
+            tabla_fase_regular_clausura[["equipo", "puntos"]].rename(columns={"puntos": "puntos_clausura"}),
+            on="equipo",
+        )
+        prom["puntos_totales"] = prom["puntos_historicos"] + prom["puntos_apertura"] + prom["puntos_clausura"]
+        prom["partidos_totales"] = prom["partidos_historicos"] + prom["equipo"].map(partidos_2026)
+        prom["promedio"] = prom["puntos_totales"] / prom["partidos_totales"]
+
+        prom = prom.sort_values("promedio", ascending=False).reset_index(drop=True)
+        prom.index = prom.index + 1
+        return prom[["equipo", "puntos_totales", "partidos_totales", "promedio"]]
+
+    def calcular_descensos_promedio(self, tabla_promedios):
+        """Los 2 equipos con peor promedio descienden -- directo, sin el
+        sistema doble de desempate por tabla anual que usa Argentina."""
+        return tabla_promedios.tail(2)["equipo"].tolist()
+
     def simular_temporada_dimayor(self):
         """Devuelve un dict con:
           - "fase_regular": DataFrame de la tabla final de la fase
@@ -248,6 +309,15 @@ class EstadisticasDimayor(Estadisticas):
             tablas_fr = self.simular_fase_regular()
             tabla_fase_regular = tablas_fr[ZONA_CLAUSURA]
 
+            # Importante: calcular la tabla de promedios ACÁ, con
+            # self.fixture todavía siendo el del Clausura -- si se calcula
+            # después de _generar_fixture_cuadrangulares() de más abajo,
+            # _partidos_2026_dimayor_por_equipo() contaría los partidos
+            # de los cuadrangulares (o ninguno, para los que no
+            # clasificaron) en vez de los del Clausura real.
+            tabla_promedios = self.calcular_tabla_promedios(tabla_fase_regular)
+            descensos_promedio = self.calcular_descensos_promedio(tabla_promedios)
+
             self._sincronizar_equipos_desde_tabla(tabla_fase_regular)
             grupos = self._dividir_en_cuadrangulares(tabla_fase_regular)
             self.fixture = self._generar_fixture_cuadrangulares(grupos)
@@ -256,6 +326,14 @@ class EstadisticasDimayor(Estadisticas):
             tablas_cuad = self.simular_fase_regular()
         else:
             tabla_fase_regular = None
+            # Igual que "fase_regular": si la temporada YA estaba
+            # dividida en cuadrangulares al llamar este método, no hay
+            # una tabla de fase regular de ESTA corrida para calcular el
+            # promedio -- se devuelve None (mismo criterio de "no
+            # disponible en este caso borde" que ya usa el resto del
+            # proyecto).
+            tabla_promedios = None
+            descensos_promedio = None
             tablas_cuad = self.simular_fase_regular()
 
         grupo_a = tablas_cuad[ZONA_CUADRANGULAR_A]
@@ -272,6 +350,8 @@ class EstadisticasDimayor(Estadisticas):
             "campeon": campeon,
             "subcampeon": subcampeon,
             "detalle_final": detalle_final,
+            "tabla_promedios": tabla_promedios,
+            "descensos_promedio": descensos_promedio,
         }
 
     # ------------------------------------------------------------------

@@ -58,6 +58,14 @@ def correr_simulacion_dimayor(n_sims=1000, imprimir=True, guardar_json=True):
     # puede mostrar "no disponible" en esa sección.
     tabla_apertura = construir_tabla_apertura()
 
+    # Tabla de promedios REAL actual (no depende de esta corrida puntual
+    # de Monte Carlo): usa la tabla del Clausura tal cual está hoy
+    # (e.tabla, antes de simular ningún partido pendiente) para mostrar
+    # dónde está parado cada equipo en la lucha por el descenso AHORA
+    # MISMO -- la que de verdad importa para "saber el descenso".
+    tabla_promedios_actual = e.calcular_tabla_promedios(e.tabla)
+    descensos_promedio_actual = e.calcular_descensos_promedio(tabla_promedios_actual)
+
     datos_web = {
         "liga": "dimayor",
         "torneo": "Clausura",
@@ -74,6 +82,13 @@ def correr_simulacion_dimayor(n_sims=1000, imprimir=True, guardar_json=True):
         "campeon": resultado["campeon"],
         "subcampeon": resultado["subcampeon"],
         "detalle_final": resultado["detalle_final"],
+        "tabla_promedios_actual": tabla_promedios_actual.to_dict(orient="records"),
+        "descensos_promedio_actual": descensos_promedio_actual,
+        "tabla_promedios_simulada": (
+            resultado["tabla_promedios"].to_dict(orient="records")
+            if resultado["tabla_promedios"] is not None else None
+        ),
+        "descensos_promedio_simulado": resultado["descensos_promedio"],
         "partidos_simulados": e.partidos_simulados_oficiales,
         "monte_carlo": resumen_mc.to_dict(orient="records"),
         "tabla_esperada": tabla_esperada_mc.to_dict(orient="records"),

@@ -5950,8 +5950,19 @@
     <div id="tabla-actual-dimayor-grupos"></div>
   </section>
 
+  <section id="sec-promedios-dimayor">
+    <div class="section-head"><span class="idx">03</span><h2>Tabla de promedios — Descenso</h2><div class="rule"></div></div>
+    <p class="section-note">Promedio de puntos por partido de los últimos ~3 años (2024 y 2025 completos, más el 2026 en curso: Torneo Apertura ya jugado + la fase regular del Clausura). Solo cuenta el todos-contra-todos de cada semestre — los Cuadrangulares y la Final no suman para el promedio, por reglamento (Art. 32 DIMAYOR). Los dos equipos con peor promedio descienden directo a la Categoría B, sin desempate por otra tabla.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>PJ</th><th>Promedio</th></tr></thead>
+        <tbody id="tabla-promedios-dimayor-body"></tbody>
+      </table>
+    </div>
+  </section>
+
   <section id="sec-tabla-dimayor">
-    <div class="section-head"><span class="idx">03</span><h2>Clausura simulado</h2><div class="rule"></div></div>
+    <div class="section-head"><span class="idx">04</span><h2>Clausura simulado</h2><div class="rule"></div></div>
     <p class="section-note">Resultado de una corrida puntual de la temporada completa: se completa la fase regular (si falta) y, con el Top 8, se arman y simulan el Cuadrangular A, el Cuadrangular B y la Final ida y vuelta entre ambos ganadores.</p>
     <div id="dimayor-campeon-footer" class="campeon-anuncio-wrap"></div>
 
@@ -5990,11 +6001,11 @@
       <span style="display:inline-block; width:10px; height:10px; border-radius:2px; background:var(--qualified-accent); margin-right:6px; vertical-align:middle;"></span>1°: pasa a la Final del Clausura.
     </p>
 
-    <div id="dimayor-final-detalle" class="section-note" style="margin-top:8px; text-align:left;"></div>
+    <div id="dimayor-final-wrap" style="margin-top:18px;"></div>
   </section>
 
   <section id="sec-mc-dimayor">
-    <div class="section-head"><span class="idx">04</span><h2>Probabilidades — Monte Carlo</h2><div class="rule"></div></div>
+    <div class="section-head"><span class="idx">05</span><h2>Probabilidades — Monte Carlo</h2><div class="rule"></div></div>
     <p class="section-note">Cada barra muestra el % de simulaciones en que el equipo clasifica a los Cuadrangulares (Top 8 de la fase regular). A la derecha, el % de veces que salió campeón.</p>
     <div class="legend">
       <span><i style="background:var(--leader-accent)"></i> Cuadrangulares</span>
@@ -6004,7 +6015,7 @@
   </section>
 
   <section id="sec-esperada-dimayor">
-    <div class="section-head"><span class="idx">05</span><h2>Posición esperada — Fase regular</h2><div class="rule"></div></div>
+    <div class="section-head"><span class="idx">06</span><h2>Posición esperada — Fase regular</h2><div class="rule"></div></div>
     <p class="section-note">Puntos y posición final promedio de cada equipo en la fase regular del Clausura, promediados sobre todas las simulaciones.</p>
     <div class="table-wrap">
       <table>
@@ -11239,6 +11250,7 @@ async function cargarDatosDimayor(){
 function iniciarDimayor(){
   renderTablaAperturaDimayor();
   renderTablaActualDimayor();
+  renderPromediosDimayor();
   renderClausuraDimayor();
   renderMCDimayor();
   renderEsperadaDimayor();
@@ -11310,11 +11322,59 @@ function renderTablaActualDimayor(){
   }).join('');
 }
 
-/* ---------- 03. CLAUSURA SIMULADO (fase regular de referencia + 2 Cuadrangulares + Final) ---------- */
+/* ---------- 03. TABLA DE PROMEDIOS (descenso) ---------- */
+function renderPromediosDimayor(){
+  const body = document.getElementById('tabla-promedios-dimayor-body');
+  if (!body || !DATA_DIMAYOR) return;
+  const filas = DATA_DIMAYOR.tabla_promedios_actual || [];
+  if (!filas.length){
+    body.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--muted);">Todavía no disponible.</td></tr>`;
+    return;
+  }
+  body.innerHTML = filas.map((f, i) => {
+    const clase = i >= filas.length - 2 ? 'descenso' : '';
+    return `<tr${clase ? ` class="${clase}"` : ''}>
+      <td>${i + 1}</td><td>${escudoHTML(f.equipo)}${nombreMostrable(f.equipo)}</td>
+      <td>${f.puntos_totales}</td><td>${f.partidos_totales}</td><td>${Number(f.promedio).toFixed(4)}</td>
+    </tr>`;
+  }).join('');
+}
+
+/* ---------- 04. CLAUSURA SIMULADO (fase regular de referencia + 2 Cuadrangulares + Final) ---------- */
 function renderGrupoDimayor(bodyId, filas){
   const body = document.getElementById(bodyId);
   if (!body || !filas) return;
   body.innerHTML = filas.map((f, i) => filaTablaDimayorHTML(f, i, i === 0 ? 'punta' : '')).join('');
+}
+
+/** Tarjeta de un solo partido (ida o vuelta) de la final, mismo patrón
+ * visual que .ascenso-score que ya usa el resto del sitio para
+ * finales a partido único -- acá se llama dos veces, una por pierna. */
+function finalDimayorLegHTML(leg, campeon){
+  return `
+    <span class="team ${leg.local === campeon ? 'win' : ''}">${escudoHTML(leg.local)}${nombreMostrable(leg.local)}</span>
+    <span class="gscore">${leg.marcador[0]} - ${leg.marcador[1]}</span>
+    <span class="team ${leg.visitante === campeon ? 'win' : ''}">${escudoHTML(leg.visitante)}${nombreMostrable(leg.visitante)}</span>
+  `;
+}
+
+function finalDimayorHTML(df, campeon){
+  if (!df || !df.ida || !df.vuelta) return '';
+  const [equipoA, ptsA] = Object.entries(df.global)[0];
+  const [equipoB, ptsB] = Object.entries(df.global)[1];
+  let footer = `Global: ${equipoA} ${ptsA}-${ptsB} ${equipoB} · <b>CAMPEÓN: ${campeon}</b>`;
+  if (df.definicion_por_penales) footer += ' · definido por penales';
+  return `
+    <div class="ascenso-card">
+      <div class="label">Final — Ida</div>
+      <div class="ascenso-score">${finalDimayorLegHTML(df.ida, campeon)}</div>
+    </div>
+    <div class="ascenso-card" style="margin-top:10px;">
+      <div class="label">Final — Vuelta</div>
+      <div class="ascenso-score">${finalDimayorLegHTML(df.vuelta, campeon)}</div>
+    </div>
+    <div class="ascenso-footer" style="margin-top:8px;">${footer}</div>
+  `;
 }
 
 function renderClausuraDimayor(){
@@ -11343,10 +11403,9 @@ function renderClausuraDimayor(){
       : '';
   }
 
-  const detalle = document.getElementById('dimayor-final-detalle');
-  if (detalle) {
-    const df = DATA_DIMAYOR.detalle_final;
-    detalle.textContent = df && df.texto ? `Final: ${df.texto}` : '';
+  const wrap = document.getElementById('dimayor-final-wrap');
+  if (wrap) {
+    wrap.innerHTML = finalDimayorHTML(DATA_DIMAYOR.detalle_final, DATA_DIMAYOR.campeon);
   }
 }
 
@@ -11694,13 +11753,12 @@ function renderCampeonResultadoDimayor(r){
       </div>`;
   }
 
-  const df = r.detalle_final || {};
   cont.innerHTML = `
     <div class="campeon-summary">🏆 <b>${r.equipo}</b> sale campeón en esta temporada simulada</div>
     ${r.tabla_fase_regular ? tablaHTML('Fase regular — tabla final', r.tabla_fase_regular) : ''}
     ${tablaHTML('Cuadrangular A', r.cuadrangular_grupo_a)}
     ${tablaHTML('Cuadrangular B', r.cuadrangular_grupo_b)}
-    <p class="section-note" style="margin-top:8px; text-align:left;">Subcampeón: <b>${nombreMostrable(r.subcampeon)}</b>${df.texto ? ' — ' + df.texto : ''}</p>
+    ${finalDimayorHTML(r.detalle_final, r.equipo)}
   `;
 }
 

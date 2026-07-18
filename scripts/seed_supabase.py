@@ -157,6 +157,29 @@ def seed_lpf_averages(repo):
         )
 
 
+def seed_dimayor_averages(repo):
+    """Igual que seed_lpf_averages() pero para dimayor_average_history
+    (ver migración 003_dimayor_average_history.sql). Valores 2024+2025
+    completos en datos/promedios_dimayor.csv -- el 2026 en curso NO se
+    siembra acá, se suma en caliente en calcular_tabla_promedios()."""
+    season_id = repo.season_id("dimayor")
+    rows = read_csv("promedios_dimayor.csv")
+    print(f"Sembrando promedios Dimayor: {len(rows)} filas", flush=True)
+    for row in rows:
+        team_id = repo.ensure_team(row["equipo"], "dimayor")
+        repo._execute(
+            """
+            insert into dimayor_average_history (season_id, team_id, puntos_historicos, partidos_historicos)
+            values (%s, %s, %s, %s)
+            on conflict (season_id, team_id) do update set
+                puntos_historicos = excluded.puntos_historicos,
+                partidos_historicos = excluded.partidos_historicos
+            """,
+            (season_id, team_id, int(row["puntos_historicos"]), int(row["partidos_historicos"])),
+        )
+
+
+
 def seed_copa(repo):
     rows = read_csv("copa_argentina.csv")
     print(f"Sembrando Copa Argentina: {len(rows)} cruces", flush=True)
@@ -197,6 +220,7 @@ def main():
         seed_leagues(repo)
         seed_scorers(repo)
         seed_lpf_averages(repo)
+        seed_dimayor_averages(repo)
         seed_copa(repo)
         seed_aliases(repo)
     print("Seed Supabase completo.", flush=True)
