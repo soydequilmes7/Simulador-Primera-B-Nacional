@@ -25,6 +25,37 @@ def correr_simulacion_dimayor(n_sims=1000, imprimir=True, guardar_json=True):
     e.crear_equipos_dimayor()
     e.calcular_estadisticas()
     e.calcular_ratings()
+
+    # Monte Carlo PRIMERO, mientras el objeto todavía está "limpio" (nadie
+    # tocó self.equipos/self.fixture todavía). Si se corre DESPUÉS de
+    # simular_temporada_dimayor(), monte_carlo_dimayor() arranca de un
+    # estado que esa corrida ya mutó -- 8 equipos quedan "congelados" en
+    # zona Cuadrangular (con sus puntos ya reseteados a 0) y self.fixture
+    # ya está reemplazado por el fixture de los cuadrangulares (solo ~24
+    # partidos entre esos 8, no los ~190 de toda la fase regular). El
+    # resultado es que esos 8 equipos quedan permanentemente afuera de
+    # ZONA_CLAUSURA en TODAS las simulaciones del Monte Carlo (0% fijo,
+    # nunca se los cuenta), y los otros 12 -- que sí quedan en
+    # ZONA_CLAUSURA pero sin ningún partido pendiente que jugar, porque
+    # el fixture activo en ese momento no los incluye -- terminan con el
+    # mismo resultado exacto en cada simulación, dando SIEMPRE el mismo
+    # grupo de 8 clasificados (100%) y dejando a los otros 4 en 0% fijo
+    # también. Bug real, encontrado por Pablo en el % de Cuadrangulares
+    # del Monte Carlo (salto de 100% a 0% sin ningún término medio).
+    if imprimir:
+        print(f"\n--- Monte Carlo ({n_sims} simulaciones) ---")
+    resumen_mc, tabla_esperada_mc, matriz_posiciones_mc = e.monte_carlo_dimayor(n_simulaciones=n_sims)
+    if imprimir:
+        print(resumen_mc.to_string())
+
+    # Recién ahora la corrida puntual "oficial" (para la tabla informativa
+    # + la final ida/vuelta) -- monte_carlo_dimayor() ya restauró
+    # self.equipos/self.fixture a como estaban antes de arrancar, así que
+    # esta corrida parte de un estado limpio también. El registro de
+    # partidos oficiales se activa recién acá, para no contaminar
+    # partidos_simulados_oficiales con los miles de partidos que corrió
+    # el Monte Carlo de arriba (esa lista es para mostrar UNA temporada
+    # puntual, no todas las simulaciones).
     e.registrar_partidos_simulados_oficiales = True
     e.partidos_simulados_oficiales = []
 
@@ -43,12 +74,6 @@ def correr_simulacion_dimayor(n_sims=1000, imprimir=True, guardar_json=True):
         print(f"\n{resultado['detalle_final']['texto']}")
         print(f"\nCAMPEÓN: {resultado['campeon']}")
         print(f"SUBCAMPEÓN: {resultado['subcampeon']}")
-
-    if imprimir:
-        print(f"\n--- Monte Carlo ({n_sims} simulaciones) ---")
-    resumen_mc, tabla_esperada_mc, matriz_posiciones_mc = e.monte_carlo_dimayor(n_simulaciones=n_sims)
-    if imprimir:
-        print(resumen_mc.to_string())
 
     # Tabla final del Torneo Apertura: informativa, no pasa por el
     # motor. Se lee del CSV local que arma scraper_promiedos_dimayor.py

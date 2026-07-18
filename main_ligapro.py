@@ -24,6 +24,24 @@ def correr_simulacion_ligapro(n_sims=1000, imprimir=True, guardar_json=True):
     e.crear_equipos_ligapro()
     e.calcular_estadisticas()
     e.calcular_ratings()
+
+    # Monte Carlo PRIMERO, mientras el objeto todavía está "limpio" --
+    # mismo motivo que Dimayor (ver main_dimayor.py): si se corre DESPUÉS
+    # de simular_temporada_ligapro(), monte_carlo_ligapro() arranca de un
+    # estado que esa corrida ya mutó (equipos "congelados" en zona
+    # Hexagonal/Cuadrangular con puntos reseteados, fixture ya
+    # reemplazado por el de la Fase Final) y termina dando siempre el
+    # mismo resultado degenerado en vez de una distribución real.
+    if imprimir:
+        print(f"\n--- Monte Carlo ({n_sims} simulaciones) ---")
+    resumen_mc, tabla_esperada_mc = e.monte_carlo_ligapro(n_simulaciones=n_sims)
+    if imprimir:
+        print(resumen_mc.to_string())
+
+    # Recién ahora la corrida puntual "oficial" -- monte_carlo_ligapro()
+    # ya restauró self.equipos/self.fixture a como estaban antes de
+    # arrancar. El registro de partidos oficiales se activa acá, para no
+    # contaminarlo con los miles de partidos del Monte Carlo de arriba.
     e.registrar_partidos_simulados_oficiales = True
     e.partidos_simulados_oficiales = []
 
@@ -48,12 +66,6 @@ def correr_simulacion_ligapro(n_sims=1000, imprimir=True, guardar_json=True):
         print(f"SUDAMERICANA (Hexagonal, 4°-6°): {clasif['sudamericana_hexagonal']}")
         print(f"SUDAMERICANA (Cuadrangular, 1°): {clasif['sudamericana_cuadrangular']}")
         print(f"DESCENSO: {clasif['descenso']}")
-
-    if imprimir:
-        print(f"\n--- Monte Carlo ({n_sims} simulaciones) ---")
-    resumen_mc, tabla_esperada_mc = e.monte_carlo_ligapro(n_simulaciones=n_sims)
-    if imprimir:
-        print(resumen_mc.to_string())
 
     datos_web = {
         "liga": "ligapro",
