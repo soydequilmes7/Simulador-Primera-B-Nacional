@@ -54,6 +54,8 @@ import time
 import urllib.error
 import urllib.request
 
+from mapeo_equipos_primerac import resolver_equipo
+
 try:
     import rutas
 except ImportError:
@@ -140,8 +142,8 @@ def _parsear_partido(g):
     except (ValueError, IndexError):
         return None
 
-    equipo_local = g["teams"][0]["name"]
-    equipo_visitante = g["teams"][1]["name"]
+    equipo_local = resolver_equipo(g["teams"][0]["name"]) or g["teams"][0]["name"]
+    equipo_visitante = resolver_equipo(g["teams"][1]["name"]) or g["teams"][1]["name"]
     estado = g.get("status", {})
 
     goles_local = goles_visitante = None
