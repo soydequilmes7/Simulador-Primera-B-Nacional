@@ -85,6 +85,7 @@ PYSIM_SOURCE_FILES = [
     "modelos/estadisticas_ligapro.py",
     "main_dimayor.py",
     "modelos/estadisticas_dimayor.py",
+    "calcular_tabla_dimayor.py",
     "main_libertadores.py",
     "modelos/estadisticas_libertadores.py",
     "main_sudamericana.py",
