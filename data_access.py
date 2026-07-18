@@ -27,6 +27,7 @@ def league_data(competition_slug: str):
             "bmetro": ("resultados_bmetro.csv", "fixture_bmetro.csv", "tabla_bmetro.csv"),
             "federal_a": ("resultados_federal_a.csv", "fixture_federal_a.csv", "tabla_federal_a.csv"),
             "primerac": ("resultados_primerac.csv", "fixture_primerac.csv", "tabla_primerac.csv"),
+            "brasileirao": ("resultados_brasileirao.csv", "fixture_brasileirao.csv", "tabla_brasileirao.csv"),
             "ligapro": ("resultados_ligapro.csv", "fixture_ligapro.csv", "tabla_ligapro.csv"),
             "dimayor": ("resultados_dimayor.csv", "fixture_dimayor.csv", "tabla_dimayor.csv"),
         }[competition_slug]
