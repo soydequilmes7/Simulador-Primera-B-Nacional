@@ -762,14 +762,35 @@ class SimulatorRepository:
             ),
         )
 
-    def upsert_match(self, competition_slug: str, row: dict, status: str) -> None:
+    def ensure_teams_bulk(self, names: list[str], competition_slug: str | None = None) -> dict[str, int]:
+        """Wrapper público de _ensure_teams_bulk() -- resuelve MUCHOS
+        nombres en una sola consulta a `teams` (en vez de una consulta
+        por nombre), para quien necesita precalcular team_ids antes de
+        un loop grande (ver seed_supabase.py: sin esto, sembrar una
+        liga de N partidos hacía ~2N consultas 'select * from teams'
+        completas, una gigantesca pérdida de round-trips)."""
+        return self._ensure_teams_bulk(names, competition_slug)
+
+    def upsert_match(
+        self, competition_slug: str, row: dict, status: str, team_ids: dict[str, int] | None = None,
+    ) -> None:
         """Se mantiene para quien necesite cargar UN partido suelto
         (ej. scripts/seed_supabase.py) -- replace_matches() ya NO la
         usa (ver arriba), así que la ruta de temporada completa no pasa
-        más por acá."""
+        más por acá.
+
+        `team_ids`: dict {nombre: id} ya resuelto de antemano (ver
+        ensure_teams_bulk()) -- si se pasa, evita que cada partido
+        dispare su propia consulta 'select * from teams' completa vía
+        ensure_team(). Si no se pasa, cae al comportamiento de
+        siempre (resuelve acá mismo, más lento pero sigue andando)."""
         season_id = self.season_id(competition_slug)
-        local_id = self.ensure_team(row["equipo_local"], competition_slug)
-        visitante_id = self.ensure_team(row["equipo_visitante"], competition_slug)
+        if team_ids is not None:
+            local_id = team_ids[row["equipo_local"]]
+            visitante_id = team_ids[row["equipo_visitante"]]
+        else:
+            local_id = self.ensure_team(row["equipo_local"], competition_slug)
+            visitante_id = self.ensure_team(row["equipo_visitante"], competition_slug)
         self._execute(
             """
             insert into matches (

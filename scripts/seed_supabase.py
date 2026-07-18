@@ -136,15 +136,27 @@ def seed_matches(repo, slug: str, pending: list[dict], played: list[dict]) -> No
         "delete from matches where competition_slug = %s and season_id = %s",
         (slug, season_id),
     )
+
+    # Resolver TODOS los equipos de la liga de una sola consulta, antes
+    # del loop -- sin esto, cada upsert_match() dispara su propio
+    # ensure_team() -> select * from teams completo (¡2 por partido!),
+    # que para una liga de 300 partidos son ~600 consultas de tabla
+    # entera en vez de 1. Es la causa real de que esto se sienta
+    # "colgado": no está trabado, está haciendo cientos de round-trips
+    # de más contra Supabase.
+    nombres = {row["equipo_local"] for row in pending} | {row["equipo_visitante"] for row in pending}
+    nombres |= {row["equipo_local"] for row in played} | {row["equipo_visitante"] for row in played}
+    team_ids = repo.ensure_teams_bulk(sorted(nombres), slug)
+
     total = len(pending) + len(played)
     done = 0
     for row in pending:
-        repo.upsert_match(slug, row, "pending")
+        repo.upsert_match(slug, row, "pending", team_ids=team_ids)
         done += 1
         if done % 100 == 0:
             print(f"    {slug}: {done}/{total} partidos", flush=True)
     for row in played:
-        repo.upsert_match(slug, row, "played")
+        repo.upsert_match(slug, row, "played", team_ids=team_ids)
         done += 1
         if done % 100 == 0 or done == total:
             print(f"    {slug}: {done}/{total} partidos", flush=True)
