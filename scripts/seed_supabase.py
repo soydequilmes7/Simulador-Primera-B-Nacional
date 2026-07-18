@@ -4,7 +4,10 @@ from __future__ import annotations
 
 import csv
 import sys
+import time
 from pathlib import Path
+
+import psycopg
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
@@ -83,19 +86,48 @@ def ensure_base(repo):
         )
 
 
-def seed_leagues(repo):
-    for slug, files in LEAGUE_FILES.items():
-        tabla = read_csv(files["tabla"])
-        fixture = read_csv(files["fixture"])
-        resultados = [row for row in read_csv(files["resultados"]) if row]
-        print(
-            f"Sembrando {slug}: standings={len(tabla)}, fixture={len(fixture)}, resultados={len(resultados)}",
-            flush=True,
-        )
-        repo.upsert_standings(slug, tabla)
-        print(f"  {slug}: standings OK", flush=True)
-        seed_matches(repo, slug, fixture, resultados)
-        print(f"  {slug}: matches OK", flush=True)
+def seed_one_league(repo, slug: str, files: dict) -> None:
+    tabla = read_csv(files["tabla"])
+    fixture = read_csv(files["fixture"])
+    resultados = [row for row in read_csv(files["resultados"]) if row]
+    print(
+        f"Sembrando {slug}: standings={len(tabla)}, fixture={len(fixture)}, resultados={len(resultados)}",
+        flush=True,
+    )
+    repo.upsert_standings(slug, tabla)
+    print(f"  {slug}: standings OK", flush=True)
+    seed_matches(repo, slug, fixture, resultados)
+    print(f"  {slug}: matches OK", flush=True)
+
+
+def _con_reintentos(descripcion: str, intentos: int, fn) -> None:
+    """Reintenta `fn()` (una tanda de trabajo dentro de su PROPIA
+    transacción/conexión nueva) ante caídas de conexión transitorias
+    con Supabase -- 'server closed the connection unexpectedly'/
+    'the connection is lost' suelen ser el pooler cortando una sesión
+    que viene abierta hace rato, no un error de los datos. Reintentar
+    con una conexión NUEVA (transaction() se vuelve a llamar adentro de
+    fn) resuelve la gran mayoría. Si se agotan los intentos, se
+    relanza el error real para no ocultar un problema de verdad."""
+    for intento in range(1, intentos + 1):
+        try:
+            fn()
+            return
+        except psycopg.OperationalError as e:
+            if intento == intentos:
+                raise
+            espera = 3 * intento
+            print(
+                f"  {descripcion}: se cortó la conexión ({e}). "
+                f"Reintentando en {espera}s (intento {intento + 1}/{intentos})...",
+                flush=True,
+            )
+            time.sleep(espera)
+
+
+def _set_timeouts(repo) -> None:
+    repo._execute("set local lock_timeout = '15s'")
+    repo._execute("set local statement_timeout = '120s'")
 
 
 def seed_matches(repo, slug: str, pending: list[dict], played: list[dict]) -> None:
@@ -213,16 +245,32 @@ def seed_alias_list(repo, competition_slug: str, team_name: str, aliases: list[s
 
 
 def main():
-    with transaction() as repo:
-        repo._execute("set local lock_timeout = '15s'")
-        repo._execute("set local statement_timeout = '120s'")
-        ensure_base(repo)
-        seed_leagues(repo)
-        seed_scorers(repo)
-        seed_lpf_averages(repo)
-        seed_dimayor_averages(repo)
-        seed_copa(repo)
-        seed_aliases(repo)
+    def _base():
+        with transaction() as repo:
+            _set_timeouts(repo)
+            ensure_base(repo)
+
+    _con_reintentos("competitions/seasons", 3, _base)
+    print("Base (competitions/seasons) OK.", flush=True)
+
+    for slug, files in LEAGUE_FILES.items():
+        def _liga(slug=slug, files=files):
+            with transaction() as repo:
+                _set_timeouts(repo)
+                seed_one_league(repo, slug, files)
+
+        _con_reintentos(slug, 3, _liga)
+
+    def _resto():
+        with transaction() as repo:
+            _set_timeouts(repo)
+            seed_scorers(repo)
+            seed_lpf_averages(repo)
+            seed_dimayor_averages(repo)
+            seed_copa(repo)
+            seed_aliases(repo)
+
+    _con_reintentos("goleadores/promedios/copa/alias", 3, _resto)
     print("Seed Supabase completo.", flush=True)
 
 
