@@ -430,6 +430,15 @@
   .sim-select-row .rango{ font-family:'JetBrains Mono'; font-size:10px; color:var(--hero-dim); }
   .last-update{ font-family:'JetBrains Mono'; font-size:10px; color:var(--hero-dim); text-align:center; }
   .sim-status{ font-family:'JetBrains Mono'; font-size:12px; color:var(--hero-dim); min-height:16px; text-align:center; }
+  .sin-matchear-detalle{
+    margin-top:8px; text-align:left; max-width:480px; margin-left:auto; margin-right:auto;
+    background: rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.14); border-radius: var(--radius-sm);
+    padding:10px 14px; font-family:'JetBrains Mono'; font-size:11px; color: var(--hero-dim);
+  }
+  .sin-matchear-titulo{ font-weight:700; margin-bottom:6px; }
+  .sin-matchear-detalle ul{ margin:0; padding-left:18px; max-height:180px; overflow-y:auto; }
+  .sin-matchear-detalle li{ margin-bottom:3px; }
+  .sin-matchear-fecha{ opacity:0.7; }
   .sim-status.error{ color:#FF9E9E; }
   .sim-status.ok{ color:#8FE3B0; }
 
@@ -6928,7 +6937,7 @@ async function correrActualizacion(){
         }
 
         if (cuerpo.sin_matchear && cuerpo.sin_matchear.length){
-            status.textContent += ` (${cuerpo.sin_matchear.length} partido(s) de Promiedos no se pudieron identificar — revisar mapeo de nombres)`;
+            status.innerHTML += sinMatchearDetalleHTML(cuerpo.sin_matchear);
         }
 
         lastUpdate.textContent = "Última consulta a Promiedos: " + new Date().toLocaleString('es-AR');
@@ -7257,6 +7266,28 @@ function banderaHTML(nombre){
 // reposicionamiento por JS de esa ronda, lo que lo dejaba muy lejos del
 // partido final en cuadros con varias rondas. Ahora es un bloque aparte,
 // simple, que va siempre pegado debajo de todo el cuadro.
+// Se llama después de "actualizar resultados" cuando el scraper trajo
+// partidos que no matchearon contra ningún cruce del fixture. Antes
+// solo se mostraba el CONTEO ("20 partido(s) no identificados") sin
+// decir cuáles -- el backend ya traía el detalle completo
+// (cuerpo.sin_matchear, un partido por fila con equipo_local/
+// equipo_visitante/jornada/fecha_hora), pero se descartaba. Ahora se
+// lista para poder ir directo a corregir el alias/nombre que falta,
+// sin tener que ir a buscarlo en los logs del servidor.
+function sinMatchearDetalleHTML(lista){
+  if (!lista || !lista.length) return '';
+  const filas = lista.map(p => {
+    const cuando = p.fecha_hora ? String(p.fecha_hora).slice(0, 10)
+      : (p.jornada !== undefined && p.jornada !== '' ? `fecha ${p.jornada}` : '');
+    return `<li>${p.equipo_local} vs ${p.equipo_visitante}${cuando ? ` <span class="sin-matchear-fecha">(${cuando})</span>` : ''}</li>`;
+  }).join('');
+  return `
+    <div class="sin-matchear-detalle">
+      <div class="sin-matchear-titulo">${lista.length} partido(s) sin identificar — revisar mapeo de nombres:</div>
+      <ul>${filas}</ul>
+    </div>`;
+}
+
 function campeonAnuncioHTML(campeon, simbolo){
   if (!campeon) return '';
   return `<div class="campeon-anuncio">${simbolo || '▲'} ${escudoHTML(campeon)}${nombreMostrable(campeon)}</div>`;
@@ -8902,7 +8933,7 @@ async function correrActualizacionPrimeraC(){
     }
 
     if (cuerpo.sin_matchear && cuerpo.sin_matchear.length){
-      status.textContent += ` (${cuerpo.sin_matchear.length} partido(s) de Promiedos no se pudieron identificar — revisar mapeo de nombres)`;
+      status.innerHTML += sinMatchearDetalleHTML(cuerpo.sin_matchear);
     }
 
     lastUpdate.textContent = "Última consulta a Promiedos: " + new Date().toLocaleString('es-AR');
@@ -9408,7 +9439,7 @@ async function correrActualizacionLPF(){
     }
 
     if (cuerpo.sin_matchear && cuerpo.sin_matchear.length){
-      status.textContent += ` (${cuerpo.sin_matchear.length} partido(s) de Promiedos no se pudieron identificar — revisar nombres)`;
+      status.innerHTML += sinMatchearDetalleHTML(cuerpo.sin_matchear);
     }
 
     lastUpdate.textContent = "Última consulta a Promiedos: " + new Date().toLocaleString('es-AR');
@@ -9929,7 +9960,7 @@ async function correrActualizacionBMetro(){
     }
 
     if (cuerpo.sin_matchear && cuerpo.sin_matchear.length){
-      status.textContent += ` (${cuerpo.sin_matchear.length} partido(s) de Promiedos no se pudieron identificar — revisar mapeo de nombres)`;
+      status.innerHTML += sinMatchearDetalleHTML(cuerpo.sin_matchear);
     }
 
     lastUpdate.textContent = "Última consulta a Promiedos: " + new Date().toLocaleString('es-AR');
@@ -10450,7 +10481,7 @@ async function correrActualizacionBrasileirao(){
     }
 
     if (cuerpo.sin_matchear && cuerpo.sin_matchear.length){
-      status.textContent += ` (${cuerpo.sin_matchear.length} partido(s) de Promiedos no se pudieron identificar — revisar mapeo de nombres)`;
+      status.innerHTML += sinMatchearDetalleHTML(cuerpo.sin_matchear);
     }
 
     lastUpdate.textContent = "Última consulta a Promiedos: " + new Date().toLocaleString('es-AR');
@@ -11076,7 +11107,7 @@ async function correrActualizacionLigaPro(){
     }
 
     if (cuerpo.sin_matchear && cuerpo.sin_matchear.length){
-      status.textContent += ` (${cuerpo.sin_matchear.length} partido(s) de ligapro.ec no se pudieron identificar — revisar mapeo de nombres)`;
+      status.innerHTML += sinMatchearDetalleHTML(cuerpo.sin_matchear);
     }
 
     lastUpdate.textContent = "Última consulta a ligapro.ec: " + new Date().toLocaleString('es-AR');
@@ -11651,7 +11682,7 @@ async function correrActualizacionDimayor(){
     }
 
     if (cuerpo.sin_matchear && cuerpo.sin_matchear.length){
-      status.textContent += ` (${cuerpo.sin_matchear.length} partido(s) no se pudieron identificar — revisar mapeo de nombres)`;
+      status.innerHTML += sinMatchearDetalleHTML(cuerpo.sin_matchear);
     }
 
     lastUpdate.textContent = "Última consulta: " + new Date().toLocaleString('es-CO');
@@ -12170,7 +12201,7 @@ async function correrActualizacionFederal(){
     }
 
     if (cuerpo.sin_matchear && cuerpo.sin_matchear.length){
-      status.textContent += ` (${cuerpo.sin_matchear.length} partido(s) de Promiedos no se pudieron identificar — revisar mapeo de nombres)`;
+      status.innerHTML += sinMatchearDetalleHTML(cuerpo.sin_matchear);
     }
 
     lastUpdate.textContent = "Última consulta a Promiedos: " + new Date().toLocaleString('es-AR');
