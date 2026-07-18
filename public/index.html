@@ -2420,6 +2420,7 @@
      El aro toma el acento de cada tema (--hero-accent) para integrarse
      con la identidad visual de esa pestaña en vez de verse pegado. */
   .torneo-logo-wrap{ display:flex; justify-content:center; margin-bottom:16px; position:relative; z-index:1; min-height:0; }
+  .dimayor-liga-logo{ display:none; }
   .torneo-logo{
     /* Badge del escudo: un disco muy sutilmente degradado (no blanco
        plano) con un aro fino de doble capa, en vez del círculo blanco
@@ -2451,6 +2452,11 @@
     display:block; width:104px; height:104px; padding:10px;
     background: radial-gradient(circle at 32% 28%, #2A2A2A 0%, #101010 72%, #050505 100%);
     box-shadow: 0 0 0 6px rgba(245,197,24,0.14), 0 10px 30px rgba(0,0,0,0.65), 0 0 40px rgba(245,197,24,0.30);
+  }
+  body.liga-dimayor .torneo-logo[data-liga="dimayor"]{
+    display:block; width:104px; height:104px; padding:10px;
+    background: radial-gradient(circle at 32% 28%, #121212 0%, #0B0B0B 72%, #050505 100%);
+    box-shadow: 0 0 0 6px rgba(0,47,135,0.28), 0 10px 30px rgba(0,0,0,0.65), 0 0 40px rgba(242,195,0,0.28);
   }
   body.liga-temporada .torneo-logo[data-liga="temporada"]{
     display:block; width:136px; height:136px; padding:20px;
@@ -3786,6 +3792,286 @@
     body.liga-ligapro #mc-list-ligapro .mc-row{ transition:none; }
   }
 
+  /* ============================================================
+     LIGA BETPLAY DIMAYOR (Colombia) -- rediseno visual identidad
+     oficial BetPlay: azul principal (#0B4DBA), azul oscuro
+     (#123A87) y amarillo (#F4C400) como base cromatica; celeste
+     (#00A9E0) reservado a hover/foco/interacciones secundarias y
+     verde (#00B140) reservado a posiciones de clasificacion y
+     estados positivos. El hero se mantiene siempre oscuro (identidad
+     fija del torneo, con una leve iluminacion azul detras del
+     encabezado); el resto de la UI tiene modo claro y oscuro reales
+     y diferenciados (ver body.liga-dimayor vs body.dark.liga-dimayor).
+     Sólo cambios de apariencia -- no se tocó lógica, datos ni cálculos. */
+  body.liga-dimayor{
+    --bg: linear-gradient(180deg, #F6F7F9 0%, #EFF1F4 100%);
+    --bg-panel: #FFFFFF;
+    --bg-panel-2: #F0F1F3;
+    --line: #D9D9D9;
+    --ink: #1E1E1E;
+    --ink-dim: #4A4A4A;
+    --muted: #666666;
+
+    --amber: #F4C400;
+    --amber-dim: rgba(244,196,0,0.14);
+    --zone-a: #F4C400;
+    --zone-a-dim: rgba(244,196,0,0.14);
+    --zone-b: #0B4DBA;
+    --zone-b-dim: rgba(11,77,186,0.12);
+    --danger: #D93636;
+    --danger-dim: rgba(217,54,54,0.12);
+    --azul: #00A9E0;
+    --azul-dim: rgba(0,169,224,0.14);
+
+    --leader-bg: #FFF6D6;
+    --leader-accent: #B8900A;
+    --leader-text: #6E5206;
+    --qualified-bg: #E4F7EA;
+    --qualified-accent: #1E8A47;
+    --qualified-text: #146334;
+    --relegation-bg: #FCE4E4;
+    --relegation-accent: #C23B3B;
+    --relegation-text: #8C2020;
+
+    --radius: 18px;
+    --radius-sm: 12px;
+    --card-shadow: 0 6px 20px rgba(11,77,186,0.08);
+    --card-shadow-hover: 0 14px 32px rgba(11,77,186,0.14);
+    --card-grad: linear-gradient(180deg, #FFFFFF 0%, #FBFCFE 100%);
+    --hero-bg: linear-gradient(160deg, #101215 0%, #0D1420 55%, #0B1830 100%);
+    --hero-ink: #FFFFFF;
+    --hero-dim: rgba(255,255,255,0.76);
+    --hero-accent: #F4C400;
+    --tabs-bg: rgba(255,255,255,0.92);
+    --btn-grad: linear-gradient(135deg, #F4C400 0%, #E0B400 100%);
+    --btn-ink: #101215;
+    --table-head-bg: #102449;
+    --hover-lift: translateY(-3px);
+    --bracket-line: #B8900A;
+    --bracket-line-glow: rgba(184,144,10,0.24);
+
+    background: var(--bg);
+  }
+  body.dark.liga-dimayor{
+    --bg: linear-gradient(180deg, #101215 0%, #111418 100%);
+    --bg-panel: #15181D;
+    --bg-panel-2: #1A1E23;
+    --line: #23272D;
+    --ink: #F5F5F5;
+    --ink-dim: #BDBDBD;
+    --muted: rgba(189,189,189,0.62);
+
+    --amber: #F4C400;
+    --amber-dim: rgba(244,196,0,0.16);
+    --zone-a: #F4C400;
+    --zone-a-dim: rgba(244,196,0,0.16);
+    --zone-b: #0B4DBA;
+    --zone-b-dim: rgba(11,77,186,0.22);
+    --danger: #FF5C5C;
+    --danger-dim: rgba(255,92,92,0.16);
+    --azul: #00A9E0;
+    --azul-dim: rgba(0,169,224,0.18);
+
+    --leader-bg: rgba(244,196,0,0.14);
+    --leader-accent: #F4C400;
+    --leader-text: #FFE066;
+    --qualified-bg: #12331F;
+    --qualified-accent: #2E7D46;
+    --qualified-text: #7FD99A;
+    --relegation-bg: rgba(255,92,92,0.14);
+    --relegation-accent: #FF5C5C;
+    --relegation-text: #FFB3B3;
+
+    --radius: 18px;
+    --radius-sm: 12px;
+    --card-shadow: 0 10px 28px rgba(0,0,0,0.55);
+    --card-shadow-hover: 0 16px 40px rgba(11,77,186,0.22);
+    --card-grad: linear-gradient(180deg, rgba(255,255,255,0.045) 0%, rgba(255,255,255,0.012) 100%);
+    --hero-bg: linear-gradient(160deg, #101215 0%, #0D1420 55%, #0B1830 100%);
+    --hero-ink: #FFFFFF;
+    --hero-dim: rgba(255,255,255,0.76);
+    --hero-accent: #F4C400;
+    --tabs-bg: rgba(16,18,21,0.94);
+    --btn-grad: linear-gradient(135deg, #F4C400 0%, #E0B400 100%);
+    --btn-ink: #101215;
+    --table-head-bg: #102449;
+    --hover-lift: translateY(-3px);
+    --bracket-line: #F4C400;
+    --bracket-line-glow: rgba(244,196,0,0.38);
+
+    background: var(--bg);
+  }
+
+  /* Fondo exclusivo detras de la UI (fuera del hero): resplandores muy
+     sutiles en los tonos BetPlay, invertidos respecto de LigaPro para
+     diferenciar de un vistazo entre ambas pestañas. */
+  body.liga-dimayor::before{
+    content:""; position:fixed; inset:0; z-index:-2; pointer-events:none;
+    background:
+      radial-gradient(1000px 620px at 12% -8%, rgba(244,196,0,0.10), transparent 60%),
+      radial-gradient(780px 540px at 100% 108%, rgba(11,77,186,0.16), transparent 62%),
+      radial-gradient(720px 500px at 45% 45%, rgba(0,169,224,0.08), transparent 66%);
+  }
+  body.dark.liga-dimayor::before{
+    background:
+      radial-gradient(1000px 620px at 12% -8%, rgba(244,196,0,0.08), transparent 60%),
+      radial-gradient(780px 540px at 100% 108%, rgba(11,77,186,0.20), transparent 62%),
+      radial-gradient(720px 500px at 45% 45%, rgba(0,169,224,0.07), transparent 66%);
+  }
+
+  /* ---- Hero: identidad fija del torneo, siempre oscura, con una
+     leve iluminacion azul difuminada detras del encabezado ---- */
+  body.liga-dimayor .hero{ border-radius: 0 0 28px 28px; position:relative; }
+  body.liga-dimayor .hero::before{
+    content:""; position:absolute; inset:0; pointer-events:none;
+    background:
+      radial-gradient(680px 460px at 50% -140px, rgba(11,77,186,0.38), transparent 72%),
+      radial-gradient(420px 320px at 80% 10%, rgba(0,169,224,0.10), transparent 70%);
+  }
+  body.liga-dimayor .hero::after{
+    height:3px;
+    background: linear-gradient(90deg,
+      #F4C400 0%, #F4C400 25%, #00A9E0 25%, #00A9E0 50%, #00B140 50%, #00B140 75%, #0B4DBA 75%, #0B4DBA 100%);
+    opacity:0.9;
+  }
+
+  /* ---- Logo oficial, centrado sobre el titulo ---- */
+  body.liga-dimayor .dimayor-liga-logo{
+    display:block; height:88px; width:auto; margin:0 auto 20px;
+    opacity:0; animation: fade-in 0.6s ease forwards 0s;
+  }
+  @media (max-width:600px){
+    body.liga-dimayor .dimayor-liga-logo{ height:64px; margin-bottom:14px; }
+  }
+
+  /* ---- Titulo: "SIMULADOR" blanco + "LIGA BETPLAY" azul + "DIMAYOR"
+     blanco (en vez del amarillo unico que tenia antes) ---- */
+  body.liga-dimayor .hero h1 span{ color: var(--hero-ink); }
+  body.liga-dimayor .hero h1 .dimayor-title-accent{ color: #3E8CFF; }
+
+  body.liga-dimayor .liga-tab.active{
+    background: linear-gradient(135deg, #0B4DBA 0%, #123A87 100%);
+    color:#FFFFFF; box-shadow: inset 0 0 0 1px rgba(244,196,0,0.4);
+  }
+  body.dark.liga-dimayor .liga-tab.active{
+    background: linear-gradient(135deg, #0B4DBA 0%, #123A87 100%);
+    color:#FFFFFF; box-shadow: inset 0 0 0 1px rgba(244,196,0,0.4);
+  }
+  body.liga-dimayor .liga-tab:not(.active){ color: var(--muted); }
+  body.liga-dimayor .liga-tabs .group{ border:1px solid var(--line); background: var(--bg-panel-2); }
+  body.liga-dimayor .liga-tabs{ border-bottom:1px solid rgba(244,196,0,0.18); }
+
+  body.liga-dimayor #mc-list-dimayor{ border-color: var(--line); }
+  body.liga-dimayor .mc-row .name .pct{ color: var(--amber); }
+
+  /* ---- Separadores de seccion: degrade fino inspirado en el logo
+     BetPlay (amarillo -> celeste -> verde -> azul) ---- */
+  body.liga-dimayor .section-head{ position:relative; padding-left:14px; }
+  body.liga-dimayor .section-head::before{
+    content:""; position:absolute; left:0; top:2px; bottom:2px; width:3px; border-radius:2px;
+    background: linear-gradient(180deg, #F4C400 0%, #F4C400 25%, #00A9E0 25%, #00A9E0 50%, #00B140 50%, #00B140 75%, #0B4DBA 75%, #0B4DBA 100%);
+  }
+
+  /* ---- Tarjetas de estadisticas (hero .meta y team-card): borde azul
+     muy sutil + sombra azul discreta al pasar el mouse ---- */
+  body.liga-dimayor .hero .meta div{
+    border-color: rgba(255,255,255,0.16);
+    transition: background 0.25s cubic-bezier(0.22,1,0.36,1), transform 0.25s cubic-bezier(0.22,1,0.36,1), border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+  body.liga-dimayor .hero .meta div:hover{
+    border-color: rgba(62,140,255,0.5);
+    box-shadow: 0 0 0 1px rgba(62,140,255,0.18), 0 8px 22px rgba(11,77,186,0.22);
+    transform: var(--hover-lift);
+  }
+  body.liga-dimayor .team-card{
+    position:relative; overflow:hidden;
+    border-color: rgba(11,77,186,0.35);
+    transition: box-shadow 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+  }
+  body.liga-dimayor .team-card:hover{
+    border-color: rgba(11,77,186,0.55);
+    box-shadow: 0 0 0 1px rgba(11,77,186,0.14), 0 10px 26px rgba(11,77,186,0.16);
+  }
+  body.liga-dimayor .team-card::before{
+    content:""; position:absolute; top:0; left:0; right:0; height:3px;
+    background: linear-gradient(90deg, #F4C400 0%, #F4C400 25%, #00A9E0 25%, #00A9E0 50%, #00B140 50%, #00B140 75%, #0B4DBA 75%, #0B4DBA 100%);
+  }
+
+  /* ---- Tablas: encabezado azul oscuro con texto blanco (las filas
+     de clasificacion/lider/descenso ya se resuelven via variables
+     --qualified-*/--leader-*/--relegation-* redefinidas arriba) ---- */
+  body.liga-dimayor thead th{ color: #FFFFFF; }
+
+  /* ---- Botones: mismo amarillo, transicion mas suave y hover con
+     brillo + sombra sutil ---- */
+  body.liga-dimayor .btn-simular{ transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease, opacity 0.15s ease; }
+  body.liga-dimayor .btn-simular:hover:not(:disabled){
+    background: linear-gradient(135deg, #FFD84D 0%, #F4C400 100%);
+    box-shadow: 0 6px 18px rgba(244,196,0,0.28);
+  }
+
+  body.liga-dimayor #sim-count-dimayor{
+    font-family:'JetBrains Mono'; font-size:13px; font-weight:600; color: var(--ink);
+    background: var(--bg-panel); border:1px solid rgba(11,77,186,0.3); border-radius: var(--radius-sm);
+    padding:8px 10px; width:88px; text-align:center; outline:none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, opacity 0.15s ease;
+  }
+  body.liga-dimayor #sim-count-dimayor:hover:not(:disabled){ border-color:#F4C400; }
+  body.liga-dimayor #sim-count-dimayor:focus{
+    border-color:#00A9E0; box-shadow: 0 0 0 3px rgba(0,169,224,0.22);
+  }
+  body.liga-dimayor #sim-count-dimayor:disabled{ cursor:wait; opacity:0.5; }
+  body.liga-dimayor #sim-count-dimayor::-webkit-inner-spin-button,
+  body.liga-dimayor #sim-count-dimayor::-webkit-outer-spin-button{ opacity:0.6; }
+
+  body.liga-dimayor #campeon-equipo-dimayor{
+    font-family:'JetBrains Mono'; font-size:13px; font-weight:600; color: var(--ink);
+    background: var(--bg-panel); border:1px solid rgba(11,77,186,0.3); border-radius:999px;
+    padding:10px 18px; outline:none; min-width:220px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, opacity 0.15s ease;
+  }
+  body.liga-dimayor #campeon-equipo-dimayor:hover:not(:disabled){ border-color:#F4C400; }
+  body.liga-dimayor #campeon-equipo-dimayor:focus{
+    border-color:#00A9E0; box-shadow: 0 0 0 3px rgba(0,169,224,0.22);
+  }
+  body.liga-dimayor #campeon-equipo-dimayor:disabled{ cursor:wait; opacity:0.5; }
+  body.liga-dimayor #campeon-equipo-dimayor option{ background:#FFFFFF; color:#1E1E1E; }
+  body.dark.liga-dimayor #campeon-equipo-dimayor option{ background:#15181D; color:#F5F5F5; }
+
+  /* ---- Subtitulo de zona arriba de cada tabla (Torneo Apertura /
+     Fase Regular Clausura / Cuadrangular A / Cuadrangular B) ---- */
+  body.liga-dimayor .dimayor-grupo-titulo{
+    display:flex; align-items:center; gap:8px; margin:26px 0 8px;
+    font-family:'JetBrains Mono', monospace; font-size:12.5px; font-weight:700;
+    letter-spacing:0.06em; text-transform:uppercase; color: var(--ink-dim);
+  }
+  body.liga-dimayor .dimayor-grupo-titulo:first-of-type{ margin-top:6px; }
+  body.liga-dimayor .dimayor-grupo-titulo i{
+    display:inline-block; width:10px; height:10px; border-radius:3px; flex:none;
+  }
+  body.liga-dimayor .dimayor-zona-badge{
+    display:inline-block; padding:2px 9px; border-radius:999px;
+    font-family:'JetBrains Mono', monospace; font-size:10.5px; font-weight:700;
+    letter-spacing:0.04em; text-transform:uppercase; white-space:nowrap;
+  }
+  /* Franja informativa (tabla final del Apertura): mismo tratamiento
+     que .section-note pero con un aro tenue, para distinguirla de las
+     tablas que si alimentan la simulacion del Clausura. */
+  body.liga-dimayor .dimayor-apertura-nota{
+    border:1px dashed rgba(11,77,186,0.35); border-radius: var(--radius-sm);
+    padding:10px 14px; margin-bottom:14px; font-size:12.5px; color: var(--ink-dim);
+  }
+
+  @media (max-width:600px){
+    body.liga-dimayor::before, body.liga-dimayor::after{ width:260px; height:260px; }
+    body.liga-dimayor .hero{ padding-top:56px; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    body.liga-dimayor .hero .meta div,
+    body.liga-dimayor .btn-simular,
+    body.liga-dimayor #mc-list-dimayor .mc-row{ transition:none; }
+    body.liga-dimayor .dimayor-liga-logo{ animation:none; opacity:1; }
+  }
   /* ---- Escudos de equipos ---- */
   .escudo{ width:24px; height:24px; object-fit:contain; vertical-align:-6px; margin-right:8px; }
   .tc-name .escudo{ width:34px; height:34px; vertical-align:-8px; margin-right:10px; }
@@ -4777,9 +5063,13 @@
            onerror="this.remove()">
       <img class="torneo-logo" data-liga="ligapro" src="logos-torneos/ligapro.png" alt=""
            onerror="this.remove()">
+      <img class="torneo-logo" data-liga="dimayor" src="logos-torneos/dimayor.png" alt=""
+           onerror="this.remove()">
       <img class="torneo-logo" data-liga="temporada" src="logos-torneos/modotorneo.png" alt=""
            onerror="this.remove()">
     </div>
+    <img class="dimayor-liga-logo" src="logos-torneos/LigaBetPlay.png" alt="Liga BetPlay Dimayor"
+         onerror="this.remove()">
     <div class="eyebrow" id="hero-eyebrow">SIMULACIÓN MONTE CARLO — <span id="hero-n">0</span> CORRIDAS</div>
     <h1 class="display"><span id="hero-title-prefix">SIMULADOR </span><span id="hero-title-span">PRIMERA NACIONAL</span></h1>
     <p class="sub" id="hero-sub">Probabilidades de ascenso y descenso calculadas simulando la temporada completa hasta cinco mil veces con un modelo Poisson ajustado por forma reciente y corrección Dixon-Coles.</p>
@@ -4874,6 +5164,20 @@
       <div id="last-update-ligapro" class="last-update"></div>
     </div>
 
+    <div class="sim-control" id="sim-control-dimayor" style="display:none">
+      <div class="sim-select-row">
+        <label for="sim-count-dimayor">Cantidad de simulaciones</label>
+        <input type="number" id="sim-count-dimayor" value="1000" min="50" max="10000" step="1">
+        <span class="rango">(50–10000)</span>
+      </div>
+      <div class="btn-row">
+        <button id="btn-simular-dimayor" class="btn-simular">Correr nueva simulación</button>
+        <button id="btn-actualizar-dimayor" class="btn-actualizar">Actualizar Resultados</button>
+      </div>
+      <div id="sim-status-dimayor" class="sim-status"></div>
+      <div id="last-update-dimayor" class="last-update"></div>
+    </div>
+
     <div class="sim-control" id="sim-control-federal" style="display:none">
       <div class="sim-select-row">
         <label for="sim-count-federal">Cantidad de simulaciones</label>
@@ -4947,6 +5251,7 @@
     <div class="group" data-region="sudamerica" style="display:none">
       <button class="liga-tab" data-liga="brasileirao">Brasileirão Série A</button>
       <button class="liga-tab" data-liga="ligapro">LigaPro Serie A</button>
+      <button class="liga-tab" data-liga="dimayor">Liga BetPlay Dimayor</button>
     </div>
     <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Cambiar entre modo claro y oscuro">
       <span id="theme-toggle-icon" class="icon-svg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span><span id="theme-toggle-label">Oscuro</span>
@@ -5602,6 +5907,114 @@
   </section>
 
   </div><!-- /vista-ligapro -->
+
+  <div id="vista-dimayor" style="display:none">
+
+  <div class="search-section" id="search-section-dimayor">
+    <div class="search-box">
+      <input type="text" id="team-search-dimayor" list="team-list-dimayor" placeholder="Buscar equipo… (ej: Millonarios, Nacional, Junior)" autocomplete="off">
+      <datalist id="team-list-dimayor"></datalist>
+    </div>
+    <div class="search-hint">Escribí el nombre del equipo para ver su tabla y sus chances en el Torneo Clausura</div>
+    <div id="search-result-dimayor"></div>
+  </div>
+
+  <div class="search-section" id="campeon-section-dimayor">
+    <div class="section-head" style="margin-bottom:14px;">
+      <span class="idx">🏆</span><h2 style="font-size:18px;">Simulá hasta que tu equipo sea campeón</h2><div class="rule"></div>
+    </div>
+    <p class="section-note" style="margin:0 0 16px; text-align:center; max-width:none;">
+      Elegí un equipo: corremos temporadas completas del Clausura (fase regular + Cuadrangulares + Final ida y
+      vuelta), una tras otra, hasta encontrar la primera en la que sale campeón. Te mostramos esa temporada puntual.
+    </p>
+    <div class="campeon-controls">
+      <select id="campeon-equipo-dimayor"><option value="">Elegí un equipo…</option></select>
+      <button id="btn-campeon-dimayor" class="btn-simular">🏆 Simular hasta el título</button>
+    </div>
+    <div id="campeon-status-dimayor" class="sim-status"></div>
+    <div id="campeon-resultado-dimayor"></div>
+  </div>
+
+  <section id="sec-apertura-dimayor">
+    <div class="section-head"><span class="idx">01</span><h2>Torneo Apertura — tabla final</h2><div class="rule"></div></div>
+    <div class="dimayor-apertura-nota">
+      Clasificación final del Torneo Apertura 2026, ya jugado por completo. Es sólo informativa: no participa de
+      esta simulación (el Clausura arranca de cero), pero sirve como referencia de forma reciente de cada equipo.
+    </div>
+    <div id="tabla-apertura-dimayor-wrap"></div>
+  </section>
+
+  <section id="sec-tabla-actual-dimayor">
+    <div class="section-head"><span class="idx">02</span><h2>Tabla actual — Torneo Clausura</h2><div class="rule"></div></div>
+    <p class="section-note">Clasificación real del Clausura en este momento, tal como quedó tras los partidos ya jugados. Mientras dura la fase regular es una tabla única de los 20 equipos; una vez definidos los 8 clasificados pasa a mostrar el Cuadrangular A y el Cuadrangular B por separado.</p>
+    <div id="tabla-actual-dimayor-grupos"></div>
+  </section>
+
+  <section id="sec-tabla-dimayor">
+    <div class="section-head"><span class="idx">03</span><h2>Clausura simulado</h2><div class="rule"></div></div>
+    <p class="section-note">Resultado de una corrida puntual de la temporada completa: se completa la fase regular (si falta) y, con el Top 8, se arman y simulan el Cuadrangular A, el Cuadrangular B y la Final ida y vuelta entre ambos ganadores.</p>
+    <div id="dimayor-campeon-footer" class="campeon-anuncio-wrap"></div>
+
+    <div id="dimayor-fase-regular-wrap" style="display:none">
+      <div class="dimayor-grupo-titulo"><i style="background:var(--muted)"></i>Fase regular — tabla final (referencia)</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>GF</th><th>GC</th><th>DG</th></tr></thead>
+          <tbody id="tabla-fase-regular-body-dimayor"></tbody>
+        </table>
+      </div>
+      <p class="section-note" style="margin-top:8px; text-align:left;">
+        <span style="display:inline-block; width:10px; height:10px; border-radius:2px; background:var(--leader-accent); margin-right:6px; vertical-align:middle;"></span>1° al 8°: clasifican a los Cuadrangulares (4 a cada grupo, según posición).
+      </p>
+    </div>
+
+    <div class="dimayor-grupo-titulo"><i style="background:var(--leader-accent)"></i>Cuadrangular A <span class="dimayor-zona-badge" style="background:var(--leader-bg); color:var(--leader-accent)">Posiciones 1°, 4°, 5°, 8°</span></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>GF</th><th>GC</th><th>DG</th></tr></thead>
+        <tbody id="tabla-cuadrangular-a-body-dimayor"></tbody>
+      </table>
+    </div>
+    <p class="section-note" style="margin-top:8px; text-align:left;">
+      <span style="display:inline-block; width:10px; height:10px; border-radius:2px; background:var(--leader-accent); margin-right:6px; vertical-align:middle;"></span>1°: pasa a la Final del Clausura.
+    </p>
+
+    <div class="dimayor-grupo-titulo"><i style="background:var(--qualified-accent)"></i>Cuadrangular B <span class="dimayor-zona-badge" style="background:var(--qualified-bg); color:var(--qualified-accent)">Posiciones 2°, 3°, 6°, 7°</span></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>GF</th><th>GC</th><th>DG</th></tr></thead>
+        <tbody id="tabla-cuadrangular-b-body-dimayor"></tbody>
+      </table>
+    </div>
+    <p class="section-note" style="margin-top:8px; text-align:left;">
+      <span style="display:inline-block; width:10px; height:10px; border-radius:2px; background:var(--qualified-accent); margin-right:6px; vertical-align:middle;"></span>1°: pasa a la Final del Clausura.
+    </p>
+
+    <div id="dimayor-final-detalle" class="section-note" style="margin-top:8px; text-align:left;"></div>
+  </section>
+
+  <section id="sec-mc-dimayor">
+    <div class="section-head"><span class="idx">04</span><h2>Probabilidades — Monte Carlo</h2><div class="rule"></div></div>
+    <p class="section-note">Cada barra muestra el % de simulaciones en que el equipo clasifica a los Cuadrangulares (Top 8 de la fase regular). A la derecha, el % de veces que salió campeón.</p>
+    <div class="legend">
+      <span><i style="background:var(--leader-accent)"></i> Cuadrangulares</span>
+      <span><i style="background:var(--qualified-accent)"></i> % campeón</span>
+    </div>
+    <div id="mc-list-dimayor"></div>
+  </section>
+
+  <section id="sec-esperada-dimayor">
+    <div class="section-head"><span class="idx">05</span><h2>Posición esperada — Fase regular</h2><div class="rule"></div></div>
+    <p class="section-note">Puntos y posición final promedio de cada equipo en la fase regular del Clausura, promediados sobre todas las simulaciones.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Equipo</th><th>Pts. prom.</th><th>Pos. prom.</th></tr></thead>
+        <tbody id="esperada-body-dimayor"></tbody>
+      </table>
+    </div>
+  </section>
+
+  </div><!-- /vista-dimayor -->
 
   <div id="vista-federal" style="display:none">
 
@@ -7735,6 +8148,7 @@ const SHARE_CONFIG = {
   copa:      { param: 'equipo_copa',     titulo: 'Copa Argentina',          data: () => (typeof DATA_COPA !== 'undefined' ? DATA_COPA : null) },
   brasileirao: { param: 'equipo_brasileirao', titulo: 'Brasileirão Série A', data: () => (typeof DATA_BRASILEIRAO !== 'undefined' ? DATA_BRASILEIRAO : null) },
   ligapro:   { param: 'equipo_ligapro',   titulo: 'LigaPro Serie A',         data: () => (typeof DATA_LIGAPRO !== 'undefined' ? DATA_LIGAPRO : null) },
+  dimayor:   { param: 'equipo_dimayor',   titulo: 'Liga BetPlay Dimayor',    data: () => (typeof DATA_DIMAYOR !== 'undefined' ? DATA_DIMAYOR : null) },
 };
 const SHARE_URL_PARAMS = Object.values(SHARE_CONFIG).map(c => c.param);
 
@@ -10784,6 +11198,512 @@ document.getElementById('btn-campeon-ligapro').addEventListener('click', simular
 /* ============================================================
    FEDERAL A
    ============================================================ */
+/* ============================================================
+   LIGA BETPLAY DIMAYOR (Colombia) -- mismo patrón que LigaPro:
+   Torneo Clausura (fase regular a una rueda + 2 Cuadrangulares +
+   Final ida y vuelta). La tabla final del Torneo Apertura es sólo
+   informativa (no pasa por el motor) y se muestra aparte. Sin
+   descenso simulado acá (el descenso real de Categoría Primera A se
+   calcula por promedio/tabla acumulada de varios torneos, fuera del
+   alcance de este simulador de un solo Clausura). */
+let DATA_DIMAYOR = null;
+let TEAM_INDEX_DIMAYOR = {};
+
+// Mismos nombres de zona que usa el backend (modelos/estadisticas_dimayor.py)
+const DIMAYOR_ZONA_CLAUSURA = "Clausura";
+const DIMAYOR_ZONA_CUADRANGULAR_A = "Cuadrangular A";
+const DIMAYOR_ZONA_CUADRANGULAR_B = "Cuadrangular B";
+
+function filaTablaDimayorHTML(f, i, clase){
+  const pos = f.posicion ?? (i + 1);
+  return `<tr${clase ? ` class="${clase}"` : ''}><td>${pos}</td><td>${escudoHTML(f.equipo)}${nombreMostrable(f.equipo)}</td><td>${f.puntos}</td><td>${f.gf}</td><td>${f.gc}</td><td>${f.dg > 0 ? '+' + f.dg : f.dg}</td></tr>`;
+}
+
+async function cargarDatosDimayor(){
+  try {
+    DATA_DIMAYOR = await cargarEstadoPersistido("/api/estado-dimayor");
+    if (!DATA_DIMAYOR) {
+      const respuesta = await fetch("./data_dimayor.json?t=" + Date.now());
+      if (!respuesta.ok) throw new Error("No se pudo cargar data_dimayor.json");
+      DATA_DIMAYOR = await respuesta.json();
+    }
+    iniciarDimayor();
+  } catch (e) {
+    const cont = document.getElementById('vista-dimayor');
+    if (cont) cont.innerHTML = `<div style="padding:24px 24px 0; max-width:720px; margin:0 auto; text-align:center; color:var(--muted); font-family:'JetBrains Mono'; font-size:13px;">
+      No se pudo cargar data_dimayor.json todavía (${e.message}). Corré <code>python main_dimayor.py</code> una vez para generarlo.
+    </div>`;
+  }
+}
+
+function iniciarDimayor(){
+  renderTablaAperturaDimayor();
+  renderTablaActualDimayor();
+  renderClausuraDimayor();
+  renderMCDimayor();
+  renderEsperadaDimayor();
+  poblarSelectEquiposDimayor();
+  TEAM_INDEX_DIMAYOR = buildTeamIndexDimayor();
+  poblarDatalistDimayor(TEAM_INDEX_DIMAYOR);
+  const busquedaDimayor = document.getElementById('team-search-dimayor');
+  if (busquedaDimayor && busquedaDimayor.value) buscarEquipoDimayor(busquedaDimayor.value);
+  abrirFichaDimayorDesdeUrl();
+  if (document.body.classList.contains('liga-dimayor')) actualizarHero('dimayor');
+}
+
+/* ---------- 01. TORNEO APERTURA (tabla final, informativa) ---------- */
+function renderTablaAperturaDimayor(){
+  const cont = document.getElementById('tabla-apertura-dimayor-wrap');
+  if (!cont || !DATA_DIMAYOR) return;
+  const filas = DATA_DIMAYOR.tabla_apertura_final || [];
+  if (!filas.length){
+    cont.innerHTML = `<p class="section-note">Todavía no está cargada la tabla final del Torneo Apertura.</p>`;
+    return;
+  }
+  cont.innerHTML = `
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>GF</th><th>GC</th><th>DG</th></tr></thead>
+        <tbody>${filas.map((f, i) => filaTablaDimayorHTML(f, i, '')).join('')}</tbody>
+      </table>
+    </div>`;
+}
+
+/* ---------- 02. TABLA ACTUAL (tabla única o 2 Cuadrangulares, según la fase) ---------- */
+function renderTablaActualDimayor(){
+  const cont = document.getElementById('tabla-actual-dimayor-grupos');
+  if (!cont || !DATA_DIMAYOR) return;
+  const filas = DATA_DIMAYOR.tabla_actual || [];
+  const zonas = [...new Set(filas.map(f => f.zona))];
+
+  if (zonas.length <= 1) {
+    // Sigue todo en fase regular: una sola tabla de 20, con el Top 8
+    // resaltado (todavía sin dividir en Cuadrangular A/B: esa
+    // asignación depende de la posición exacta 1/4/5/8 vs 2/3/6/7,
+    // no de un simple corte de tabla).
+    cont.innerHTML = `
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>GF</th><th>GC</th><th>DG</th></tr></thead>
+          <tbody>${filas.map((f, i) => filaTablaDimayorHTML(f, i, i < 8 ? 'reducido' : '')).join('')}</tbody>
+        </table>
+      </div>
+      <p class="section-note" style="margin-top:8px; text-align:left;">
+        <span style="display:inline-block; width:10px; height:10px; border-radius:2px; background:var(--leader-accent); margin-right:6px; vertical-align:middle;"></span>1° al 8°: clasificarían a los Cuadrangulares (4 equipos a cada grupo, según su posición exacta).
+      </p>`;
+    return;
+  }
+
+  // Ya se dividió en los 2 Cuadrangulares.
+  const metaA = { titulo: DIMAYOR_ZONA_CUADRANGULAR_A, accentVar: 'var(--leader-accent)', bgVar: 'var(--leader-bg)', badge: 'Grupo A' };
+  const metaB = { titulo: DIMAYOR_ZONA_CUADRANGULAR_B, accentVar: 'var(--qualified-accent)', bgVar: 'var(--qualified-bg)', badge: 'Grupo B' };
+  cont.innerHTML = [metaA, metaB].filter(m => zonas.includes(m.titulo)).map(meta => {
+    const grupo = filas.filter(f => f.zona === meta.titulo).sort((a, b) => a.posicion - b.posicion);
+    return `
+      <div class="dimayor-grupo-titulo"><i style="background:${meta.accentVar}"></i>${meta.titulo} <span class="dimayor-zona-badge" style="background:${meta.bgVar}; color:${meta.accentVar}">${meta.badge}</span></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>GF</th><th>GC</th><th>DG</th></tr></thead>
+          <tbody>${grupo.map((f, i) => filaTablaDimayorHTML(f, i, i === 0 ? 'punta' : '')).join('')}</tbody>
+        </table>
+      </div>`;
+  }).join('');
+}
+
+/* ---------- 03. CLAUSURA SIMULADO (fase regular de referencia + 2 Cuadrangulares + Final) ---------- */
+function renderGrupoDimayor(bodyId, filas){
+  const body = document.getElementById(bodyId);
+  if (!body || !filas) return;
+  body.innerHTML = filas.map((f, i) => filaTablaDimayorHTML(f, i, i === 0 ? 'punta' : '')).join('');
+}
+
+function renderClausuraDimayor(){
+  if (!DATA_DIMAYOR) return;
+
+  const wrapFR = document.getElementById('dimayor-fase-regular-wrap');
+  if (DATA_DIMAYOR.tabla_fase_regular && DATA_DIMAYOR.tabla_fase_regular.length) {
+    wrapFR.style.display = '';
+    renderGrupoDimayor('tabla-fase-regular-body-dimayor', DATA_DIMAYOR.tabla_fase_regular.map((f, i) => ({ ...f, _clase: i < 8 ? 'reducido' : '' })));
+    // renderGrupoDimayor resalta sólo la punta; acá interesa resaltar el Top 8 completo.
+    const body = document.getElementById('tabla-fase-regular-body-dimayor');
+    if (body) {
+      body.innerHTML = DATA_DIMAYOR.tabla_fase_regular.map((f, i) => filaTablaDimayorHTML(f, i, i < 8 ? 'reducido' : '')).join('');
+    }
+  } else {
+    wrapFR.style.display = 'none';
+  }
+
+  renderGrupoDimayor('tabla-cuadrangular-a-body-dimayor', DATA_DIMAYOR.cuadrangular_grupo_a);
+  renderGrupoDimayor('tabla-cuadrangular-b-body-dimayor', DATA_DIMAYOR.cuadrangular_grupo_b);
+
+  const footer = document.getElementById('dimayor-campeon-footer');
+  if (footer) {
+    footer.innerHTML = DATA_DIMAYOR.campeon
+      ? `${campeonAnuncioHTML(DATA_DIMAYOR.campeon, '🏆')}<div class="section-note" style="margin-top:4px;">Subcampeón: ${escudoHTML(DATA_DIMAYOR.subcampeon)}${nombreMostrable(DATA_DIMAYOR.subcampeon)}</div>`
+      : '';
+  }
+
+  const detalle = document.getElementById('dimayor-final-detalle');
+  if (detalle) {
+    const df = DATA_DIMAYOR.detalle_final;
+    detalle.textContent = df && df.texto ? `Final: ${df.texto}` : '';
+  }
+}
+
+/* ---------- 04. MONTE CARLO ---------- */
+function renderMCDimayor(){
+  const list = document.getElementById('mc-list-dimayor');
+  if (!list || !DATA_DIMAYOR || !DATA_DIMAYOR.monte_carlo) return;
+  list.innerHTML = "";
+  DATA_DIMAYOR.monte_carlo.forEach((f, i) => {
+    const row = document.createElement('div');
+    row.className = 'mc-row';
+    const cuad = f['%cuadrangulares'];
+    const campeon = f['%campeon'];
+    row.innerHTML = `
+      <div class="pos">${i + 1}</div>
+      <div>
+        <div class="name"><span>${escudoHTML(f.equipo)}${nombreMostrable(f.equipo)}</span><span class="pct">${fmtPct(f['%subcampeon'])} subcampeón</span></div>
+        <div class="mc-bar-track">
+          <div class="mc-bar-fill directo" style="width:${cuad}%; background:var(--leader-accent)"></div>
+        </div>
+        <div class="mc-sub">
+          <span><i class="dot" style="background:var(--leader-accent)"></i>${fmtPct(cuad)} Cuadrangulares</span>
+        </div>
+      </div>
+      <div class="mc-desc">
+        <div class="desc-pct" style="color:var(--qualified-accent)">${fmtPct(campeon)}</div>
+        <div class="desc-lbl">campeón</div>
+        <div class="desc-bar-track"><div class="desc-bar-fill" style="width:${Math.min(campeon, 100)}%; background:var(--qualified-accent)"></div></div>
+      </div>
+    `;
+    list.appendChild(row);
+  });
+}
+
+/* ---------- 05. POSICIÓN FINAL ESPERADA (fase regular) ---------- */
+function renderEsperadaDimayor(){
+  const body = document.getElementById('esperada-body-dimayor');
+  if (!body || !DATA_DIMAYOR || !DATA_DIMAYOR.tabla_esperada) return;
+  body.innerHTML = "";
+  DATA_DIMAYOR.tabla_esperada.forEach((f, i) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${i + 1}</td><td>${escudoHTML(f.equipo)}${nombreMostrable(f.equipo)}</td><td>${f.puntos_prom_clausura}</td><td>${f.posicion_prom_clausura}</td>`;
+    body.appendChild(tr);
+  });
+}
+
+/* ---------- BUSCADOR DE EQUIPOS (DIMAYOR) ---------- */
+const BADGE_ESTADO_DIMAYOR = {
+  cuadrangulares: { bg: 'var(--leader-bg)',     color: 'var(--leader-accent)',     label: 'CUADRANGULARES' },
+  final:          { bg: 'var(--qualified-bg)',  color: 'var(--qualified-accent)',  label: 'CLASIFICÓ A LA FINAL' },
+  medio:          { bg: 'var(--line)',          color: 'var(--muted)',             label: 'MITAD DE TABLA' },
+};
+
+function estadoDimayor(f){
+  const zona = f.zona, pos = f.posicion;
+  if (zona === DIMAYOR_ZONA_CLAUSURA) return pos <= 8 ? 'cuadrangulares' : 'medio';
+  if (zona === DIMAYOR_ZONA_CUADRANGULAR_A || zona === DIMAYOR_ZONA_CUADRANGULAR_B) return pos === 1 ? 'final' : 'medio';
+  return 'medio';
+}
+
+function buildTeamIndexDimayor(){
+  const index = {};
+  if (!DATA_DIMAYOR) return index;
+  const actual = DATA_DIMAYOR.tabla_actual || [];
+  const mc = DATA_DIMAYOR.monte_carlo || [];
+  const esperada = DATA_DIMAYOR.tabla_esperada || [];
+  const rachas = DATA_DIMAYOR.rachas || {};
+  actual.forEach(f => {
+    const mcRow = mc.find(m => m.equipo === f.equipo) || {};
+    const espRow = esperada.find(e => e.equipo === f.equipo) || {};
+    const ultimos5 = [...(rachas[f.equipo] || [])].reverse();
+    index[f.equipo] = {
+      equipo: f.equipo, zona: f.zona, posicion: f.posicion,
+      puntos: f.puntos, gf: f.gf, gc: f.gc, dg: f.dg,
+      estado: estadoDimayor(f),
+      cuadrangulares: mcRow['%cuadrangulares'] ?? 0,
+      campeon: mcRow['%campeon'] ?? 0,
+      subcampeon: mcRow['%subcampeon'] ?? 0,
+      puntos_prom: espRow['puntos_prom_clausura'] ?? '—',
+      posicion_prom: espRow['posicion_prom_clausura'] ?? '—',
+      ultimos5
+    };
+  });
+  return index;
+}
+
+function poblarDatalistDimayor(index){
+  const dl = document.getElementById('team-list-dimayor');
+  if (!dl) return;
+  dl.innerHTML = Object.keys(index).sort().map(nombre => `<option value="${nombre}">`).join('');
+}
+
+function renderTeamCardDimayor(t){
+  const badge = BADGE_ESTADO_DIMAYOR[t.estado] || BADGE_ESTADO_DIMAYOR.medio;
+  const zonaLbl = t.zona === DIMAYOR_ZONA_CLAUSURA ? 'la fase regular' : `el ${t.zona}`;
+  const tieneEsperada = t.posicion_prom !== '—';
+  return `
+    <div class="team-card">
+      <div class="tc-head">
+        <div class="tc-name">${escudoHTML(t.equipo)}${nombreMostrable(t.equipo)}</div>
+        <span class="tc-zone" style="background:${badge.bg}; color:${badge.color}">${badge.label}</span>
+      </div>
+      <div class="tc-pos">Posición actual: <b>${t.posicion}°</b> en ${zonaLbl} — <b>${t.puntos}</b> pts (DG ${t.dg > 0 ? '+' + t.dg : t.dg})</div>
+      <div class="tc-grid" style="margin-top:16px;">
+        <div class="tc-stat"><div class="v" style="color:var(--leader-accent)">${fmtPct(t.cuadrangulares)}</div><div class="l">Cuadrangulares</div></div>
+        <div class="tc-stat"><div class="v" style="color:var(--qualified-accent)">${fmtPct(t.campeon)}</div><div class="l">Campeón</div></div>
+        <div class="tc-stat"><div class="v" style="color:var(--zone-a)">${fmtPct(t.subcampeon)}</div><div class="l">Subcampeón</div></div>
+      </div>
+      <div class="tc-mc-title">Clasifica a los Cuadrangulares en ${fmtPct(t.cuadrangulares)} de las simulaciones</div>
+      <div class="mc-bar-track" style="margin-bottom:14px;">
+        <div class="mc-bar-fill directo" style="width:${t.cuadrangulares}%; background:var(--leader-accent)"></div>
+      </div>
+      <div class="tc-pos">Terminó campeón en <b>${fmtPct(t.campeon)}</b> de las simulaciones${tieneEsperada ? ` — posición final promedio (fase regular): <b>${t.posicion_prom}°</b>, puntos promedio: <b>${t.puntos_prom}</b>` : ''}</div>
+      <div class="tc-racha">
+        <div class="tc-racha-title">Últimos partidos</div>
+        ${renderRacha(t.ultimos5)}
+      </div>
+      <div class="tc-share">
+        <button onclick="compartirLink('dimayor', '${t.equipo.replace(/'/g, "\\'")}', this)">🔗 Copiar link</button>
+        <button onclick="compartirFicha('dimayor', '${t.equipo.replace(/'/g, "\\'")}', this)">📤 Compartir</button>
+      </div>
+    </div>
+  `;
+}
+
+function buscarEquipoDimayor(nombre){
+  const resultDiv = document.getElementById('search-result-dimayor');
+  if (!resultDiv) return;
+  if (!nombre || !nombre.trim()){
+    resultDiv.innerHTML = "";
+    return;
+  }
+  const index = TEAM_INDEX_DIMAYOR;
+  const exacto = index[nombre];
+  if (exacto){
+    resultDiv.innerHTML = renderTeamCardDimayor(exacto);
+    return;
+  }
+  const q = nombre.trim().toLowerCase();
+  const coincidencia = Object.values(index).find(t => t.equipo.toLowerCase().includes(q));
+  if (coincidencia){
+    resultDiv.innerHTML = renderTeamCardDimayor(coincidencia);
+  } else {
+    resultDiv.innerHTML = `<div class="no-result">No se encontró ningún equipo llamado "${nombre}"</div>`;
+  }
+}
+
+document.getElementById('team-search-dimayor').addEventListener('input', (e) => buscarEquipoDimayor(e.target.value));
+
+let _fichaDimayorDesdeUrlAbierta = false;
+function abrirFichaDimayorDesdeUrl(){
+  if (_fichaDimayorDesdeUrlAbierta) return;
+  const equipoUrl = new URLSearchParams(window.location.search).get('equipo_dimayor');
+  if (!equipoUrl) return;
+  _fichaDimayorDesdeUrlAbierta = true;
+  setRegion('sudamerica');
+  setLiga('dimayor');
+  const input = document.getElementById('team-search-dimayor');
+  if (input) input.value = equipoUrl;
+  buscarEquipoDimayor(equipoUrl);
+}
+
+/* ---------- SIMULAR / ACTUALIZAR (DIMAYOR) ---------- */
+function leerNSimsDimayor(){
+  const input = document.getElementById('sim-count-dimayor');
+  let n = parseInt(input.value, 10);
+  if (!Number.isFinite(n)) n = 1000;
+  n = Math.max(50, Math.min(10000, n));
+  input.value = n;
+  return n;
+}
+
+async function correrSimulacionDimayor(){
+  const btn = document.getElementById('btn-simular-dimayor');
+  const status = document.getElementById('sim-status-dimayor');
+  const input = document.getElementById('sim-count-dimayor');
+  const nSims = leerNSimsDimayor();
+
+  if (!beginApiAction(status)) return;
+
+  btn.disabled = true;
+  input.disabled = true;
+  btn.textContent = "Simulando…";
+  status.classList.remove('error', 'ok');
+  status.textContent = `Corriendo ${nSims} simulaciones — puede tardar 1-2 minutos, no cierres esta pestaña.`;
+
+  try {
+    const cuerpo = await ejecutarSimulacion("simular-dimayor", { n_sims: Number(nSims) }, "/api/simular-dimayor", status);
+
+    DATA_DIMAYOR = cuerpo;
+    iniciarDimayor();
+
+    status.classList.add('ok');
+    status.textContent = "✓ Simulación actualizada (" + (DATA_DIMAYOR.generado || "") + ")";
+  } catch (e) {
+    setApiErrorStatus(status, "No se pudo correr la simulación", e);
+  } finally {
+    btn.disabled = false;
+    input.disabled = false;
+    btn.textContent = "Correr nueva simulación";
+    endApiAction();
+  }
+}
+
+document.getElementById('btn-simular-dimayor').addEventListener('click', correrSimulacionDimayor);
+
+async function correrActualizacionDimayor(){
+  const btn = document.getElementById('btn-actualizar-dimayor');
+  const status = document.getElementById('sim-status-dimayor');
+  const lastUpdate = document.getElementById('last-update-dimayor');
+  const input = document.getElementById('sim-count-dimayor');
+  const nSims = leerNSimsDimayor();
+
+  if (!beginApiAction(status)) return;
+
+  btn.disabled = true;
+  input.disabled = true;
+  btn.textContent = "Buscando resultados…";
+  status.classList.remove('error', 'ok');
+  status.textContent = "Consultando resultados y re-simulando si hay partidos nuevos — puede tardar 1-2 minutos.";
+
+  try {
+    const respuesta = await apiFetch(apiUrl("/api/actualizar-dimayor"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ n_sims: Number(nSims) })
+    });
+    const cuerpo = await respuesta.json().catch(() => ({}));
+    if (!respuesta.ok) throw apiResponseError(respuesta, cuerpo);
+
+    if (cuerpo.actualizado) {
+      DATA_DIMAYOR = cuerpo.datos;
+      iniciarDimayor();
+      status.classList.add('ok');
+      status.textContent = `✓ Se cargaron ${cuerpo.cargados.length} partido(s) nuevo(s) y se re-simuló.`;
+    } else {
+      if (cuerpo.datos) {
+        DATA_DIMAYOR = cuerpo.datos;
+        iniciarDimayor();
+      }
+      status.classList.add('ok');
+      status.textContent = "✓ Consultado — no había partidos nuevos jugados todavía.";
+    }
+
+    if (cuerpo.sin_matchear && cuerpo.sin_matchear.length){
+      status.textContent += ` (${cuerpo.sin_matchear.length} partido(s) no se pudieron identificar — revisar mapeo de nombres)`;
+    }
+
+    lastUpdate.textContent = "Última consulta: " + new Date().toLocaleString('es-CO');
+  } catch (e) {
+    setApiErrorStatus(status, "No se pudo actualizar", e);
+  } finally {
+    btn.disabled = false;
+    input.disabled = false;
+    btn.textContent = "Actualizar Resultados";
+    endApiAction();
+  }
+}
+
+document.getElementById('btn-actualizar-dimayor').addEventListener('click', correrActualizacionDimayor);
+
+function poblarSelectEquiposDimayor(){
+  const sel = document.getElementById('campeon-equipo-dimayor');
+  if (!sel || !DATA_DIMAYOR || !DATA_DIMAYOR.tabla_actual) return;
+  const valorPrevio = sel.value;
+  const nombres = DATA_DIMAYOR.tabla_actual.map(f => f.equipo).sort();
+  sel.innerHTML = '<option value="">Elegí un equipo…</option>' +
+    nombres.map(n => `<option value="${n}">${n}</option>`).join('');
+  if (valorPrevio && nombres.includes(valorPrevio)) sel.value = valorPrevio;
+}
+
+/* ---------- DIMAYOR: SIMULAR HASTA EL TÍTULO ---------- */
+function claseFilaGrupoDimayor(i){
+  return i === 0 ? 'punta' : '';
+}
+
+async function simularHastaCampeonDimayor(){
+  const btn = document.getElementById('btn-campeon-dimayor');
+  const sel = document.getElementById('campeon-equipo-dimayor');
+  const status = document.getElementById('campeon-status-dimayor');
+  const resultado = document.getElementById('campeon-resultado-dimayor');
+  const equipo = sel.value;
+
+  status.classList.remove('error', 'ok');
+
+  if (!equipo){
+    status.classList.add('error');
+    status.textContent = "Elegí un equipo primero.";
+    return;
+  }
+
+  if (!beginApiAction(status)) return;
+
+  btn.disabled = true;
+  sel.disabled = true;
+  btn.textContent = "Simulando…";
+  status.textContent = `Corriendo temporadas hasta que ${equipo} sea campeón — puede tardar unos segundos.`;
+  resultado.innerHTML = "";
+
+  try {
+    const cuerpo = await ejecutarSimulacion("simular-campeon-dimayor", { equipo }, "/api/simular-campeon-dimayor", status);
+
+    if (!cuerpo.logrado) {
+      status.classList.add('error');
+      status.textContent = `No se logró el título de ${equipo} en ${cuerpo.max_intentos} intentos simulados. Probá de nuevo — el azar puede variar.`;
+      return;
+    }
+
+    renderCampeonResultadoDimayor(cuerpo);
+    status.classList.add('ok');
+    status.textContent = `✓ Encontrado en el intento N° ${cuerpo.intentos}`;
+  } catch (e) {
+    setApiErrorStatus(status, "No se pudo simular", e);
+  } finally {
+    btn.disabled = false;
+    sel.disabled = false;
+    btn.textContent = "🏆 Simular hasta el título";
+    endApiAction();
+  }
+}
+
+document.getElementById('btn-campeon-dimayor').addEventListener('click', simularHastaCampeonDimayor);
+
+function renderCampeonResultadoDimayor(r){
+  const cont = document.getElementById('campeon-resultado-dimayor');
+
+  function filasHTML(filas){
+    return filas.map((f, i) => {
+      const clase = claseFilaGrupoDimayor(i);
+      const esObjetivo = f.equipo === r.equipo;
+      return `<tr${clase ? ` class="${clase}"` : ''}${esObjetivo ? ' style="box-shadow: inset 3px 0 0 var(--amber);"' : ''}>
+        <td>${i + 1}</td><td>${escudoHTML(f.equipo)}${nombreMostrable(f.equipo)}${esObjetivo ? ' 🏆' : ''}</td><td>${f.puntos}</td><td>${f.gf}</td><td>${f.gc}</td><td>${f.dg > 0 ? '+' + f.dg : f.dg}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  function tablaHTML(titulo, filas){
+    return `
+      <div class="dimayor-grupo-titulo"><i style="background:var(--amber)"></i>${titulo}</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>GF</th><th>GC</th><th>DG</th></tr></thead>
+          <tbody>${filasHTML(filas)}</tbody>
+        </table>
+      </div>`;
+  }
+
+  const df = r.detalle_final || {};
+  cont.innerHTML = `
+    <div class="campeon-summary">🏆 <b>${r.equipo}</b> sale campeón en esta temporada simulada</div>
+    ${r.tabla_fase_regular ? tablaHTML('Fase regular — tabla final', r.tabla_fase_regular) : ''}
+    ${tablaHTML('Cuadrangular A', r.cuadrangular_grupo_a)}
+    ${tablaHTML('Cuadrangular B', r.cuadrangular_grupo_b)}
+    <p class="section-note" style="margin-top:8px; text-align:left;">Subcampeón: <b>${nombreMostrable(r.subcampeon)}</b>${df.texto ? ' — ' + df.texto : ''}</p>
+  `;
+}
+
 let DATA_FEDERAL;
 let zonaFederalPF = "1";
 let zonaFederal2F = "A";
@@ -11402,6 +12322,15 @@ const HERO_TEXTOS = {
     ascensosLbl: "Sudamericana",
     descensosLbl: "Descensos",
   },
+  dimayor: {
+    eyebrow: () => `SIMULACIÓN MONTE CARLO — <span id="hero-n">${(DATA_DIMAYOR && DATA_DIMAYOR.n_simulaciones) || 0}</span> CORRIDAS`,
+    titulo: "LIGA BETPLAY DIMAYOR",
+    sub: "Torneo Clausura: fase regular de 20 equipos a una rueda (19 fechas), Top 8 divididos en dos Cuadrangulares (todos contra todos ida y vuelta) y Final entre ambos ganadores a partido de ida y vuelta — mismo modelo Poisson ajustado por forma reciente y corrección Dixon-Coles. La tabla final del Torneo Apertura se muestra aparte, sólo a modo informativo.",
+    equiposLbl: "Equipos",
+    zonasLbl: "Cuadrangulares",
+    ascensosLbl: "Clasifican (Top 8)",
+    descensosLbl: "Finalistas",
+  },
   libertadores: {
     eyebrow: () => `SIMULACIÓN MONTE CARLO — <span id="hero-n">${(DATA_LIBERTADORES && DATA_LIBERTADORES.n_simulaciones) || 0}</span> CORRIDAS`,
     titulo: "COPA LIBERTADORES",
@@ -11439,7 +12368,14 @@ function aplicarMetaTemporada(){
 function actualizarHero(liga){
   const t = HERO_TEXTOS[liga];
   document.getElementById('hero-eyebrow').innerHTML = t.eyebrow();
-  document.getElementById('hero-title-span').textContent = t.titulo;
+  const tituloEl = document.getElementById('hero-title-span');
+  // Sólo estético: en Dimayor "LIGA BETPLAY" se resalta en azul dentro
+  // del título; el resto de las ligas sigue usando textContent plano.
+  if (liga === 'dimayor'){
+    tituloEl.innerHTML = '<span class="dimayor-title-accent">LIGA BETPLAY</span> DIMAYOR';
+  } else {
+    tituloEl.textContent = t.titulo;
+  }
   document.getElementById('hero-sub').textContent = t.sub;
   document.getElementById('meta-equipos-lbl').textContent = t.equiposLbl;
   document.getElementById('meta-zonas-lbl').textContent = t.zonasLbl;
@@ -11493,6 +12429,11 @@ function actualizarHero(liga){
     document.getElementById('meta-zonas').textContent = 3; // Ecuador 1/2/3 vía Hexagonal
     document.getElementById('meta-ascensos').textContent = 4; // Ecuador 1/2/3 Hexagonal + Ecuador 4 Cuadrangular
     document.getElementById('meta-descensos').textContent = (DATA_LIGAPRO && DATA_LIGAPRO.descensos && DATA_LIGAPRO.descensos.length) || 2;
+  } else if (liga === 'dimayor'){
+    document.getElementById('meta-equipos').textContent = (DATA_DIMAYOR && DATA_DIMAYOR.tabla_actual && DATA_DIMAYOR.tabla_actual.length) || 20;
+    document.getElementById('meta-zonas').textContent = 2; // Cuadrangular A + Cuadrangular B
+    document.getElementById('meta-ascensos').textContent = 8; // Top 8 clasifican
+    document.getElementById('meta-descensos').textContent = 2; // Ganador A + ganador B a la final
   } else if (liga === 'temporada'){
     // Equipos/Competencias/Ascensos/Descensos por temporada salen de la
     // última corrida real (TEMPORADA_META_CACHE), no son un dato fijo de
@@ -11520,6 +12461,7 @@ function setLiga(liga){
   document.getElementById('vista-bmetro').style.display = liga === 'bmetro' ? '' : 'none';
   document.getElementById('vista-brasileirao').style.display = liga === 'brasileirao' ? '' : 'none';
   document.getElementById('vista-ligapro').style.display = liga === 'ligapro' ? '' : 'none';
+  document.getElementById('vista-dimayor').style.display = liga === 'dimayor' ? '' : 'none';
   document.getElementById('vista-federal').style.display = liga === 'federal' ? '' : 'none';
   document.getElementById('vista-primerac').style.display = liga === 'primerac' ? '' : 'none';
   document.getElementById('vista-temporada').style.display = liga === 'temporada' ? '' : 'none';
@@ -11529,6 +12471,7 @@ function setLiga(liga){
   document.getElementById('sim-control-bmetro').style.display = liga === 'bmetro' ? '' : 'none';
   document.getElementById('sim-control-brasileirao').style.display = liga === 'brasileirao' ? '' : 'none';
   document.getElementById('sim-control-ligapro').style.display = liga === 'ligapro' ? '' : 'none';
+  document.getElementById('sim-control-dimayor').style.display = liga === 'dimayor' ? '' : 'none';
   document.getElementById('sim-control-federal').style.display = liga === 'federal' ? '' : 'none';
   document.getElementById('sim-control-primerac').style.display = liga === 'primerac' ? '' : 'none';
   document.getElementById('sim-control-libertadores').style.display = liga === 'libertadores' ? '' : 'none';
@@ -11541,6 +12484,7 @@ function setLiga(liga){
   document.body.classList.toggle('liga-bmetro', liga === 'bmetro');
   document.body.classList.toggle('liga-brasileirao', liga === 'brasileirao');
   document.body.classList.toggle('liga-ligapro', liga === 'ligapro');
+  document.body.classList.toggle('liga-dimayor', liga === 'dimayor');
   document.body.classList.toggle('liga-federal', liga === 'federal');
   document.body.classList.toggle('liga-primerac', liga === 'primerac');
   document.body.classList.toggle('liga-temporada', liga === 'temporada');
@@ -12608,6 +13552,7 @@ cargarDatosSudamericana();
 cargarDatosBMetro();
 cargarDatosBrasileirao();
 cargarDatosLigaPro();
+cargarDatosDimayor();
 cargarDatosFederal();
 
 // La página, tal como está en el HTML estático, arranca mostrando

@@ -60,6 +60,7 @@ COMPETITIONS = {
     "brasileirao": CompetitionSpec("brasileirao", "Brasileirão Série A"),
     "ligapro": CompetitionSpec("ligapro", "LigaPro Serie A"),
     "copa": CompetitionSpec("copa", "Copa Argentina"),
+    "dimayor": CompetitionSpec("dimayor", "Liga BetPlay Dimayor"),
 }
 
 TABLE_FILE_SLUGS = {
@@ -70,6 +71,7 @@ TABLE_FILE_SLUGS = {
     "tabla_primerac.csv": "primerac",
     "tabla_brasileirao.csv": "brasileirao",
     "tabla_ligapro.csv": "ligapro",
+    "tabla_dimayor.csv": "dimayor",
 }
 
 
@@ -905,6 +907,7 @@ LEAGUE_FILE_SPECS = {
     "primerac": ("tabla_primerac.csv", "fixture_primerac.csv", "resultados_primerac.csv"),
     "brasileirao": ("tabla_brasileirao.csv", "fixture_brasileirao.csv", "resultados_brasileirao.csv"),
     "ligapro": ("tabla_ligapro.csv", "fixture_ligapro.csv", "resultados_ligapro.csv"),
+    "dimayor": ("tabla_dimayor.csv", "fixture_dimayor.csv", "resultados_dimayor.csv"),
 }
 
 
@@ -939,6 +942,8 @@ def league_csv_files(competition_slug: str) -> dict[str, str]:
         bootstrap_league_from_csv("brasileirao")
     if competition_slug == "ligapro":
         bootstrap_league_from_csv("ligapro")
+    if competition_slug == "dimayor":
+        bootstrap_league_from_csv("dimayor")
 
     repo = repository()
     resultados, fixture, tabla = repo.league_data(competition_slug)
@@ -964,6 +969,7 @@ def league_csv_files(competition_slug: str) -> dict[str, str]:
         "primerac": ("tabla_primerac.csv", "fixture_primerac.csv", "resultados_primerac.csv"),
         "brasileirao": ("tabla_brasileirao.csv", "fixture_brasileirao.csv", "resultados_brasileirao.csv"),
         "ligapro": ("tabla_ligapro.csv", "fixture_ligapro.csv", "resultados_ligapro.csv"),
+        "dimayor": ("tabla_dimayor.csv", "fixture_dimayor.csv", "resultados_dimayor.csv"),
     }
     tabla_name, fixture_name, resultados_name = prefixes[competition_slug]
     return {

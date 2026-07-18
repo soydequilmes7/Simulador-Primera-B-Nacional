@@ -28,6 +28,7 @@ def league_data(competition_slug: str):
             "federal_a": ("resultados_federal_a.csv", "fixture_federal_a.csv", "tabla_federal_a.csv"),
             "primerac": ("resultados_primerac.csv", "fixture_primerac.csv", "tabla_primerac.csv"),
             "ligapro": ("resultados_ligapro.csv", "fixture_ligapro.csv", "tabla_ligapro.csv"),
+            "dimayor": ("resultados_dimayor.csv", "fixture_dimayor.csv", "tabla_dimayor.csv"),
         }[competition_slug]
         return tuple(pd.read_csv(_csv_path(nombre)) for nombre in nombres)
 
@@ -37,6 +38,8 @@ def league_data(competition_slug: str):
         bootstrap_league_from_csv("primerac")
     if competition_slug == "ligapro":
         bootstrap_league_from_csv("ligapro")
+    if competition_slug == "dimayor":
+        bootstrap_league_from_csv("dimayor")
 
     return repository().league_data(competition_slug)
 

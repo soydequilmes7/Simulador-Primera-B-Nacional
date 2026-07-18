@@ -43,6 +43,7 @@ from main_federal import correr_simulacion_federal, simular_hasta_ascenso_federa
 from main_primerac import correr_simulacion as correr_simulacion_primerac, simular_hasta_campeon as simular_hasta_ascenso_primerac
 from main_brasileirao import correr_simulacion_brasileirao, simular_hasta_campeon_brasileirao
 from main_ligapro import correr_simulacion_ligapro, simular_hasta_campeon_ligapro
+from main_dimayor import correr_simulacion_dimayor, simular_hasta_campeon_dimayor
 from main_libertadores import correr_simulacion_libertadores, simular_hasta_campeon_libertadores
 from main_sudamericana import correr_simulacion_sudamericana, simular_hasta_campeon_sudamericana
 
@@ -125,6 +126,15 @@ def simular_campeon_ligapro(equipo_objetivo, max_intentos):
     return _envolver_hasta_campeon(resultado, equipo_objetivo, max_intentos)
 
 
+def simular_dimayor(n_sims):
+    return correr_simulacion_dimayor(n_sims=n_sims, imprimir=False, guardar_json=False)
+
+
+def simular_campeon_dimayor(equipo_objetivo, max_intentos):
+    resultado = simular_hasta_campeon_dimayor(equipo_objetivo, max_intentos=max_intentos, imprimir=False)
+    return _envolver_hasta_campeon(resultado, equipo_objetivo, max_intentos)
+
+
 def simular_libertadores(n_sims):
     return correr_simulacion_libertadores(imprimir=False, guardar_json=False, n_sims=n_sims)
 
@@ -160,6 +170,8 @@ _TAREAS = {
     "simular-campeon-brasileirao": lambda kwargs: simular_campeon_brasileirao(kwargs["equipo"], kwargs["max_intentos"]),
     "simular-ligapro": lambda kwargs: simular_ligapro(kwargs["n_sims"]),
     "simular-campeon-ligapro": lambda kwargs: simular_campeon_ligapro(kwargs["equipo"], kwargs["max_intentos"]),
+    "simular-dimayor": lambda kwargs: simular_dimayor(kwargs["n_sims"]),
+    "simular-campeon-dimayor": lambda kwargs: simular_campeon_dimayor(kwargs["equipo"], kwargs["max_intentos"]),
     "simular-libertadores": lambda kwargs: simular_libertadores(kwargs["n_sims"]),
     "simular-campeon-libertadores": lambda kwargs: simular_campeon_libertadores(kwargs["equipo"], kwargs["max_intentos"]),
     "simular-sudamericana": lambda kwargs: simular_sudamericana(kwargs["n_sims"]),

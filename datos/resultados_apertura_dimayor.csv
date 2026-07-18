@@ -1,0 +1,191 @@
+fecha,jornada,equipo_local,equipo_visitante,goles_local,goles_visitante
+,1,Deportivo Pereira,Llaneros FC,0,2
+,1,Fortaleza FC,Alianza FC,1,0
+,1,América de Cali,Internacional de Bogotá,3,0
+,1,Atlético Nacional,Boyacá Chicó,4,0
+,1,Atlético Bucaramanga,Millonarios,2,1
+,1,Deportivo Pasto,Independiente Medellín,1,0
+,1,Jaguares de Córdoba,Deportivo Cali,1,0
+,1,Junior FC,Deportes Tolima,0,2
+,1,Independiente Santa Fe,Águilas Doradas,1,1
+,1,Cúcuta Deportivo,Once Caldas,1,2
+,2,Atlético Nacional,Jaguares de Córdoba,2,1
+,2,Internacional de Bogotá,Cúcuta Deportivo,2,1
+,2,Deportes Tolima,Alianza FC,2,0
+,2,Deportivo Pereira,Fortaleza FC,0,0
+,2,Llaneros FC,Atlético Bucaramanga,1,1
+,2,Deportivo Cali,Independiente Medellín,3,1
+,2,Boyacá Chicó,América de Cali,0,1
+,2,Águilas Doradas,Deportivo Pasto,1,2
+,2,Millonarios,Junior FC,1,2
+,2,Once Caldas,Independiente Santa Fe,1,1
+,3,Junior FC,Atlético Nacional,0,4
+,3,Cúcuta Deportivo,Atlético Bucaramanga,2,2
+,3,Fortaleza FC,Llaneros FC,1,1
+,3,Independiente Medellín,Deportes Tolima,2,2
+,3,Alianza FC,Boyacá Chicó,1,1
+,3,Independiente Santa Fe,Deportivo Pereira,2,2
+,3,Deportivo Pasto,Millonarios,2,1
+,3,Águilas Doradas,Deportivo Cali,2,1
+,3,Jaguares de Córdoba,Internacional de Bogotá,2,3
+,3,América de Cali,Once Caldas,1,1
+,4,Boyacá Chicó,Independiente Santa Fe,0,1
+,4,Atlético Bucaramanga,Alianza FC,5,0
+,4,Deportivo Cali,Deportivo Pasto,3,0
+,4,Once Caldas,Jaguares de Córdoba,1,1
+,4,Llaneros FC,Águilas Doradas,1,1
+,4,Millonarios,Independiente Medellín,0,0
+,4,Internacional de Bogotá,Deportes Tolima,0,0
+,4,Deportivo Pereira,Junior FC,2,3
+,4,Atlético Nacional,América de Cali,2,1
+,4,Cúcuta Deportivo,Fortaleza FC,1,1
+,5,Deportivo Pasto,Atlético Bucaramanga,0,0
+,5,Independiente Medellín,Internacional de Bogotá,1,2
+,5,Águilas Doradas,Cúcuta Deportivo,3,2
+,5,Deportes Tolima,Llaneros FC,0,1
+,5,Junior FC,Boyacá Chicó,3,0
+,5,Alianza FC,Once Caldas,1,1
+,5,Deportivo Cali,Millonarios,0,0
+,5,Jaguares de Córdoba,Deportivo Pereira,1,0
+,5,Fortaleza FC,América de Cali,1,2
+,5,Independiente Santa Fe,Atlético Nacional,1,2
+,6,Deportivo Pereira,Alianza FC,2,3
+,6,Cúcuta Deportivo,Independiente Medellín,1,3
+,6,Llaneros FC,Deportivo Pasto,0,1
+,6,Atlético Bucaramanga,Deportes Tolima,0,0
+,6,Millonarios,Águilas Doradas,1,0
+,6,Internacional de Bogotá,Deportivo Cali,3,2
+,6,Boyacá Chicó,Jaguares de Córdoba,5,0
+,6,Once Caldas,Junior FC,2,1
+,6,Atlético Nacional,Fortaleza FC,4,1
+,6,América de Cali,Independiente Santa Fe,1,0
+,7,Águilas Doradas,Atlético Bucaramanga,2,1
+,7,Millonarios,Llaneros FC,2,1
+,7,Independiente Medellín,Deportivo Pereira,1,1
+,7,Deportivo Pasto,Internacional de Bogotá,1,1
+,7,Deportes Tolima,Once Caldas,2,1
+,7,Deportivo Cali,Atlético Nacional,1,0
+,7,Fortaleza FC,Boyacá Chicó,2,1
+,7,Alianza FC,Cúcuta Deportivo,1,1
+,7,Jaguares de Córdoba,Independiente Santa Fe,3,1
+,7,Junior FC,América de Cali,2,1
+,8,Llaneros FC,Independiente Medellín,2,2
+,8,Deportivo Pereira,Deportivo Pasto,2,2
+,8,Once Caldas,Fortaleza FC,4,2
+,8,Atlético Bucaramanga,Deportivo Cali,0,0
+,8,Atlético Nacional,Alianza FC,3,0
+,8,Internacional de Bogotá,Millonarios,3,2
+,8,Independiente Santa Fe,Junior FC,2,1
+,8,Boyacá Chicó,Águilas Doradas,0,1
+,8,América de Cali,Jaguares de Córdoba,3,0
+,8,Cúcuta Deportivo,Deportes Tolima,3,2
+,9,Jaguares de Córdoba,Junior FC,0,2
+,9,Independiente Medellín,Atlético Bucaramanga,1,2
+,9,Deportivo Pasto,Cúcuta Deportivo,3,2
+,9,Águilas Doradas,Internacional de Bogotá,0,0
+,9,Deportes Tolima,Atlético Nacional,1,0
+,9,Fortaleza FC,Independiente Santa Fe,1,1
+,9,Deportivo Cali,Llaneros FC,1,1
+,9,Millonarios,Deportivo Pereira,5,1
+,9,Once Caldas,Boyacá Chicó,3,0
+,9,Alianza FC,América de Cali,0,3
+,10,Fortaleza FC,Jaguares de Córdoba,2,1
+,10,Deportes Tolima,Independiente Santa Fe,2,2
+,10,Llaneros FC,Internacional de Bogotá,1,1
+,10,Junior FC,Alianza FC,1,1
+,10,Deportivo Cali,Once Caldas,0,2
+,10,Águilas Doradas,Atlético Nacional,1,2
+,10,Millonarios,Cúcuta Deportivo,2,0
+,10,Deportivo Pasto,América de Cali,2,0
+,10,Atlético Bucaramanga,Deportivo Pereira,3,0
+,10,Independiente Medellín,Boyacá Chicó,2,0
+,11,Once Caldas,Deportivo Pasto,4,2
+,11,Atlético Nacional,Llaneros FC,2,0
+,11,Internacional de Bogotá,Atlético Bucaramanga,0,0
+,11,Cúcuta Deportivo,Deportivo Cali,0,2
+,11,Boyacá Chicó,Millonarios,2,1
+,11,Independiente Santa Fe,Alianza FC,1,1
+,11,Deportivo Pereira,Águilas Doradas,0,1
+,11,América de Cali,Deportes Tolima,1,1
+,11,Jaguares de Córdoba,Independiente Medellín,1,2
+,11,Junior FC,Fortaleza FC,2,1
+,12,Llaneros FC,Cúcuta Deportivo,2,2
+,12,Millonarios,Atlético Nacional,3,0
+,12,Deportivo Pasto,Boyacá Chicó,2,0
+,12,Internacional de Bogotá,Deportivo Pereira,2,2
+,12,Atlético Bucaramanga,Once Caldas,1,1
+,12,Deportivo Cali,Independiente Santa Fe,1,1
+,12,Alianza FC,Jaguares de Córdoba,1,0
+,12,Deportes Tolima,Fortaleza FC,2,0
+,12,Independiente Medellín,Junior FC,2,0
+,12,Águilas Doradas,América de Cali,0,1
+,13,Once Caldas,Millonarios,1,4
+,13,Atlético Nacional,Internacional de Bogotá,3,0
+,13,Alianza FC,Deportivo Cali,1,0
+,13,Boyacá Chicó,Deportes Tolima,1,1
+,13,Independiente Santa Fe,Independiente Medellín,2,1
+,13,Jaguares de Córdoba,Águilas Doradas,1,1
+,13,Deportivo Pereira,Cúcuta Deportivo,2,2
+,13,Junior FC,Atlético Bucaramanga,2,0
+,13,Fortaleza FC,Deportivo Pasto,1,2
+,13,América de Cali,Llaneros FC,0,0
+,14,Águilas Doradas,Alianza FC,1,0
+,14,Atlético Bucaramanga,Independiente Santa Fe,1,2
+,14,Cúcuta Deportivo,Boyacá Chicó,1,0
+,14,Deportes Tolima,Jaguares de Córdoba,3,1
+,14,Deportivo Cali,Deportivo Pereira,1,0
+,14,Internacional de Bogotá,Junior FC,0,1
+,14,Deportivo Pasto,Atlético Nacional,1,2
+,14,Llaneros FC,Once Caldas,1,1
+,14,Independiente Medellín,América de Cali,2,1
+,14,Millonarios,Fortaleza FC,2,2
+,15,Deportes Tolima,Águilas Doradas,4,1
+,15,Alianza FC,Deportivo Pasto,0,0
+,15,Independiente Santa Fe,Llaneros FC,0,1
+,15,Atlético Nacional,Cúcuta Deportivo,0,0
+,15,Boyacá Chicó,Deportivo Pereira,1,0
+,15,América de Cali,Atlético Bucaramanga,2,0
+,15,Jaguares de Córdoba,Millonarios,1,0
+,15,Once Caldas,Independiente Medellín,1,1
+,15,Fortaleza FC,Internacional de Bogotá,1,1
+,15,Junior FC,Deportivo Cali,1,2
+,16,Deportivo Cali,Fortaleza FC,1,1
+,16,Cúcuta Deportivo,América de Cali,2,0
+,16,Llaneros FC,Jaguares de Córdoba,2,0
+,16,Deportivo Pereira,Once Caldas,0,0
+,16,Deportivo Pasto,Deportes Tolima,1,0
+,16,Águilas Doradas,Junior FC,0,3
+,16,Independiente Medellín,Atlético Nacional,2,3
+,16,Millonarios,Independiente Santa Fe,1,1
+,16,Atlético Bucaramanga,Boyacá Chicó,5,0
+,16,Internacional de Bogotá,Alianza FC,2,1
+,17,Boyacá Chicó,Deportivo Cali,1,0
+,17,Jaguares de Córdoba,Deportivo Pasto,2,3
+,17,Deportes Tolima,Deportivo Pereira,2,0
+,17,Fortaleza FC,Águilas Doradas,2,0
+,17,Independiente Santa Fe,Cúcuta Deportivo,5,0
+,17,Alianza FC,Independiente Medellín,0,1
+,17,Junior FC,Llaneros FC,2,0
+,17,América de Cali,Millonarios,3,1
+,17,Once Caldas,Internacional de Bogotá,2,1
+,17,Atlético Nacional,Atlético Bucaramanga,2,0
+,18,Deportivo Pasto,Independiente Santa Fe,1,2
+,18,Millonarios,Deportes Tolima,2,0
+,18,Cúcuta Deportivo,Junior FC,1,1
+,18,Atlético Bucaramanga,Jaguares de Córdoba,2,2
+,18,Deportivo Pereira,Atlético Nacional,1,0
+,18,Deportivo Cali,América de Cali,1,0
+,18,Independiente Medellín,Fortaleza FC,1,0
+,18,Águilas Doradas,Once Caldas,2,2
+,18,Llaneros FC,Alianza FC,0,0
+,18,Internacional de Bogotá,Boyacá Chicó,4,0
+,19,Once Caldas,Atlético Nacional,1,0
+,19,Boyacá Chicó,Llaneros FC,3,0
+,19,Jaguares de Córdoba,Cúcuta Deportivo,2,0
+,19,Alianza FC,Millonarios,2,2
+,19,Independiente Medellín,Águilas Doradas,1,2
+,19,Deportes Tolima,Deportivo Cali,1,1
+,19,Independiente Santa Fe,Internacional de Bogotá,3,1
+,19,Fortaleza FC,Atlético Bucaramanga,2,1
+,19,América de Cali,Deportivo Pereira,1,0
+,19,Junior FC,Deportivo Pasto,4,3

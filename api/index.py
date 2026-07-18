@@ -53,6 +53,8 @@ from actualizar_resultados_brasileirao import actualizar as actualizar_brasileir
 from main_brasileirao import correr_simulacion_brasileirao
 from actualizar_resultados_ligapro import actualizar as actualizar_ligapro
 from main_ligapro import correr_simulacion_ligapro
+from actualizar_resultados_dimayor import actualizar as actualizar_dimayor
+from main_dimayor import correr_simulacion_dimayor
 
 # Archivos de código fuente que necesita el simulador corriendo en el
 # navegador (Pyodide/Web Worker, ver public/js/sim-worker.js). Se sirven
@@ -80,6 +82,8 @@ PYSIM_SOURCE_FILES = [
     "modelos/estadisticas_brasileirao.py",
     "main_ligapro.py",
     "modelos/estadisticas_ligapro.py",
+    "main_dimayor.py",
+    "modelos/estadisticas_dimayor.py",
     "main_libertadores.py",
     "modelos/estadisticas_libertadores.py",
     "main_sudamericana.py",
@@ -192,6 +196,7 @@ _lock_federal = ReadWriteLock()
 _lock_primerac = ReadWriteLock()
 _lock_brasileirao = ReadWriteLock()
 _lock_ligapro = ReadWriteLock()
+_lock_dimayor = ReadWriteLock()
 _lock_libertadores = ReadWriteLock()
 _lock_sudamericana = ReadWriteLock()
 
@@ -225,6 +230,10 @@ class SimularBrasileiraoBody(BaseModel):
 
 
 class SimularLigaProBody(BaseModel):
+    n_sims: int = 1000
+
+
+class SimularDimayorBody(BaseModel):
     n_sims: int = 1000
 
 
@@ -455,6 +464,36 @@ def evolucion_posiciones_ligapro():
         _lock_ligapro.release_read()
 
 
+@app.get("/api/evolucion-posiciones-dimayor")
+def evolucion_posiciones_dimayor():
+    """Igual que /api/evolucion-posiciones-ligapro pero para Liga
+    BetPlay Dimayor. La zona de cada equipo es "Clausura" durante la
+    fase regular y, una vez resuelta, "Cuadrangular A"/"Cuadrangular B"
+    para los 8 clasificados (los otros 12 quedan en "Clausura", ya
+    eliminados) -- calcular_evolucion()/tamano_por_zona() son genéricos
+    por zona, no hace falta ningún caso especial."""
+    ocupado = _adquirir_lectura(
+        _lock_dimayor,
+        "Hay una actualización de Dimayor en curso. Esperá unos segundos y probá de nuevo.",
+    )
+    if ocupado:
+        return ocupado
+    try:
+        with transaction() as repo:
+            tabla_actual = repo.standing_records("dimayor")
+            zona_por_club = {fila["equipo"]: fila["zona"] for fila in tabla_actual}
+            partidos_jugados = repo.match_records("dimayor", "played")
+        evolucion = calcular_evolucion(partidos_jugados, zona_por_club)
+        return {
+            "evolucion": evolucion,
+            "zonas": tamano_por_zona(zona_por_club),
+        }
+    except Exception as e:
+        return _error_response(e)
+    finally:
+        _lock_dimayor.release_read()
+
+
 @app.get("/api/datos-copa")
 def datos_copa():
     """Igual que /api/datos-nacional pero con el cuadro de la Copa
@@ -588,6 +627,26 @@ def datos_ligapro():
         _lock_ligapro.release_read()
 
 
+@app.get("/api/datos-dimayor")
+def datos_dimayor():
+    """Igual que /api/datos-ligapro pero con los CSV de Liga BetPlay
+    Dimayor (Colombia): tabla, fixture y resultados del Torneo
+    Clausura, con la columna "zona" reflejando "Clausura" o, una vez
+    resuelta esa fase, "Cuadrangular A"/"Cuadrangular B"."""
+    ocupado = _adquirir_lectura(
+        _lock_dimayor,
+        "Hay una actualización de Dimayor en curso. Esperá unos segundos y probá de nuevo.",
+    )
+    if ocupado:
+        return ocupado
+    try:
+        return {"files": league_csv_files("dimayor")}
+    except Exception as e:
+        return _error_response(e)
+    finally:
+        _lock_dimayor.release_read()
+
+
 def _archivos_datos_locales(nombres: list[str]) -> dict[str, str]:
     """A diferencia de las demás competencias (Supabase, vía
     league_csv_files/cup_csv_files), Libertadores y Sudamericana no
@@ -694,6 +753,11 @@ def estado_brasileirao():
 @app.get("/api/estado-ligapro")
 def estado_ligapro():
     return _estado_persistido("ligapro")
+
+
+@app.get("/api/estado-dimayor")
+def estado_dimayor():
+    return _estado_persistido("dimayor")
 
 
 @app.get("/api/estado-copa")
@@ -1129,6 +1193,60 @@ def simular_campeon_ligapro_endpoint(body: SimularCampeonBody):
         _lock_ligapro.release_read()
 
 
+@app.post("/api/simular-dimayor")
+def simular_dimayor_endpoint(body: SimularDimayorBody = SimularDimayorBody()):
+    """Corre la simulación completa de Liga BetPlay Dimayor (Colombia):
+    Torneo Clausura (todos contra todos, 19 fechas, sin arrastre de
+    puntos desde el Apertura -- esa página no simula el Apertura, ya
+    terminado) seguido de los Cuadrangulares (Grupo A: 1-4-5-8, Grupo
+    B: 2-3-6-7 de la fase regular) y la Final ida y vuelta con
+    definición por penales si hace falta, + Monte Carlo. Devuelve el
+    resultado directo, incluyendo la tabla final del Torneo Apertura
+    como dato informativo (no simulado)."""
+    n_sims = _clamp_n_sims(body.n_sims)
+
+    ocupado = _adquirir_lectura(
+        _lock_dimayor,
+        "Hay una actualización de Dimayor en curso. Esperá unos segundos y probá de nuevo.",
+    )
+    if ocupado:
+        return ocupado
+    try:
+        datos = pysim_dispatch.simular_dimayor(n_sims)
+        return datos
+    except Exception as e:
+        return _error_response(e)
+    finally:
+        _lock_dimayor.release_read()
+
+
+@app.post("/api/simular-campeon-dimayor")
+def simular_campeon_dimayor_endpoint(body: SimularCampeonBody):
+    """Corre simular_hasta_campeon_dimayor() del equipo pedido (Clausura
+    + Cuadrangulares + Final completos cada intento, hasta que salga
+    campeón) y devuelve esa temporada completa."""
+    equipo_objetivo = body.equipo.strip()
+    if not equipo_objetivo:
+        return JSONResponse(status_code=400, content={"error": "Falta indicar el equipo"})
+
+    max_intentos = _clamp_max_intentos(body.max_intentos)
+
+    ocupado = _adquirir_lectura(
+        _lock_dimayor,
+        "Hay una actualización de Dimayor en curso. Esperá unos segundos y probá de nuevo.",
+    )
+    if ocupado:
+        return ocupado
+    try:
+        return pysim_dispatch.simular_campeon_dimayor(equipo_objetivo, max_intentos)
+    except ValueError as e:
+        return JSONResponse(status_code=400, content={"error": str(e)})
+    except Exception as e:
+        return _error_response(e)
+    finally:
+        _lock_dimayor.release_read()
+
+
 @app.post("/api/actualizar-primerac")
 def actualizar_primerac_endpoint(body: SimularPrimeraCBody = SimularPrimeraCBody()):
     """Scrapea Promiedos (Primera C) y, si hay partidos nuevos, actualiza
@@ -1192,6 +1310,30 @@ def actualizar_ligapro_endpoint(body: SimularLigaProBody = SimularLigaProBody())
         return _error_response(e)
     finally:
         _lock_ligapro.release_write()
+
+
+@app.post("/api/actualizar-dimayor")
+def actualizar_dimayor_endpoint(body: SimularDimayorBody = SimularDimayorBody()):
+    """Scrapea Promiedos (Liga BetPlay, id "gca") y, si hay partidos
+    nuevos del Torneo Clausura, actualiza fixture/resultados/tabla y
+    re-simula. La tabla final del Torneo Apertura se re-consulta en
+    cada simulación (ver main_dimayor.py), no hace falta actualizarla
+    acá aparte."""
+    n_sims = _clamp_n_sims(body.n_sims)
+
+    ocupado = _adquirir_escritura(
+        _lock_dimayor,
+        "Hay simulaciones o una actualización de Dimayor en curso. Esperá unos segundos y probá de nuevo.",
+    )
+    if ocupado:
+        return ocupado
+    try:
+        resultado = actualizar_dimayor(n_sims=n_sims, correr_simulacion_fn=correr_simulacion_dimayor, imprimir=False)
+        return resultado
+    except Exception as e:
+        return _error_response(e)
+    finally:
+        _lock_dimayor.release_write()
 
 
 @app.post("/api/simular-campeon-primerac")
