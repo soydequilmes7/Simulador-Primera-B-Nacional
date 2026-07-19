@@ -426,7 +426,17 @@ function carreraObtenerOfertasPrestamo(nombreClubActual, nivelJugador, cantidad)
   if (nivelJugador < CARRERA_UMBRAL_OFERTA_EXTERIOR) {
     candidatos = candidatos.filter(c => c.iso2 === "AR");
   }
-  candidatos.forEach(c => { c._dist = Math.abs(c.nivel - nivelJugador) + Math.random() * 10; });
+  // La distancia castiga más un paso PARA ABAJO que uno para arriba: así
+  // la progresión se siente más como una carrera ascendente (con algún
+  // salto ambicioso posible) en vez de quedar siempre pegada al nivel
+  // exacto actual. Un club bastante más grande igual puede aparecer si
+  // hay suerte en el ruido; uno bastante más chico casi no compite salvo
+  // que no haya opciones mejores en el pool.
+  candidatos.forEach(c => {
+    const diff = c.nivel - nivelJugador;
+    const distanciaBase = diff >= 0 ? diff * 0.75 : Math.abs(diff) * 1.3;
+    c._dist = distanciaBase + Math.random() * 10;
+  });
   candidatos.sort((a, b) => a._dist - b._dist);
   const acotado = candidatos.slice(0, Math.min(n * 4, candidatos.length));
   for (let i = acotado.length - 1; i > 0; i--) {
@@ -434,6 +444,16 @@ function carreraObtenerOfertasPrestamo(nombreClubActual, nivelJugador, cantidad)
     [acotado[i], acotado[j]] = [acotado[j], acotado[i]];
   }
   return acotado.slice(0, n);
+}
+
+// Etiqueta de "salto de nivel" para mostrar en la tarjeta de oferta: le
+// da al jugador una lectura rápida de si la oferta es una mejora, un
+// paso lateral o un paso atrás respecto de su nivel actual.
+function carreraClaseSalto(nivelClub, nivelJugador){
+  const diff = nivelClub - nivelJugador;
+  if (diff >= 8) return { texto: "↑ Salto de nivel", clase: "salto-arriba" };
+  if (diff <= -8) return { texto: "↓ Nivel más bajo", clase: "salto-abajo" };
+  return { texto: "= Nivel similar", clase: "salto-igual" };
 }
 
 // Posiciones de cancha: código, etiqueta y ubicación porcentual (top/left)

@@ -5303,29 +5303,24 @@ body.liga-carrera{
   text-transform:uppercase; letter-spacing:.03em;
 }
 .carrera-decision-liga .carrera-logo-liga{ width:14px; height:14px; object-fit:contain; }
+.carrera-decision-salto{
+  font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:.03em;
+  border-radius:999px; padding:2px 8px; margin-top:4px;
+}
+.carrera-decision-salto.salto-arriba{ background:rgba(159,224,176,.16); border:1px solid rgba(159,224,176,.4); color:#9FE0B0; }
+.carrera-decision-salto.salto-igual{ background:rgba(255,255,255,.06); border:1px solid var(--glass-border); color:var(--muted); }
+.carrera-decision-salto.salto-abajo{ background:rgba(240,140,122,.14); border:1px solid rgba(240,140,122,.35); color:#F08C7A; }
 
-/* Ascenso/descenso real de división, marcado en la fila de la temporada
-   en la que pasó. */
-.carrera-badge-ascenso, .carrera-badge-descenso{
-  font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:.04em;
-  border-radius:999px; padding:2px 7px; white-space:nowrap; margin-left:4px; flex-shrink:0;
+/* Eventos del período (ascenso/descenso, lesión, convocatoria): íconos
+   chicos con tooltip nativo (title) en vez de badges de texto completo,
+   para que la fila se mantenga en una sola línea. */
+.carrera-fila-icono{
+  font-size:11px; margin-left:3px; cursor:default; flex-shrink:0;
   animation: carreraCardIn .4s ease both;
 }
-.carrera-badge-ascenso{ background:rgba(159,224,176,.16); border:1px solid rgba(159,224,176,.4); color:#9FE0B0; }
-.carrera-badge-descenso{ background:rgba(240,140,122,.16); border:1px solid rgba(240,140,122,.4); color:#F08C7A; }
-.carrera-badge-lesion{
-  font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:.04em;
-  border-radius:999px; padding:2px 7px; white-space:nowrap; margin-left:4px; flex-shrink:0;
-  background:rgba(224,169,79,.14); border:1px solid rgba(224,169,79,.35); color:#E0A94F;
-  animation: carreraCardIn .4s ease both;
-}
-.carrera-badge-seleccion{
-  font-size:9.5px; font-weight:700; letter-spacing:.02em; display:inline-flex; align-items:center; gap:4px;
-  border-radius:999px; padding:2px 7px; white-space:nowrap; margin-left:4px; flex-shrink:0;
-  background:rgba(79,140,255,.14); border:1px solid rgba(79,140,255,.35); color:var(--accent);
-  animation: carreraCardIn .4s ease both;
-}
-.carrera-badge-seleccion .carrera-bandera-img{ width:12px; height:8px; }
+.carrera-fila-icono--ascenso{ color:#9FE0B0; }
+.carrera-fila-icono--descenso{ color:#F08C7A; }
+.carrera-fila-icono--lesion, .carrera-fila-icono--seleccion{ filter:grayscale(0); }
 
 .carrera-seleccion{
   margin:0 0 18px; padding:12px 14px; border-radius:14px;
@@ -5375,12 +5370,9 @@ body.liga-carrera{
    selección) abajo en su propia fila -- así no compiten por el mismo
    espacio horizontal que el nombre ni se superponen con la columna de
    OVR cuando hay varios badges juntos. */
-.carrera-fila-club{ display:flex; flex-direction:column; gap:3px; min-width:0; color:var(--ink); font-weight:600; font-size:13.5px; }
-.carrera-fila-club-nombre{ display:flex; align-items:center; gap:8px; min-width:0; }
-.carrera-fila-club-nombre span{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0; }
-.carrera-fila-badges{ display:flex; flex-wrap:wrap; gap:4px; }
+.carrera-fila-club{ display:flex; align-items:center; gap:8px; min-width:0; color:var(--ink); font-weight:600; font-size:13.5px; }
+.carrera-fila-club span{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0; }
 .carrera-fila-escudo{ width:22px; height:22px; object-fit:contain; flex-shrink:0; }
-.carrera-fila-club .carrera-logo-liga{ width:15px; height:15px; object-fit:contain; flex-shrink:0; opacity:.85; }
 .carrera-fila-ovr{
   justify-self:start; background:rgba(232,196,104,.14); border:1px solid rgba(232,196,104,.35); color:var(--gold);
   font-family:'Oswald', sans-serif; font-weight:700; font-size:12.5px; border-radius:8px; padding:3px 9px;

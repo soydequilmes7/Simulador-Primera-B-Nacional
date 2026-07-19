@@ -215,7 +215,7 @@ function carreraAplicarAscensoDescenso(club, resultadoClub){
 // Probabilidad de lesión por período (2 años) y su severidad. Una lesión
 // leve casi no se nota; una grave te come casi todo el período y además
 // atrasa el desarrollo (penalizacionCrecimiento), no solo los partidos.
-const CARRERA_PROB_LESION = 0.16;
+const CARRERA_PROB_LESION = 0.07;
 function carreraTirarLesion(){
   if (Math.random() >= CARRERA_PROB_LESION) return null;
   const roll = Math.random();
@@ -285,9 +285,6 @@ function carreraSimularTemporada(){
   const goles = Math.max(0, Math.round(partidos * factorGol * (j.atributos.ataque / 60) * ruidoGol()));
   const asistencias = Math.max(0, Math.round(partidos * factorAsist * (j.atributos.ataque / 60) * ruidoGol()));
 
-  let valoracion = 5 + (j.atributos.general / 99) * 4 + (Math.random() * 0.8 - 0.3);
-  valoracion = Math.round(Math.max(1, Math.min(10, valoracion)) * 10) / 10;
-
   // Selección nacional: a partir de cierto nivel general empieza a haber
   // chance de convocatoria, creciente con el nivel. Las presencias/goles
   // de ese período se acumulan aparte de las del club (no las reemplazan).
@@ -350,6 +347,29 @@ function carreraSimularTemporada(){
     generalDespues = Math.max(piso, generalAntes - declive);
   }
   j.atributos.general = generalDespues;
+
+  // Nota de la temporada: a diferencia de antes (que solo miraba el nivel
+  // general del jugador, sin importar si jugó o no), ahora se arma con lo
+  // que realmente pasó ese período -- minutos, producción respecto de lo
+  // esperado para su posición, cómo le fue al equipo, y si progresó o
+  // retrocedió. Un banco de suplentes en un club campeón no saca la misma
+  // nota que un titular indiscutido, aunque los dos tengan el mismo OVR.
+  let valoracion = 5.0;
+  valoracion += (partidos / PARTIDOS_TEMPORADA) * 1.3; // presencia en cancha
+  const produccionEsperada = partidos * (factorGol + factorAsist * 0.6) * (j.atributos.ataque / 60);
+  const produccionReal = goles + asistencias * 0.6;
+  if (produccionEsperada > 0.5) {
+    valoracion += Math.max(-1, Math.min(2, (produccionReal / produccionEsperada - 1) * 1.5));
+  }
+  const bonoEquipo = {
+    "Campeón": 1.0, "Clasificó a copas internacionales": 0.5,
+    "Mitad de tabla": 0, "Peleó el descenso": -0.4, "Descendió": -0.8,
+  }[resultadoClub] || 0;
+  valoracion += bonoEquipo;
+  valoracion += Math.max(-0.6, Math.min(0.6, (generalDespues - generalAntes) * 0.08)); // progresión personal
+  valoracion += Math.random() * 0.6 - 0.3; // variación de partido a partido
+  valoracion = Math.round(Math.max(1, Math.min(10, valoracion)) * 10) / 10;
+
   j.edad = edadDeLaTemporada + CARRERA_PASO_EDAD;
   CARRERA_STATE.temporada += 1;
 
@@ -505,12 +525,15 @@ function carreraMostrarDashboard(){
         ${CARRERA_STATE.decision.opciones.map((op, i) => {
           const ultimaImpar = i === CARRERA_STATE.decision.opciones.length - 1 && CARRERA_STATE.decision.opciones.length % 2 === 1;
           const tipo = op.id === "seguir" || op.id === "volver" ? "Quedarte en" : op.id === "extender" ? "Extender en" : op.id === "definitiva" ? "Ficha fija con" : op.id.startsWith("prueba") ? "Prueba en" : op.id.startsWith("prestamo") ? "Préstamo en" : "Fichar por";
+          const esClubNuevo = op.id.startsWith("fichaje") || op.id.startsWith("prestamo") || op.id.startsWith("prueba");
+          const salto = esClubNuevo ? carreraClaseSalto(op.club.nivel, j.atributos.general) : null;
           return `
           <button type="button" class="carrera-decision-card${ultimaImpar ? " carrera-decision-card--centrada" : ""}" data-id="${op.id}" style="animation-delay:${i * 60}ms">
             <span class="carrera-decision-tipo">${tipo}</span>
             <strong>${op.club.nombre}</strong>
             <img class="carrera-decision-escudo" src="escudos/${op.club.escudo}" alt="" onerror="this.style.visibility='hidden'">
             <span class="carrera-decision-liga">${carreraLogoLigaHTML(op.club.liga)}${op.club.liga}</span>
+            ${salto ? `<span class="carrera-decision-salto ${salto.clase}">${salto.texto}</span>` : ""}
           </button>`;
         }).join("")}
       </div>
@@ -603,21 +626,22 @@ function carreraTablaEdadesHTML(){
   for (let edad = CARRERA_EDAD_INICIAL; edad < CARRERA_EDAD_RETIRO; edad += CARRERA_PASO_EDAD) {
     const h = porEdad.get(edad);
     if (h) {
-      const badgeDivision = h.cambioDivision === "ascenso" ? `<span class="carrera-badge-ascenso">▲ Ascenso</span>`
-        : h.cambioDivision === "descenso" ? `<span class="carrera-badge-descenso">▼ Descenso</span>` : "";
-      const badgeLesion = h.lesion ? `<span class="carrera-badge-lesion" title="${h.partidos} PJ por la lesión">🩹 Lesión (${h.lesion.tipo})</span>` : "";
-      const badgeSeleccion = h.convocatoria ? `<span class="carrera-badge-seleccion">${carreraBandera(j.pais.iso2)} +${h.convocatoria.presencias}</span>` : "";
-      const badges = badgeDivision + badgeLesion + badgeSeleccion;
+      // Los eventos del período (ascenso/descenso, lesión, convocatoria)
+      // se muestran como un ícono chico con tooltip en vez de badges de
+      // texto completo -- así la fila queda de una sola línea, sin pisar
+      // el nombre del club ni desbordar en pantallas angostas.
+      let iconos = "";
+      if (h.cambioDivision === "ascenso") iconos += `<span class="carrera-fila-icono carrera-fila-icono--ascenso" title="Ascenso de división">▲</span>`;
+      else if (h.cambioDivision === "descenso") iconos += `<span class="carrera-fila-icono carrera-fila-icono--descenso" title="Descenso de división">▼</span>`;
+      if (h.lesion) iconos += `<span class="carrera-fila-icono carrera-fila-icono--lesion" title="Lesión ${h.lesion.tipo}: ${h.partidos} PJ jugados">🩹</span>`;
+      if (h.convocatoria) iconos += `<span class="carrera-fila-icono carrera-fila-icono--seleccion" title="Convocado a la selección: +${h.convocatoria.presencias} presencias">🌐</span>`;
       filas.push(`
-        <div class="carrera-fila carrera-fila-jugada ${carreraClaseResultado(h.resultadoClub)}" style="animation-delay:${Math.min(filas.length, 10) * 40}ms">
+        <div class="carrera-fila carrera-fila-jugada ${carreraClaseResultado(h.resultadoClub)}" style="animation-delay:${Math.min(filas.length, 10) * 40}ms" title="${h.club} — ${h.liga} — ${h.resultadoClub}">
           <div class="carrera-fila-edad">${h.edad}</div>
           <div class="carrera-fila-club">
-            <div class="carrera-fila-club-nombre">
-              <img class="carrera-fila-escudo" src="escudos/${h.escudo}" alt="" onerror="this.style.visibility='hidden'">
-              ${carreraLogoLigaHTML(h.liga)}
-              <span title="${h.club}">${h.club}</span>
-            </div>
-            ${badges ? `<div class="carrera-fila-badges">${badges}</div>` : ""}
+            <img class="carrera-fila-escudo" src="escudos/${h.escudo}" alt="" onerror="this.style.visibility='hidden'">
+            <span>${h.club}</span>
+            ${iconos}
           </div>
           <div class="carrera-fila-ovr ${carreraClaseOVR(h.generalDespues)}">${h.generalDespues}</div>
           <div class="carrera-fila-num">${h.partidos}</div>
