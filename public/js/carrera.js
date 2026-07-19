@@ -111,14 +111,24 @@ function carreraMostrarOferta(){
 function carreraRenderOferta(){
   const cont = document.getElementById("carrera-oferta-grid");
   cont.innerHTML = CARRERA_STATE.ofertas.map((club, i) => `
-    <div class="carrera-oferta-card">
+    <div class="carrera-oferta-card" style="animation-delay:${i * 70}ms">
       <img class="carrera-oferta-escudo" src="escudos/${club.escudo}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">
       <h3>${club.nombre}</h3>
       <p class="carrera-oferta-liga">${club.liga}</p>
       <button type="button" class="btn-carrera-primary carrera-oferta-btn" data-i="${i}">Fichar</button>
     </div>`).join("");
   cont.querySelectorAll(".carrera-oferta-btn").forEach(btn => {
-    btn.addEventListener("click", () => carreraElegirClub(CARRERA_STATE.ofertas[+btn.dataset.i]));
+    btn.addEventListener("click", () => {
+      const club = CARRERA_STATE.ofertas[+btn.dataset.i];
+      const tarjeta = btn.closest(".carrera-oferta-card");
+      // Feedback visual antes de saltar al dashboard: la tarjeta elegida
+      // se agranda/ilumina y las demás se apagan, para que el fichaje se
+      // sienta como una decisión en vez de un salto de pantalla seco.
+      cont.querySelectorAll(".carrera-oferta-card").forEach(c => c.classList.add("carrera-oferta-card--descartada"));
+      tarjeta.classList.remove("carrera-oferta-card--descartada");
+      tarjeta.classList.add("carrera-oferta-card--elegida");
+      setTimeout(() => carreraElegirClub(club), 420);
+    });
   });
 }
 
@@ -130,6 +140,11 @@ const CARRERA_EDAD_INICIAL = 16;
 const CARRERA_EDAD_RETIRO = 40;
 
 function carreraElegirClub(club){
+  // Copia propia del club: a partir de acá el club puede ascender/descender
+  // (ver carreraAplicarAscensoDescenso) sin tocar el objeto original del
+  // pool en CARRERA_CLUBES/CARRERA_STATE.ofertas, que debe quedar intacto
+  // para que otras carreras futuras arranquen siempre igual.
+  club = { ...club };
   CARRERA_STATE.jugador.club = club;
   CARRERA_STATE.jugador.clubDueño = club;
   CARRERA_STATE.jugador.enPrestamo = false;
@@ -145,6 +160,39 @@ function carreraElegirClub(club){
   CARRERA_STATE.decision = null;
   CARRERA_STATE.retirado = false;
   carreraMostrarDashboard();
+}
+
+// Ascenso/descenso real del club del jugador dentro de la pirámide
+// argentina (Primera C/B Metropolitana -> Primera Nacional -> Liga
+// Profesional). Hasta acá "Campeón"/"Descendió" eran solo texto narrativo:
+// el club nunca cambiaba de división de verdad, por eso nunca se sentía
+// un ascenso o un descenso real en la carrera. Se aplica sobre el objeto
+// club del jugador (ya copiado aparte del pool, ver carreraElegirClub) y
+// solo corre para clubes argentinos, que son los únicos con 3 escalones
+// modelados -- los clubes del exterior no tienen ese dato y quedan igual.
+const CARRERA_DIVISION_TIER = {
+  "Primera C": 1, "B Metropolitana": 1,
+  "Primera Nacional": 2,
+  "Liga Profesional": 3,
+};
+const CARRERA_SIGUIENTE_LIGA = { 1: "Primera Nacional", 2: "Liga Profesional" };
+
+function carreraAplicarAscensoDescenso(club, resultadoClub){
+  const tier = CARRERA_DIVISION_TIER[club.liga];
+  if (!tier) return null; // club del exterior, sin pirámide modelada
+  if (resultadoClub === "Campeón" && tier < 3) {
+    const ligaNueva = CARRERA_SIGUIENTE_LIGA[tier];
+    club.nivel = tier === 1 ? Math.max(club.nivel + 14, 52) : Math.max(club.nivel + 16, 62);
+    club.liga = ligaNueva;
+    return "ascenso";
+  }
+  if (resultadoClub === "Descendió" && tier > 1) {
+    const ligaNueva = tier === 3 ? "Primera Nacional" : "Primera C";
+    club.nivel = tier === 3 ? Math.min(club.nivel - 16, 58) : Math.min(club.nivel - 14, 46);
+    club.liga = ligaNueva;
+    return "descenso";
+  }
+  return null;
 }
 
 /* ---------- Motor de temporada (resumen directo, simulación aparte) ---------- */
@@ -181,6 +229,7 @@ function carreraSimularTemporada(){
   valoracion = Math.round(Math.max(1, Math.min(10, valoracion)) * 10) / 10;
 
   // Resultado del club (simulación aparte, sin fixture real).
+  const ligaDeLaTemporada = club.liga;
   const rollClub = (club.nivel || 45) + (Math.random() * 30 - 15);
   let resultadoClub;
   if (rollClub >= 80) resultadoClub = "Campeón";
@@ -188,6 +237,11 @@ function carreraSimularTemporada(){
   else if (rollClub >= 45) resultadoClub = "Mitad de tabla";
   else if (rollClub >= 30) resultadoClub = "Peleó el descenso";
   else resultadoClub = "Descendió";
+
+  // Ascenso/descenso real de división (solo clubes argentinos, ver arriba).
+  // Se aplica DESPUÉS de tirar el resultado de esta temporada -- el nivel
+  // nuevo del club rige recién a partir de la próxima, no retroactivo.
+  const cambioDivision = carreraAplicarAscensoDescenso(club, resultadoClub);
 
   // Progresión: antes del pico (edadPico, 30-32) crece si juega y todavía no
   // llegó al potencial. Desde el pico en adelante, declina en vez de crecer;
@@ -201,8 +255,13 @@ function carreraSimularTemporada(){
   if (edadDeLaTemporada < j.edadPico) {
     let crecimiento;
     if (partidos >= 36) crecimiento = Math.round(Math.random() * 6) + 2;
-    else if (partidos >= 16) crecimiento = Math.round(Math.random() * 4);
-    else crecimiento = Math.round(Math.random() * 3) - 2;
+    else if (partidos >= 16) crecimiento = Math.round(Math.random() * 4) + 1;
+    // Con pocos minutos igual entrena y crece un poco si es joven -- antes
+    // esta rama podía dar crecimiento negativo, y como un juvenil recién
+    // llegado a un club de nivel más alto casi no juega al principio
+    // (ver "chance" arriba), la carrera quedaba prácticamente trabada sin
+    // crecer nunca. Con muy pocos minutos y ya mayor sí puede estancarse.
+    else crecimiento = edadDeLaTemporada <= 22 ? Math.round(Math.random() * 3) : Math.round(Math.random() * 2) - 1;
     generalDespues = Math.max(1, Math.min(j.atributos.potencial, generalAntes + crecimiento));
     j.picoGeneral = Math.max(j.picoGeneral, generalDespues);
   } else {
@@ -218,7 +277,7 @@ function carreraSimularTemporada(){
 
   CARRERA_STATE.historial.unshift({
     temporada: CARRERA_STATE.temporada, edad: edadDeLaTemporada, club: club.nombre,
-    escudo: club.escudo, liga: club.liga, resultadoClub, partidos, goles, asistencias,
+    escudo: club.escudo, liga: ligaDeLaTemporada, cambioDivision, resultadoClub, partidos, goles, asistencias,
     valoracion, generalAntes, generalDespues
   });
 
@@ -285,9 +344,12 @@ function carreraResolverDecision(id){
   const op = dec.opciones.find(o => o.id === id);
   if (!op) return;
   const j = CARRERA_STATE.jugador;
-  j.club = op.club;
+  // "volver"/"extender"/"definitiva" reusan el club en el que ya está (con
+  // sus ascensos/descensos ya aplicados) tal cual; el resto son clubes
+  // nuevos del pool -- se copian para no mutar el pool compartido.
+  j.club = (op.id === "volver" || op.id === "extender" || op.id === "definitiva") ? op.club : { ...op.club };
   j.enPrestamo = !!op.prestamo;
-  if (op.dueñoNuevo) j.clubDueño = op.club;
+  if (op.dueñoNuevo) j.clubDueño = j.club;
   CARRERA_STATE.decision = null;
   carreraMostrarDashboard();
 }
@@ -386,13 +448,31 @@ function carreraMostrarDashboard(){
   if (btnTemporada) btnTemporada.addEventListener("click", carreraSimularTemporada);
 
   dash.querySelectorAll(".carrera-decision-card").forEach(btn => {
-    btn.addEventListener("click", () => carreraResolverDecision(btn.dataset.id));
+    btn.addEventListener("click", () => {
+      const id = btn.dataset.id;
+      dash.querySelectorAll(".carrera-decision-card").forEach(c => c.classList.add("carrera-decision-card--descartada"));
+      btn.classList.remove("carrera-decision-card--descartada");
+      btn.classList.add("carrera-decision-card--elegida");
+      setTimeout(() => carreraResolverDecision(id), 380);
+    });
   });
 
   const btnNuevaCarrera = document.getElementById("btn-carrera-nueva");
   if (btnNuevaCarrera) btnNuevaCarrera.addEventListener("click", carreraReiniciarEstado);
 
   document.getElementById("btn-carrera-editar").addEventListener("click", carreraReiniciarEstado);
+
+  // Reengancha la animación de entrada de la tarjeta en cada temporada
+  // jugada -- por default una animación CSS solo corre la primera vez que
+  // el elemento aparece, así que sin este truco (forzar un reflow entre
+  // sacar y volver a poner la clase) el dashboard se sentía "estático"
+  // después del primer render, aunque el contenido cambiara.
+  const tarjeta = dash.querySelector(".carrera-tarjeta");
+  if (tarjeta) {
+    tarjeta.style.animation = "none";
+    void tarjeta.offsetWidth;
+    tarjeta.style.animation = "";
+  }
 }
 
 // Arma la tabla de la derecha: una fila por cada bienio posible entre los
@@ -408,6 +488,8 @@ function carreraTablaEdadesHTML(){
   for (let edad = CARRERA_EDAD_INICIAL; edad < CARRERA_EDAD_RETIRO; edad += CARRERA_PASO_EDAD) {
     const h = porEdad.get(edad);
     if (h) {
+      const badgeDivision = h.cambioDivision === "ascenso" ? `<span class="carrera-badge-ascenso">▲ Ascenso</span>`
+        : h.cambioDivision === "descenso" ? `<span class="carrera-badge-descenso">▼ Descenso</span>` : "";
       filas.push(`
         <div class="carrera-fila carrera-fila-jugada ${carreraClaseResultado(h.resultadoClub)}" style="animation-delay:${Math.min(filas.length, 10) * 40}ms">
           <div class="carrera-fila-edad">${h.edad}</div>
@@ -415,6 +497,7 @@ function carreraTablaEdadesHTML(){
             <img class="carrera-fila-escudo" src="escudos/${h.escudo}" alt="" onerror="this.style.visibility='hidden'">
             ${carreraLogoLigaHTML(h.liga)}
             <span>${h.club}</span>
+            ${badgeDivision}
           </div>
           <div class="carrera-fila-ovr ${carreraClaseOVR(h.generalDespues)}">${h.generalDespues}</div>
           <div class="carrera-fila-num">${h.partidos}</div>

@@ -5183,9 +5183,12 @@ body.liga-carrera{
 .carrera-oferta-card{
   background: var(--glass-bg); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
   border:1px solid var(--glass-border); border-radius:22px; padding:26px 20px; text-align:center;
-  box-shadow: var(--glass-shadow); transition: border-color .2s ease, transform .2s ease;
+  box-shadow: var(--glass-shadow); transition: border-color .2s ease, transform .2s ease, opacity .3s ease;
+  animation: carreraCardIn .35s ease both;
 }
 .carrera-oferta-card:hover{ border-color:var(--glass-border-hover); transform:translateY(-3px); }
+.carrera-oferta-card--elegida{ border-color:var(--gold); box-shadow:0 0 0 3px rgba(232,196,104,.25), var(--glass-shadow); transform:scale(1.04); }
+.carrera-oferta-card--descartada{ opacity:.35; transform:scale(.97); pointer-events:none; }
 .carrera-oferta-escudo{ width:64px; height:64px; object-fit:contain; margin:0 auto 14px; display:block; }
 .carrera-oferta-card h3{ font-family:'Oswald', sans-serif; font-size:17px; color:var(--ink); margin:0 0 4px; }
 .carrera-oferta-liga{ color:var(--muted); font-size:12.5px; margin:0 0 20px; text-transform:uppercase; letter-spacing:.05em; }
@@ -5290,6 +5293,8 @@ body.liga-carrera{
 }
 .carrera-decision-card--centrada{ grid-column:1 / -1; max-width:260px; margin:0 auto; width:100%; }
 .carrera-decision-card:hover{ border-color:var(--accent); background:rgba(79,140,255,.08); transform:translateY(-3px) scale(1.02); }
+.carrera-decision-card--elegida{ border-color:var(--gold); background:rgba(232,196,104,.10); box-shadow:0 0 0 3px rgba(232,196,104,.25); transform:scale(1.04); }
+.carrera-decision-card--descartada{ opacity:.3; transform:scale(.96); pointer-events:none; }
 .carrera-decision-tipo{ color:var(--muted); font-size:10px; text-transform:uppercase; letter-spacing:.05em; }
 .carrera-decision-card strong{ font-family:'Oswald', sans-serif; font-size:13px; }
 .carrera-decision-escudo{ width:38px; height:38px; object-fit:contain; margin:4px 0; }
@@ -5298,6 +5303,16 @@ body.liga-carrera{
   text-transform:uppercase; letter-spacing:.03em;
 }
 .carrera-decision-liga .carrera-logo-liga{ width:14px; height:14px; object-fit:contain; }
+
+/* Ascenso/descenso real de división, marcado en la fila de la temporada
+   en la que pasó. */
+.carrera-badge-ascenso, .carrera-badge-descenso{
+  font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:.04em;
+  border-radius:999px; padding:2px 7px; white-space:nowrap; margin-left:4px; flex-shrink:0;
+  animation: carreraCardIn .4s ease both;
+}
+.carrera-badge-ascenso{ background:rgba(159,224,176,.16); border:1px solid rgba(159,224,176,.4); color:#9FE0B0; }
+.carrera-badge-descenso{ background:rgba(240,140,122,.16); border:1px solid rgba(240,140,122,.4); color:#F08C7A; }
 
 /* ---- Retiro ---- */
 .carrera-retiro{ text-align:center; border-top:none; padding-top:0; }
