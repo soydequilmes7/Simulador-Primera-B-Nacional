@@ -5294,11 +5294,20 @@ body.liga-carrera{
   border:1px solid var(--glass-border); border-radius:22px; padding:22px; box-shadow: var(--glass-shadow);
 }
 .carrera-timeline h3{ font-family:'Oswald', sans-serif; font-size:15px; color:var(--ink); margin:0 0 14px; }
+@keyframes carreraTimelineIn{ from{ opacity:0; transform:translateX(-8px); } to{ opacity:1; transform:none; } }
 .carrera-timeline-item{
-  display:grid; grid-template-columns:44px 1.3fr 1.3fr 0.6fr 40px; gap:12px; align-items:center;
-  background:rgba(255,255,255,.03); border:1px solid var(--glass-border); border-radius:14px; padding:11px 14px; margin-bottom:8px;
-  font-size:12.5px; color:var(--ink-dim);
+  display:grid; grid-template-columns:32px 44px 1.3fr 1.3fr 0.6fr 40px; gap:12px; align-items:center;
+  background:rgba(255,255,255,.03); border:1px solid var(--glass-border); border-left:3px solid transparent;
+  border-radius:14px; padding:11px 14px; margin-bottom:8px; font-size:12.5px; color:var(--ink-dim);
+  animation: carreraTimelineIn .3s ease both;
 }
+.carrera-timeline-escudo{ width:26px; height:26px; object-fit:contain; justify-self:center; }
+/* Color por resultado de la temporada: da lectura rápida de cómo le fue al
+   club sin tener que leer el texto de cada fila. */
+.carrera-timeline-item.resultado-campeon{ border-left-color:var(--gold); background:rgba(232,196,104,.06); }
+.carrera-timeline-item.resultado-copas{ border-left-color:var(--accent); }
+.carrera-timeline-item.resultado-pelea{ border-left-color:#E0A94F; }
+.carrera-timeline-item.resultado-descenso{ border-left-color:#E0604F; background:rgba(224,96,79,.06); }
 .carrera-timeline-edad{
   text-align:center; font-family:'Oswald', sans-serif; font-size:17px; color:var(--ink); line-height:1;
 }
@@ -5316,6 +5325,11 @@ body.liga-carrera{
 .carrera-timeline-ovr.ovr-bajo{ background:linear-gradient(155deg, #cfd6e3, #8993A8); color:#12161f; }
 .carrera-timeline-ovr.ovr-juvenil{ background:rgba(255,255,255,.10); color:var(--ink-dim); }
 
+/* ---- Retiro ---- */
+.carrera-retiro{ text-align:center; }
+.carrera-retiro h3{ font-size:20px; margin-bottom:10px; }
+.carrera-retiro .carrera-oferta-sub{ margin:0 0 18px; }
+
 @media (max-width:760px){
   .carrera-hero{ grid-template-columns:1fr; }
   .carrera-hero-img{ height:180px; }
@@ -5325,7 +5339,7 @@ body.liga-carrera{
   .carrera-historial-rating, .carrera-historial-general{ text-align:left; }
   .carrera-dash-grid{ grid-template-columns:1fr; }
   .carrera-decision-grid{ grid-template-columns:1fr; }
-  .carrera-timeline-item{ grid-template-columns:36px 1fr 1fr; grid-template-areas:"edad club club" "stats stats rating"; }
+  .carrera-timeline-item{ grid-template-columns:24px 32px 1fr 1fr; }
 }
 </style>
 </head>

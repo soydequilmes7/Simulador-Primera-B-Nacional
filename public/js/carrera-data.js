@@ -93,6 +93,69 @@ const CARRERA_CLUBES = {
     { nombre:"UAI Urquiza", escudo:"uaiurquiza.png", liga:"B Metropolitana", nivel:48 },
     { nombre:"Villa Dálmine", escudo:"villadalmine.png", liga:"B Metropolitana", nivel:48 },
     { nombre:"Villa San Carlos", escudo:"villasancarlos.png", liga:"B Metropolitana", nivel:39 },
+    // Primera Nacional (segunda división argentina) — escalón intermedio entre
+    // el ascenso (Primera C / B Metropolitana) y la Liga Profesional, para que
+    // la carrera pueda subir de división en división en vez de saltar directo
+    // a Primera. Mismos escudos/slugs que usa el simulador de ligas.
+    { nombre:"Chacarita", escudo:"chacarita.png", liga:"Primera Nacional", nivel:58 },
+    { nombre:"Quilmes", escudo:"quilmes.png", liga:"Primera Nacional", nivel:60 },
+    { nombre:"Almagro", escudo:"almagro.png", liga:"Primera Nacional", nivel:56 },
+    { nombre:"Atlanta", escudo:"atlanta.png", liga:"Primera Nacional", nivel:54 },
+    { nombre:"Chicago", escudo:"nueva_chicago.png", liga:"Primera Nacional", nivel:55 },
+    { nombre:"Colón", escudo:"colon.png", liga:"Primera Nacional", nivel:64 },
+    { nombre:"Agropecuario", escudo:"agropecuario.png", liga:"Primera Nacional", nivel:47 },
+    { nombre:"All Boys", escudo:"allboys.png", liga:"Primera Nacional", nivel:48 },
+    { nombre:"Alte. Brown", escudo:"almirante.png", liga:"Primera Nacional", nivel:50 },
+    { nombre:"Atlético Rafaela", escudo:"atleticorafaela.png", liga:"Primera Nacional", nivel:58 },
+    { nombre:"Estudiantes (Caseros)", escudo:"estudiantes_caseros.png", liga:"Primera Nacional", nivel:46 },
+    { nombre:"Ferro", escudo:"ferro.png", liga:"Primera Nacional", nivel:55 },
+    { nombre:"Gimnasia (J)", escudo:"gimnasiajujuy.png", liga:"Primera Nacional", nivel:48 },
+    { nombre:"Gimnasia y Tiro", escudo:"gimnasia_y_tiro.png", liga:"Primera Nacional", nivel:47 },
+    { nombre:"Godoy Cruz", escudo:"godoycruz.png", liga:"Primera Nacional", nivel:63 },
+    { nombre:"Güemes", escudo:"guemes.png", liga:"Primera Nacional", nivel:50 },
+    { nombre:"Los Andes", escudo:"los_andes.png", liga:"Primera Nacional", nivel:44 },
+    { nombre:"Maipú", escudo:"depmaipu.png", liga:"Primera Nacional", nivel:60 },
+    { nombre:"Midland", escudo:"midland.png", liga:"Primera Nacional", nivel:42 },
+    { nombre:"Morón", escudo:"moron.png", liga:"Primera Nacional", nivel:52 },
+    { nombre:"Patronato", escudo:"patronato.png", liga:"Primera Nacional", nivel:58 },
+    { nombre:"San Martín (SJ)", escudo:"sanmartinsj.png", liga:"Primera Nacional", nivel:50 },
+    { nombre:"San Martín (T)", escudo:"sanmartintuc.png", liga:"Primera Nacional", nivel:52 },
+    { nombre:"San Miguel", escudo:"sanmiguel.png", liga:"Primera Nacional", nivel:46 },
+    { nombre:"San Telmo", escudo:"santelmo.png", liga:"Primera Nacional", nivel:44 },
+    { nombre:"Temperley", escudo:"temperley.png", liga:"Primera Nacional", nivel:50 },
+    { nombre:"Tristán Suárez", escudo:"tristansuarez.png", liga:"Primera Nacional", nivel:45 },
+    // Liga Profesional (primera división argentina) — techo de la carrera
+    // dentro del fútbol local, antes de que empiecen a llegar ofertas del
+    // exterior (ver UMBRAL_OFERTA_EXTERIOR en carreraObtenerOfertasPrestamo).
+    { nombre:"River Plate", escudo:"river.png", liga:"Liga Profesional", nivel:92 },
+    { nombre:"Boca Juniors", escudo:"boca.png", liga:"Liga Profesional", nivel:90 },
+    { nombre:"Racing Club", escudo:"racing.png", liga:"Liga Profesional", nivel:82 },
+    { nombre:"Talleres de Córdoba", escudo:"talleres.png", liga:"Liga Profesional", nivel:80 },
+    { nombre:"Vélez Sarsfield", escudo:"velez.png", liga:"Liga Profesional", nivel:79 },
+    { nombre:"Estudiantes de La Plata", escudo:"estudiantes.png", liga:"Liga Profesional", nivel:77 },
+    { nombre:"Independiente", escudo:"independiente.png", liga:"Liga Profesional", nivel:78 },
+    { nombre:"San Lorenzo", escudo:"sanlorenzo.png", liga:"Liga Profesional", nivel:76 },
+    { nombre:"Rosario Central", escudo:"rosariocentral.png", liga:"Liga Profesional", nivel:76 },
+    { nombre:"Argentinos Juniors", escudo:"argentinos.png", liga:"Liga Profesional", nivel:75 },
+    { nombre:"Huracán", escudo:"huracan.png", liga:"Liga Profesional", nivel:74 },
+    { nombre:"Defensa y Justicia", escudo:"defensa.png", liga:"Liga Profesional", nivel:74 },
+    { nombre:"Newell's Old Boys", escudo:"newells.png", liga:"Liga Profesional", nivel:73 },
+    { nombre:"Lanús", escudo:"lanus.png", liga:"Liga Profesional", nivel:72 },
+    { nombre:"Unión de Santa Fe", escudo:"union.png", liga:"Liga Profesional", nivel:70 },
+    { nombre:"Gimnasia La Plata", escudo:"gimnasia.png", liga:"Liga Profesional", nivel:68 },
+    { nombre:"Belgrano", escudo:"belgrano.png", liga:"Liga Profesional", nivel:68 },
+    { nombre:"Central Córdoba (SdE)", escudo:"centralcordoba3.png", liga:"Liga Profesional", nivel:67 },
+    { nombre:"Atlético Tucumán", escudo:"atleticotucuman.png", liga:"Liga Profesional", nivel:66 },
+    { nombre:"Instituto", escudo:"instituto.png", liga:"Liga Profesional", nivel:65 },
+    { nombre:"Tigre", escudo:"tigre.png", liga:"Liga Profesional", nivel:64 },
+    { nombre:"Platense", escudo:"platense.png", liga:"Liga Profesional", nivel:63 },
+    { nombre:"Banfield", escudo:"banfield.png", liga:"Liga Profesional", nivel:63 },
+    { nombre:"Barracas Central", escudo:"barracas.png", liga:"Liga Profesional", nivel:65 },
+    { nombre:"Sarmiento (Junín)", escudo:"sarmiento.png", liga:"Liga Profesional", nivel:62 },
+    { nombre:"Independiente Rivadavia", escudo:"independienteriv.png", liga:"Liga Profesional", nivel:60 },
+    { nombre:"Deportivo Riestra", escudo:"riestra.png", liga:"Liga Profesional", nivel:58 },
+    { nombre:"Estudiantes RC", escudo:"estudiantesrc.png", liga:"Liga Profesional", nivel:55 },
+    { nombre:"Gimnasia de Mendoza", escudo:"gimnasiamendoza.png", liga:"Liga Profesional", nivel:55 },
   ],
   BO: [
     { nombre:"Always Ready", escudo:"alwaysready.png", liga:"Liga boliviana", nivel:54 },
@@ -277,6 +340,17 @@ function carreraFormatoValor(valor){
   return "€" + valor;
 }
 
+// Clase CSS por resultado del club en la temporada, para colorear cada
+// fila de la trayectoria (campeón en dorado, descenso en rojo, etc.) en
+// vez de dejar todas las filas del mismo gris sin distinción visual.
+function carreraClaseResultado(resultado){
+  if (resultado === "Campeón") return "resultado-campeon";
+  if (resultado === "Clasificó a copas internacionales") return "resultado-copas";
+  if (resultado === "Peleó el descenso") return "resultado-pelea";
+  if (resultado === "Descendió") return "resultado-descenso";
+  return "resultado-neutro";
+}
+
 // Clase CSS por rango de OVR, para el color del badge grande de la ficha.
 function carreraClaseOVR(ovr){
   if (ovr >= 80) return "ovr-elite";
@@ -286,27 +360,41 @@ function carreraClaseOVR(ovr){
   return "ovr-juvenil";
 }
 
-// Pool completo de clubes (todas las nacionalidades) aplanado y sin
-// duplicados, con su iso2 de origen. Se usa para armar ofertas de
-// préstamo/transferencia a mitad de carrera, sin importar el país
-// original del jugador.
+// Pool completo de clubes (todas las nacionalidades) aplanado, con su iso2
+// de origen. Se usa para armar ofertas de préstamo/transferencia a mitad de
+// carrera, sin importar el país original del jugador. Dedupea por
+// nombre+país (no solo por nombre) porque hay nombres repetidos entre
+// países -- "Universidad Católica" (Chile/Ecuador), "Nacional"
+// (Paraguay/Uruguay) -- y dedupear solo por nombre hacía desaparecer para
+// siempre a uno de los dos clubes de la lista de ofertas.
 function carreraTodosClubes(){
   const vistos = new Set();
   const out = [];
   Object.entries(CARRERA_CLUBES).forEach(([iso2, lista]) => {
     lista.forEach(c => {
-      if (!vistos.has(c.nombre)) { vistos.add(c.nombre); out.push({ ...c, iso2 }); }
+      const clave = c.nombre + "|" + iso2;
+      if (!vistos.has(clave)) { vistos.add(clave); out.push({ ...c, iso2 }); }
     });
   });
   return out;
 }
 
+// A partir de qué nivel general empieza a "verlo" el scouting del exterior.
+// Por debajo de esto, las ofertas de préstamo/transferencia se limitan a
+// clubes argentinos (así la carrera realmente escala Primera C/B Metro ->
+// Primera Nacional -> Liga Profesional en vez de saltar directo afuera).
+const CARRERA_UMBRAL_OFERTA_EXTERIOR = 58;
+
 // Ofertas de préstamo/transferencia a mitad de carrera: clubes de nivel
-// parecido al del jugador (con algo de ruido para variedad), excluyendo
-// el club en el que ya está.
+// parecido al del jugador (con algo de ruido para variedad), excluyendo el
+// club en el que ya está y, si el nivel todavía no amerita scouting
+// internacional, excluyendo también clubes no argentinos.
 function carreraObtenerOfertasPrestamo(nombreClubActual, nivelJugador, cantidad){
   const n = cantidad || 2;
-  const candidatos = carreraTodosClubes().filter(c => c.nombre !== nombreClubActual);
+  let candidatos = carreraTodosClubes().filter(c => c.nombre !== nombreClubActual);
+  if (nivelJugador < CARRERA_UMBRAL_OFERTA_EXTERIOR) {
+    candidatos = candidatos.filter(c => c.iso2 === "AR");
+  }
   candidatos.forEach(c => { c._dist = Math.abs(c.nivel - nivelJugador) + Math.random() * 10; });
   candidatos.sort((a, b) => a._dist - b._dist);
   const acotado = candidatos.slice(0, Math.min(n * 4, candidatos.length));

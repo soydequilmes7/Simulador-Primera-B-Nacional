@@ -23,7 +23,8 @@ const CARRERA_STATE = {
   temporada: 0,      // temporadas jugadas
   historial: [],     // resumen de cada temporada jugada
   titulos: [],       // { temporada, edad, club, liga } — títulos ganados con el club actual
-  decision: null     // { opciones:[{id,label,club,prestamo,dueñoNuevo}] } pendiente tras simular
+  decision: null,    // { opciones:[{id,label,club,prestamo,dueñoNuevo}] } pendiente tras simular
+  retirado: false    // true cuando el jugador llegó a CARRERA_EDAD_RETIRO
 };
 
 function carreraJugadorCompleto(){
@@ -121,16 +122,28 @@ function carreraRenderOferta(){
   });
 }
 
+// Edad de arranque de la carrera: cantera, recién asomando a un club de
+// ascenso (Primera C / B Metropolitana), todavía sin nada asegurado.
+const CARRERA_EDAD_INICIAL = 16;
+// Edad límite: la temporada jugada a esta edad es la última; después el
+// jugador se retira. No hay forma de "seguir jugando hasta los 100".
+const CARRERA_EDAD_RETIRO = 40;
+
 function carreraElegirClub(club){
   CARRERA_STATE.jugador.club = club;
   CARRERA_STATE.jugador.clubDueño = club;
   CARRERA_STATE.jugador.enPrestamo = false;
-  CARRERA_STATE.jugador.edad = 17;
+  CARRERA_STATE.jugador.edad = CARRERA_EDAD_INICIAL;
   CARRERA_STATE.jugador.atributos = carreraGenerarAtributos(CARRERA_STATE.jugador.posicion);
+  // Edad de pico (prime): entre 30 y 32, sorteada una sola vez por carrera.
+  // A partir de ahí el rendimiento empieza a bajar en vez de crecer.
+  CARRERA_STATE.jugador.edadPico = 30 + Math.floor(Math.random() * 3);
+  CARRERA_STATE.jugador.picoGeneral = CARRERA_STATE.jugador.atributos.general;
   CARRERA_STATE.temporada = 0;
   CARRERA_STATE.historial = [];
   CARRERA_STATE.titulos = [];
   CARRERA_STATE.decision = null;
+  CARRERA_STATE.retirado = false;
   carreraMostrarDashboard();
 }
 
@@ -171,21 +184,34 @@ function carreraSimularTemporada(){
   else if (rollClub >= 30) resultadoClub = "Peleó el descenso";
   else resultadoClub = "Descendió";
 
-  // Progresión: crece si juega y todavía no llegó al potencial; declina con la edad.
+  // Progresión: antes del pico (edadPico, 30-32) crece si juega y todavía no
+  // llegó al potencial. Desde el pico en adelante, declina en vez de crecer;
+  // cuánto puede bajar depende de qué tan alto fue el pico -- un jugador
+  // que llegó a 90 de general se mantiene arriba de piso más alto (~75-80)
+  // que uno que llegó a 50 (~37-38), en proporción al pico, no en valor fijo.
   const generalAntes = j.atributos.general;
-  let crecimiento;
-  if (partidos >= 18) crecimiento = Math.round(Math.random() * 3) + 1;
-  else if (partidos >= 8) crecimiento = Math.round(Math.random() * 2);
-  else crecimiento = Math.round(Math.random() * 2) - 1;
-  if (edadDeLaTemporada >= 30) crecimiento -= 1;
-  const generalDespues = Math.max(1, Math.min(j.atributos.potencial, generalAntes + crecimiento));
+  let generalDespues;
+  if (edadDeLaTemporada < j.edadPico) {
+    let crecimiento;
+    if (partidos >= 18) crecimiento = Math.round(Math.random() * 3) + 1;
+    else if (partidos >= 8) crecimiento = Math.round(Math.random() * 2);
+    else crecimiento = Math.round(Math.random() * 2) - 1;
+    generalDespues = Math.max(1, Math.min(j.atributos.potencial, generalAntes + crecimiento));
+    j.picoGeneral = Math.max(j.picoGeneral, generalDespues);
+  } else {
+    const retencion = 0.65 + (j.picoGeneral / 99) * 0.20; // 65%-85% del pico
+    const piso = Math.round(j.picoGeneral * retencion);
+    const añosPasadoElPico = edadDeLaTemporada - j.edadPico;
+    const declive = 1 + Math.floor(Math.random() * 2) + Math.floor(añosPasadoElPico / 3);
+    generalDespues = Math.max(piso, generalAntes - declive);
+  }
   j.atributos.general = generalDespues;
   j.edad = edadDeLaTemporada + 1;
   CARRERA_STATE.temporada += 1;
 
   CARRERA_STATE.historial.unshift({
-    temporada: CARRERA_STATE.temporada, edad: edadDeLaTemporada, club: club.nombre, resultadoClub,
-    partidos, goles, asistencias, valoracion, generalAntes, generalDespues
+    temporada: CARRERA_STATE.temporada, edad: edadDeLaTemporada, club: club.nombre,
+    escudo: club.escudo, resultadoClub, partidos, goles, asistencias, valoracion, generalAntes, generalDespues
   });
 
   if (resultadoClub === "Campeón") {
@@ -194,16 +220,25 @@ function carreraSimularTemporada(){
     });
   }
 
-  carreraGenerarDecision();
+  if (j.edad >= CARRERA_EDAD_RETIRO) {
+    CARRERA_STATE.retirado = true;
+    CARRERA_STATE.decision = null;
+  } else {
+    carreraGenerarDecision();
+  }
   carreraMostrarDashboard();
 }
 
-/* ---------- Préstamos / continuidad: decisión post-temporada ---------- */
+/* ---------- Préstamos / fichajes / continuidad: decisión post-temporada ---------- */
 // Arma las opciones que se muestran en el panel de decisión del dashboard
 // después de simular una temporada. Si el jugador está a préstamo, puede
 // volver a su club dueño, firmar ficha definitiva con el club prestador,
 // o extender el préstamo un año más. Si no está a préstamo, puede
-// quedarse en su club o aceptar una de dos ofertas de préstamo.
+// quedarse en su club o recibir ofertas de otros clubes -- mezclando
+// fichajes definitivos (transferencia real, dueño nuevo) y préstamos, no
+// solo préstamos: un jugador que ya se afianzó recibe más ofertas de
+// compra que de préstamo, y uno joven que todavía necesita rodaje recibe
+// más préstamos que fichajes.
 function carreraGenerarDecision(){
   const j = CARRERA_STATE.jugador;
   const opciones = [];
@@ -213,9 +248,22 @@ function carreraGenerarDecision(){
     opciones.push({ id:"extender", label:`Extender préstamo en ${j.club.nombre}`, club:j.club, prestamo:true });
   } else {
     opciones.push({ id:"seguir", label:`Quedarte en ${j.club.nombre}`, club:j.club, prestamo:false });
-    const ofertas = carreraObtenerOfertasPrestamo(j.club.nombre, j.atributos.general, 2);
-    ofertas.forEach((c, i) => {
-      opciones.push({ id:"prestamo"+i, label:`Préstamo a ${c.nombre}`, club:c, prestamo:true });
+    // Cuántas de las 2 ofertas restantes son fichaje vs préstamo. Menor a
+    // 21 años: casi siempre préstamo (necesita rodaje). De ahí en más, la
+    // mezcla se inclina a fichaje a medida que el nivel general es más alto.
+    let fichajes;
+    if (j.edad <= 20) fichajes = Math.random() < 0.15 ? 1 : 0;
+    else if (j.atributos.general >= 65) fichajes = Math.random() < 0.7 ? 2 : 1;
+    else fichajes = Math.random() < 0.55 ? 1 : 2;
+    const prestamos = 2 - fichajes;
+
+    const candidatos = carreraObtenerOfertasPrestamo(j.club.nombre, j.atributos.general, fichajes + prestamos);
+    candidatos.forEach((c, i) => {
+      if (i < fichajes) {
+        opciones.push({ id:"fichaje"+i, label:`Fichaje de ${c.nombre}`, club:c, prestamo:false, dueñoNuevo:true });
+      } else {
+        opciones.push({ id:"prestamo"+i, label:`Préstamo a ${c.nombre}`, club:c, prestamo:true });
+      }
     });
   }
   CARRERA_STATE.decision = { opciones };
@@ -261,9 +309,14 @@ function carreraMostrarDashboard(){
       </div>
     </div>` : "";
 
-  const decisionHTML = CARRERA_STATE.decision ? `
+  const decisionHTML = CARRERA_STATE.retirado ? `
+    <div class="carrera-decision carrera-retiro">
+      <h3>🏁 Fin de la carrera</h3>
+      <p class="carrera-oferta-sub">${j.apellido.trim().toUpperCase()} se retira a los ${j.edad} años, tras ${CARRERA_STATE.temporada} temporadas y ${CARRERA_STATE.titulos.length} título${CARRERA_STATE.titulos.length === 1 ? "" : "s"}. Pico de nivel: ${j.picoGeneral} OVR.</p>
+      <button type="button" class="btn-carrera-primary" id="btn-carrera-nueva">Empezar una nueva carrera</button>
+    </div>` : CARRERA_STATE.decision ? `
     <div class="carrera-decision">
-      <h3>${j.enPrestamo ? "Fin del préstamo — ¿qué hacés?" : "¿Seguís en el club o probás un préstamo?"}</h3>
+      <h3>${j.enPrestamo ? "Fin del préstamo — ¿qué hacés?" : "¿Qué hacés esta temporada?"}</h3>
       <div class="carrera-decision-grid">
         ${CARRERA_STATE.decision.opciones.map(op => `
           <button type="button" class="carrera-decision-card" data-id="${op.id}">
@@ -279,8 +332,9 @@ function carreraMostrarDashboard(){
   const timelineHTML = CARRERA_STATE.historial.length ? `
     <div class="carrera-timeline">
       <h3>Trayectoria</h3>
-      ${CARRERA_STATE.historial.slice().reverse().map(h => `
-        <div class="carrera-timeline-item">
+      ${CARRERA_STATE.historial.slice().reverse().map((h, i) => `
+        <div class="carrera-timeline-item ${carreraClaseResultado(h.resultadoClub)}" style="animation-delay:${Math.min(i, 8) * 35}ms">
+          <img class="carrera-timeline-escudo" src="escudos/${h.escudo}" alt="" onerror="this.style.visibility='hidden'">
           <div class="carrera-timeline-edad">${h.edad}<span>años</span></div>
           <div class="carrera-timeline-col carrera-timeline-club"><b>${h.club}</b><span>${h.resultadoClub}</span></div>
           <div class="carrera-timeline-col">${h.partidos} PJ · ${h.goles} G · ${h.asistencias} A</div>
@@ -334,18 +388,29 @@ function carreraMostrarDashboard(){
     btn.addEventListener("click", () => carreraResolverDecision(btn.dataset.id));
   });
 
-  document.getElementById("btn-carrera-editar").addEventListener("click", () => {
-    CARRERA_STATE.jugador.club = null;
-    CARRERA_STATE.jugador.clubDueño = null;
-    CARRERA_STATE.jugador.enPrestamo = false;
-    CARRERA_STATE.jugador.edad = null;
-    CARRERA_STATE.jugador.atributos = null;
-    CARRERA_STATE.temporada = 0;
-    CARRERA_STATE.historial = [];
-    CARRERA_STATE.titulos = [];
-    CARRERA_STATE.decision = null;
-    carreraMostrarIdentidad();
-  });
+  const btnNuevaCarrera = document.getElementById("btn-carrera-nueva");
+  if (btnNuevaCarrera) btnNuevaCarrera.addEventListener("click", carreraReiniciarEstado);
+
+  document.getElementById("btn-carrera-editar").addEventListener("click", carreraReiniciarEstado);
+}
+
+// Vuelve a la pantalla de identidad y limpia todo el estado de la carrera
+// anterior (club, edad, atributos, curva de pico/declive, historial,
+// títulos y el flag de retiro), para arrancar una carrera nueva de cero.
+function carreraReiniciarEstado(){
+  CARRERA_STATE.jugador.club = null;
+  CARRERA_STATE.jugador.clubDueño = null;
+  CARRERA_STATE.jugador.enPrestamo = false;
+  CARRERA_STATE.jugador.edad = null;
+  CARRERA_STATE.jugador.edadPico = null;
+  CARRERA_STATE.jugador.picoGeneral = null;
+  CARRERA_STATE.jugador.atributos = null;
+  CARRERA_STATE.temporada = 0;
+  CARRERA_STATE.historial = [];
+  CARRERA_STATE.titulos = [];
+  CARRERA_STATE.decision = null;
+  CARRERA_STATE.retirado = false;
+  carreraMostrarIdentidad();
 }
 
 /* ---------- Inicialización (una sola vez) ---------- */
@@ -364,8 +429,7 @@ function initCarrera(){
 
   document.getElementById("carrera-input-numero").addEventListener("input", (ev) => {
     let n = parseInt(ev.target.value, 10);
-    if (isNaN(n)) n = "";
-    else n = Math.max(1, Math.min(99, n));
+    n = isNaN(n) ? 10 : Math.max(1, Math.min(99, n));
     CARRERA_STATE.jugador.numero = n;
     carreraActualizarCamiseta();
   });
