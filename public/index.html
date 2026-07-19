@@ -5313,6 +5313,30 @@ body.liga-carrera{
 }
 .carrera-badge-ascenso{ background:rgba(159,224,176,.16); border:1px solid rgba(159,224,176,.4); color:#9FE0B0; }
 .carrera-badge-descenso{ background:rgba(240,140,122,.16); border:1px solid rgba(240,140,122,.4); color:#F08C7A; }
+.carrera-badge-lesion{
+  font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:.04em;
+  border-radius:999px; padding:2px 7px; white-space:nowrap; margin-left:4px; flex-shrink:0;
+  background:rgba(224,169,79,.14); border:1px solid rgba(224,169,79,.35); color:#E0A94F;
+  animation: carreraCardIn .4s ease both;
+}
+.carrera-badge-seleccion{
+  font-size:9.5px; font-weight:700; letter-spacing:.02em; display:inline-flex; align-items:center; gap:4px;
+  border-radius:999px; padding:2px 7px; white-space:nowrap; margin-left:4px; flex-shrink:0;
+  background:rgba(79,140,255,.14); border:1px solid rgba(79,140,255,.35); color:var(--accent);
+  animation: carreraCardIn .4s ease both;
+}
+.carrera-badge-seleccion .carrera-bandera-img{ width:12px; height:8px; }
+
+.carrera-seleccion{
+  margin:0 0 18px; padding:12px 14px; border-radius:14px;
+  background:rgba(79,140,255,.06); border:1px solid rgba(79,140,255,.25);
+}
+.carrera-seleccion h4{ font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--accent); margin:0 0 8px; font-weight:700; display:flex; align-items:center; gap:6px; }
+.carrera-seleccion .carrera-bandera-img{ width:15px; height:11px; }
+.carrera-seleccion-stats{ display:grid; grid-template-columns:1fr 1fr; gap:8px; text-align:center; }
+.carrera-seleccion-stats b{ display:block; color:var(--ink); font-size:16px; font-family:'Oswald', sans-serif; }
+.carrera-seleccion-stats span{ display:block; color:var(--muted); font-size:10px; text-transform:uppercase; letter-spacing:.05em; margin-top:2px; }
+.carrera-vitrina-item--hito{ background:rgba(79,140,255,.12); border-color:rgba(79,140,255,.35); color:var(--accent); }
 
 /* ---- Retiro ---- */
 .carrera-retiro{ text-align:center; border-top:none; padding-top:0; }

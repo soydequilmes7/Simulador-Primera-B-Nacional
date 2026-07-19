@@ -23,6 +23,7 @@ const CARRERA_STATE = {
   temporada: 0,      // temporadas jugadas
   historial: [],     // resumen de cada temporada jugada
   titulos: [],       // { temporada, edad, club, liga } — títulos ganados con el club actual
+  hitos: [],         // { tipo:'seleccion', edad, pais } — debut en selección, etc.
   decision: null,    // { opciones:[{id,label,club,prestamo,dueñoNuevo}] } pendiente tras simular
   retirado: false    // true cuando el jugador llegó a CARRERA_EDAD_RETIRO
 };
@@ -154,9 +155,12 @@ function carreraElegirClub(club){
   // A partir de ahí el rendimiento empieza a bajar en vez de crecer.
   CARRERA_STATE.jugador.edadPico = 30 + Math.floor(Math.random() * 3);
   CARRERA_STATE.jugador.picoGeneral = CARRERA_STATE.jugador.atributos.general;
+  CARRERA_STATE.jugador.capasSeleccion = 0;
+  CARRERA_STATE.jugador.golesSeleccion = 0;
   CARRERA_STATE.temporada = 0;
   CARRERA_STATE.historial = [];
   CARRERA_STATE.titulos = [];
+  CARRERA_STATE.hitos = [];
   CARRERA_STATE.decision = null;
   CARRERA_STATE.retirado = false;
   carreraMostrarDashboard();
@@ -195,6 +199,37 @@ function carreraAplicarAscensoDescenso(club, resultadoClub){
   return null;
 }
 
+// Probabilidad de lesión por período (2 años) y su severidad. Una lesión
+// leve casi no se nota; una grave te come casi todo el período y además
+// atrasa el desarrollo (penalizacionCrecimiento), no solo los partidos.
+const CARRERA_PROB_LESION = 0.16;
+function carreraTirarLesion(){
+  if (Math.random() >= CARRERA_PROB_LESION) return null;
+  const roll = Math.random();
+  if (roll < 0.50) {
+    return { tipo: "leve", fraccionPerdida: 0.15 + Math.random() * 0.15, penalizacionCrecimiento: 0 };
+  } else if (roll < 0.85) {
+    return { tipo: "moderada", fraccionPerdida: 0.35 + Math.random() * 0.20, penalizacionCrecimiento: 1 };
+  } else {
+    return { tipo: "grave", fraccionPerdida: 0.65 + Math.random() * 0.25, penalizacionCrecimiento: 3 };
+  }
+}
+
+// Selección nacional: por debajo de CARRERA_UMBRAL_SELECCION no hay chance
+// (todavía no rinde para eso); por encima, la probabilidad de convocatoria
+// ese período crece con el nivel general. Si es convocado, las presencias
+// y goles con la selección son un extra sobre las stats de club, no las
+// reemplazan -- se acumulan en j.capasSeleccion / j.golesSeleccion.
+const CARRERA_UMBRAL_SELECCION = 66;
+function carreraTirarConvocatoria(general, factorGol, ataque){
+  if (general < CARRERA_UMBRAL_SELECCION) return null;
+  const probabilidad = Math.min(0.75, (general - CARRERA_UMBRAL_SELECCION) * 0.035 + 0.08);
+  if (Math.random() >= probabilidad) return null;
+  const presencias = 2 + Math.floor(Math.random() * 9); // 2-10 partidos en el período
+  const goles = Math.max(0, Math.round(presencias * factorGol * 0.6 * (ataque / 60) * (0.6 + Math.random() * 0.7)));
+  return { presencias, goles };
+}
+
 /* ---------- Motor de temporada (resumen directo, simulación aparte) ---------- */
 // La carrera avanza de a 2 años por click (edad +2 cada vez, como pediste),
 // así que "temporada" acá es en realidad un bienio: el doble de partidos,
@@ -215,6 +250,18 @@ function carreraSimularTemporada(){
   let partidos = Math.round(PARTIDOS_TEMPORADA * (chance / 100) * ruidoMinutos);
   partidos = Math.max(0, Math.min(PARTIDOS_TEMPORADA, partidos));
 
+  // Lesiones: cada período hay una chance de que una lesión le recorte
+  // partidos (y, si es fuerte, también el desarrollo -- perder meses de
+  // competencia/entrenamiento pesa más que solo los partidos perdidos).
+  // No se modela para el período de retiro para abajo porque a esa altura
+  // ya no hay curva de crecimiento que penalizar.
+  const lesion = carreraTirarLesion();
+  let penalizacionCrecimiento = 0;
+  if (lesion) {
+    partidos = Math.round(partidos * (1 - lesion.fraccionPerdida));
+    penalizacionCrecimiento = lesion.penalizacionCrecimiento;
+  }
+
   // Producción ofensiva según grupo de posición.
   let factorGol, factorAsist;
   if (CARRERA_GRUPOS_POSICION.delantero.includes(j.posicion)) { factorGol = 0.55; factorAsist = 0.18; }
@@ -227,6 +274,16 @@ function carreraSimularTemporada(){
 
   let valoracion = 5 + (j.atributos.general / 99) * 4 + (Math.random() * 0.8 - 0.3);
   valoracion = Math.round(Math.max(1, Math.min(10, valoracion)) * 10) / 10;
+
+  // Selección nacional: a partir de cierto nivel general empieza a haber
+  // chance de convocatoria, creciente con el nivel. Las presencias/goles
+  // de ese período se acumulan aparte de las del club (no las reemplazan).
+  const convocatoria = carreraTirarConvocatoria(j.atributos.general, factorGol, j.atributos.ataque);
+  const debutSeleccion = convocatoria && j.capasSeleccion === 0;
+  if (convocatoria) {
+    j.capasSeleccion += convocatoria.presencias;
+    j.golesSeleccion += convocatoria.goles;
+  }
 
   // Resultado del club (simulación aparte, sin fixture real).
   const ligaDeLaTemporada = club.liga;
@@ -262,6 +319,7 @@ function carreraSimularTemporada(){
     // (ver "chance" arriba), la carrera quedaba prácticamente trabada sin
     // crecer nunca. Con muy pocos minutos y ya mayor sí puede estancarse.
     else crecimiento = edadDeLaTemporada <= 22 ? Math.round(Math.random() * 3) : Math.round(Math.random() * 2) - 1;
+    crecimiento -= penalizacionCrecimiento;
     generalDespues = Math.max(1, Math.min(j.atributos.potencial, generalAntes + crecimiento));
     j.picoGeneral = Math.max(j.picoGeneral, generalDespues);
   } else {
@@ -278,13 +336,16 @@ function carreraSimularTemporada(){
   CARRERA_STATE.historial.unshift({
     temporada: CARRERA_STATE.temporada, edad: edadDeLaTemporada, club: club.nombre,
     escudo: club.escudo, liga: ligaDeLaTemporada, cambioDivision, resultadoClub, partidos, goles, asistencias,
-    valoracion, generalAntes, generalDespues
+    valoracion, generalAntes, generalDespues, lesion, convocatoria, debutSeleccion
   });
 
   if (resultadoClub === "Campeón") {
     CARRERA_STATE.titulos.unshift({
       temporada: CARRERA_STATE.temporada, edad: j.edad, club: club.nombre, liga: club.liga
     });
+  }
+  if (debutSeleccion) {
+    CARRERA_STATE.hitos.unshift({ tipo: "seleccion", edad: j.edad, pais: j.pais.nombre });
   }
 
   if (j.edad >= CARRERA_EDAD_RETIRO) {
@@ -371,10 +432,21 @@ function carreraMostrarDashboard(){
     acc.pj += h.partidos; acc.goles += h.goles; acc.asist += h.asistencias; return acc;
   }, { pj:0, goles:0, asist:0 });
 
-  const vitrinaHTML = CARRERA_STATE.titulos.length ? `
-    <div class="carrera-vitrina-lista">
-      ${CARRERA_STATE.titulos.map(t => `<span class="carrera-vitrina-item">🏆 ${t.liga} · ${t.edad} años</span>`).join("")}
-    </div>` : `<p class="carrera-vitrina-vacia">Vitrina vacía</p>`;
+  const vitrinaItems = [
+    ...CARRERA_STATE.titulos.map(t => `<span class="carrera-vitrina-item">🏆 ${t.liga} · ${t.edad} años</span>`),
+    ...CARRERA_STATE.hitos.map(h => `<span class="carrera-vitrina-item carrera-vitrina-item--hito">${carreraBandera(j.pais.iso2)} Debut en ${h.pais} · ${h.edad} años</span>`),
+  ];
+  const vitrinaHTML = vitrinaItems.length ? `
+    <div class="carrera-vitrina-lista">${vitrinaItems.join("")}</div>` : `<p class="carrera-vitrina-vacia">Vitrina vacía</p>`;
+
+  const seleccionHTML = j.capasSeleccion > 0 ? `
+    <div class="carrera-seleccion">
+      <h4>${carreraBandera(j.pais.iso2)} Selección de ${j.pais.nombre}</h4>
+      <div class="carrera-seleccion-stats">
+        <div><b>${j.capasSeleccion}</b><span>Presencias</span></div>
+        <div><b>${j.golesSeleccion}</b><span>Goles</span></div>
+      </div>
+    </div>` : "";
 
   const decisionHTML = CARRERA_STATE.retirado ? `
     <div class="carrera-decision carrera-retiro">
@@ -430,6 +502,7 @@ function carreraMostrarDashboard(){
           <h4>🏆 Vitrina</h4>
           ${vitrinaHTML}
         </div>
+        ${seleccionHTML}
         <div class="carrera-atributos">
           <div class="carrera-atributo"><span>Potencial</span><b>${a.potencial}</b><div class="carrera-atributo-barra"><div style="width:${a.potencial}%"></div></div></div>
           <div class="carrera-atributo"><span>Ataque</span><b>${a.ataque}</b><div class="carrera-atributo-barra"><div style="width:${a.ataque}%"></div></div></div>
@@ -490,6 +563,8 @@ function carreraTablaEdadesHTML(){
     if (h) {
       const badgeDivision = h.cambioDivision === "ascenso" ? `<span class="carrera-badge-ascenso">▲ Ascenso</span>`
         : h.cambioDivision === "descenso" ? `<span class="carrera-badge-descenso">▼ Descenso</span>` : "";
+      const badgeLesion = h.lesion ? `<span class="carrera-badge-lesion" title="${h.partidos} PJ por la lesión">🩹 Lesión (${h.lesion.tipo})</span>` : "";
+      const badgeSeleccion = h.convocatoria ? `<span class="carrera-badge-seleccion">${carreraBandera(j.pais.iso2)} +${h.convocatoria.presencias}</span>` : "";
       filas.push(`
         <div class="carrera-fila carrera-fila-jugada ${carreraClaseResultado(h.resultadoClub)}" style="animation-delay:${Math.min(filas.length, 10) * 40}ms">
           <div class="carrera-fila-edad">${h.edad}</div>
@@ -497,7 +572,7 @@ function carreraTablaEdadesHTML(){
             <img class="carrera-fila-escudo" src="escudos/${h.escudo}" alt="" onerror="this.style.visibility='hidden'">
             ${carreraLogoLigaHTML(h.liga)}
             <span>${h.club}</span>
-            ${badgeDivision}
+            ${badgeDivision}${badgeLesion}${badgeSeleccion}
           </div>
           <div class="carrera-fila-ovr ${carreraClaseOVR(h.generalDespues)}">${h.generalDespues}</div>
           <div class="carrera-fila-num">${h.partidos}</div>
@@ -536,10 +611,13 @@ function carreraReiniciarEstado(){
   CARRERA_STATE.jugador.edad = null;
   CARRERA_STATE.jugador.edadPico = null;
   CARRERA_STATE.jugador.picoGeneral = null;
+  CARRERA_STATE.jugador.capasSeleccion = 0;
+  CARRERA_STATE.jugador.golesSeleccion = 0;
   CARRERA_STATE.jugador.atributos = null;
   CARRERA_STATE.temporada = 0;
   CARRERA_STATE.historial = [];
   CARRERA_STATE.titulos = [];
+  CARRERA_STATE.hitos = [];
   CARRERA_STATE.decision = null;
   CARRERA_STATE.retirado = false;
   carreraMostrarIdentidad();
