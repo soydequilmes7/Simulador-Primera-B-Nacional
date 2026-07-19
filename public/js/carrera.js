@@ -157,6 +157,7 @@ function carreraElegirClub(club){
   CARRERA_STATE.jugador.picoGeneral = CARRERA_STATE.jugador.atributos.general;
   CARRERA_STATE.jugador.capasSeleccion = 0;
   CARRERA_STATE.jugador.golesSeleccion = 0;
+  CARRERA_STATE.jugador.descartado = false;
   CARRERA_STATE.temporada = 0;
   CARRERA_STATE.historial = [];
   CARRERA_STATE.titulos = [];
@@ -180,6 +181,18 @@ const CARRERA_DIVISION_TIER = {
   "Liga Profesional": 3,
 };
 const CARRERA_SIGUIENTE_LIGA = { 1: "Primera Nacional", 2: "Liga Profesional" };
+
+// Nivel "promedio esperado" de cada división: un club de nivel exactamente
+// igual a esto es un candidato típico de mitad de tabla en su liga, uno
+// bastante por encima pelea el título/ascenso, uno bastante por debajo
+// pelea el descenso. Los clubes del exterior (sin entrada acá) usan su
+// propio nivel como centro -- no tienen pirámide modelada, así que el
+// resultado queda centrado en "mitad de tabla" siempre, sin sesgo.
+const CARRERA_CENTRO_DIVISION = {
+  "Primera C": 40, "B Metropolitana": 43,
+  "Primera Nacional": 55,
+  "Liga Profesional": 72,
+};
 
 function carreraAplicarAscensoDescenso(club, resultadoClub){
   const tier = CARRERA_DIVISION_TIER[club.liga];
@@ -286,13 +299,20 @@ function carreraSimularTemporada(){
   }
 
   // Resultado del club (simulación aparte, sin fixture real).
+  // OJO: el umbral tiene que ser RELATIVO al nivel esperado de la propia
+  // división del club, no absoluto -- con umbrales absolutos (rollClub>=80
+  // para "Campeón") un club de nivel 55 con variación máxima ±15 nunca
+  // podía llegar a 80 aunque tuviera la mejor suerte posible, así que el
+  // ascenso/descenso quedaba matemáticamente inalcanzable para casi
+  // cualquier club fuera de los más fuertes de la Liga Profesional.
   const ligaDeLaTemporada = club.liga;
-  const rollClub = (club.nivel || 45) + (Math.random() * 30 - 15);
+  const centroDivision = CARRERA_CENTRO_DIVISION[club.liga] ?? club.nivel;
+  const rendimiento = (club.nivel - centroDivision) + (Math.random() * 40 - 20);
   let resultadoClub;
-  if (rollClub >= 80) resultadoClub = "Campeón";
-  else if (rollClub >= 65) resultadoClub = "Clasificó a copas internacionales";
-  else if (rollClub >= 45) resultadoClub = "Mitad de tabla";
-  else if (rollClub >= 30) resultadoClub = "Peleó el descenso";
+  if (rendimiento >= 18) resultadoClub = "Campeón";
+  else if (rendimiento >= 8) resultadoClub = "Clasificó a copas internacionales";
+  else if (rendimiento >= -8) resultadoClub = "Mitad de tabla";
+  else if (rendimiento >= -18) resultadoClub = "Peleó el descenso";
   else resultadoClub = "Descendió";
 
   // Ascenso/descenso real de división (solo clubes argentinos, ver arriba).
@@ -369,28 +389,48 @@ function carreraSimularTemporada(){
 // más préstamos que fichajes.
 function carreraGenerarDecision(){
   const j = CARRERA_STATE.jugador;
+  const ultima = CARRERA_STATE.historial[0]; // la temporada recién jugada
   const opciones = [];
   if (j.enPrestamo) {
     opciones.push({ id:"volver", label:`Volver a ${j.clubDueño.nombre}`, club:j.clubDueño, prestamo:false });
     opciones.push({ id:"definitiva", label:`Ficha definitiva con ${j.club.nombre}`, club:j.club, prestamo:false, dueñoNuevo:true });
     opciones.push({ id:"extender", label:`Extender préstamo en ${j.club.nombre}`, club:j.club, prestamo:true });
+    j.descartado = false;
   } else {
-    opciones.push({ id:"seguir", label:`Quedarte en ${j.club.nombre}`, club:j.club, prestamo:false });
-    // Cuántas de las 2 ofertas restantes son fichaje vs préstamo. Menor a
+    // El club no siempre te renueva: si la temporada fue floja (nota baja
+    // o casi no jugaste, típico de una lesión larga) hay bastante chance
+    // de que directamente te dejen libre en vez de ofrecerte seguir. En
+    // ese caso no hay opción "seguir", y las ofertas que aparecen son de
+    // nivel más bajo -- nadie grande sale a buscar a alguien que recién
+    // tuvo una mala temporada.
+    const rindioMal = ultima && (ultima.valoracion < 5.5 || ultima.partidos <= 6);
+    const probDescarte = rindioMal ? 0.4 : 0.05;
+    const descartado = Math.random() < probDescarte;
+    j.descartado = descartado;
+
+    if (!descartado) {
+      opciones.push({ id:"seguir", label:`Quedarte en ${j.club.nombre}`, club:j.club, prestamo:false });
+    }
+    // Cuántas de las ofertas restantes son fichaje vs préstamo. Menor a
     // 21 años: casi siempre préstamo (necesita rodaje). De ahí en más, la
-    // mezcla se inclina a fichaje a medida que el nivel general es más alto.
+    // mezcla se inclina a fichaje a medida que el nivel general es más
+    // alto -- salvo que te hayan dejado libre, ahí casi todo es préstamo
+    // o prueba, porque no hay margen para negociar un fichaje grande.
     let fichajes;
-    if (j.edad <= 20) fichajes = Math.random() < 0.15 ? 1 : 0;
+    if (descartado) fichajes = j.atributos.general >= 60 && Math.random() < 0.3 ? 1 : 0;
+    else if (j.edad <= 20) fichajes = Math.random() < 0.15 ? 1 : 0;
     else if (j.atributos.general >= 65) fichajes = Math.random() < 0.7 ? 2 : 1;
     else fichajes = Math.random() < 0.55 ? 1 : 2;
-    const prestamos = 2 - fichajes;
+    const cantidadOfertas = descartado ? 3 : 2;
+    const prestamos = cantidadOfertas - fichajes;
 
-    const candidatos = carreraObtenerOfertasPrestamo(j.club.nombre, j.atributos.general, fichajes + prestamos);
+    const nivelBusqueda = descartado ? j.atributos.general - 10 : j.atributos.general;
+    const candidatos = carreraObtenerOfertasPrestamo(j.club.nombre, nivelBusqueda, fichajes + prestamos);
     candidatos.forEach((c, i) => {
       if (i < fichajes) {
         opciones.push({ id:"fichaje"+i, label:`Fichaje de ${c.nombre}`, club:c, prestamo:false, dueñoNuevo:true });
       } else {
-        opciones.push({ id:"prestamo"+i, label:`Préstamo a ${c.nombre}`, club:c, prestamo:true });
+        opciones.push({ id:(descartado ? "prueba" : "prestamo")+i, label:`${descartado ? "Prueba" : "Préstamo"} en ${c.nombre}`, club:c, prestamo:true });
       }
     });
   }
@@ -454,15 +494,17 @@ function carreraMostrarDashboard(){
       <p class="carrera-oferta-sub">${j.apellido.trim().toUpperCase()} se retira a los ${j.edad} años, tras ${CARRERA_STATE.temporada} temporada${CARRERA_STATE.temporada === 1 ? "" : "s"} y ${CARRERA_STATE.titulos.length} título${CARRERA_STATE.titulos.length === 1 ? "" : "s"}. Pico de nivel: ${j.picoGeneral} OVR.</p>
       <button type="button" class="btn-carrera-primary" id="btn-carrera-nueva">Empezar una nueva carrera</button>
     </div>` : CARRERA_STATE.decision ? `
-    <div class="carrera-decision">
-      <h3>${j.enPrestamo ? "Regreso a tu club" : "¿Qué hacés esta temporada?"}</h3>
+    <div class="carrera-decision${j.descartado ? " carrera-decision--descarte" : ""}">
+      <h3>${j.enPrestamo ? "Regreso a tu club" : j.descartado ? "😕 No te renovaron" : "¿Qué hacés esta temporada?"}</h3>
       <p class="carrera-decision-desc">${j.enPrestamo
         ? `Volvés a ${j.clubDueño.nombre} y vas a ser tenido en cuenta. Si igual querés salir, tenés ${CARRERA_STATE.decision.opciones.length - 1} oferta${CARRERA_STATE.decision.opciones.length - 1 === 1 ? "" : "s"} para cambiar de aire.`
+        : j.descartado
+        ? `${j.club.nombre} decidió no seguir contando con vos. Tenés que buscar equipo nuevo -- por ahora, solo aparecen pruebas y préstamos.`
         : `Podés quedarte en ${j.club.nombre} o escuchar otras ofertas.`}</p>
       <div class="carrera-decision-grid">
         ${CARRERA_STATE.decision.opciones.map((op, i) => {
           const ultimaImpar = i === CARRERA_STATE.decision.opciones.length - 1 && CARRERA_STATE.decision.opciones.length % 2 === 1;
-          const tipo = op.id === "seguir" || op.id === "volver" ? "Quedarte en" : op.id === "extender" ? "Extender en" : op.id === "definitiva" ? "Ficha fija con" : "Fichar por";
+          const tipo = op.id === "seguir" || op.id === "volver" ? "Quedarte en" : op.id === "extender" ? "Extender en" : op.id === "definitiva" ? "Ficha fija con" : op.id.startsWith("prueba") ? "Prueba en" : op.id.startsWith("prestamo") ? "Préstamo en" : "Fichar por";
           return `
           <button type="button" class="carrera-decision-card${ultimaImpar ? " carrera-decision-card--centrada" : ""}" data-id="${op.id}" style="animation-delay:${i * 60}ms">
             <span class="carrera-decision-tipo">${tipo}</span>
@@ -565,19 +607,23 @@ function carreraTablaEdadesHTML(){
         : h.cambioDivision === "descenso" ? `<span class="carrera-badge-descenso">▼ Descenso</span>` : "";
       const badgeLesion = h.lesion ? `<span class="carrera-badge-lesion" title="${h.partidos} PJ por la lesión">🩹 Lesión (${h.lesion.tipo})</span>` : "";
       const badgeSeleccion = h.convocatoria ? `<span class="carrera-badge-seleccion">${carreraBandera(j.pais.iso2)} +${h.convocatoria.presencias}</span>` : "";
+      const badges = badgeDivision + badgeLesion + badgeSeleccion;
       filas.push(`
         <div class="carrera-fila carrera-fila-jugada ${carreraClaseResultado(h.resultadoClub)}" style="animation-delay:${Math.min(filas.length, 10) * 40}ms">
           <div class="carrera-fila-edad">${h.edad}</div>
           <div class="carrera-fila-club">
-            <img class="carrera-fila-escudo" src="escudos/${h.escudo}" alt="" onerror="this.style.visibility='hidden'">
-            ${carreraLogoLigaHTML(h.liga)}
-            <span>${h.club}</span>
-            ${badgeDivision}${badgeLesion}${badgeSeleccion}
+            <div class="carrera-fila-club-nombre">
+              <img class="carrera-fila-escudo" src="escudos/${h.escudo}" alt="" onerror="this.style.visibility='hidden'">
+              ${carreraLogoLigaHTML(h.liga)}
+              <span title="${h.club}">${h.club}</span>
+            </div>
+            ${badges ? `<div class="carrera-fila-badges">${badges}</div>` : ""}
           </div>
           <div class="carrera-fila-ovr ${carreraClaseOVR(h.generalDespues)}">${h.generalDespues}</div>
           <div class="carrera-fila-num">${h.partidos}</div>
           <div class="carrera-fila-num">⚽ ${h.goles}</div>
           <div class="carrera-fila-num">🅰️ ${h.asistencias}</div>
+          <div class="carrera-fila-nota ${carreraClaseNota(h.valoracion)}" title="Nota de la temporada">${h.valoracion.toFixed(1)}</div>
         </div>`);
     } else if (edad === j.edad && !CARRERA_STATE.retirado) {
       filas.push(`
@@ -595,7 +641,7 @@ function carreraTablaEdadesHTML(){
   return `
     <div class="carrera-tabla">
       <div class="carrera-tabla-header">
-        <div>EDAD</div><div>CLUB</div><div>OVR</div><div>PJ</div><div>GLS</div><div>AST</div>
+        <div>EDAD</div><div>CLUB</div><div>OVR</div><div>PJ</div><div>GLS</div><div>AST</div><div>NOTA</div>
       </div>
       <div class="carrera-tabla-body">${filas.join("")}</div>
     </div>`;

@@ -372,6 +372,16 @@ function carreraLogoLigaHTML(liga){
   return `<img class="carrera-logo-liga" src="logos-torneos/${archivo}" alt="" loading="lazy" onerror="this.remove()">`;
 }
 
+// Clase CSS por nota de la temporada (escala 1-10, como el rating de
+// partido de Sofascore): verde para buena temporada, rojo para mala.
+function carreraClaseNota(nota){
+  if (nota >= 7.5) return "nota-elite";
+  if (nota >= 6.8) return "nota-alta";
+  if (nota >= 6.0) return "nota-media";
+  if (nota >= 5.0) return "nota-baja";
+  return "nota-mala";
+}
+
 // Clase CSS por rango de OVR, para el color del badge grande de la ficha.
 function carreraClaseOVR(ovr){
   if (ovr >= 80) return "ovr-elite";
