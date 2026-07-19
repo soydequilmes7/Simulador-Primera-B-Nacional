@@ -164,7 +164,7 @@ function carreraElegirClub(club){
   CARRERA_STATE.hitos = [];
   CARRERA_STATE.decision = null;
   CARRERA_STATE.retirado = false;
-  carreraMostrarDashboard();
+  carreraSimularTemporada();
 }
 
 // Ascenso/descenso real del club del jugador dentro de la pirámide
@@ -181,6 +181,19 @@ const CARRERA_DIVISION_TIER = {
   "Liga Profesional": 3,
 };
 const CARRERA_SIGUIENTE_LIGA = { 1: "Primera Nacional", 2: "Liga Profesional" };
+
+// Copa Argentina: torneo de eliminación directa abierto a las 4 divisiones
+// modeladas, así que a diferencia del campeonato de liga un club chico
+// SÍ tiene chance real de dar la sorpresa (como pasa en la vida real). La
+// probabilidad depende un poco del nivel pero mucho menos que el título
+// de liga -- son pocos partidos de eliminación directa, no una temporada
+// completa demostrando quién es mejor.
+function carreraTirarCopaArgentina(club){
+  if (!CARRERA_DIVISION_TIER[club.liga]) return false; // solo clubes argentinos
+  const factorNivel = Math.max(0, club.nivel - 30) / 70; // ~0 a ~1
+  const probabilidad = 0.015 + factorNivel * 0.045; // 1.5% a ~6%
+  return Math.random() < probabilidad;
+}
 
 // Nivel "promedio esperado" de cada división: un club de nivel exactamente
 // igual a esto es un candidato típico de mitad de tabla en su liga, uno
@@ -276,11 +289,11 @@ function carreraSimularTemporada(){
   }
 
   // Producción ofensiva según grupo de posición.
-  let factorGol, factorAsist;
-  if (CARRERA_GRUPOS_POSICION.delantero.includes(j.posicion)) { factorGol = 0.55; factorAsist = 0.18; }
-  else if (CARRERA_GRUPOS_POSICION.medio.includes(j.posicion)) { factorGol = 0.22; factorAsist = 0.30; }
-  else if (CARRERA_GRUPOS_POSICION.defensor.includes(j.posicion)) { factorGol = 0.06; factorAsist = 0.10; }
-  else { factorGol = 0.01; factorAsist = 0.02; }
+  let factorGol, factorAsist, grupoPosicion;
+  if (CARRERA_GRUPOS_POSICION.delantero.includes(j.posicion)) { factorGol = 0.55; factorAsist = 0.18; grupoPosicion = "delantero"; }
+  else if (CARRERA_GRUPOS_POSICION.medio.includes(j.posicion)) { factorGol = 0.22; factorAsist = 0.30; grupoPosicion = "medio"; }
+  else if (CARRERA_GRUPOS_POSICION.defensor.includes(j.posicion)) { factorGol = 0.06; factorAsist = 0.10; grupoPosicion = "defensor"; }
+  else { factorGol = 0.01; factorAsist = 0.02; grupoPosicion = "arquero"; }
   const ruidoGol = () => 0.6 + Math.random() * 0.7;
   const goles = Math.max(0, Math.round(partidos * factorGol * (j.atributos.ataque / 60) * ruidoGol()));
   const asistencias = Math.max(0, Math.round(partidos * factorAsist * (j.atributos.ataque / 60) * ruidoGol()));
@@ -348,40 +361,69 @@ function carreraSimularTemporada(){
   }
   j.atributos.general = generalDespues;
 
-  // Nota de la temporada: a diferencia de antes (que solo miraba el nivel
-  // general del jugador, sin importar si jugó o no), ahora se arma con lo
-  // que realmente pasó ese período -- minutos, producción respecto de lo
-  // esperado para su posición, cómo le fue al equipo, y si progresó o
-  // retrocedió. Un banco de suplentes en un club campeón no saca la misma
-  // nota que un titular indiscutido, aunque los dos tengan el mismo OVR.
-  let valoracion = 5.0;
-  valoracion += (partidos / PARTIDOS_TEMPORADA) * 1.3; // presencia en cancha
-  const produccionEsperada = partidos * (factorGol + factorAsist * 0.6) * (j.atributos.ataque / 60);
-  const produccionReal = goles + asistencias * 0.6;
-  if (produccionEsperada > 0.5) {
-    valoracion += Math.max(-1, Math.min(2, (produccionReal / produccionEsperada - 1) * 1.5));
+  // Nota de la temporada, estilo Sofascore. La versión anterior tenía un
+  // problema de fondo: comparaba la producción contra una "expectativa"
+  // calculada con la MISMA fórmula que los goles/asistencias (con el
+  // mismo factor de ataque del jugador), así que en la práctica se
+  // comparaba contra sí misma más ruido -- un jugador que casi no jugó
+  // igual podía sacar una nota alta si el equipo salió campeón o si
+  // progresó ese período, cosas que no tienen nada que ver con cómo jugó
+  // él en cancha. Ahora: si jugó muy poco, la nota queda neutra (no hay
+  // temporada real que calificar); si jugó, se mide gol+asistencia POR
+  // PARTIDO contra un piso fijo por posición (independiente de su propio
+  // ataque, para que mida de verdad sobre/bajo rendimiento del rol), y el
+  // resultado del equipo pesa poco al lado de eso -- la progresión
+  // personal no entra acá, es una cosa aparte del desarrollo del jugador.
+  // Piso de producción "esperada" por posición: derivado de la MISMA
+  // fórmula que genera goles/asistencias reales (factorGol/factorAsist a
+  // ataque=60, con el ruido promedio de ruidoGol), no un número puesto a
+  // ojo -- si no, un delantero "promedio para su rol" siempre puntuaba
+  // mejor que un defensor "promedio para su rol" aunque los dos estén
+  // rindiendo exactamente como se espera de su posición.
+  const CARRERA_BASELINE_PRODUCCION = {
+    delantero: (0.55 + 0.18 * 0.6) * 0.95,
+    medio: (0.22 + 0.30 * 0.6) * 0.95,
+    defensor: (0.06 + 0.10 * 0.6) * 0.95,
+    arquero: (0.01 + 0.02 * 0.6) * 0.95,
+  };
+  let valoracion;
+  if (partidos < 4) {
+    valoracion = 5.0 + (Math.random() * 0.4 - 0.2);
+  } else {
+    const produccionPorPartido = (goles + asistencias * 0.6) / partidos;
+    const baseline = CARRERA_BASELINE_PRODUCCION[grupoPosicion];
+    const bonoEquipo = {
+      "Campeón": 0.5, "Clasificó a copas internacionales": 0.25,
+      "Mitad de tabla": 0, "Peleó el descenso": -0.2, "Descendió": -0.4,
+    }[resultadoClub] || 0;
+    valoracion = 6.0 + (produccionPorPartido - baseline) * 4.5 + bonoEquipo
+      + (partidos / PARTIDOS_TEMPORADA - 0.5) * 0.5
+      + (Math.random() * 0.5 - 0.25);
   }
-  const bonoEquipo = {
-    "Campeón": 1.0, "Clasificó a copas internacionales": 0.5,
-    "Mitad de tabla": 0, "Peleó el descenso": -0.4, "Descendió": -0.8,
-  }[resultadoClub] || 0;
-  valoracion += bonoEquipo;
-  valoracion += Math.max(-0.6, Math.min(0.6, (generalDespues - generalAntes) * 0.08)); // progresión personal
-  valoracion += Math.random() * 0.6 - 0.3; // variación de partido a partido
   valoracion = Math.round(Math.max(1, Math.min(10, valoracion)) * 10) / 10;
 
   j.edad = edadDeLaTemporada + CARRERA_PASO_EDAD;
   CARRERA_STATE.temporada += 1;
 
+  // Copa Argentina: torneo aparte del campeonato de liga, se puede ganar
+  // en la misma temporada que se sale campeón de liga o descendido, no
+  // son excluyentes entre sí.
+  const ganoCopaArgentina = carreraTirarCopaArgentina(club);
+
   CARRERA_STATE.historial.unshift({
     temporada: CARRERA_STATE.temporada, edad: edadDeLaTemporada, club: club.nombre,
     escudo: club.escudo, liga: ligaDeLaTemporada, cambioDivision, resultadoClub, partidos, goles, asistencias,
-    valoracion, generalAntes, generalDespues, lesion, convocatoria, debutSeleccion
+    valoracion, generalAntes, generalDespues, lesion, convocatoria, debutSeleccion, ganoCopaArgentina
   });
 
   if (resultadoClub === "Campeón") {
     CARRERA_STATE.titulos.unshift({
       temporada: CARRERA_STATE.temporada, edad: j.edad, club: club.nombre, liga: club.liga
+    });
+  }
+  if (ganoCopaArgentina) {
+    CARRERA_STATE.titulos.unshift({
+      temporada: CARRERA_STATE.temporada, edad: j.edad, club: club.nombre, liga: "Copa Argentina"
     });
   }
   if (debutSeleccion) {
@@ -457,8 +499,10 @@ function carreraGenerarDecision(){
   CARRERA_STATE.decision = { opciones };
 }
 
-// Aplica la opción elegida en el panel de decisión y vuelve a habilitar
-// el botón de "Jugar Temporada".
+// Aplica la opción elegida en el panel de decisión y arranca directo la
+// temporada en el club nuevo (o el mismo, si eligió "seguir"/"volver"),
+// sin necesitar un click extra en "Jugar Temporada" -- elegir club Y
+// jugar esa temporada son, en los hechos, la misma decisión.
 function carreraResolverDecision(id){
   const dec = CARRERA_STATE.decision;
   if (!dec) return;
@@ -472,7 +516,7 @@ function carreraResolverDecision(id){
   j.enPrestamo = !!op.prestamo;
   if (op.dueñoNuevo) j.clubDueño = j.club;
   CARRERA_STATE.decision = null;
-  carreraMostrarDashboard();
+  carreraSimularTemporada();
 }
 
 /* ---------- Pantalla 4: dashboard ---------- */
@@ -635,8 +679,9 @@ function carreraTablaEdadesHTML(){
       else if (h.cambioDivision === "descenso") iconos += `<span class="carrera-fila-icono carrera-fila-icono--descenso" title="Descenso de división">▼</span>`;
       if (h.lesion) iconos += `<span class="carrera-fila-icono carrera-fila-icono--lesion" title="Lesión ${h.lesion.tipo}: ${h.partidos} PJ jugados">🩹</span>`;
       if (h.convocatoria) iconos += `<span class="carrera-fila-icono carrera-fila-icono--seleccion" title="Convocado a la selección: +${h.convocatoria.presencias} presencias">🌐</span>`;
+      if (h.ganoCopaArgentina) iconos += `<span class="carrera-fila-icono" title="Ganó la Copa Argentina">🏆</span>`;
       filas.push(`
-        <div class="carrera-fila carrera-fila-jugada ${carreraClaseResultado(h.resultadoClub)}" style="animation-delay:${Math.min(filas.length, 10) * 40}ms" title="${h.club} — ${h.liga} — ${h.resultadoClub}">
+        <div class="carrera-fila carrera-fila-jugada ${carreraClaseResultado(h.resultadoClub)}" style="animation-delay:${Math.min(filas.length, 10) * 40}ms; border-left-color:${carreraColorClub(h.club)}" title="${h.club} — ${h.liga} — ${h.resultadoClub}">
           <div class="carrera-fila-edad">${h.edad}</div>
           <div class="carrera-fila-club">
             <img class="carrera-fila-escudo" src="escudos/${h.escudo}" alt="" onerror="this.style.visibility='hidden'">

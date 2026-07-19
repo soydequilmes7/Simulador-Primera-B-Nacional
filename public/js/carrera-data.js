@@ -133,8 +133,8 @@ const CARRERA_CLUBES = {
     { nombre:"Talleres de Córdoba", escudo:"talleres.png", liga:"Liga Profesional", nivel:80 },
     { nombre:"Vélez Sarsfield", escudo:"velez.png", liga:"Liga Profesional", nivel:79 },
     { nombre:"Estudiantes de La Plata", escudo:"estudiantes.png", liga:"Liga Profesional", nivel:77 },
-    { nombre:"Independiente", escudo:"independiente.png", liga:"Liga Profesional", nivel:78 },
-    { nombre:"San Lorenzo", escudo:"sanlorenzo.png", liga:"Liga Profesional", nivel:76 },
+    { nombre:"Independiente", escudo:"independiente.png", liga:"Liga Profesional", nivel:64 },
+    { nombre:"San Lorenzo", escudo:"sanlorenzo.png", liga:"Liga Profesional", nivel:60 },
     { nombre:"Rosario Central", escudo:"rosariocentral.png", liga:"Liga Profesional", nivel:76 },
     { nombre:"Argentinos Juniors", escudo:"argentinos.png", liga:"Liga Profesional", nivel:75 },
     { nombre:"Huracán", escudo:"huracan.png", liga:"Liga Profesional", nivel:74 },
@@ -380,6 +380,42 @@ function carreraClaseNota(nota){
   if (nota >= 6.0) return "nota-media";
   if (nota >= 5.0) return "nota-baja";
   return "nota-mala";
+}
+
+// Color principal por club, para pintar la fila de la trayectoria con la
+// identidad del club en vez de un color genérico. Son aproximaciones (un
+// solo color dominante, no la paleta completa) para los clubes más
+// conocidos de la Liga Profesional y algunos tradicionales de ascenso;
+// el resto (incluida toda Sudamérica fuera de Argentina) cae al color
+// estable por hash de carreraColorClub(), así igual quedan diferenciados
+// entre sí y siempre el mismo color para el mismo club, aunque no sea
+// necesariamente su color real -- si tenés los colores exactos de algún
+// club que uses seguido, pasámelos y los sumo acá.
+const CARRERA_COLOR_CLUB = {
+  "River Plate": "#D91A2A", "Boca Juniors": "#0F4C92", "Racing Club": "#77C7E8",
+  "Talleres de Córdoba": "#0A4595", "Vélez Sarsfield": "#1E5AA8",
+  "Estudiantes de La Plata": "#C8102E", "Independiente": "#D91C24",
+  "San Lorenzo": "#0C2340", "Rosario Central": "#1B3B6F", "Argentinos Juniors": "#E2001A",
+  "Huracán": "#E30613", "Defensa y Justicia": "#6E2585", "Newell's Old Boys": "#B5121B",
+  "Lanús": "#6F1D2B", "Unión de Santa Fe": "#D2232A", "Gimnasia La Plata": "#002D62",
+  "Belgrano": "#1B1F3B", "Central Córdoba (SdE)": "#10245C", "Atlético Tucumán": "#6EC6E8",
+  "Instituto": "#C8102E", "Tigre": "#0033A0", "Platense": "#2B2B2B",
+  "Banfield": "#2E7D32", "Barracas Central": "#7A1F2B", "Sarmiento (Junín)": "#1B7B3A",
+  "Independiente Rivadavia": "#1C3F94", "Deportivo Riestra": "#F26522",
+  "Chacarita": "#1a1a1a", "Atlanta": "#1B3B6F", "Quilmes": "#6EC6E8",
+  "Colón": "#B5121B", "Godoy Cruz": "#0A4595", "Patronato": "#B5121B",
+  "All Boys": "#1a1a1a", "Temperley": "#6EC6E8", "Almagro": "#B5121B",
+  "Chicago": "#1a1a1a", "Los Andes": "#E2001A",
+};
+
+// Color estable por nombre de club (hash simple -> tono HSL), para todo
+// club que no tiene una entrada curada arriba.
+function carreraColorClub(nombreClub){
+  if (CARRERA_COLOR_CLUB[nombreClub]) return CARRERA_COLOR_CLUB[nombreClub];
+  let hash = 0;
+  for (let i = 0; i < nombreClub.length; i++) hash = nombreClub.charCodeAt(i) + ((hash << 5) - hash);
+  const hue = Math.abs(hash) % 360;
+  return `hsl(${hue}, 50%, 52%)`;
 }
 
 // Clase CSS por rango de OVR, para el color del badge grande de la ficha.
