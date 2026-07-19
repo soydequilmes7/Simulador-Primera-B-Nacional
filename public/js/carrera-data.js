@@ -351,6 +351,27 @@ function carreraClaseResultado(resultado){
   return "resultado-neutro";
 }
 
+// Logo del torneo por liga, para mostrar junto al escudo del club en la
+// trayectoria. Solo cubre las ligas para las que el simulador ya tiene un
+// logo en public/logos-torneos -- las que no están (la mayoría de las
+// ligas sudamericanas fuera de Argentina/Brasil/Colombia/Ecuador) se
+// omiten en vez de mostrar un ícono roto.
+const CARRERA_LOGO_LIGA = {
+  "Primera C": "primera-c.png",
+  "B Metropolitana": "b-metropolitana.png",
+  "Primera Nacional": "primera-nacional.png",
+  "Liga Profesional": "liga-profesional.png",
+  "Brasileirão": "brasileirao.png",
+  "Liga colombiana": "LigaBetPlay.png",
+  "Liga ecuatoriana": "ligapro.png",
+};
+
+function carreraLogoLigaHTML(liga){
+  const archivo = CARRERA_LOGO_LIGA[liga];
+  if (!archivo) return "";
+  return `<img class="carrera-logo-liga" src="logos-torneos/${archivo}" alt="" loading="lazy" onerror="this.remove()">`;
+}
+
 // Clase CSS por rango de OVR, para el color del badge grande de la ficha.
 function carreraClaseOVR(ovr){
   if (ovr >= 80) return "ovr-elite";

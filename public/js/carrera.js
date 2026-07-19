@@ -148,6 +148,11 @@ function carreraElegirClub(club){
 }
 
 /* ---------- Motor de temporada (resumen directo, simulación aparte) ---------- */
+// La carrera avanza de a 2 años por click (edad +2 cada vez, como pediste),
+// así que "temporada" acá es en realidad un bienio: el doble de partidos,
+// y la curva de crecimiento/declive escalada a ese mismo período.
+const CARRERA_PASO_EDAD = 2;
+
 function carreraSimularTemporada(){
   const j = CARRERA_STATE.jugador;
   const club = j.club;
@@ -157,7 +162,7 @@ function carreraSimularTemporada(){
   const diff = j.atributos.general - (club.nivel || 45);
   let chance = 45 + diff * 1.6;
   chance = Math.max(5, Math.min(95, chance));
-  const PARTIDOS_TEMPORADA = 30;
+  const PARTIDOS_TEMPORADA = 30 * CARRERA_PASO_EDAD;
   const ruidoMinutos = 0.7 + Math.random() * 0.5;
   let partidos = Math.round(PARTIDOS_TEMPORADA * (chance / 100) * ruidoMinutos);
   partidos = Math.max(0, Math.min(PARTIDOS_TEMPORADA, partidos));
@@ -189,29 +194,32 @@ function carreraSimularTemporada(){
   // cuánto puede bajar depende de qué tan alto fue el pico -- un jugador
   // que llegó a 90 de general se mantiene arriba de piso más alto (~75-80)
   // que uno que llegó a 50 (~37-38), en proporción al pico, no en valor fijo.
+  // Los rangos de crecimiento/declive están escalados x2 porque cada click
+  // representa 2 años, no 1.
   const generalAntes = j.atributos.general;
   let generalDespues;
   if (edadDeLaTemporada < j.edadPico) {
     let crecimiento;
-    if (partidos >= 18) crecimiento = Math.round(Math.random() * 3) + 1;
-    else if (partidos >= 8) crecimiento = Math.round(Math.random() * 2);
-    else crecimiento = Math.round(Math.random() * 2) - 1;
+    if (partidos >= 36) crecimiento = Math.round(Math.random() * 6) + 2;
+    else if (partidos >= 16) crecimiento = Math.round(Math.random() * 4);
+    else crecimiento = Math.round(Math.random() * 3) - 2;
     generalDespues = Math.max(1, Math.min(j.atributos.potencial, generalAntes + crecimiento));
     j.picoGeneral = Math.max(j.picoGeneral, generalDespues);
   } else {
     const retencion = 0.65 + (j.picoGeneral / 99) * 0.20; // 65%-85% del pico
     const piso = Math.round(j.picoGeneral * retencion);
-    const añosPasadoElPico = edadDeLaTemporada - j.edadPico;
-    const declive = 1 + Math.floor(Math.random() * 2) + Math.floor(añosPasadoElPico / 3);
+    const bieniosPasadoElPico = (edadDeLaTemporada - j.edadPico) / CARRERA_PASO_EDAD;
+    const declive = 2 + Math.floor(Math.random() * 3) + Math.floor(bieniosPasadoElPico / 1.5);
     generalDespues = Math.max(piso, generalAntes - declive);
   }
   j.atributos.general = generalDespues;
-  j.edad = edadDeLaTemporada + 1;
+  j.edad = edadDeLaTemporada + CARRERA_PASO_EDAD;
   CARRERA_STATE.temporada += 1;
 
   CARRERA_STATE.historial.unshift({
     temporada: CARRERA_STATE.temporada, edad: edadDeLaTemporada, club: club.nombre,
-    escudo: club.escudo, resultadoClub, partidos, goles, asistencias, valoracion, generalAntes, generalDespues
+    escudo: club.escudo, liga: club.liga, resultadoClub, partidos, goles, asistencias,
+    valoracion, generalAntes, generalDespues
   });
 
   if (resultadoClub === "Campeón") {
@@ -302,46 +310,38 @@ function carreraMostrarDashboard(){
   }, { pj:0, goles:0, asist:0 });
 
   const vitrinaHTML = CARRERA_STATE.titulos.length ? `
-    <div class="carrera-vitrina">
-      <h4>Vitrina</h4>
-      <div class="carrera-vitrina-lista">
-        ${CARRERA_STATE.titulos.map(t => `<span class="carrera-vitrina-item">🏆 ${t.liga} · ${t.edad} años</span>`).join("")}
-      </div>
-    </div>` : "";
+    <div class="carrera-vitrina-lista">
+      ${CARRERA_STATE.titulos.map(t => `<span class="carrera-vitrina-item">🏆 ${t.liga} · ${t.edad} años</span>`).join("")}
+    </div>` : `<p class="carrera-vitrina-vacia">Vitrina vacía</p>`;
 
   const decisionHTML = CARRERA_STATE.retirado ? `
     <div class="carrera-decision carrera-retiro">
       <h3>🏁 Fin de la carrera</h3>
-      <p class="carrera-oferta-sub">${j.apellido.trim().toUpperCase()} se retira a los ${j.edad} años, tras ${CARRERA_STATE.temporada} temporadas y ${CARRERA_STATE.titulos.length} título${CARRERA_STATE.titulos.length === 1 ? "" : "s"}. Pico de nivel: ${j.picoGeneral} OVR.</p>
+      <p class="carrera-oferta-sub">${j.apellido.trim().toUpperCase()} se retira a los ${j.edad} años, tras ${CARRERA_STATE.temporada} temporada${CARRERA_STATE.temporada === 1 ? "" : "s"} y ${CARRERA_STATE.titulos.length} título${CARRERA_STATE.titulos.length === 1 ? "" : "s"}. Pico de nivel: ${j.picoGeneral} OVR.</p>
       <button type="button" class="btn-carrera-primary" id="btn-carrera-nueva">Empezar una nueva carrera</button>
     </div>` : CARRERA_STATE.decision ? `
     <div class="carrera-decision">
-      <h3>${j.enPrestamo ? "Fin del préstamo — ¿qué hacés?" : "¿Qué hacés esta temporada?"}</h3>
+      <h3>${j.enPrestamo ? "Regreso a tu club" : "¿Qué hacés esta temporada?"}</h3>
+      <p class="carrera-decision-desc">${j.enPrestamo
+        ? `Volvés a ${j.clubDueño.nombre} y vas a ser tenido en cuenta. Si igual querés salir, tenés ${CARRERA_STATE.decision.opciones.length - 1} oferta${CARRERA_STATE.decision.opciones.length - 1 === 1 ? "" : "s"} para cambiar de aire.`
+        : `Podés quedarte en ${j.club.nombre} o escuchar otras ofertas.`}</p>
       <div class="carrera-decision-grid">
-        ${CARRERA_STATE.decision.opciones.map(op => `
-          <button type="button" class="carrera-decision-card" data-id="${op.id}">
-            <img class="carrera-decision-escudo" src="escudos/${op.club.escudo}" alt="" onerror="this.style.visibility='hidden'">
+        ${CARRERA_STATE.decision.opciones.map((op, i) => {
+          const ultimaImpar = i === CARRERA_STATE.decision.opciones.length - 1 && CARRERA_STATE.decision.opciones.length % 2 === 1;
+          const tipo = op.id === "seguir" || op.id === "volver" ? "Quedarte en" : op.id === "extender" ? "Extender en" : op.id === "definitiva" ? "Ficha fija con" : "Fichar por";
+          return `
+          <button type="button" class="carrera-decision-card${ultimaImpar ? " carrera-decision-card--centrada" : ""}" data-id="${op.id}" style="animation-delay:${i * 60}ms">
+            <span class="carrera-decision-tipo">${tipo}</span>
             <strong>${op.club.nombre}</strong>
-            <span>${op.club.liga}</span>
-            <em>${op.label}</em>
-          </button>`).join("")}
+            <img class="carrera-decision-escudo" src="escudos/${op.club.escudo}" alt="" onerror="this.style.visibility='hidden'">
+            <span class="carrera-decision-liga">${carreraLogoLigaHTML(op.club.liga)}${op.club.liga}</span>
+          </button>`;
+        }).join("")}
       </div>
     </div>` : `
     <button type="button" class="btn-carrera-primary carrera-btn-temporada" id="btn-carrera-jugar-temporada">Jugar Temporada ${CARRERA_STATE.temporada + 1}</button>`;
 
-  const timelineHTML = CARRERA_STATE.historial.length ? `
-    <div class="carrera-timeline">
-      <h3>Trayectoria</h3>
-      ${CARRERA_STATE.historial.slice().reverse().map((h, i) => `
-        <div class="carrera-timeline-item ${carreraClaseResultado(h.resultadoClub)}" style="animation-delay:${Math.min(i, 8) * 35}ms">
-          <img class="carrera-timeline-escudo" src="escudos/${h.escudo}" alt="" onerror="this.style.visibility='hidden'">
-          <div class="carrera-timeline-edad">${h.edad}<span>años</span></div>
-          <div class="carrera-timeline-col carrera-timeline-club"><b>${h.club}</b><span>${h.resultadoClub}</span></div>
-          <div class="carrera-timeline-col">${h.partidos} PJ · ${h.goles} G · ${h.asistencias} A</div>
-          <div class="carrera-timeline-col carrera-timeline-rating">${h.valoracion}</div>
-          <div class="carrera-timeline-ovr ${carreraClaseOVR(h.generalDespues)}">${h.generalDespues}</div>
-        </div>`).join("")}
-    </div>` : `<p class="carrera-oferta-sub">Todavía no jugaste ninguna temporada.</p>`;
+  const tablaHTML = carreraTablaEdadesHTML();
 
   dash.innerHTML = `
     <div class="carrera-dash-grid">
@@ -349,22 +349,24 @@ function carreraMostrarDashboard(){
         <div class="carrera-tarjeta-top">
           <div class="carrera-ovr-badge ${claseOVR}">${a.general}<span>OVR</span></div>
           <div class="carrera-tarjeta-id">
-            <h2>${j.apellido.trim().toUpperCase()} <span class="carrera-resumen-num">#${j.numero}</span></h2>
-            <p class="carrera-tarjeta-meta">${carreraBandera(j.pais.iso2)} ${j.pais.nombre} · ${j.posicion} · ${j.edad} años</p>
-          </div>
-        </div>
-        <div class="carrera-tarjeta-valor">Valor de mercado <b>${valor}</b></div>
-        <div class="carrera-resumen-club">
-          <img class="carrera-resumen-club-escudo" src="escudos/${j.club.escudo}" alt="" onerror="this.style.visibility='hidden'">
-          <div>
-            <strong>${j.club.nombre}${j.enPrestamo ? " (préstamo)" : ""}</strong>
-            <span>${j.club.liga}${j.enPrestamo ? " · Dueño: " + j.clubDueño.nombre : ""}</span>
+            <div class="carrera-tarjeta-id-top">
+              <span class="carrera-tarjeta-chip">${carreraBandera(j.pais.iso2)}</span>
+              <span class="carrera-tarjeta-chip">#${j.numero}</span>
+              <span class="carrera-tarjeta-chip carrera-tarjeta-chip-pos">${j.posicion}</span>
+              <span class="carrera-tarjeta-edad">EDAD<b>${j.edad}</b></span>
+            </div>
+            <h2>${carreraLogoLigaHTML(j.club.liga)}${j.apellido.trim().toUpperCase()}</h2>
+            <div class="carrera-tarjeta-valor">VALOR <b>${valor}</b></div>
           </div>
         </div>
         <div class="carrera-tarjeta-stats">
-          <div><b>${totales.pj}</b><span>PJ</span></div>
-          <div><b>${totales.goles}</b><span>Goles</span></div>
-          <div><b>${totales.asist}</b><span>Asist.</span></div>
+          <div><span class="carrera-stat-icono">🎽</span><b>${totales.pj}</b><span>PJ</span></div>
+          <div><span class="carrera-stat-icono">⚽</span><b>${totales.goles}</b><span>GLS</span></div>
+          <div><span class="carrera-stat-icono">🅰️</span><b>${totales.asist}</b><span>AST</span></div>
+        </div>
+        <div class="carrera-vitrina">
+          <h4>🏆 Vitrina</h4>
+          ${vitrinaHTML}
         </div>
         <div class="carrera-atributos">
           <div class="carrera-atributo"><span>Potencial</span><b>${a.potencial}</b><div class="carrera-atributo-barra"><div style="width:${a.potencial}%"></div></div></div>
@@ -372,12 +374,11 @@ function carreraMostrarDashboard(){
           <div class="carrera-atributo"><span>Defensa</span><b>${a.defensa}</b><div class="carrera-atributo-barra"><div style="width:${a.defensa}%"></div></div></div>
           <div class="carrera-atributo"><span>Físico</span><b>${a.fisico}</b><div class="carrera-atributo-barra"><div style="width:${a.fisico}%"></div></div></div>
         </div>
-        ${vitrinaHTML}
+        ${decisionHTML}
         <button type="button" class="btn-carrera-secondary" id="btn-carrera-editar">Editar identidad</button>
       </div>
       <div class="carrera-dash-derecha">
-        ${decisionHTML}
-        ${timelineHTML}
+        ${tablaHTML}
       </div>
     </div>`;
 
@@ -392,6 +393,54 @@ function carreraMostrarDashboard(){
   if (btnNuevaCarrera) btnNuevaCarrera.addEventListener("click", carreraReiniciarEstado);
 
   document.getElementById("btn-carrera-editar").addEventListener("click", carreraReiniciarEstado);
+}
+
+// Arma la tabla de la derecha: una fila por cada bienio posible entre los
+// 16 y los 38 años (el último bienio jugable antes del retiro a los 40).
+// Cada fila puede estar en 3 estados: ya jugada (datos reales, con escudo,
+// logo de liga y color según cómo le fue esa temporada al club), en curso
+// (todavía no se eligió club para esa edad -- fila "Eligiendo club...") o
+// futura (apagada, solo muestra la edad).
+function carreraTablaEdadesHTML(){
+  const j = CARRERA_STATE.jugador;
+  const porEdad = new Map(CARRERA_STATE.historial.map(h => [h.edad, h]));
+  const filas = [];
+  for (let edad = CARRERA_EDAD_INICIAL; edad < CARRERA_EDAD_RETIRO; edad += CARRERA_PASO_EDAD) {
+    const h = porEdad.get(edad);
+    if (h) {
+      filas.push(`
+        <div class="carrera-fila carrera-fila-jugada ${carreraClaseResultado(h.resultadoClub)}" style="animation-delay:${Math.min(filas.length, 10) * 40}ms">
+          <div class="carrera-fila-edad">${h.edad}</div>
+          <div class="carrera-fila-club">
+            <img class="carrera-fila-escudo" src="escudos/${h.escudo}" alt="" onerror="this.style.visibility='hidden'">
+            ${carreraLogoLigaHTML(h.liga)}
+            <span>${h.club}</span>
+          </div>
+          <div class="carrera-fila-ovr ${carreraClaseOVR(h.generalDespues)}">${h.generalDespues}</div>
+          <div class="carrera-fila-num">${h.partidos}</div>
+          <div class="carrera-fila-num">⚽ ${h.goles}</div>
+          <div class="carrera-fila-num">🅰️ ${h.asistencias}</div>
+        </div>`);
+    } else if (edad === j.edad && !CARRERA_STATE.retirado) {
+      filas.push(`
+        <div class="carrera-fila carrera-fila-pendiente">
+          <div class="carrera-fila-edad carrera-fila-edad-pendiente">${edad}</div>
+          <div class="carrera-fila-club carrera-fila-eligiendo">Eligiendo club...</div>
+        </div>`);
+    } else {
+      filas.push(`
+        <div class="carrera-fila carrera-fila-futura">
+          <div class="carrera-fila-edad">${edad}</div>
+        </div>`);
+    }
+  }
+  return `
+    <div class="carrera-tabla">
+      <div class="carrera-tabla-header">
+        <div>EDAD</div><div>CLUB</div><div>OVR</div><div>PJ</div><div>GLS</div><div>AST</div>
+      </div>
+      <div class="carrera-tabla-body">${filas.join("")}</div>
+    </div>`;
 }
 
 // Vuelve a la pantalla de identidad y limpia todo el estado de la carrera

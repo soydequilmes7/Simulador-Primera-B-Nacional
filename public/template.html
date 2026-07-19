@@ -5191,33 +5191,13 @@ body.liga-carrera{
 .carrera-oferta-liga{ color:var(--muted); font-size:12.5px; margin:0 0 20px; text-transform:uppercase; letter-spacing:.05em; }
 .carrera-oferta-btn{ width:100%; }
 
-.carrera-resumen-club{
-  display:flex; align-items:center; gap:12px; text-align:left; margin:0 0 18px;
-  background:rgba(255,255,255,.04); border:1px solid var(--glass-border); border-radius:14px; padding:12px 14px;
-}
-.carrera-resumen-club-escudo{ width:40px; height:40px; object-fit:contain; flex-shrink:0; }
-.carrera-resumen-club strong{ display:block; color:var(--ink); font-size:14px; }
-.carrera-resumen-club span{ display:block; color:var(--muted); font-size:12px; margin-top:2px; }
-
 .carrera-atributos{ display:grid; grid-template-columns:1fr 1fr; gap:12px 18px; text-align:left; margin:0 0 22px; }
 .carrera-atributo span{ display:block; font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin-bottom:3px; }
 .carrera-atributo b{ color:var(--ink); font-size:15px; }
 .carrera-atributo-barra{ height:5px; border-radius:99px; background:rgba(255,255,255,.08); margin-top:5px; overflow:hidden; }
-.carrera-atributo-barra div{ height:100%; background:linear-gradient(90deg, var(--accent), var(--gold)); border-radius:99px; }
+.carrera-atributo-barra div{ height:100%; background:linear-gradient(90deg, var(--accent), var(--gold)); border-radius:99px; transition:width .5s cubic-bezier(.4,0,.2,1); }
 
 .carrera-btn-temporada{ width:100%; margin:4px 0 10px; }
-
-.carrera-historial{ max-width:640px; margin:26px auto 0; }
-.carrera-historial h3{ font-family:'Oswald', sans-serif; font-size:15px; color:var(--ink); margin:0 0 12px; text-align:left; }
-.carrera-historial-item{
-  display:grid; grid-template-columns:0.55fr 1.3fr 1.3fr 0.55fr 0.75fr; gap:10px; align-items:center;
-  background:var(--glass-bg); border:1px solid var(--glass-border); border-radius:14px; padding:12px 16px; margin-bottom:8px;
-  font-size:12.5px; color:var(--ink-dim); text-align:left;
-}
-.carrera-historial-col span{ display:block; color:var(--muted); font-size:11px; margin-top:2px; }
-.carrera-historial-club b{ color:var(--ink); font-size:13px; }
-.carrera-historial-rating{ font-weight:700; color:var(--gold); text-align:center; }
-.carrera-historial-general{ text-align:right; color:var(--ink-dim); }
 
 .carrera-resumen-card{
   max-width:460px; margin:40px auto; text-align:center;
@@ -5230,116 +5210,157 @@ body.liga-carrera{
 .carrera-resumen-meta{ color:var(--ink-dim); font-size:13.5px; margin:0 0 14px; text-transform:capitalize; }
 .carrera-resumen-nota{ color:var(--muted); font-size:13px; line-height:1.5; margin:0 0 20px; }
 
-/* ---- Dashboard v2: tarjeta + timeline por edad, con préstamos ---- */
-.carrera-dash-grid{ display:grid; grid-template-columns:360px 1fr; gap:26px; align-items:start; margin-top:10px; }
+/* ---- Dashboard v3: tarjeta + tabla de edades cada 2 años ---- */
+.carrera-dash-grid{ display:grid; grid-template-columns:340px 1fr; gap:26px; align-items:start; margin-top:10px; }
 
 .carrera-tarjeta{
   background: var(--glass-bg); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
-  border:1px solid var(--glass-border); border-radius:22px; padding:26px; box-shadow: var(--glass-shadow);
+  border:1px solid var(--glass-border); border-radius:22px; padding:24px; box-shadow: var(--glass-shadow);
+  animation: carreraFade .35s ease both;
 }
-.carrera-tarjeta-top{ display:flex; align-items:center; gap:16px; margin-bottom:14px; }
+.carrera-tarjeta-top{ display:flex; align-items:flex-start; gap:14px; margin-bottom:16px; }
 .carrera-ovr-badge{
-  flex-shrink:0; width:64px; height:64px; border-radius:16px; display:flex; flex-direction:column;
-  align-items:center; justify-content:center; font-family:'Oswald', sans-serif; font-size:24px; font-weight:700;
+  flex-shrink:0; width:60px; height:60px; border-radius:16px; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; font-family:'Oswald', sans-serif; font-size:22px; font-weight:700;
   line-height:1; color:#0d1015; box-shadow: 0 6px 16px rgba(0,0,0,.35);
+  transition: transform .2s ease;
 }
+.carrera-tarjeta:hover .carrera-ovr-badge{ transform:scale(1.05) rotate(-2deg); }
 .carrera-ovr-badge span{ font-size:9px; font-weight:700; letter-spacing:.06em; margin-top:2px; text-transform:uppercase; opacity:.75; }
 .carrera-ovr-badge.ovr-elite{ background:linear-gradient(155deg, var(--gold), #C9A24F); }
 .carrera-ovr-badge.ovr-alto{ background:linear-gradient(155deg, #8AB4FF, var(--accent)); color:#08101f; }
 .carrera-ovr-badge.ovr-medio{ background:linear-gradient(155deg, #9FE0B0, #4FAF6E); color:#06210f; }
 .carrera-ovr-badge.ovr-bajo{ background:linear-gradient(155deg, #cfd6e3, #8993A8); color:#12161f; }
 .carrera-ovr-badge.ovr-juvenil{ background:rgba(255,255,255,.10); color:var(--ink-dim); border:1px solid var(--glass-border); }
-.carrera-tarjeta-id h2{ font-family:'Oswald', sans-serif; color:var(--ink); margin:0 0 4px; font-size:19px; }
-.carrera-tarjeta-meta{ color:var(--ink-dim); font-size:12.5px; margin:0; display:flex; align-items:center; gap:6px; text-transform:capitalize; }
-.carrera-tarjeta-meta .carrera-bandera-img{ width:16px; height:11px; object-fit:cover; }
-.carrera-tarjeta-valor{
-  text-align:center; color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.06em;
-  background:rgba(255,255,255,.04); border:1px solid var(--glass-border); border-radius:12px; padding:10px; margin-bottom:14px;
-}
-.carrera-tarjeta-valor b{ display:block; color:var(--gold); font-family:'Oswald', sans-serif; font-size:17px; margin-top:2px; letter-spacing:.02em; }
-.carrera-tarjeta-stats{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; text-align:center; margin:0 0 18px; }
-.carrera-tarjeta-stats div{ background:rgba(255,255,255,.04); border:1px solid var(--glass-border); border-radius:12px; padding:10px 4px; }
-.carrera-tarjeta-stats b{ display:block; color:var(--ink); font-size:16px; font-family:'Oswald', sans-serif; }
-.carrera-tarjeta-stats span{ display:block; color:var(--muted); font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; margin-top:2px; }
 
-.carrera-vitrina{ margin:4px 0 18px; }
+.carrera-tarjeta-id{ flex:1; min-width:0; }
+.carrera-tarjeta-id-top{ display:flex; align-items:center; gap:6px; margin-bottom:6px; }
+.carrera-tarjeta-chip{
+  background:rgba(255,255,255,.06); border:1px solid var(--glass-border); border-radius:999px;
+  padding:2px 9px; font-size:11px; font-weight:700; color:var(--ink-dim); line-height:18px; display:inline-flex; align-items:center;
+}
+.carrera-tarjeta-chip .carrera-bandera-img{ width:14px; height:10px; object-fit:cover; }
+.carrera-tarjeta-chip-pos{ background:rgba(79,140,255,.16); border-color:rgba(79,140,255,.3); color:var(--accent); }
+.carrera-tarjeta-edad{ margin-left:auto; text-align:right; font-size:9px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; line-height:1.1; }
+.carrera-tarjeta-edad b{ display:block; font-family:'Oswald', sans-serif; font-size:20px; color:var(--ink); }
+.carrera-tarjeta-id h2{
+  font-family:'Oswald', sans-serif; color:var(--ink); margin:0 0 8px; font-size:17px; white-space:nowrap;
+  overflow:hidden; text-overflow:ellipsis; display:flex; align-items:center; gap:7px;
+}
+.carrera-tarjeta-id h2 .carrera-logo-liga{ width:18px; height:18px; object-fit:contain; flex-shrink:0; }
+.carrera-tarjeta-valor{
+  display:inline-flex; align-items:center; gap:6px; color:var(--muted); font-size:10.5px;
+  text-transform:uppercase; letter-spacing:.06em;
+}
+.carrera-tarjeta-valor b{ color:var(--gold); font-family:'Oswald', sans-serif; font-size:14px; letter-spacing:.02em; }
+
+.carrera-tarjeta-stats{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; text-align:center; margin:0 0 16px; }
+.carrera-tarjeta-stats div{
+  background:rgba(255,255,255,.04); border:1px solid var(--glass-border); border-radius:12px; padding:10px 4px;
+  transition: border-color .2s ease, background .2s ease;
+}
+.carrera-tarjeta-stats div:hover{ border-color:var(--glass-border-hover); background:rgba(255,255,255,.06); }
+.carrera-stat-icono{ display:block; font-size:14px; margin-bottom:2px; }
+.carrera-tarjeta-stats b{ display:block; color:var(--ink); font-size:16px; font-family:'Oswald', sans-serif; }
+.carrera-tarjeta-stats span{ display:block; color:var(--muted); font-size:10px; text-transform:uppercase; letter-spacing:.05em; margin-top:2px; }
+
+.carrera-vitrina{ margin:0 0 18px; }
 .carrera-vitrina h4{ font-size:11px; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); margin:0 0 8px; font-weight:700; }
+.carrera-vitrina-vacia{ color:var(--muted); font-size:12px; margin:0; }
 .carrera-vitrina-lista{ display:flex; flex-wrap:wrap; gap:6px; }
 .carrera-vitrina-item{
   background:rgba(232,196,104,.12); border:1px solid rgba(232,196,104,.35); color:var(--gold);
   font-size:11.5px; border-radius:999px; padding:5px 11px; white-space:nowrap;
+  animation: carreraFade .3s ease both;
 }
 
 .carrera-dash-derecha{ display:flex; flex-direction:column; gap:22px; }
 
-.carrera-decision{
-  background: var(--glass-bg); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
-  border:1px solid var(--glass-border); border-radius:22px; padding:22px; box-shadow: var(--glass-shadow);
-}
-.carrera-decision h3{ font-family:'Oswald', sans-serif; font-size:16px; color:var(--ink); margin:0 0 16px; }
-.carrera-decision-grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:14px; }
+/* ---- Panel de decisión (fichajes/préstamos) ---- */
+.carrera-decision{ margin:0 0 18px; padding-top:18px; border-top:1px solid var(--glass-border); }
+.carrera-decision h3{ font-family:'Oswald', sans-serif; font-size:15px; color:var(--ink); margin:0 0 6px; }
+.carrera-decision-desc{ color:var(--muted); font-size:12px; line-height:1.5; margin:0 0 14px; }
+.carrera-decision-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+@keyframes carreraCardIn{ from{ opacity:0; transform:translateY(8px) scale(.97); } to{ opacity:1; transform:none; } }
 .carrera-decision-card{
   display:flex; flex-direction:column; align-items:center; text-align:center; gap:4px;
-  background:rgba(255,255,255,.04); border:1px solid var(--glass-border); border-radius:16px; padding:16px 10px;
+  background:rgba(255,255,255,.04); border:1px solid var(--glass-border); border-radius:14px; padding:12px 8px;
   cursor:pointer; transition:border-color .2s ease, transform .2s ease, background .2s ease; color:var(--ink);
+  animation: carreraCardIn .3s ease both;
 }
-.carrera-decision-card:hover{ border-color:var(--accent); background:rgba(79,140,255,.08); transform:translateY(-2px); }
-.carrera-decision-escudo{ width:44px; height:44px; object-fit:contain; margin-bottom:6px; }
-.carrera-decision-card strong{ font-family:'Oswald', sans-serif; font-size:13.5px; }
-.carrera-decision-card span{ color:var(--muted); font-size:10.5px; text-transform:uppercase; letter-spacing:.04em; margin-bottom:6px; }
-.carrera-decision-card em{ font-style:normal; color:var(--accent); font-size:11.5px; font-weight:600; }
-
-.carrera-timeline{
-  background: var(--glass-bg); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
-  border:1px solid var(--glass-border); border-radius:22px; padding:22px; box-shadow: var(--glass-shadow);
+.carrera-decision-card--centrada{ grid-column:1 / -1; max-width:260px; margin:0 auto; width:100%; }
+.carrera-decision-card:hover{ border-color:var(--accent); background:rgba(79,140,255,.08); transform:translateY(-3px) scale(1.02); }
+.carrera-decision-tipo{ color:var(--muted); font-size:10px; text-transform:uppercase; letter-spacing:.05em; }
+.carrera-decision-card strong{ font-family:'Oswald', sans-serif; font-size:13px; }
+.carrera-decision-escudo{ width:38px; height:38px; object-fit:contain; margin:4px 0; }
+.carrera-decision-liga{
+  display:inline-flex; align-items:center; gap:5px; color:var(--muted); font-size:10px;
+  text-transform:uppercase; letter-spacing:.03em;
 }
-.carrera-timeline h3{ font-family:'Oswald', sans-serif; font-size:15px; color:var(--ink); margin:0 0 14px; }
-@keyframes carreraTimelineIn{ from{ opacity:0; transform:translateX(-8px); } to{ opacity:1; transform:none; } }
-.carrera-timeline-item{
-  display:grid; grid-template-columns:32px 44px 1.3fr 1.3fr 0.6fr 40px; gap:12px; align-items:center;
-  background:rgba(255,255,255,.03); border:1px solid var(--glass-border); border-left:3px solid transparent;
-  border-radius:14px; padding:11px 14px; margin-bottom:8px; font-size:12.5px; color:var(--ink-dim);
-  animation: carreraTimelineIn .3s ease both;
-}
-.carrera-timeline-escudo{ width:26px; height:26px; object-fit:contain; justify-self:center; }
-/* Color por resultado de la temporada: da lectura rápida de cómo le fue al
-   club sin tener que leer el texto de cada fila. */
-.carrera-timeline-item.resultado-campeon{ border-left-color:var(--gold); background:rgba(232,196,104,.06); }
-.carrera-timeline-item.resultado-copas{ border-left-color:var(--accent); }
-.carrera-timeline-item.resultado-pelea{ border-left-color:#E0A94F; }
-.carrera-timeline-item.resultado-descenso{ border-left-color:#E0604F; background:rgba(224,96,79,.06); }
-.carrera-timeline-edad{
-  text-align:center; font-family:'Oswald', sans-serif; font-size:17px; color:var(--ink); line-height:1;
-}
-.carrera-timeline-edad span{ display:block; font-size:9px; color:var(--muted); text-transform:uppercase; margin-top:2px; }
-.carrera-timeline-col span{ display:block; color:var(--muted); font-size:11px; margin-top:2px; }
-.carrera-timeline-club b{ color:var(--ink); font-size:13px; }
-.carrera-timeline-rating{ font-weight:700; color:var(--gold); text-align:center; }
-.carrera-timeline-ovr{
-  width:34px; height:34px; border-radius:10px; display:flex; align-items:center; justify-content:center;
-  font-family:'Oswald', sans-serif; font-weight:700; font-size:13px; color:#0d1015; justify-self:end;
-}
-.carrera-timeline-ovr.ovr-elite{ background:linear-gradient(155deg, var(--gold), #C9A24F); }
-.carrera-timeline-ovr.ovr-alto{ background:linear-gradient(155deg, #8AB4FF, var(--accent)); color:#08101f; }
-.carrera-timeline-ovr.ovr-medio{ background:linear-gradient(155deg, #9FE0B0, #4FAF6E); color:#06210f; }
-.carrera-timeline-ovr.ovr-bajo{ background:linear-gradient(155deg, #cfd6e3, #8993A8); color:#12161f; }
-.carrera-timeline-ovr.ovr-juvenil{ background:rgba(255,255,255,.10); color:var(--ink-dim); }
+.carrera-decision-liga .carrera-logo-liga{ width:14px; height:14px; object-fit:contain; }
 
 /* ---- Retiro ---- */
-.carrera-retiro{ text-align:center; }
+.carrera-retiro{ text-align:center; border-top:none; padding-top:0; }
 .carrera-retiro h3{ font-size:20px; margin-bottom:10px; }
 .carrera-retiro .carrera-oferta-sub{ margin:0 0 18px; }
+
+/* ---- Tabla de trayectoria, de a 2 años ---- */
+.carrera-tabla{
+  background: var(--glass-bg); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+  border:1px solid var(--glass-border); border-radius:22px; padding:8px 18px 14px; box-shadow: var(--glass-shadow);
+}
+.carrera-tabla-header{
+  display:grid; grid-template-columns:52px 1.6fr 70px 60px 60px 60px; gap:10px; padding:12px 8px 10px;
+  font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--muted);
+  border-bottom:1px solid var(--glass-border);
+}
+@keyframes carreraFilaIn{ from{ opacity:0; transform:translateX(-10px); } to{ opacity:1; transform:none; } }
+.carrera-fila{
+  display:grid; grid-template-columns:52px 1.6fr 70px 60px 60px 60px; gap:10px; align-items:center;
+  padding:10px 8px; border-radius:12px; font-size:13px; color:var(--ink-dim);
+  border-bottom:1px solid rgba(255,255,255,.03);
+}
+.carrera-fila-jugada{ animation: carreraFilaIn .3s ease both; transition: background .2s ease; }
+.carrera-fila-jugada:hover{ background:rgba(255,255,255,.04); }
+.carrera-fila-edad{
+  width:34px; height:34px; border-radius:10px; display:flex; align-items:center; justify-content:center;
+  font-family:'Oswald', sans-serif; font-weight:700; font-size:15px; color:#0d1015;
+  background:rgba(255,255,255,.08); color:var(--ink-dim);
+}
+.carrera-fila-jugada.resultado-neutro .carrera-fila-edad{ background:linear-gradient(155deg, #8AB4FF, var(--accent)); color:#08101f; }
+.carrera-fila-jugada.resultado-copas .carrera-fila-edad{ background:linear-gradient(155deg, #8AB4FF, var(--accent)); color:#08101f; }
+.carrera-fila-jugada.resultado-campeon .carrera-fila-edad{ background:linear-gradient(155deg, #9FE0B0, #4FAF6E); color:#06210f; }
+.carrera-fila-jugada.resultado-pelea .carrera-fila-edad{ background:linear-gradient(155deg, #F0B86E, #D98C3F); color:#2a1600; }
+.carrera-fila-jugada.resultado-descenso .carrera-fila-edad{ background:linear-gradient(155deg, #F08C7A, #D9573F); color:#2a0800; }
+.carrera-fila-club{ display:flex; align-items:center; gap:8px; min-width:0; color:var(--ink); font-weight:600; font-size:13.5px; }
+.carrera-fila-club span{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.carrera-fila-escudo{ width:24px; height:24px; object-fit:contain; flex-shrink:0; }
+.carrera-fila-club .carrera-logo-liga{ width:16px; height:16px; object-fit:contain; flex-shrink:0; opacity:.85; }
+.carrera-fila-ovr{
+  justify-self:start; background:rgba(232,196,104,.14); border:1px solid rgba(232,196,104,.35); color:var(--gold);
+  font-family:'Oswald', sans-serif; font-weight:700; font-size:12.5px; border-radius:8px; padding:3px 9px;
+}
+.carrera-fila-num{ color:var(--ink-dim); font-size:12.5px; }
+
+.carrera-fila-pendiente{ background:rgba(79,140,255,.05); border-radius:12px; animation: carreraFilaIn .3s ease both; }
+.carrera-fila-edad-pendiente{ background:rgba(79,140,255,.16); border:1px solid rgba(79,140,255,.35); color:var(--accent); animation: carreraPulso 1.6s ease-in-out infinite; }
+@keyframes carreraPulso{ 0%,100%{ box-shadow:0 0 0 0 rgba(79,140,255,.35); } 50%{ box-shadow:0 0 0 6px rgba(79,140,255,0); } }
+.carrera-fila-eligiendo{ color:var(--accent); font-style:italic; font-size:12.5px; }
+
+.carrera-fila-futura{ opacity:.35; }
+.carrera-fila-futura .carrera-fila-edad{ background:transparent; color:var(--muted); }
 
 @media (max-width:760px){
   .carrera-hero{ grid-template-columns:1fr; }
   .carrera-hero-img{ height:180px; }
   .carrera-identidad-grid{ grid-template-columns:1fr; }
   .carrera-oferta-grid{ grid-template-columns:1fr; }
-  .carrera-historial-item{ grid-template-columns:1fr 1fr; }
-  .carrera-historial-rating, .carrera-historial-general{ text-align:left; }
   .carrera-dash-grid{ grid-template-columns:1fr; }
   .carrera-decision-grid{ grid-template-columns:1fr; }
-  .carrera-timeline-item{ grid-template-columns:24px 32px 1fr 1fr; }
+  .carrera-decision-card--centrada{ max-width:none; }
+  .carrera-tabla-header{ grid-template-columns:40px 1fr 54px 40px 40px 40px; font-size:9px; }
+  .carrera-fila{ grid-template-columns:40px 1fr 54px 40px 40px 40px; gap:6px; font-size:11.5px; }
+  .carrera-fila-club{ font-size:12px; }
 }
 </style>
 </head>
