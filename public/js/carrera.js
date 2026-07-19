@@ -486,8 +486,23 @@ function carreraGenerarDecision(){
     const cantidadOfertas = descartado ? 3 : 2;
     const prestamos = cantidadOfertas - fichajes;
 
-    const nivelBusqueda = descartado ? j.atributos.general - 10 : j.atributos.general;
-    const candidatos = carreraObtenerOfertasPrestamo(j.club.nombre, nivelBusqueda, fichajes + prestamos);
+    // El nivel de club al que aspirás no depende solo del OVR: una
+    // temporada de nota muy alta (buen rendimiento, no solo buen OVR de
+    // base) te pone en el radar de clubes más ambiciosos de lo que tu
+    // nivel general solo ameritaría -- así "cuantos más goles metas y
+    // mejor rindas, mejores equipos te llaman" pesa de verdad, no solo
+    // el número de OVR.
+    const bonoForma = ultima && !descartado ? Math.max(0, (ultima.valoracion - 6.5) * 4) : 0;
+    const nivelBusqueda = descartado ? j.atributos.general - 10 : j.atributos.general + bonoForma;
+    // Si te acaban de dejar libre, no tiene sentido que ese mismo club (o
+    // el anterior inmediato) te vuelva a ofrecer algo la temporada
+    // siguiente -- se excluyen los últimos clubes en los que estuvo,
+    // no solo el actual, para evitar el "te corto y al toque me ofrece
+    // volver" que reportó Pablo.
+    const clubesRecientes = descartado
+      ? CARRERA_STATE.historial.slice(0, 2).map(h => h.club)
+      : [];
+    const candidatos = carreraObtenerOfertasPrestamo(j.club.nombre, nivelBusqueda, fichajes + prestamos, clubesRecientes);
     candidatos.forEach((c, i) => {
       if (i < fichajes) {
         opciones.push({ id:"fichaje"+i, label:`Fichaje de ${c.nombre}`, club:c, prestamo:false, dueñoNuevo:true });
@@ -613,7 +628,6 @@ function carreraMostrarDashboard(){
         </div>
         ${seleccionHTML}
         <div class="carrera-atributos">
-          <div class="carrera-atributo"><span>Potencial</span><b>${a.potencial}</b><div class="carrera-atributo-barra"><div style="width:${a.potencial}%"></div></div></div>
           <div class="carrera-atributo"><span>Ataque</span><b>${a.ataque}</b><div class="carrera-atributo-barra"><div style="width:${a.ataque}%"></div></div></div>
           <div class="carrera-atributo"><span>Defensa</span><b>${a.defensa}</b><div class="carrera-atributo-barra"><div style="width:${a.defensa}%"></div></div></div>
           <div class="carrera-atributo"><span>Físico</span><b>${a.fisico}</b><div class="carrera-atributo-barra"><div style="width:${a.fisico}%"></div></div></div>

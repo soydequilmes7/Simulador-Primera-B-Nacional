@@ -67,95 +67,95 @@ function carreraBandera(iso2, alt){
    ===================================================================== */
 const CARRERA_CLUBES = {
   AR: [
-    { nombre:"Berazategui", escudo:"berazategui.png", liga:"Primera C", nivel:38 },
-    { nombre:"Cañuelas", escudo:"canuelas.png", liga:"Primera C", nivel:39 },
-    { nombre:"Central Ballester", escudo:"centralballester.png", liga:"Primera C", nivel:41 },
-    { nombre:"Claypole", escudo:"claypole.png", liga:"Primera C", nivel:30 },
-    { nombre:"El Porvenir", escudo:"elporvenir.png", liga:"Primera C", nivel:42 },
-    { nombre:"Sacachispas", escudo:"sacachispas.png", liga:"Primera C", nivel:35 },
-    { nombre:"Fénix", escudo:"fenix.png", liga:"Primera C", nivel:41 },
-    { nombre:"Lugano", escudo:"lugano.png", liga:"Primera C", nivel:37 },
-    { nombre:"Atlas", escudo:"atlas.png", liga:"Primera C", nivel:34 },
-    { nombre:"Argentino de Merlo", escudo:"argentinomerlo.png", liga:"B Metropolitana", nivel:37 },
-    { nombre:"Argentino de Quilmes", escudo:"argquilmes.png", liga:"B Metropolitana", nivel:48 },
-    { nombre:"Arsenal de Sarandí", escudo:"arsenal.png", liga:"B Metropolitana", nivel:38 },
-    { nombre:"Brown de Adrogué", escudo:"brownadrogue.png", liga:"B Metropolitana", nivel:40 },
-    { nombre:"Camioneros", escudo:"camioneros.png", liga:"B Metropolitana", nivel:47 },
-    { nombre:"Comunicaciones", escudo:"comunicaciones.png", liga:"B Metropolitana", nivel:45 },
-    { nombre:"Deportivo Armenio", escudo:"armenio.png", liga:"B Metropolitana", nivel:42 },
-    { nombre:"Laferrere", escudo:"laferrere.png", liga:"B Metropolitana", nivel:45 },
-    { nombre:"Deportivo Merlo", escudo:"depmerlo.png", liga:"B Metropolitana", nivel:45 },
-    { nombre:"Excursionistas", escudo:"excursionistas.png", liga:"B Metropolitana", nivel:46 },
-    { nombre:"Flandria", escudo:"flandria.png", liga:"B Metropolitana", nivel:43 },
-    { nombre:"Ituzaingó", escudo:"ituzaingo.png", liga:"B Metropolitana", nivel:43 },
-    { nombre:"Liniers", escudo:"liniers.png", liga:"B Metropolitana", nivel:42 },
-    { nombre:"Sportivo Italiano", escudo:"spitaliano.png", liga:"B Metropolitana", nivel:48 },
-    { nombre:"UAI Urquiza", escudo:"uaiurquiza.png", liga:"B Metropolitana", nivel:48 },
-    { nombre:"Villa Dálmine", escudo:"villadalmine.png", liga:"B Metropolitana", nivel:48 },
-    { nombre:"Villa San Carlos", escudo:"villasancarlos.png", liga:"B Metropolitana", nivel:39 },
+    { nombre:"Berazategui", escudo:"berazategui.png", liga:"Primera C", nivel:22 },
+    { nombre:"Cañuelas", escudo:"canuelas.png", liga:"Primera C", nivel:23 },
+    { nombre:"Central Ballester", escudo:"centralballester.png", liga:"Primera C", nivel:24 },
+    { nombre:"Claypole", escudo:"claypole.png", liga:"Primera C", nivel:18 },
+    { nombre:"El Porvenir", escudo:"elporvenir.png", liga:"Primera C", nivel:25 },
+    { nombre:"Sacachispas", escudo:"sacachispas.png", liga:"Primera C", nivel:21 },
+    { nombre:"Fénix", escudo:"fenix.png", liga:"Primera C", nivel:24 },
+    { nombre:"Lugano", escudo:"lugano.png", liga:"Primera C", nivel:22 },
+    { nombre:"Atlas", escudo:"atlas.png", liga:"Primera C", nivel:20 },
+    { nombre:"Argentino de Merlo", escudo:"argentinomerlo.png", liga:"B Metropolitana", nivel:22 },
+    { nombre:"Argentino de Quilmes", escudo:"argquilmes.png", liga:"B Metropolitana", nivel:28 },
+    { nombre:"Arsenal de Sarandí", escudo:"arsenal.png", liga:"B Metropolitana", nivel:22 },
+    { nombre:"Brown de Adrogué", escudo:"brownadrogue.png", liga:"B Metropolitana", nivel:24 },
+    { nombre:"Camioneros", escudo:"camioneros.png", liga:"B Metropolitana", nivel:27 },
+    { nombre:"Comunicaciones", escudo:"comunicaciones.png", liga:"B Metropolitana", nivel:26 },
+    { nombre:"Deportivo Armenio", escudo:"armenio.png", liga:"B Metropolitana", nivel:25 },
+    { nombre:"Laferrere", escudo:"laferrere.png", liga:"B Metropolitana", nivel:26 },
+    { nombre:"Deportivo Merlo", escudo:"depmerlo.png", liga:"B Metropolitana", nivel:26 },
+    { nombre:"Excursionistas", escudo:"excursionistas.png", liga:"B Metropolitana", nivel:27 },
+    { nombre:"Flandria", escudo:"flandria.png", liga:"B Metropolitana", nivel:25 },
+    { nombre:"Ituzaingó", escudo:"ituzaingo.png", liga:"B Metropolitana", nivel:25 },
+    { nombre:"Liniers", escudo:"liniers.png", liga:"B Metropolitana", nivel:25 },
+    { nombre:"Sportivo Italiano", escudo:"spitaliano.png", liga:"B Metropolitana", nivel:28 },
+    { nombre:"UAI Urquiza", escudo:"uaiurquiza.png", liga:"B Metropolitana", nivel:28 },
+    { nombre:"Villa Dálmine", escudo:"villadalmine.png", liga:"B Metropolitana", nivel:28 },
+    { nombre:"Villa San Carlos", escudo:"villasancarlos.png", liga:"B Metropolitana", nivel:23 },
     // Primera Nacional (segunda división argentina) — escalón intermedio entre
     // el ascenso (Primera C / B Metropolitana) y la Liga Profesional, para que
     // la carrera pueda subir de división en división en vez de saltar directo
     // a Primera. Mismos escudos/slugs que usa el simulador de ligas.
-    { nombre:"Chacarita", escudo:"chacarita.png", liga:"Primera Nacional", nivel:58 },
-    { nombre:"Quilmes", escudo:"quilmes.png", liga:"Primera Nacional", nivel:60 },
-    { nombre:"Almagro", escudo:"almagro.png", liga:"Primera Nacional", nivel:56 },
-    { nombre:"Atlanta", escudo:"atlanta.png", liga:"Primera Nacional", nivel:54 },
-    { nombre:"Chicago", escudo:"nueva_chicago.png", liga:"Primera Nacional", nivel:55 },
-    { nombre:"Colón", escudo:"colon.png", liga:"Primera Nacional", nivel:64 },
-    { nombre:"Agropecuario", escudo:"agropecuario.png", liga:"Primera Nacional", nivel:47 },
-    { nombre:"All Boys", escudo:"allboys.png", liga:"Primera Nacional", nivel:48 },
-    { nombre:"Alte. Brown", escudo:"almirante.png", liga:"Primera Nacional", nivel:50 },
-    { nombre:"Atlético Rafaela", escudo:"atleticorafaela.png", liga:"Primera Nacional", nivel:58 },
-    { nombre:"Estudiantes (Caseros)", escudo:"estudiantes_caseros.png", liga:"Primera Nacional", nivel:46 },
-    { nombre:"Ferro", escudo:"ferro.png", liga:"Primera Nacional", nivel:55 },
-    { nombre:"Gimnasia (J)", escudo:"gimnasiajujuy.png", liga:"Primera Nacional", nivel:48 },
-    { nombre:"Gimnasia y Tiro", escudo:"gimnasia_y_tiro.png", liga:"Primera Nacional", nivel:47 },
-    { nombre:"Godoy Cruz", escudo:"godoycruz.png", liga:"Primera Nacional", nivel:63 },
-    { nombre:"Güemes", escudo:"guemes.png", liga:"Primera Nacional", nivel:50 },
-    { nombre:"Los Andes", escudo:"los_andes.png", liga:"Primera Nacional", nivel:44 },
-    { nombre:"Maipú", escudo:"depmaipu.png", liga:"Primera Nacional", nivel:60 },
-    { nombre:"Midland", escudo:"midland.png", liga:"Primera Nacional", nivel:42 },
-    { nombre:"Morón", escudo:"moron.png", liga:"Primera Nacional", nivel:52 },
-    { nombre:"Patronato", escudo:"patronato.png", liga:"Primera Nacional", nivel:58 },
-    { nombre:"San Martín (SJ)", escudo:"sanmartinsj.png", liga:"Primera Nacional", nivel:50 },
-    { nombre:"San Martín (T)", escudo:"sanmartintuc.png", liga:"Primera Nacional", nivel:52 },
-    { nombre:"San Miguel", escudo:"sanmiguel.png", liga:"Primera Nacional", nivel:46 },
-    { nombre:"San Telmo", escudo:"santelmo.png", liga:"Primera Nacional", nivel:44 },
-    { nombre:"Temperley", escudo:"temperley.png", liga:"Primera Nacional", nivel:50 },
-    { nombre:"Tristán Suárez", escudo:"tristansuarez.png", liga:"Primera Nacional", nivel:45 },
+    { nombre:"Chacarita", escudo:"chacarita.png", liga:"Primera Nacional", nivel:39 },
+    { nombre:"Quilmes", escudo:"quilmes.png", liga:"Primera Nacional", nivel:41 },
+    { nombre:"Almagro", escudo:"almagro.png", liga:"Primera Nacional", nivel:38 },
+    { nombre:"Atlanta", escudo:"atlanta.png", liga:"Primera Nacional", nivel:37 },
+    { nombre:"Chicago", escudo:"nueva_chicago.png", liga:"Primera Nacional", nivel:38 },
+    { nombre:"Colón", escudo:"colon.png", liga:"Primera Nacional", nivel:43 },
+    { nombre:"Agropecuario", escudo:"agropecuario.png", liga:"Primera Nacional", nivel:33 },
+    { nombre:"All Boys", escudo:"allboys.png", liga:"Primera Nacional", nivel:34 },
+    { nombre:"Alte. Brown", escudo:"almirante.png", liga:"Primera Nacional", nivel:35 },
+    { nombre:"Atlético Rafaela", escudo:"atleticorafaela.png", liga:"Primera Nacional", nivel:39 },
+    { nombre:"Estudiantes (Caseros)", escudo:"estudiantes_caseros.png", liga:"Primera Nacional", nivel:32 },
+    { nombre:"Ferro", escudo:"ferro.png", liga:"Primera Nacional", nivel:38 },
+    { nombre:"Gimnasia (J)", escudo:"gimnasiajujuy.png", liga:"Primera Nacional", nivel:34 },
+    { nombre:"Gimnasia y Tiro", escudo:"gimnasia_y_tiro.png", liga:"Primera Nacional", nivel:33 },
+    { nombre:"Godoy Cruz", escudo:"godoycruz.png", liga:"Primera Nacional", nivel:42 },
+    { nombre:"Güemes", escudo:"guemes.png", liga:"Primera Nacional", nivel:35 },
+    { nombre:"Los Andes", escudo:"los_andes.png", liga:"Primera Nacional", nivel:31 },
+    { nombre:"Maipú", escudo:"depmaipu.png", liga:"Primera Nacional", nivel:41 },
+    { nombre:"Midland", escudo:"midland.png", liga:"Primera Nacional", nivel:30 },
+    { nombre:"Morón", escudo:"moron.png", liga:"Primera Nacional", nivel:36 },
+    { nombre:"Patronato", escudo:"patronato.png", liga:"Primera Nacional", nivel:39 },
+    { nombre:"San Martín (SJ)", escudo:"sanmartinsj.png", liga:"Primera Nacional", nivel:35 },
+    { nombre:"San Martín (T)", escudo:"sanmartintuc.png", liga:"Primera Nacional", nivel:36 },
+    { nombre:"San Miguel", escudo:"sanmiguel.png", liga:"Primera Nacional", nivel:32 },
+    { nombre:"San Telmo", escudo:"santelmo.png", liga:"Primera Nacional", nivel:31 },
+    { nombre:"Temperley", escudo:"temperley.png", liga:"Primera Nacional", nivel:35 },
+    { nombre:"Tristán Suárez", escudo:"tristansuarez.png", liga:"Primera Nacional", nivel:32 },
     // Liga Profesional (primera división argentina) — techo de la carrera
     // dentro del fútbol local, antes de que empiecen a llegar ofertas del
     // exterior (ver UMBRAL_OFERTA_EXTERIOR en carreraObtenerOfertasPrestamo).
     { nombre:"River Plate", escudo:"river.png", liga:"Liga Profesional", nivel:92 },
     { nombre:"Boca Juniors", escudo:"boca.png", liga:"Liga Profesional", nivel:90 },
-    { nombre:"Racing Club", escudo:"racing.png", liga:"Liga Profesional", nivel:82 },
-    { nombre:"Talleres de Córdoba", escudo:"talleres.png", liga:"Liga Profesional", nivel:80 },
-    { nombre:"Vélez Sarsfield", escudo:"velez.png", liga:"Liga Profesional", nivel:79 },
-    { nombre:"Estudiantes de La Plata", escudo:"estudiantes.png", liga:"Liga Profesional", nivel:77 },
-    { nombre:"Independiente", escudo:"independiente.png", liga:"Liga Profesional", nivel:64 },
-    { nombre:"San Lorenzo", escudo:"sanlorenzo.png", liga:"Liga Profesional", nivel:60 },
-    { nombre:"Rosario Central", escudo:"rosariocentral.png", liga:"Liga Profesional", nivel:76 },
-    { nombre:"Argentinos Juniors", escudo:"argentinos.png", liga:"Liga Profesional", nivel:75 },
-    { nombre:"Huracán", escudo:"huracan.png", liga:"Liga Profesional", nivel:74 },
-    { nombre:"Defensa y Justicia", escudo:"defensa.png", liga:"Liga Profesional", nivel:74 },
-    { nombre:"Newell's Old Boys", escudo:"newells.png", liga:"Liga Profesional", nivel:73 },
-    { nombre:"Lanús", escudo:"lanus.png", liga:"Liga Profesional", nivel:72 },
-    { nombre:"Unión de Santa Fe", escudo:"union.png", liga:"Liga Profesional", nivel:70 },
-    { nombre:"Gimnasia La Plata", escudo:"gimnasia.png", liga:"Liga Profesional", nivel:68 },
-    { nombre:"Belgrano", escudo:"belgrano.png", liga:"Liga Profesional", nivel:68 },
-    { nombre:"Central Córdoba (SdE)", escudo:"centralcordoba3.png", liga:"Liga Profesional", nivel:67 },
-    { nombre:"Atlético Tucumán", escudo:"atleticotucuman.png", liga:"Liga Profesional", nivel:66 },
-    { nombre:"Instituto", escudo:"instituto.png", liga:"Liga Profesional", nivel:65 },
-    { nombre:"Tigre", escudo:"tigre.png", liga:"Liga Profesional", nivel:64 },
-    { nombre:"Platense", escudo:"platense.png", liga:"Liga Profesional", nivel:63 },
-    { nombre:"Banfield", escudo:"banfield.png", liga:"Liga Profesional", nivel:63 },
-    { nombre:"Barracas Central", escudo:"barracas.png", liga:"Liga Profesional", nivel:65 },
-    { nombre:"Sarmiento (Junín)", escudo:"sarmiento.png", liga:"Liga Profesional", nivel:62 },
-    { nombre:"Independiente Rivadavia", escudo:"independienteriv.png", liga:"Liga Profesional", nivel:60 },
-    { nombre:"Deportivo Riestra", escudo:"riestra.png", liga:"Liga Profesional", nivel:58 },
-    { nombre:"Estudiantes RC", escudo:"estudiantesrc.png", liga:"Liga Profesional", nivel:55 },
-    { nombre:"Gimnasia de Mendoza", escudo:"gimnasiamendoza.png", liga:"Liga Profesional", nivel:55 },
+    { nombre:"Racing Club", escudo:"racing.png", liga:"Liga Profesional", nivel:85 },
+    { nombre:"Talleres de Córdoba", escudo:"talleres.png", liga:"Liga Profesional", nivel:66 },
+    { nombre:"Vélez Sarsfield", escudo:"velez.png", liga:"Liga Profesional", nivel:65 },
+    { nombre:"Estudiantes de La Plata", escudo:"estudiantes.png", liga:"Liga Profesional", nivel:63 },
+    { nombre:"Independiente", escudo:"independiente.png", liga:"Liga Profesional", nivel:84 },
+    { nombre:"San Lorenzo", escudo:"sanlorenzo.png", liga:"Liga Profesional", nivel:48 },
+    { nombre:"Rosario Central", escudo:"rosariocentral.png", liga:"Liga Profesional", nivel:62 },
+    { nombre:"Argentinos Juniors", escudo:"argentinos.png", liga:"Liga Profesional", nivel:62 },
+    { nombre:"Huracán", escudo:"huracan.png", liga:"Liga Profesional", nivel:61 },
+    { nombre:"Defensa y Justicia", escudo:"defensa.png", liga:"Liga Profesional", nivel:61 },
+    { nombre:"Newell's Old Boys", escudo:"newells.png", liga:"Liga Profesional", nivel:60 },
+    { nombre:"Lanús", escudo:"lanus.png", liga:"Liga Profesional", nivel:59 },
+    { nombre:"Unión de Santa Fe", escudo:"union.png", liga:"Liga Profesional", nivel:57 },
+    { nombre:"Gimnasia La Plata", escudo:"gimnasia.png", liga:"Liga Profesional", nivel:55 },
+    { nombre:"Belgrano", escudo:"belgrano.png", liga:"Liga Profesional", nivel:55 },
+    { nombre:"Central Córdoba (SdE)", escudo:"centralcordoba3.png", liga:"Liga Profesional", nivel:55 },
+    { nombre:"Atlético Tucumán", escudo:"atleticotucuman.png", liga:"Liga Profesional", nivel:54 },
+    { nombre:"Instituto", escudo:"instituto.png", liga:"Liga Profesional", nivel:53 },
+    { nombre:"Tigre", escudo:"tigre.png", liga:"Liga Profesional", nivel:52 },
+    { nombre:"Platense", escudo:"platense.png", liga:"Liga Profesional", nivel:51 },
+    { nombre:"Banfield", escudo:"banfield.png", liga:"Liga Profesional", nivel:51 },
+    { nombre:"Barracas Central", escudo:"barracas.png", liga:"Liga Profesional", nivel:53 },
+    { nombre:"Sarmiento (Junín)", escudo:"sarmiento.png", liga:"Liga Profesional", nivel:50 },
+    { nombre:"Independiente Rivadavia", escudo:"independienteriv.png", liga:"Liga Profesional", nivel:48 },
+    { nombre:"Deportivo Riestra", escudo:"riestra.png", liga:"Liga Profesional", nivel:47 },
+    { nombre:"Estudiantes RC", escudo:"estudiantesrc.png", liga:"Liga Profesional", nivel:44 },
+    { nombre:"Gimnasia de Mendoza", escudo:"gimnasiamendoza.png", liga:"Liga Profesional", nivel:44 },
   ],
   BO: [
     { nombre:"Always Ready", escudo:"alwaysready.png", liga:"Liga boliviana", nivel:54 },
@@ -306,7 +306,17 @@ function carreraGenerarAtributos(posicion){
 // probándose en el ascenso argentino).
 function carreraObtenerOfertas(iso2, cantidad){
   const n = cantidad || 3;
-  const pool = CARRERA_CLUBES[iso2] || CARRERA_CLUBES.AR;
+  let pool = CARRERA_CLUBES[iso2] || CARRERA_CLUBES.AR;
+  // BUG que reportó Pablo: CARRERA_CLUBES.AR tiene las 4 divisiones
+  // argentinas juntas en el mismo array (cantera + Nacional + Liga
+  // Profesional), porque ahí también se abastece el resto de la carrera
+  // (carreraObtenerOfertasPrestamo). Pero la oferta INICIAL de cantera a
+  // los 16 años tiene que salir solo de las divisiones de ascenso más
+  // bajas -- sin este filtro, un juvenil podía arrancar de entrada en
+  // River Plate o Boca, saltándose toda la pirámide.
+  if (iso2 === "AR") {
+    pool = pool.filter(c => c.liga === "Primera C" || c.liga === "B Metropolitana");
+  }
   const copia = pool.slice();
   const elegidos = [];
   while (copia.length && elegidos.length < n){
@@ -456,9 +466,10 @@ const CARRERA_UMBRAL_OFERTA_EXTERIOR = 58;
 // parecido al del jugador (con algo de ruido para variedad), excluyendo el
 // club en el que ya está y, si el nivel todavía no amerita scouting
 // internacional, excluyendo también clubes no argentinos.
-function carreraObtenerOfertasPrestamo(nombreClubActual, nivelJugador, cantidad){
+function carreraObtenerOfertasPrestamo(nombreClubActual, nivelJugador, cantidad, excluirRecientes){
   const n = cantidad || 2;
-  let candidatos = carreraTodosClubes().filter(c => c.nombre !== nombreClubActual);
+  const excluir = new Set([nombreClubActual, ...(excluirRecientes || [])]);
+  let candidatos = carreraTodosClubes().filter(c => !excluir.has(c.nombre));
   if (nivelJugador < CARRERA_UMBRAL_OFERTA_EXTERIOR) {
     candidatos = candidatos.filter(c => c.iso2 === "AR");
   }
