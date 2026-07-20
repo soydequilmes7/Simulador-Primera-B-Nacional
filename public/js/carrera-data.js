@@ -495,12 +495,24 @@ function carreraObtenerOfertasPrestamo(nombreClubActual, nivelJugador, cantidad,
 
 // Etiqueta de "salto de nivel" para mostrar en la tarjeta de oferta: le
 // da al jugador una lectura rápida de si la oferta es una mejora, un
-// paso lateral o un paso atrás respecto de su nivel actual.
-function carreraClaseSalto(nivelClub, nivelJugador){
-  const diff = nivelClub - nivelJugador;
-  if (diff >= 8) return { texto: "↑ Salto de nivel", clase: "salto-arriba" };
-  if (diff <= -8) return { texto: "↓ Nivel más bajo", clase: "salto-abajo" };
-  return { texto: "= Nivel similar", clase: "salto-igual" };
+// paso lateral o un paso atrás respecto de SU CLUB ACTUAL (nivel de
+// club contra nivel de club, no nivel de club contra OVR del jugador --
+// así compara peras con peras: si tu club actual es de nivel 40 y te
+// ofrecen uno de 45, es "similar" aunque tu OVR personal sea 70).
+//
+// OJO con esto: antes había un único corte en ±8, así que TODO lo que
+// quedaba más de 8 puntos abajo cayía en la misma etiqueta "Nivel más
+// bajo" -- un club apenas por debajo (ej. -11) y un club de dos
+// divisiones menos (ej. -30) se veían idénticos en la tarjeta, aunque
+// nivel numérico fuera bien distinto. Con 5 franjas en vez de 3 la
+// etiqueta ahora refleja el tamaño real de la brecha.
+function carreraClaseSalto(nivelClub, nivelClubActual){
+  const diff = nivelClub - nivelClubActual;
+  if (diff >= 18) return { texto: "↑↑ Salto enorme", clase: "salto-arriba-fuerte" };
+  if (diff >= 6) return { texto: "↑ Salto de nivel", clase: "salto-arriba" };
+  if (diff > -6) return { texto: "= Nivel similar", clase: "salto-igual" };
+  if (diff > -18) return { texto: "↓ Nivel más bajo", clase: "salto-abajo" };
+  return { texto: "↓↓ Categoría inferior", clase: "salto-abajo-fuerte" };
 }
 
 // Posiciones de cancha: código, etiqueta y ubicación porcentual (top/left)

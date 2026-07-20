@@ -201,9 +201,24 @@ function carreraTirarCopaArgentina(club){
 // pelea el descenso. Los clubes del exterior (sin entrada acá) usan su
 // propio nivel como centro -- no tienen pirámide modelada, así que el
 // resultado queda centrado en "mitad de tabla" siempre, sin sesgo.
+//
+// BUG que reportó Gonza: estos valores estaban puestos muy por encima del
+// nivel real de los clubes que existen en el pool de cada división (ver
+// CARRERA_CLUBES) -- el club MÁS FUERTE de Primera C tiene nivel 25, pero
+// el centro estaba en 40; el de B Metro tiene nivel 28 contra un centro
+// de 43; el de Nacional tiene nivel 43 contra un centro de 55. Como el
+// resultado sale de (nivel_club - centro) + ruido(±20), y "Campeón"
+// necesita ese total >= 18, NINGÚN club real de esas 3 divisiones podía
+// llegar a "Campeón" ni con la mejor suerte posible -- y como el ascenso
+// de división solo se dispara con "Campeón", esas divisiones quedaban
+// con el ascenso prácticamente inalcanzable, y toda la trayectoria caía
+// siempre entre "Mitad de tabla" y "Descendió" sin importar el nivel real
+// del club. Ahora el centro es la media real de nivel de cada división
+// (Liga Profesional ya estaba bien calibrada -- su rango real 44-92 sí
+// deja "Campeón" alcanzable con el centro anterior, así que no se toca).
 const CARRERA_CENTRO_DIVISION = {
-  "Primera C": 40, "B Metropolitana": 43,
-  "Primera Nacional": 55,
+  "Primera C": 22, "B Metropolitana": 26,
+  "Primera Nacional": 36,
   "Liga Profesional": 72,
 };
 
@@ -212,7 +227,14 @@ function carreraAplicarAscensoDescenso(club, resultadoClub){
   if (!tier) return null; // club del exterior, sin pirámide modelada
   if (resultadoClub === "Campeón" && tier < 3) {
     const ligaNueva = CARRERA_SIGUIENTE_LIGA[tier];
-    club.nivel = tier === 1 ? Math.max(club.nivel + 14, 52) : Math.max(club.nivel + 16, 62);
+    // El piso de nivel al ascender no puede superar el nivel real máximo
+    // de la división de destino (ver CARRERA_CLUBES) -- antes tier 1
+    // (Primera C/B Metro) tenía piso 52 contra un máximo real de 43 en
+    // Primera Nacional, así que un recién ascendido arrancaba siendo
+    // automáticamente el mejor equipo de toda la división. Ahora entra
+    // cerca del piso de la nueva división, como corresponde a un recién
+    // llegado, en vez de por encima de su techo.
+    club.nivel = tier === 1 ? Math.max(club.nivel + 10, 30) : Math.max(club.nivel + 16, 62);
     club.liga = ligaNueva;
     return "ascenso";
   }
@@ -574,7 +596,7 @@ function carreraMostrarDashboard(){
       <button type="button" class="btn-carrera-primary" id="btn-carrera-nueva">Empezar una nueva carrera</button>
     </div>` : CARRERA_STATE.decision ? `
     <div class="carrera-decision${j.descartado ? " carrera-decision--descarte" : ""}">
-      <h3>${j.enPrestamo ? "Regreso a tu club" : j.descartado ? "😕 No te renovaron" : "¿Qué hacés esta temporada?"}</h3>
+      <h3>${j.enPrestamo ? "Regreso a tu club" : j.descartado ? "No te renovaron" : "¿Qué hacés esta temporada?"}</h3>
       <p class="carrera-decision-desc">${j.enPrestamo
         ? `Volvés a ${j.clubDueño.nombre} y vas a ser tenido en cuenta. Si igual querés salir, tenés ${CARRERA_STATE.decision.opciones.length - 1} oferta${CARRERA_STATE.decision.opciones.length - 1 === 1 ? "" : "s"} para cambiar de aire.`
         : j.descartado
@@ -585,7 +607,7 @@ function carreraMostrarDashboard(){
           const ultimaImpar = i === CARRERA_STATE.decision.opciones.length - 1 && CARRERA_STATE.decision.opciones.length % 2 === 1;
           const tipo = op.id === "seguir" || op.id === "volver" ? "Quedarte en" : op.id === "extender" ? "Extender en" : op.id === "definitiva" ? "Ficha fija con" : op.id.startsWith("prueba") ? "Prueba en" : op.id.startsWith("prestamo") ? "Préstamo en" : "Fichar por";
           const esClubNuevo = op.id.startsWith("fichaje") || op.id.startsWith("prestamo") || op.id.startsWith("prueba");
-          const salto = esClubNuevo ? carreraClaseSalto(op.club.nivel, j.atributos.general) : null;
+          const salto = esClubNuevo ? carreraClaseSalto(op.club.nivel, j.club.nivel) : null;
           return `
           <button type="button" class="carrera-decision-card${ultimaImpar ? " carrera-decision-card--centrada" : ""}" data-id="${op.id}" style="animation-delay:${i * 60}ms">
             <span class="carrera-decision-tipo">${tipo}</span>
@@ -695,7 +717,7 @@ function carreraTablaEdadesHTML(){
       if (h.convocatoria) iconos += `<span class="carrera-fila-icono carrera-fila-icono--seleccion" title="Convocado a la selección: +${h.convocatoria.presencias} presencias">🌐</span>`;
       if (h.ganoCopaArgentina) iconos += `<span class="carrera-fila-icono" title="Ganó la Copa Argentina">🏆</span>`;
       filas.push(`
-        <div class="carrera-fila carrera-fila-jugada ${carreraClaseResultado(h.resultadoClub)}" style="animation-delay:${Math.min(filas.length, 10) * 40}ms; border-left-color:${carreraColorClub(h.club)}" title="${h.club} — ${h.liga} — ${h.resultadoClub}">
+        <div class="carrera-fila carrera-fila-jugada ${carreraClaseResultado(h.resultadoClub)}" style="animation-delay:${Math.min(filas.length, 10) * 40}ms; --club-color:${carreraColorClub(h.club)}" title="${h.club} — ${h.liga} — ${h.resultadoClub}">
           <div class="carrera-fila-edad">${h.edad}</div>
           <div class="carrera-fila-club">
             <img class="carrera-fila-escudo" src="escudos/${h.escudo}" alt="" onerror="this.style.visibility='hidden'">
