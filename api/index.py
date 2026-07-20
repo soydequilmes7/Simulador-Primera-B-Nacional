@@ -2199,6 +2199,182 @@ def season_generate_next_endpoint(body: GenerarTemporadaBody):
         _lock_season.release_write()
 
 
+# ---------------------------------------------------------------------
+# Modo Carrera DT -- ver season/dt_carrera.py para el diseño completo.
+# Todos estos endpoints son de SOLO LECTURA/cálculo, no escriben nada
+# en Supabase: el estado del DT (reputación, club actual, historial)
+# vive en el frontend, mismo criterio que estado_anterior/proximo_estado
+# de /api/season/play. Por eso no usan _lock_season.
+# ---------------------------------------------------------------------
+
+class DTOfertasBody(BaseModel):
+    reputacion: int = 10
+    divisiones: list[str] | None = None
+    cantidad: int = 3
+
+
+@app.post("/api/dt/ofertas")
+def dt_ofertas_endpoint(body: DTOfertasBody):
+    """Clubes que le ofertan al DT esta temporada según su reputación.
+    Lee el roster real con ClubRegistry.build_from_current_data() --
+    el mismo punto de entrada que usa la ronda 1 de Modo Temporada --
+    y lo filtra por season.dt_carrera.techo_prestigio_para(reputacion)."""
+    try:
+        from season.club_registry import ClubRegistry
+        from season.dt_carrera import candidatos_desde_registry, ofertas_de_clubes, techo_prestigio_para
+
+        registry = ClubRegistry.build_from_current_data()
+        divisiones = tuple(body.divisiones) if body.divisiones else None
+        candidatos = candidatos_desde_registry(registry, divisiones=divisiones)
+        ofertas = ofertas_de_clubes(body.reputacion, candidatos, cantidad=body.cantidad)
+        return {
+            "reputacion": body.reputacion,
+            "techo_prestigio": techo_prestigio_para(body.reputacion),
+            "ofertas": [
+                {"nombre": c.nombre, "division": c.division_slug, "factor_prestigio": c.factor_prestigio}
+                for c in ofertas
+            ],
+        }
+    except Exception as e:
+        return _error_response(e)
+
+
+class DTObjetivoBody(BaseModel):
+    nombre: str
+    division: str
+    factor_prestigio: float
+
+
+@app.post("/api/dt/objetivo")
+def dt_objetivo_endpoint(body: DTObjetivoBody):
+    """Objetivo que le pone la dirigencia al DT para la temporada en
+    este club -- depende del prestigio del club, no de nada que haya
+    hecho el DT todavía (recién arranca ahí)."""
+    try:
+        from season.dt_carrera import ClubCandidato, descripcion_objetivo, generar_objetivo
+
+        club = ClubCandidato(nombre=body.nombre, division_slug=body.division, factor_prestigio=body.factor_prestigio)
+        objetivo = generar_objetivo(club)
+        return {"objetivo": objetivo.value, "descripcion": descripcion_objetivo(objetivo)}
+    except Exception as e:
+        return _error_response(e)
+
+
+class DTRatingInicialBody(BaseModel):
+    factor_prestigio: float
+
+
+@app.post("/api/dt/rating-inicial")
+def dt_rating_inicial_endpoint(body: DTRatingInicialBody):
+    """Rating de arranque del club (ataque/defensa) a partir de su
+    prestigio -- ver el docstring de rating_por_prestigio en
+    season/dt_carrera.py para por qué no engancha al rating Poisson en
+    vivo de cada división."""
+    try:
+        from season.dt_carrera import rating_por_prestigio
+
+        return rating_por_prestigio(body.factor_prestigio)
+    except Exception as e:
+        return _error_response(e)
+
+
+class DTFicharBody(BaseModel):
+    categoria: str  # "arquero" | "defensa" | "mediocampo" | "ataque"
+
+
+@app.post("/api/dt/mercado/fichar")
+def dt_fichar_endpoint(body: DTFicharBody):
+    """Una tirada de mercado simplificado -- no cobra presupuesto, el
+    frontend resta season.dt_carrera.COSTO_FICHAJE y decide si el DT
+    tiene plata para llamar a este endpoint."""
+    try:
+        from season.dt_carrera import CATEGORIA_A_CAMPO_RATING, COSTO_FICHAJE, CategoriaFichaje, fichar
+
+        categoria = CategoriaFichaje(body.categoria)
+        fichaje = fichar(categoria)
+        return {
+            "categoria": fichaje.categoria.value,
+            "resultado": fichaje.resultado.value,
+            "delta_rating": fichaje.delta_rating,
+            "campo_rating": CATEGORIA_A_CAMPO_RATING[categoria],
+            "texto": fichaje.texto,
+            "costo": COSTO_FICHAJE,
+        }
+    except Exception as e:
+        return _error_response(e)
+
+
+class DTPartidoBody(BaseModel):
+    rating_dt: dict[str, float]
+    rating_rival: dict[str, float]
+    formacion: str
+    mentalidad: str
+
+
+@app.post("/api/dt/partido/jugar")
+def dt_partido_jugar_endpoint(body: DTPartidoBody):
+    """Resuelve un partido de Modo Carrera DT: ajusta los lambda por
+    formación/mentalidad, sortea el marcador con el mismo mecanismo
+    Poisson de siempre, y arma la cronología minuto a minuto a partir
+    de ESE marcador (nunca al revés -- ver season/dt_carrera.py,
+    sección 3, para por qué esto no puede desviarse del resultado)."""
+    try:
+        from season.dt_carrera import Formacion, Mentalidad, jugar_partido_dt
+
+        resultado = jugar_partido_dt(
+            body.rating_dt,
+            body.rating_rival,
+            Formacion(body.formacion),
+            Mentalidad(body.mentalidad),
+        )
+        return {
+            "goles_local": resultado.goles_local,
+            "goles_visitante": resultado.goles_visitante,
+            "lambda_local": resultado.lambda_local,
+            "lambda_visitante": resultado.lambda_visitante,
+            "eventos": [
+                {
+                    "minuto": e.minuto,
+                    "equipo": e.equipo,
+                    "gol": e.gol,
+                    "texto": e.texto,
+                    "marcador_local": e.marcador_local,
+                    "marcador_visitante": e.marcador_visitante,
+                }
+                for e in resultado.eventos
+            ],
+        }
+    except Exception as e:
+        return _error_response(e)
+
+
+class DTEvaluarBody(BaseModel):
+    objetivo: str
+    puntos: int
+    partidos_jugados: int
+    temporadas_fallidas_previas: int = 0
+
+
+@app.post("/api/dt/temporada/evaluar")
+def dt_temporada_evaluar_endpoint(body: DTEvaluarBody):
+    """Cierre de temporada: compara los puntos del DT contra el umbral
+    de su objetivo y decide si sigue, hay presión, o lo echan (recién
+    a la segunda temporada fallida seguida -- ver evaluar_temporada)."""
+    try:
+        from season.dt_carrera import TipoObjetivo, evaluar_temporada, objetivo_cumplido
+
+        objetivo = TipoObjetivo(body.objetivo)
+        cumplido = objetivo_cumplido(objetivo, body.puntos, body.partidos_jugados)
+        evaluacion = evaluar_temporada(objetivo, cumplido, body.temporadas_fallidas_previas)
+        return {
+            "cumplido": evaluacion.cumplido,
+            "delta_reputacion": evaluacion.delta_reputacion,
+            "despedido": evaluacion.despedido,
+        }
+    except Exception as e:
+        return _error_response(e)
+
+
 # En Render este mismo proceso sirve el dashboard de public/. En Vercel,
 # public/ se sirve como salida estática separada y no forma parte del bundle
 # Python, así que el mount solo se instala cuando el directorio existe.
