@@ -5265,12 +5265,11 @@ body.liga-carrera{
 .carrera-tarjeta{
   position:relative; overflow:hidden; isolation:isolate;
   background:
-    radial-gradient(480px 260px at 100% -10%, rgba(232,196,104,.12), transparent 60%),
-    radial-gradient(420px 240px at -10% 0%, rgba(79,140,255,.14), transparent 55%),
+    radial-gradient(480px 260px at 100% -10%, rgba(232,196,104,.07), transparent 60%),
     var(--glass-bg);
   backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
   border:1px solid var(--glass-border); border-radius:26px; padding:32px 30px;
-  box-shadow: 0 28px 60px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.05);
+  box-shadow: 0 20px 44px rgba(0,0,0,.45);
   animation: carreraFade .35s ease both;
 }
 .carrera-tarjeta::before{
@@ -5321,14 +5320,15 @@ body.liga-carrera{
 }
 .carrera-tarjeta-valor b{ color:var(--gold); font-family:'Oswald', sans-serif; font-size:19px; letter-spacing:.02em; }
 
-.carrera-tarjeta-stats{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; text-align:center; margin:0 0 26px; }
+.carrera-tarjeta-stats{ display:grid; grid-template-columns:repeat(3,1fr); text-align:center; margin:0 0 26px; }
 .carrera-tarjeta-stats div{
-  background:rgba(255,255,255,.05); border:1px solid var(--glass-border); border-radius:16px; padding:16px 6px;
-  transition: border-color .2s ease, background .2s ease, transform .2s ease;
+  position:relative; padding:2px 6px;
 }
-.carrera-tarjeta-stats div:hover{ border-color:var(--glass-border-hover); background:rgba(255,255,255,.08); transform:translateY(-3px); }
-.carrera-stat-icono{ display:block; font-size:18px; margin-bottom:5px; }
-.carrera-tarjeta-stats b{ display:block; color:var(--ink); font-size:23px; font-family:'Oswald', sans-serif; }
+.carrera-tarjeta-stats div + div::before{
+  content:''; position:absolute; left:0; top:8%; bottom:8%; width:1px; background:var(--glass-border);
+}
+.carrera-stat-icono{ display:block; font-size:15px; margin-bottom:6px; opacity:.75; }
+.carrera-tarjeta-stats b{ display:block; color:var(--ink); font-size:24px; font-family:'Oswald', sans-serif; }
 .carrera-tarjeta-stats span{ display:block; color:var(--muted); font-size:10.5px; text-transform:uppercase; letter-spacing:.06em; margin-top:4px; font-weight:600; }
 
 .carrera-vitrina{ margin:0 0 26px; padding-bottom:26px; border-bottom:1px solid var(--glass-border); }
@@ -5339,7 +5339,6 @@ body.liga-carrera{
   background:rgba(232,196,104,.14); border:1px solid rgba(232,196,104,.4); color:var(--gold);
   font-size:12px; font-weight:600; border-radius:999px; padding:7px 13px; white-space:nowrap;
   animation: carreraFade .3s ease both;
-  box-shadow: 0 4px 10px rgba(232,196,104,.1);
 }
 
 .carrera-dash-derecha{ display:flex; flex-direction:column; gap:24px; }
@@ -5352,23 +5351,20 @@ body.liga-carrera{
 @keyframes carreraCardIn{ from{ opacity:0; transform:translateY(8px) scale(.97); } to{ opacity:1; transform:none; } }
 .carrera-decision-card{
   display:flex; flex-direction:column; align-items:center; text-align:center; gap:5px;
-  background:
-    radial-gradient(140px 80px at 50% -20%, rgba(255,255,255,.08), transparent 70%),
-    rgba(255,255,255,.04);
-  border:1px solid var(--glass-border); border-radius:18px; padding:18px 12px 16px;
+  background:rgba(255,255,255,.03);
+  border:1px solid var(--glass-border); border-radius:18px; padding:20px 12px 18px;
   cursor:pointer; transition:border-color .2s ease, transform .2s ease, background .2s ease, box-shadow .2s ease; color:var(--ink);
   animation: carreraCardIn .3s ease both;
 }
 .carrera-decision-card--centrada{ grid-column:1 / -1; max-width:290px; margin:0 auto; width:100%; }
-.carrera-decision-card:hover{ border-color:var(--accent); background:rgba(79,140,255,.12); transform:translateY(-5px) scale(1.02); box-shadow:0 16px 32px rgba(0,0,0,.4); }
-.carrera-decision-card--elegida{ border-color:var(--gold); background:rgba(232,196,104,.14); box-shadow:0 0 0 3px rgba(232,196,104,.28), 0 16px 32px rgba(0,0,0,.4); transform:scale(1.04); }
+.carrera-decision-card:hover{ border-color:var(--accent); background:rgba(79,140,255,.10); transform:translateY(-4px); box-shadow:0 14px 28px rgba(0,0,0,.35); }
+.carrera-decision-card--elegida{ border-color:var(--gold); background:rgba(232,196,104,.12); box-shadow:0 0 0 2px rgba(232,196,104,.25); transform:none; }
 .carrera-decision-card--descartada{ opacity:.28; transform:scale(.96); pointer-events:none; }
 .carrera-decision-tipo{
-  color:var(--muted); font-size:10px; text-transform:uppercase; letter-spacing:.07em; font-weight:700;
-  background:rgba(255,255,255,.06); border:1px solid var(--glass-border); border-radius:999px; padding:4px 11px;
+  color:var(--accent); font-size:10px; text-transform:uppercase; letter-spacing:.08em; font-weight:700;
 }
-.carrera-decision-card strong{ font-family:'Oswald', sans-serif; font-size:15px; margin-top:7px; }
-.carrera-decision-escudo{ width:50px; height:50px; object-fit:contain; margin:8px 0; filter:drop-shadow(0 6px 11px rgba(0,0,0,.45)); }
+.carrera-decision-card strong{ font-family:'Oswald', sans-serif; font-size:16px; margin-top:4px; }
+.carrera-decision-escudo{ width:64px; height:64px; object-fit:contain; margin:10px 0; filter:drop-shadow(0 6px 11px rgba(0,0,0,.45)); }
 .carrera-decision-liga{
   display:inline-flex; align-items:center; gap:5px; color:var(--muted); font-size:10.5px;
   text-transform:uppercase; letter-spacing:.03em;
@@ -5411,119 +5407,134 @@ body.liga-carrera{
 .carrera-retiro h3{ font-size:22px; margin-bottom:10px; }
 .carrera-retiro .carrera-oferta-sub{ margin:0 0 18px; }
 
-/* ---- Línea de tiempo de la carrera: ya no es una tabla, cada temporada
-   es una tarjeta de pase premium con una línea vertical que conecta todas
-   las edades, para que se sienta como una verdadera progresión de carrera. ---- */
+/* ---- Línea de tiempo de la carrera: rediseño compacto estilo tabla
+   premium (EA FC / Football Manager). Sin línea vertical de conexión;
+   cada temporada es una banda horizontal de ~60px para que entren
+   muchas más en pantalla con mínimo scroll. ---- */
 .carrera-tabla{
   background:
-    radial-gradient(600px 300px at 100% 0%, rgba(232,196,104,.05), transparent 60%),
+    radial-gradient(600px 300px at 100% 0%, rgba(232,196,104,.04), transparent 60%),
     var(--glass-bg);
   backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
-  border:1px solid var(--glass-border); border-radius:26px; padding:14px 22px 22px; box-shadow: 0 24px 54px rgba(0,0,0,.5);
+  border:1px solid var(--glass-border); border-radius:20px; padding:0; box-shadow: 0 24px 54px rgba(0,0,0,.5);
+  overflow:hidden;
 }
 .carrera-tabla-header{
-  display:grid; grid-template-columns:64px 2.4fr 56px 46px 56px 56px 60px; gap:12px; padding:14px 16px 12px;
-  font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:var(--muted);
-  border-bottom:1px solid var(--glass-border);
+  display:grid; grid-template-columns:44px 1fr 52px 40px 36px 36px 52px; gap:12px; padding:11px 16px;
+  font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:var(--muted);
+  border-bottom:1px solid var(--glass-border); background:rgba(255,255,255,.02);
 }
-.carrera-tabla-body{ position:relative; padding-left:2px; }
-/* Línea vertical de progresión: pasa por el centro de la columna de edad
-   (64px de ancho, nodo centrado en los primeros 32px) y conecta todas las
-   tarjetas de temporada entre sí. */
-.carrera-tabla-body::before{
-  content:''; position:absolute; top:6px; bottom:6px; left:47px; width:2px;
-  background:linear-gradient(180deg, var(--gold), var(--accent) 45%, rgba(255,255,255,.08) 100%);
-  opacity:.55; z-index:0;
-}
-@keyframes carreraFilaIn{ from{ opacity:0; transform:translateX(-10px); } to{ opacity:1; transform:none; } }
+.carrera-tabla-body{ position:relative; }
+@keyframes carreraFilaIn{ from{ opacity:0; } to{ opacity:1; } }
 .carrera-fila{
   position:relative; z-index:1;
-  display:grid; grid-template-columns:64px 2.4fr 56px 46px 56px 56px 60px; gap:12px; align-items:center;
-  padding:16px 16px; border-radius:18px; font-size:14px; color:var(--ink-dim); margin-top:12px;
+  display:grid; grid-template-columns:44px 1fr 52px 40px 36px 36px 52px; gap:12px; align-items:center;
+  height:60px; padding:0 16px; font-size:14.5px; color:var(--ink-dim); margin:0;
+  border-bottom:1px solid rgba(255,255,255,.045);
 }
+.carrera-fila:last-child{ border-bottom:none; }
 .carrera-fila-jugada{
   --club-tint: var(--club-color, var(--accent));
-  --tint-bg-1: color-mix(in srgb, var(--club-tint) 26%, transparent);
-  --tint-bg-2: color-mix(in srgb, var(--club-tint) 9%, transparent);
-  --tint-border: color-mix(in srgb, var(--club-tint) 58%, transparent);
-  --tint-glow: color-mix(in srgb, var(--club-tint) 35%, transparent);
-  background: linear-gradient(100deg, var(--tint-bg-1) 0%, var(--tint-bg-2) 45%, rgba(255,255,255,.02) 100%);
-  border:1px solid var(--tint-border);
-  box-shadow: 0 10px 26px rgba(0,0,0,.35), 0 0 26px -8px var(--tint-glow);
-  animation: carreraFilaIn .3s ease both;
-  transition: background .25s ease, border-color .25s ease, transform .18s ease, box-shadow .25s ease;
+  background: rgba(255,255,255,.02);
+  border-left:3px solid color-mix(in srgb, var(--club-tint) 42%, transparent);
+  animation: carreraFilaIn .2s ease both;
+  transition: background .2s ease, border-color .2s ease;
 }
+.carrera-fila-jugada:nth-child(even){ background: rgba(255,255,255,.035); }
 .carrera-fila-jugada:hover{
-  --tint-bg-1: color-mix(in srgb, var(--club-tint) 38%, transparent);
-  --tint-bg-2: color-mix(in srgb, var(--club-tint) 14%, transparent);
-  --tint-border: color-mix(in srgb, var(--club-tint) 80%, transparent);
-  transform: translateX(5px) translateY(-2px);
-  box-shadow: 0 16px 36px rgba(0,0,0,.45), 0 0 40px -6px var(--tint-glow);
+  background: color-mix(in srgb, var(--club-tint) 10%, rgba(255,255,255,.03));
+  border-left-color: color-mix(in srgb, var(--club-tint) 75%, transparent);
+}
+/* Fila del club actual: la única con degradado fuerte + glow, para que
+   se destaque de un vistazo entre el resto de la carrera. Se activa
+   agregando la clase modificadora "carrera-fila-jugada--actual" a la
+   fila correspondiente desde carrera.js (no requiere tocar el resto). */
+.carrera-fila-jugada--actual{
+  background: linear-gradient(100deg, color-mix(in srgb, var(--club-tint) 30%, transparent) 0%, color-mix(in srgb, var(--club-tint) 10%, transparent) 60%, rgba(255,255,255,.02) 100%);
+  border-left:3px solid var(--club-tint);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--club-tint) 35%, transparent), 0 0 22px -6px color-mix(in srgb, var(--club-tint) 65%, transparent);
+}
+.carrera-fila-jugada--actual:hover{
+  background: linear-gradient(100deg, color-mix(in srgb, var(--club-tint) 40%, transparent) 0%, color-mix(in srgb, var(--club-tint) 15%, transparent) 60%, rgba(255,255,255,.03) 100%);
 }
 .carrera-fila-edad{
-  position:relative; width:44px; height:44px; border-radius:13px; display:flex; align-items:center; justify-content:center;
-  font-family:'Oswald', sans-serif; font-weight:700; font-size:18px; color:#0d1015;
-  background:rgba(255,255,255,.09); color:var(--ink-dim); flex-shrink:0;
-  box-shadow:0 4px 14px rgba(0,0,0,.35), 0 0 0 5px var(--bg-app, #05070C);
+  position:relative; width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center;
+  font-family:'Oswald', sans-serif; font-weight:700; font-size:17px; color:#0d1015;
+  background:rgba(255,255,255,.08); color:var(--ink-dim); flex-shrink:0;
 }
 .carrera-fila-jugada.resultado-neutro .carrera-fila-edad{ background:linear-gradient(155deg, #8AB4FF, var(--accent)); color:#08101f; }
 .carrera-fila-jugada.resultado-copas .carrera-fila-edad{ background:linear-gradient(155deg, #8AB4FF, var(--accent)); color:#08101f; }
-.carrera-fila-jugada.resultado-campeon .carrera-fila-edad{ background:linear-gradient(155deg, #9FE0B0, #4FAF6E); color:#06210f; box-shadow:0 4px 14px rgba(0,0,0,.35), 0 0 0 5px var(--bg-app, #05070C), 0 0 18px rgba(159,224,176,.5); }
+.carrera-fila-jugada.resultado-campeon .carrera-fila-edad{ background:linear-gradient(155deg, #9FE0B0, #4FAF6E); color:#06210f; box-shadow:0 0 14px rgba(159,224,176,.45); }
 .carrera-fila-jugada.resultado-pelea .carrera-fila-edad{ background:linear-gradient(155deg, #F0B86E, #D98C3F); color:#2a1600; }
 .carrera-fila-jugada.resultado-descenso .carrera-fila-edad{ background:linear-gradient(155deg, #F08C7A, #D9573F); color:#2a0800; }
-/* Celda de club en 2 líneas: nombre arriba, badges (ascenso/lesión/
-   selección) abajo en su propia fila -- así no compiten por el mismo
-   espacio horizontal que el nombre ni se superponen con la columna de
-   OVR cuando hay varios badges juntos. */
-.carrera-fila-club{ display:flex; align-items:center; gap:12px; min-width:0; color:var(--ink); font-weight:700; font-size:16px; }
-.carrera-fila-club span{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0; letter-spacing:.01em; }
-.carrera-fila-escudo{ width:34px; height:34px; object-fit:contain; flex-shrink:0; filter:drop-shadow(0 4px 8px rgba(0,0,0,.5)); }
-.carrera-fila-ovr{
-  justify-self:start; background:rgba(232,196,104,.16); border:1px solid rgba(232,196,104,.4); color:var(--gold);
-  font-family:'Oswald', sans-serif; font-weight:700; font-size:13px; border-radius:9px; padding:4px 9px;
+.carrera-fila-club{ display:flex; align-items:center; gap:10px; min-width:0; color:var(--ink); font-weight:700; font-size:15px; }
+.carrera-fila-club span{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0; letter-spacing:.005em; }
+.carrera-fila-escudo{ width:27px; height:27px; object-fit:contain; flex-shrink:0; filter:drop-shadow(0 3px 6px rgba(0,0,0,.5)); }
+/* Ícono de trofeo junto al nombre en temporadas con título -- reutiliza
+   la misma condición que ya pinta la insignia de edad en verde/dorado,
+   sin necesidad de una clase nueva. */
+.carrera-fila-jugada.resultado-campeon .carrera-fila-club::before{
+  content:'🏆'; font-size:12px; flex-shrink:0; filter:drop-shadow(0 0 4px rgba(159,224,176,.5));
 }
-.carrera-fila-num{ color:var(--ink-dim); font-size:13px; font-weight:600; }
+/* Acento sutil para temporadas de competencia europea/internacional --
+   se activa agregando la clase modificadora "carrera-fila-jugada--europa"
+   desde carrera.js cuando corresponda. */
+.carrera-fila-jugada--europa{
+  border-left-color: rgba(79,140,255,.55);
+  background: linear-gradient(100deg, rgba(79,140,255,.07) 0%, rgba(79,140,255,.02) 55%, transparent 100%);
+}
+.carrera-fila-ovr{
+  justify-self:start; background:rgba(232,196,104,.14); border:1px solid rgba(232,196,104,.38); color:var(--gold);
+  font-family:'Oswald', sans-serif; font-weight:700; font-size:13px; border-radius:7px;
+  width:52px; height:28px; display:flex; align-items:center; justify-content:center;
+}
+.carrera-fila-num{ color:var(--ink-dim); font-size:13.5px; font-weight:600; text-align:center; }
 
 /* Nota de la temporada estilo Sofascore: pastilla numérica con color de
    fondo según el rango, para leer de un vistazo si la temporada fue
    buena o mala sin tener que comparar el resto de las columnas. */
 .carrera-fila-nota{
   justify-self:end; font-family:'Oswald', sans-serif; font-weight:700; font-size:13px;
-  border-radius:9px; padding:4px 9px; text-align:center; min-width:36px;
+  border-radius:7px; text-align:center; width:52px; height:28px; display:flex; align-items:center; justify-content:center;
 }
-.carrera-fila-nota.nota-elite{ background:rgba(159,224,176,.22); border:1px solid rgba(159,224,176,.5); color:#9FE0B0; }
-.carrera-fila-nota.nota-alta{ background:rgba(159,224,176,.16); border:1px solid rgba(159,224,176,.4); color:#9FE0B0; }
-.carrera-fila-nota.nota-media{ background:rgba(232,196,104,.16); border:1px solid rgba(232,196,104,.4); color:var(--gold); }
-.carrera-fila-nota.nota-baja{ background:rgba(240,184,110,.16); border:1px solid rgba(240,184,110,.4); color:#F0B86E; }
-.carrera-fila-nota.nota-mala{ background:rgba(240,140,122,.18); border:1px solid rgba(240,140,122,.45); color:#F08C7A; }
+.carrera-fila-nota.nota-elite{ background:rgba(159,224,176,.2); border:1px solid rgba(159,224,176,.5); color:#9FE0B0; }
+.carrera-fila-nota.nota-alta{ background:rgba(159,224,176,.15); border:1px solid rgba(159,224,176,.4); color:#9FE0B0; }
+.carrera-fila-nota.nota-media{ background:rgba(232,196,104,.15); border:1px solid rgba(232,196,104,.4); color:var(--gold); }
+.carrera-fila-nota.nota-baja{ background:rgba(240,184,110,.15); border:1px solid rgba(240,184,110,.4); color:#F0B86E; }
+.carrera-fila-nota.nota-mala{ background:rgba(240,140,122,.16); border:1px solid rgba(240,140,122,.45); color:#F08C7A; }
 
 .carrera-fila-pendiente{
-  background:rgba(79,140,255,.08); border:1px solid rgba(79,140,255,.22); border-radius:18px;
-  margin-top:12px; animation: carreraFilaIn .3s ease both; box-shadow: 0 10px 24px rgba(0,0,0,.3);
+  background:rgba(79,140,255,.06); border-left:3px solid rgba(79,140,255,.4);
+  animation: carreraFilaIn .2s ease both;
 }
 .carrera-fila-edad-pendiente{
   background:rgba(79,140,255,.18); border:1px solid rgba(79,140,255,.4); color:var(--accent);
   animation: carreraPulso 1.6s ease-in-out infinite;
 }
-@keyframes carreraPulso{ 0%,100%{ box-shadow:0 0 0 0 rgba(79,140,255,.4), 0 0 0 5px var(--bg-app, #05070C); } 50%{ box-shadow:0 0 0 7px rgba(79,140,255,0), 0 0 0 5px var(--bg-app, #05070C); } }
-.carrera-fila-eligiendo{ color:var(--accent); font-style:italic; font-size:13.5px; }
+@keyframes carreraPulso{ 0%,100%{ box-shadow:0 0 0 0 rgba(79,140,255,.4); } 50%{ box-shadow:0 0 0 6px rgba(79,140,255,0); } }
+.carrera-fila-eligiendo{ color:var(--accent); font-style:italic; font-size:13px; }
 
-/* Temporadas futuras: en vez de dejar solo un número suelto, se arman
-   como tarjetas placeholder traslúcidas y con borde punteado, con texto
-   genérico que deja claro que la línea de tiempo sigue -- todavía no hay
-   nada que contar en esa edad. */
+/* Temporadas futuras: banda apagada y punteada dentro de la misma
+   grilla compacta, sin ocupar más alto que el resto de las filas. */
 .carrera-fila-futura{
-  opacity:.55; margin-top:12px; border:1px dashed var(--glass-border); border-radius:18px;
-  background:rgba(255,255,255,.015);
+  opacity:.5; border-left:3px dashed var(--glass-border); background:rgba(255,255,255,.01);
 }
 .carrera-fila-futura .carrera-fila-edad{
-  background:transparent; color:var(--muted); box-shadow:0 0 0 5px var(--bg-app, #05070C);
-  border:1px dashed var(--glass-border);
+  background:transparent; color:var(--muted); border:1px dashed var(--glass-border);
 }
 .carrera-fila-futura::after{
-  content:'Temporada futura · aún sin club · esperando próximo destino';
-  grid-column:2 / -1; color:var(--muted); font-size:12.5px; font-style:italic; letter-spacing:.01em;
+  content:'Temporada futura · sin club · esperando destino';
+  grid-column:2 / -1; color:var(--muted); font-size:12px; font-style:italic; letter-spacing:.01em;
 }
+
+/* Fila de retiro: tono apagado plata/gris en vez del acento de club --
+   se activa agregando la clase modificadora "carrera-fila-jugada--retiro"
+   a la última temporada desde carrera.js. */
+.carrera-fila-jugada--retiro{
+  background: rgba(180,185,195,.05); border-left:3px solid rgba(180,185,195,.4); opacity:.75;
+}
+.carrera-fila-jugada--retiro .carrera-fila-edad{ background:rgba(180,185,195,.18); color:#C5CAD4; }
+.carrera-fila-jugada--retiro .carrera-fila-club{ color:#C5CAD4; }
 
 /* Panel de decisión cuando el club dejó libre al jugador: notificación
    de evento con icono contenedor y acento rojo, en vez de un simple

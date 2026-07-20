@@ -18,6 +18,17 @@ const CARRERA_STATE = {
     enPrestamo: false,
     edad: null,
     atributos: null, // { ataque, defensa, fisico, general, potencial }
+    adn: null,       // atributos ocultos (nunca se muestran en UI) — ver carreraGenerarADN
+    reputacion: 0,   // 0-100, separada del OVR, la mueve el rendimiento real
+    potencialEfectivo: null, // techo de crecimiento actual, puede subir/bajar (ver carreraActualizarPotencialEfectivo)
+    // --- Fase 5 (§9-10): flags de hitos "primera vez" + continuidad en el club actual ---
+    temporadasEnClubActual: 1, // usado para el hito de capitán (3+ temporadas seguidas en el mismo club)
+    capitanEnClubActual: false,
+    primerClubEuropeoHecho: false,
+    continentalHecho: false,
+    golHecho: false,
+    tituloHecho: false,
+    balonDeOroHecho: false,
   },
   ofertas: [],       // clubes ofrecidos en carrera-oferta (se fija al entrar a la pantalla)
   temporada: 0,      // temporadas jugadas
@@ -139,6 +150,11 @@ const CARRERA_EDAD_INICIAL = 16;
 // Edad límite: la temporada jugada a esta edad es la última; después el
 // jugador se retira. No hay forma de "seguir jugando hasta los 100".
 const CARRERA_EDAD_RETIRO = 40;
+// Edad a partir de la cual puede aparecer la oferta de "vuelta a casa": un
+// regreso al fútbol del país de origen sobre el cierre de la carrera. Antes
+// de esta edad no tiene sentido -- volver a casa a los 25 sería un paso
+// atrás, no un cierre de ciclo. Ver carreraProbabilidadVueltaCasa.
+const CARRERA_EDAD_VUELTA_CASA = 34;
 
 function carreraElegirClub(club){
   // Copia propia del club: a partir de acá el club puede ascender/descender
@@ -151,13 +167,39 @@ function carreraElegirClub(club){
   CARRERA_STATE.jugador.enPrestamo = false;
   CARRERA_STATE.jugador.edad = CARRERA_EDAD_INICIAL;
   CARRERA_STATE.jugador.atributos = carreraGenerarAtributos(CARRERA_STATE.jugador.posicion);
-  // Edad de pico (prime): entre 30 y 32, sorteada una sola vez por carrera.
-  // A partir de ahí el rendimiento empieza a bajar en vez de crecer.
-  CARRERA_STATE.jugador.edadPico = 30 + Math.floor(Math.random() * 3);
+  // ADN oculto (Fase 1 del rediseño): nunca se muestra en la UI. Define
+  // techo real de potencial, edad de pico y las variables que van a
+  // entrar en juego en las próximas fases (mercado, decadencia, lesiones).
+  CARRERA_STATE.jugador.adn = carreraGenerarADN();
+  // El techo de potencial ya no es fijo para siempre, y ahora es un sorteo
+  // TOTALMENTE aleatorio entre 86 y 99 -- sin relación con el general
+  // inicial. Así cualquier jugador, arranque como arranque, tiene chance
+  // real de llegar a nivel elite si el rendimiento lo acompaña; lo que
+  // decide si lo alcanza o no es cómo lo desarrollás, no el dado tirado
+  // al crear el jugador.
+  CARRERA_STATE.jugador.adn.potencialMax = 86 + Math.floor(Math.random() * 14);
+  CARRERA_STATE.jugador.potencialEfectivo = CARRERA_STATE.jugador.atributos.potencial;
+  // Reputación: arranca baja siempre (nadie es conocido a los 16 en cantera)
+  // y desde acá la mueve el rendimiento real, no el nivel de club.
+  CARRERA_STATE.jugador.reputacion = 5;
+  // Edad de pico (prime): ahora sale del ADN (24-32, no un rango fijo
+  // 30-32) para que la curva de carrera varíe jugador a jugador. Se deja
+  // también en jugador.edadPico (alias plano) porque el motor de temporada
+  // y el dashboard ya lo leen así.
+  CARRERA_STATE.jugador.edadPico = CARRERA_STATE.jugador.adn.edadPico;
   CARRERA_STATE.jugador.picoGeneral = CARRERA_STATE.jugador.atributos.general;
   CARRERA_STATE.jugador.capasSeleccion = 0;
   CARRERA_STATE.jugador.golesSeleccion = 0;
   CARRERA_STATE.jugador.descartado = false;
+  // Flags de hitos "primera vez" (Fase 5, §10) y contador de continuidad
+  // en el club actual (usado para el hito de capitán).
+  CARRERA_STATE.jugador.temporadasEnClubActual = 1;
+  CARRERA_STATE.jugador.capitanEnClubActual = false;
+  CARRERA_STATE.jugador.primerClubEuropeoHecho = false;
+  CARRERA_STATE.jugador.continentalHecho = false;
+  CARRERA_STATE.jugador.golHecho = false;
+  CARRERA_STATE.jugador.tituloHecho = false;
+  CARRERA_STATE.jugador.balonDeOroHecho = false;
   CARRERA_STATE.temporada = 0;
   CARRERA_STATE.historial = [];
   CARRERA_STATE.titulos = [];
@@ -347,6 +389,12 @@ function carreraSimularTemporada(){
   else if (rendimiento >= -18) resultadoClub = "Peleó el descenso";
   else resultadoClub = "Descendió";
 
+  // Tier de la temporada (Fase 5, §9): se calcula ACÁ, antes de aplicar
+  // ascenso/descenso más abajo, porque ese cambio muta club.liga para la
+  // PRÓXIMA temporada -- los premios de esta temporada tienen que usar la
+  // liga en la que de verdad se jugó.
+  const tierTemporada = carreraObtenerTier(ligaDeLaTemporada);
+
   // Ascenso/descenso real de división (solo clubes argentinos, ver arriba).
   // Se aplica DESPUÉS de tirar el resultado de esta temporada -- el nivel
   // nuevo del club rige recién a partir de la próxima, no retroactivo.
@@ -375,11 +423,20 @@ function carreraSimularTemporada(){
     generalDespues = Math.max(1, Math.min(j.atributos.potencial, generalAntes + crecimiento));
     j.picoGeneral = Math.max(j.picoGeneral, generalDespues);
   } else {
-    const retencion = 0.65 + (j.picoGeneral / 99) * 0.20; // 65%-85% del pico
+    // Fase 3 del rediseño: la retención y la velocidad de caída ya no son
+    // un rango fijo para todos -- salen de adn.velocidadDecadencia (0-100).
+    // Un jugador con velocidadDecadencia baja retiene hasta 90% de su pico
+    // y cae ~1 punto por bienio; uno con velocidadDecadencia alta retiene
+    // solo 55% y cae hasta 4 puntos por bienio, antes incluso de sumar el
+    // agravante de los bienios ya pasados desde el pico. El profesionalismo
+    // amortigua la caída (cuida mejor el físico), igual que ya hace con el
+    // potencial dinámico (ver carreraActualizarPotencialEfectivo).
+    const retencion = 0.55 + (1 - j.adn.velocidadDecadencia / 100) * 0.35; // 55%-90% del pico
     const piso = Math.round(j.picoGeneral * retencion);
     const bieniosPasadoElPico = (edadDeLaTemporada - j.edadPico) / CARRERA_PASO_EDAD;
-    const declive = 2 + Math.floor(Math.random() * 3) + Math.floor(bieniosPasadoElPico / 1.5);
-    generalDespues = Math.max(piso, generalAntes - declive);
+    let declive = 1 + (j.adn.velocidadDecadencia / 100) * 3 + Math.random() * 2 + bieniosPasadoElPico * 0.4;
+    declive *= (1 - (j.adn.profesionalismo / 100) * 0.25);
+    generalDespues = Math.max(piso, generalAntes - Math.round(declive));
   }
   j.atributos.general = generalDespues;
 
@@ -408,12 +465,15 @@ function carreraSimularTemporada(){
     defensor: (0.06 + 0.10 * 0.6) * 0.95,
     arquero: (0.01 + 0.02 * 0.6) * 0.95,
   };
+  // Se saca afuera del if/else para poder reusarlo también en el cálculo
+  // de premios individuales (Fase 5, §9), que necesita el mismo baseline
+  // "esperado por rol" que ya usa la nota de temporada.
+  const baseline = CARRERA_BASELINE_PRODUCCION[grupoPosicion];
   let valoracion;
   if (partidos < 4) {
     valoracion = 5.0 + (Math.random() * 0.4 - 0.2);
   } else {
     const produccionPorPartido = (goles + asistencias * 0.6) / partidos;
-    const baseline = CARRERA_BASELINE_PRODUCCION[grupoPosicion];
     const bonoEquipo = {
       "Campeón": 0.5, "Clasificó a copas internacionales": 0.25,
       "Mitad de tabla": 0, "Peleó el descenso": -0.2, "Descendió": -0.4,
@@ -423,6 +483,22 @@ function carreraSimularTemporada(){
       + (Math.random() * 0.5 - 0.25);
   }
   valoracion = Math.round(Math.max(1, Math.min(10, valoracion)) * 10) / 10;
+
+  // ADN: potencial dinámico y reputación (Fase 1 del rediseño). Se calculan
+  // acá porque ya están disponibles todos los datos de la temporada
+  // (valoración, partidos, resultado del club, lesión, convocatoria). La
+  // lista de premios va vacía hasta que se implemente la Fase 5.
+  carreraActualizarPotencialEfectivo(j, { valoracion, partidos, resultadoClub, lesion });
+  j.atributos.potencial = j.potencialEfectivo;
+
+  // Premios individuales de la temporada (Fase 5, §9): calculados por
+  // tier, decisión confirmada. Se calculan antes de actualizar reputación
+  // porque cada premio ganado alimenta un salto fuerte de reputación.
+  const premiosTemporada = carreraCalcularPremios(
+    j, { valoracion, goles, asistencias, partidos, resultadoClub }, tierTemporada, grupoPosicion, baseline
+  );
+
+  carreraActualizarReputacion(j, { valoracion, goles, asistencias, resultadoClub, convocatoria, cambioDivision, lesion }, premiosTemporada);
 
   j.edad = edadDeLaTemporada + CARRERA_PASO_EDAD;
   CARRERA_STATE.temporada += 1;
@@ -435,9 +511,11 @@ function carreraSimularTemporada(){
   CARRERA_STATE.historial.unshift({
     temporada: CARRERA_STATE.temporada, edad: edadDeLaTemporada, club: club.nombre,
     escudo: club.escudo, liga: ligaDeLaTemporada, cambioDivision, resultadoClub, partidos, goles, asistencias,
-    valoracion, generalAntes, generalDespues, lesion, convocatoria, debutSeleccion, ganoCopaArgentina
+    valoracion, generalAntes, generalDespues, lesion, convocatoria, debutSeleccion, ganoCopaArgentina,
+    premios: premiosTemporada
   });
 
+  const huboTitulo = resultadoClub === "Campeón" || ganoCopaArgentina;
   if (resultadoClub === "Campeón") {
     CARRERA_STATE.titulos.unshift({
       temporada: CARRERA_STATE.temporada, edad: j.edad, club: club.nombre, liga: club.liga
@@ -452,9 +530,43 @@ function carreraSimularTemporada(){
     CARRERA_STATE.hitos.unshift({ tipo: "seleccion", edad: j.edad, pais: j.pais.nombre });
   }
 
+  // Hitos de carrera (Fase 5, §10): la mayoría se derivan directamente de
+  // datos que ya se calcularon arriba -- acá solo se detecta la PRIMERA
+  // vez que pasa cada uno (salvo lesión grave, que se registra cada vez
+  // que ocurre, y ascenso/descenso, que se registra cada vez que se
+  // asciende o desciende de verdad).
+  if (CARRERA_STATE.temporada === 1) {
+    CARRERA_STATE.hitos.unshift({ tipo: "debut_profesional", edad: edadDeLaTemporada, club: club.nombre });
+  }
+  if (goles > 0 && !j.golHecho) {
+    j.golHecho = true;
+    CARRERA_STATE.hitos.unshift({ tipo: "primer_gol", edad: edadDeLaTemporada, club: club.nombre });
+  }
+  if (huboTitulo && !j.tituloHecho) {
+    j.tituloHecho = true;
+    CARRERA_STATE.hitos.unshift({ tipo: "primer_titulo", edad: j.edad, club: club.nombre });
+  }
+  if (cambioDivision === "ascenso") {
+    CARRERA_STATE.hitos.unshift({ tipo: "ascenso", edad: j.edad, club: club.nombre });
+  } else if (cambioDivision === "descenso") {
+    CARRERA_STATE.hitos.unshift({ tipo: "descenso", edad: j.edad, club: club.nombre });
+  }
+  if (resultadoClub === "Clasificó a copas internacionales" && !j.continentalHecho) {
+    j.continentalHecho = true;
+    CARRERA_STATE.hitos.unshift({ tipo: "debut_continental", edad: j.edad, club: club.nombre });
+  }
+  if (lesion && lesion.tipo === "grave") {
+    CARRERA_STATE.hitos.unshift({ tipo: "lesion_grave", edad: j.edad, club: club.nombre });
+  }
+  if (premiosTemporada.some(p => p.tipo === "balon_de_oro") && !j.balonDeOroHecho) {
+    j.balonDeOroHecho = true;
+    CARRERA_STATE.hitos.unshift({ tipo: "balon_de_oro", edad: j.edad, club: club.nombre });
+  }
+
   if (j.edad >= CARRERA_EDAD_RETIRO) {
     CARRERA_STATE.retirado = true;
     CARRERA_STATE.decision = null;
+    CARRERA_STATE.hitos.unshift({ tipo: "retiro", edad: j.edad });
   } else {
     carreraGenerarDecision();
   }
@@ -471,6 +583,16 @@ function carreraSimularTemporada(){
 // solo préstamos: un jugador que ya se afianzó recibe más ofertas de
 // compra que de préstamo, y uno joven que todavía necesita rodaje recibe
 // más préstamos que fichajes.
+// Probabilidad de que aparezca la oferta de "vuelta a casa" esta
+// temporada, una vez que el jugador ya está en la ventana de edad (ver
+// CARRERA_EDAD_VUELTA_CASA): sube a medida que se acerca el retiro -- a
+// los 34 recién empieza a ser una posibilidad real (15%), a los 39 es
+// casi segura (75%, nunca 100% porque no todas las temporadas coincide
+// con que el club de casa lo llame).
+function carreraProbabilidadVueltaCasa(edad){
+  return Math.min(0.75, Math.max(0.15, (edad - CARRERA_EDAD_VUELTA_CASA + 1) * 0.11));
+}
+
 function carreraGenerarDecision(){
   const j = CARRERA_STATE.jugador;
   const ultima = CARRERA_STATE.historial[0]; // la temporada recién jugada
@@ -524,7 +646,7 @@ function carreraGenerarDecision(){
     const clubesRecientes = descartado
       ? CARRERA_STATE.historial.slice(0, 2).map(h => h.club)
       : [];
-    const candidatos = carreraObtenerOfertasPrestamo(j.club.nombre, nivelBusqueda, fichajes + prestamos, clubesRecientes);
+    const candidatos = carreraObtenerOfertasPrestamo(j, CARRERA_STATE.temporada, j.club.nombre, nivelBusqueda, fichajes + prestamos, clubesRecientes);
     candidatos.forEach((c, i) => {
       if (i < fichajes) {
         opciones.push({ id:"fichaje"+i, label:`Fichaje de ${c.nombre}`, club:c, prestamo:false, dueñoNuevo:true });
@@ -532,6 +654,27 @@ function carreraGenerarDecision(){
         opciones.push({ id:(descartado ? "prueba" : "prestamo")+i, label:`${descartado ? "Prueba" : "Préstamo"} en ${c.nombre}`, club:c, prestamo:true });
       }
     });
+
+    // "Vuelta a casa" (§ pedido por Gonzalo): sobre el final de la carrera,
+    // si el jugador está jugando fuera de su país de origen, puede
+    // aparecer una oferta EXTRA de un club de ESE país -- cierre
+    // sentimental de la carrera. Se suma a las ofertas normales, no las
+    // reemplaza, y solo si hay clubes cargados para ese país en el dataset
+    // (si no hay, no se puede armar la oferta y se omite sin romper nada).
+    if (!descartado && j.edad >= CARRERA_EDAD_VUELTA_CASA && j.club.iso2 !== j.pais.iso2) {
+      const poolOrigen = CARRERA_CLUBES[j.pais.iso2];
+      if (poolOrigen && poolOrigen.length && Math.random() < carreraProbabilidadVueltaCasa(j.edad)) {
+        const candidatosOrigen = poolOrigen
+          .filter(c => c.nombre !== j.club.nombre)
+          .map(c => ({ ...c, iso2: j.pais.iso2 }));
+        candidatosOrigen.forEach(c => { c._score = carreraScoreClub(c, j, nivelBusqueda, CARRERA_STATE.temporada); });
+        candidatosOrigen.sort((a, b) => b._score - a._score);
+        const elegido = candidatosOrigen[0];
+        if (elegido) {
+          opciones.push({ id:"vueltacasa", label:`Vuelta a casa: ${elegido.nombre} (${j.pais.nombre})`, club: elegido, prestamo:false, dueñoNuevo:true, vueltaCasa:true });
+        }
+      }
+    }
   }
   CARRERA_STATE.decision = { opciones };
 }
@@ -549,9 +692,40 @@ function carreraResolverDecision(id){
   // "volver"/"extender"/"definitiva" reusan el club en el que ya está (con
   // sus ascensos/descensos ya aplicados) tal cual; el resto son clubes
   // nuevos del pool -- se copian para no mutar el pool compartido.
-  j.club = (op.id === "volver" || op.id === "extender" || op.id === "definitiva") ? op.club : { ...op.club };
+  const sigueEnMismoClub = op.id === "volver" || op.id === "extender" || op.id === "definitiva";
+  j.club = sigueEnMismoClub ? op.club : { ...op.club };
   j.enPrestamo = !!op.prestamo;
   if (op.dueñoNuevo) j.clubDueño = j.club;
+
+  // Continuidad en el club actual (Fase 5, §10): el contador solo sigue
+  // subiendo si es genuinamente el mismo club (incluye volver de préstamo
+  // al dueño y extender el préstamo); un club nuevo de verdad lo resetea.
+  // Cambio de club de verdad: se detectan acá los hitos de "primer club
+  // europeo" y "vuelve a un club en el que ya jugó antes" (retorno), que
+  // solo tienen sentido en el momento del cambio, no cada temporada.
+  if (sigueEnMismoClub) {
+    j.temporadasEnClubActual += 1;
+  } else {
+    const yaJugoEnEseClub = CARRERA_STATE.historial.some(h => h.club === j.club.nombre);
+    if (op.vueltaCasa) {
+      CARRERA_STATE.hitos.unshift({ tipo: "vuelta_pais_origen", edad: j.edad, club: j.club.nombre, pais: j.pais.nombre });
+    } else if (yaJugoEnEseClub) {
+      CARRERA_STATE.hitos.unshift({ tipo: "retorno_club_origen", edad: j.edad, club: j.club.nombre });
+    }
+    if (carreraObtenerTier(j.club.liga) >= 3 && !j.primerClubEuropeoHecho) {
+      j.primerClubEuropeoHecho = true;
+      CARRERA_STATE.hitos.unshift({ tipo: "primer_club_europeo", edad: j.edad, club: j.club.nombre });
+    }
+    j.temporadasEnClubActual = 1;
+    j.capitanEnClubActual = false;
+  }
+  // Capitán: heurística simple, 3+ temporadas seguidas en el mismo club
+  // (una sola vez por estadía, no se repite temporada a temporada).
+  if (!j.capitanEnClubActual && j.temporadasEnClubActual >= 3) {
+    j.capitanEnClubActual = true;
+    CARRERA_STATE.hitos.unshift({ tipo: "capitan", edad: j.edad, club: j.club.nombre });
+  }
+
   CARRERA_STATE.decision = null;
   carreraSimularTemporada();
 }
@@ -573,12 +747,25 @@ function carreraMostrarDashboard(){
     acc.pj += h.partidos; acc.goles += h.goles; acc.asist += h.asistencias; return acc;
   }, { pj:0, goles:0, asist:0 });
 
-  const vitrinaItems = [
-    ...CARRERA_STATE.titulos.map(t => `<span class="carrera-vitrina-item">🏆 ${t.liga} · ${t.edad} años</span>`),
-    ...CARRERA_STATE.hitos.map(h => `<span class="carrera-vitrina-item carrera-vitrina-item--hito">${carreraBandera(j.pais.iso2)} Debut en ${h.pais} · ${h.edad} años</span>`),
-  ];
-  const vitrinaHTML = vitrinaItems.length ? `
-    <div class="carrera-vitrina-lista">${vitrinaItems.join("")}</div>` : `<p class="carrera-vitrina-vacia">Vitrina vacía</p>`;
+  // Timeline de carrera (Fase 5, §10): reemplaza la vitrina plana de
+  // títulos por una línea de tiempo ordenada por edad que mezcla títulos
+  // y todos los tipos de hito, cada uno con ícono + texto. Reusa la
+  // misma clase CSS que ya existía (carrera-vitrina-item) para no
+  // depender de estilos nuevos en index.html.
+  const timelineItems = [
+    ...CARRERA_STATE.titulos.map(t => ({ edad: t.edad, icono: "🏆", texto: `${t.liga} con ${t.club}` })),
+    ...CARRERA_STATE.hitos.map(h => {
+      if (h.tipo === "seleccion") {
+        return { edad: h.edad, icono: carreraBandera(j.pais.iso2), texto: `Debut en la Selección de ${h.pais}` };
+      }
+      const info = CARRERA_HITO_INFO[h.tipo];
+      return { edad: h.edad, icono: info ? info.icono : "•", texto: info ? info.texto(h) : h.tipo };
+    }),
+  ].sort((a, b) => a.edad - b.edad);
+  const vitrinaHTML = timelineItems.length ? `
+    <div class="carrera-vitrina-lista">${timelineItems.map(it =>
+      `<span class="carrera-vitrina-item carrera-vitrina-item--hito">${it.icono} ${it.texto} · ${it.edad} años</span>`
+    ).join("")}</div>` : `<p class="carrera-vitrina-vacia">Vitrina vacía</p>`;
 
   const seleccionHTML = j.capasSeleccion > 0 ? `
     <div class="carrera-seleccion">
@@ -649,6 +836,10 @@ function carreraMostrarDashboard(){
           ${vitrinaHTML}
         </div>
         ${seleccionHTML}
+        <div class="carrera-atributo carrera-atributo-reputacion" title="Cómo te ve el mundo del fútbol: la mueven tu rendimiento real, tus títulos y tu continuidad -- no solo tu nivel general">
+          <span>Reputación</span><b>${Math.round(j.reputacion)}</b>
+          <div class="carrera-atributo-barra"><div style="width:${Math.round(j.reputacion)}%"></div></div>
+        </div>
         <div class="carrera-atributos">
           <div class="carrera-atributo"><span>Ataque</span><b>${a.ataque}</b><div class="carrera-atributo-barra"><div style="width:${a.ataque}%"></div></div></div>
           <div class="carrera-atributo"><span>Defensa</span><b>${a.defensa}</b><div class="carrera-atributo-barra"><div style="width:${a.defensa}%"></div></div></div>
@@ -716,6 +907,9 @@ function carreraTablaEdadesHTML(){
       if (h.lesion) iconos += `<span class="carrera-fila-icono carrera-fila-icono--lesion" title="Lesión ${h.lesion.tipo}: ${h.partidos} PJ jugados">🩹</span>`;
       if (h.convocatoria) iconos += `<span class="carrera-fila-icono carrera-fila-icono--seleccion" title="Convocado a la selección: +${h.convocatoria.presencias} presencias">🌐</span>`;
       if (h.ganoCopaArgentina) iconos += `<span class="carrera-fila-icono" title="Ganó la Copa Argentina">🏆</span>`;
+      if (h.premios && h.premios.length) {
+        iconos += h.premios.map(p => `<span class="carrera-fila-icono" title="${p.nombre}">${CARRERA_PREMIO_ICONO[p.tipo] || "🎖️"}</span>`).join("");
+      }
       filas.push(`
         <div class="carrera-fila carrera-fila-jugada ${carreraClaseResultado(h.resultadoClub)}" style="animation-delay:${Math.min(filas.length, 10) * 40}ms; --club-color:${carreraColorClub(h.club)}" title="${h.club} — ${h.liga} — ${h.resultadoClub}">
           <div class="carrera-fila-edad">${h.edad}</div>
@@ -762,9 +956,19 @@ function carreraReiniciarEstado(){
   CARRERA_STATE.jugador.edad = null;
   CARRERA_STATE.jugador.edadPico = null;
   CARRERA_STATE.jugador.picoGeneral = null;
+  CARRERA_STATE.jugador.adn = null;
+  CARRERA_STATE.jugador.reputacion = 0;
+  CARRERA_STATE.jugador.potencialEfectivo = null;
   CARRERA_STATE.jugador.capasSeleccion = 0;
   CARRERA_STATE.jugador.golesSeleccion = 0;
   CARRERA_STATE.jugador.atributos = null;
+  CARRERA_STATE.jugador.temporadasEnClubActual = 1;
+  CARRERA_STATE.jugador.capitanEnClubActual = false;
+  CARRERA_STATE.jugador.primerClubEuropeoHecho = false;
+  CARRERA_STATE.jugador.continentalHecho = false;
+  CARRERA_STATE.jugador.golHecho = false;
+  CARRERA_STATE.jugador.tituloHecho = false;
+  CARRERA_STATE.jugador.balonDeOroHecho = false;
   CARRERA_STATE.temporada = 0;
   CARRERA_STATE.historial = [];
   CARRERA_STATE.titulos = [];
