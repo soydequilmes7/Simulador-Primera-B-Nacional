@@ -20,7 +20,8 @@ let DT_STATE = {
   rating: null,             // {ataque_local, ataque_visitante, defensa_local, defensa_visitante}
   objetivo: null,           // slug, ej. "playoffs"
   objetivoDesc: "",
-  presupuesto: 100,
+  presupuesto: 0,
+  fichajesPorCategoria: {},  // {arquero: 2, ataque: 1, ...} -- cuántas veces se fichó ahí esta temporada
   rivalesPool: [],
   rivalIndex: 0,
   rivalActual: null,
@@ -35,7 +36,6 @@ let DT_STATE = {
   mentalidadSel: "equilibrada",
 };
 
-const DT_COSTO_FICHAJE = 25;
 const DT_CATEGORIAS = ["arquero", "defensa", "mediocampo", "ataque"];
 
 let DT_INIT_DONE = false;
@@ -145,18 +145,15 @@ const DT_NOMBRE_DIVISION = {
 async function dtElegirClub(club) {
   dtSetStatus("dt-status-ofertas", "Firmando contrato...");
   try {
-    const [objetivoResp, ratingResp, poolResp] = await Promise.all([
-      dtPost("/api/dt/objetivo", club),
-      dtPost("/api/dt/rating-inicial", { factor_prestigio: club.factor_prestigio }),
-      dtPost("/api/dt/ofertas", { reputacion: 100, divisiones: [club.division], cantidad: 8 }),
-    ]);
+    const cuerpo = await dtPost("/api/dt/club/elegir", club);
     DT_STATE.club = club;
-    DT_STATE.objetivo = objetivoResp.objetivo;
-    DT_STATE.objetivoDesc = objetivoResp.descripcion;
-    DT_STATE.rating = ratingResp;
-    DT_STATE.rivalesPool = poolResp.ofertas.filter((c) => c.nombre !== club.nombre);
+    DT_STATE.objetivo = cuerpo.objetivo;
+    DT_STATE.objetivoDesc = cuerpo.descripcion;
+    DT_STATE.rating = cuerpo.rating_inicial;
+    DT_STATE.presupuesto = cuerpo.presupuesto_inicial;
+    DT_STATE.rivalesPool = cuerpo.rivales;
     DT_STATE.rivalIndex = 0;
-    DT_STATE.presupuesto = 100;
+    DT_STATE.fichajesPorCategoria = {};
     DT_STATE.puntos = 0;
     DT_STATE.partidosJugados = 0;
     DT_STATE.numeroTemporada += 1;
@@ -167,17 +164,24 @@ async function dtElegirClub(club) {
   }
 }
 
+// Espejo del costo creciente de season/dt_carrera.costo_fichaje -- solo
+// para MOSTRAR el próximo costo antes de confirmar. El costo real que
+// se cobra siempre es el que devuelve el servidor en la respuesta de
+// /api/dt/mercado/fichar (esta función nunca decide cuánto se cobra).
+function dtCostoFichaje(intento) {
+  return Math.round(25 * Math.pow(1.6, intento));
+}
+
 function dtRenderPretemporada() {
   document.getElementById("dt-pre-club-liga").textContent = DT_NOMBRE_DIVISION[DT_STATE.club.division] || DT_STATE.club.division;
   document.getElementById("dt-pre-club-nombre").textContent = DT_STATE.club.nombre;
   document.getElementById("dt-pre-objetivo").textContent = DT_STATE.objetivoDesc;
-  document.getElementById("dt-presupuesto-num").textContent = DT_STATE.presupuesto;
   document.getElementById("dt-fichaje-log").textContent = "";
   const grid = document.getElementById("dt-mercado-grid");
   grid.innerHTML = DT_CATEGORIAS.map((cat) => `
     <button class="dt-mercado-card" data-cat="${cat}">
       <div class="dt-cat">${cat}</div>
-      <div class="dt-cat-costo">${DT_COSTO_FICHAJE} pts</div>
+      <div class="dt-cat-costo" data-costo-de="${cat}"></div>
     </button>
   `).join("");
   grid.querySelectorAll(".dt-mercado-card").forEach((btn) => {
@@ -188,18 +192,25 @@ function dtRenderPretemporada() {
 
 function dtActualizarDisabledMercado() {
   document.getElementById("dt-presupuesto-num").textContent = DT_STATE.presupuesto;
-  document.querySelectorAll("#dt-mercado-grid .dt-mercado-card").forEach((btn) => {
-    btn.disabled = DT_STATE.presupuesto < DT_COSTO_FICHAJE;
+  DT_CATEGORIAS.forEach((cat) => {
+    const intento = DT_STATE.fichajesPorCategoria[cat] || 0;
+    const costo = dtCostoFichaje(intento);
+    const etiqueta = document.querySelector(`[data-costo-de="${cat}"]`);
+    if (etiqueta) etiqueta.textContent = costo + " pts";
+    const boton = document.querySelector(`.dt-mercado-card[data-cat="${cat}"]`);
+    if (boton) boton.disabled = DT_STATE.presupuesto < costo;
   });
 }
 
 async function dtFichar(categoria) {
+  const intento = DT_STATE.fichajesPorCategoria[categoria] || 0;
   try {
-    const cuerpo = await dtPost("/api/dt/mercado/fichar", { categoria });
+    const cuerpo = await dtPost("/api/dt/mercado/fichar", { categoria, intento });
     DT_STATE.rating[cuerpo.campo_rating] = Math.round((DT_STATE.rating[cuerpo.campo_rating] + cuerpo.delta_rating) * 10000) / 10000;
     DT_STATE.presupuesto -= cuerpo.costo;
+    DT_STATE.fichajesPorCategoria[categoria] = intento + 1;
     document.getElementById("dt-fichaje-log").innerHTML =
-      `<b>${categoria}:</b> ${cuerpo.texto} (${cuerpo.resultado})`;
+      `<b>${categoria}</b> (${cuerpo.costo} pts): ${cuerpo.texto} -- ${cuerpo.resultado}`;
     dtActualizarDisabledMercado();
   } catch (e) {
     document.getElementById("dt-fichaje-log").textContent = "No se pudo fichar: " + e.message;
@@ -360,7 +371,8 @@ async function dtSeguirEnElClub() {
     const objetivoResp = await dtPost("/api/dt/objetivo", DT_STATE.club);
     DT_STATE.objetivo = objetivoResp.objetivo;
     DT_STATE.objetivoDesc = objetivoResp.descripcion;
-    DT_STATE.presupuesto = 100;
+    DT_STATE.presupuesto = dtPresupuestoInicial(DT_STATE.club.factor_prestigio);
+    DT_STATE.fichajesPorCategoria = {};
     DT_STATE.puntos = 0;
     DT_STATE.partidosJugados = 0;
     DT_STATE.numeroTemporada += 1;
@@ -369,4 +381,12 @@ async function dtSeguirEnElClub() {
   } catch (e) {
     dtSetStatus("dt-status-ofertas", "No se pudo arrancar la temporada siguiente: " + e.message, true);
   }
+}
+
+// Espejo de season/dt_carrera.presupuesto_inicial -- fórmula
+// determinística, no hace falta pedirle esto al servidor de nuevo
+// (evita otro build_from_current_data() solo para un número).
+function dtPresupuestoInicial(factorPrestigio) {
+  const factor = Math.max(0, Math.min(0.5, factorPrestigio));
+  return Math.round(60 + factor * 200);
 }

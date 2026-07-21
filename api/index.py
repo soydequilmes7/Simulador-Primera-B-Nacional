@@ -2239,6 +2239,58 @@ def dt_ofertas_endpoint(body: DTOfertasBody):
         return _error_response(e)
 
 
+class DTElegirClubBody(BaseModel):
+    nombre: str
+    division: str
+    factor_prestigio: float
+    cantidad_rivales: int = 8
+
+
+@app.post("/api/dt/club/elegir")
+def dt_elegir_club_endpoint(body: DTElegirClubBody):
+    """Todo lo que hace falta para arrancar en un club nuevo, EN UNA
+    SOLA LLAMADA: objetivo de la dirigencia, rating de arranque,
+    presupuesto de pretemporada y el pool de rivales de la división
+    para toda la temporada.
+
+    Antes esto eran 3 llamadas del frontend en paralelo, dos de las
+    cuales (/api/dt/ofertas usado para el pool de rivales, y esta
+    misma) disparaban su PROPIO ClubRegistry.build_from_current_data()
+    -- una lectura completa de las 5 divisiones contra Supabase, dos
+    veces por cada club que el usuario elegía. Esa duplicación era la
+    causa real de la demora al firmar contrato (no la cantidad de
+    pantallas). Acá se arma el registry una sola vez y se reusa para
+    todo."""
+    try:
+        from season.club_registry import ClubRegistry
+        from season.dt_carrera import (
+            ClubCandidato,
+            descripcion_objetivo,
+            generar_objetivo,
+            presupuesto_inicial,
+            rating_por_prestigio,
+            rivales_de_division,
+        )
+
+        registry = ClubRegistry.build_from_current_data()
+        club = ClubCandidato(nombre=body.nombre, division_slug=body.division, factor_prestigio=body.factor_prestigio)
+        objetivo = generar_objetivo(club)
+        rivales = rivales_de_division(registry, body.division, excluir_nombre=body.nombre, cantidad=body.cantidad_rivales)
+
+        return {
+            "objetivo": objetivo.value,
+            "descripcion": descripcion_objetivo(objetivo),
+            "rating_inicial": rating_por_prestigio(body.factor_prestigio),
+            "presupuesto_inicial": presupuesto_inicial(body.factor_prestigio),
+            "rivales": [
+                {"nombre": r.nombre, "division": r.division_slug, "factor_prestigio": r.factor_prestigio}
+                for r in rivales
+            ],
+        }
+    except Exception as e:
+        return _error_response(e)
+
+
 class DTObjetivoBody(BaseModel):
     nombre: str
     division: str
@@ -2247,9 +2299,10 @@ class DTObjetivoBody(BaseModel):
 
 @app.post("/api/dt/objetivo")
 def dt_objetivo_endpoint(body: DTObjetivoBody):
-    """Objetivo que le pone la dirigencia al DT para la temporada en
-    este club -- depende del prestigio del club, no de nada que haya
-    hecho el DT todavía (recién arranca ahí)."""
+    """Objetivo suelto para cuando el DT SIGUE en el mismo club una
+    temporada más (ya tiene rating y pool de rivales en memoria del
+    frontend, no hace falta reconstruir nada de eso -- por eso este
+    endpoint se mantiene aparte de /api/dt/club/elegir)."""
     try:
         from season.dt_carrera import ClubCandidato, descripcion_objetivo, generar_objetivo
 
@@ -2280,25 +2333,29 @@ def dt_rating_inicial_endpoint(body: DTRatingInicialBody):
 
 class DTFicharBody(BaseModel):
     categoria: str  # "arquero" | "defensa" | "mediocampo" | "ataque"
+    intento: int = 0  # cuántas veces ya se fichó en ESTA categoría esta temporada
 
 
 @app.post("/api/dt/mercado/fichar")
 def dt_fichar_endpoint(body: DTFicharBody):
-    """Una tirada de mercado simplificado -- no cobra presupuesto, el
-    frontend resta season.dt_carrera.COSTO_FICHAJE y decide si el DT
-    tiene plata para llamar a este endpoint."""
+    """Una tirada de mercado simplificado. El costo YA VIENE CRECIENTE
+    según `intento` (ver season.dt_carrera.costo_fichaje) -- el
+    frontend lleva la cuenta de cuántas veces fichó en cada categoría
+    esta temporada y la manda acá; el costo real de esta tirada vuelve
+    en la respuesta (`fichaje.costo`), la capa de arriba resta eso del
+    presupuesto."""
     try:
-        from season.dt_carrera import CATEGORIA_A_CAMPO_RATING, COSTO_FICHAJE, CategoriaFichaje, fichar
+        from season.dt_carrera import CATEGORIA_A_CAMPO_RATING, CategoriaFichaje, fichar
 
         categoria = CategoriaFichaje(body.categoria)
-        fichaje = fichar(categoria)
+        fichaje = fichar(categoria, intento=body.intento)
         return {
             "categoria": fichaje.categoria.value,
             "resultado": fichaje.resultado.value,
             "delta_rating": fichaje.delta_rating,
             "campo_rating": CATEGORIA_A_CAMPO_RATING[categoria],
             "texto": fichaje.texto,
-            "costo": COSTO_FICHAJE,
+            "costo": fichaje.costo,
         }
     except Exception as e:
         return _error_response(e)

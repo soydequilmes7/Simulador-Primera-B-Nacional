@@ -21,6 +21,7 @@ import numpy as np
 
 from season.club_registry import ClubRegistry
 from season.dt_carrera import (
+    CATEGORIA_A_CAMPO_RATING,
     CategoriaFichaje,
     ClubCandidato,
     DTState,
@@ -30,6 +31,7 @@ from season.dt_carrera import (
     TipoObjetivo,
     ajustar_lambdas,
     candidatos_desde_registry,
+    costo_fichaje,
     evaluar_temporada,
     fichar,
     generar_cronologia,
@@ -38,8 +40,10 @@ from season.dt_carrera import (
     lambda_partido,
     objetivo_cumplido,
     ofertas_de_clubes,
+    presupuesto_inicial,
     rating_por_prestigio,
     resolver_partido,
+    rivales_de_division,
     techo_prestigio_para,
 )
 
@@ -149,6 +153,54 @@ class TestMercado(unittest.TestCase):
         self.assertAlmostEqual(conteos["flop"] / n, 0.20, delta=0.06)
         self.assertAlmostEqual(conteos["promedio"] / n, 0.55, delta=0.06)
         self.assertAlmostEqual(conteos["pego"] / n, 0.25, delta=0.06)
+
+    def test_presupuesto_crece_con_el_prestigio(self):
+        self.assertLess(presupuesto_inicial(0.0), presupuesto_inicial(0.5))
+
+    def test_presupuesto_nunca_alcanza_para_las_4_categorias_sin_limite(self):
+        # Antes: 100 fijo, costo fijo 25 -> siempre alcanzaba justo para
+        # las 4 categorías, sin ninguna decisión real. Ahora el costo
+        # de la segunda compra en la MISMA categoría ya es más caro, así
+        # que ni el club más grande (presupuesto máximo) puede fichar
+        # sin límite en todas.
+        presupuesto_maximo = presupuesto_inicial(0.5)
+        costo_una_de_cada_categoria = costo_fichaje(0) * 4
+        self.assertGreaterEqual(presupuesto_maximo, costo_una_de_cada_categoria)
+        # pero repetir una categoría 3 veces seguidas ya no entra
+        costo_triple_en_una_categoria = sum(costo_fichaje(i) for i in range(3))
+        self.assertLess(presupuesto_inicial(0.0), costo_triple_en_una_categoria)
+
+    def test_costo_fichaje_crece_con_cada_repeticion(self):
+        primero = costo_fichaje(0)
+        segundo = costo_fichaje(1)
+        tercero = costo_fichaje(2)
+        self.assertLess(primero, segundo)
+        self.assertLess(segundo, tercero)
+
+    def test_fichaje_trae_su_propio_costo(self):
+        fichaje = fichar(CategoriaFichaje.ARQUERO, intento=2, rng=random.Random(1))
+        self.assertEqual(fichaje.costo, costo_fichaje(2))
+
+
+class TestRivalesDeDivision(unittest.TestCase):
+    def test_arma_pool_excluyendo_al_propio_club(self):
+        registry = ClubRegistry()
+        registry.agregar_club("Mi Club", "Primera Nacional")
+        registry.agregar_club("Rival A", "Primera Nacional")
+        registry.agregar_club("Rival B", "Primera Nacional")
+        registry.agregar_club("De Otra Liga", "Liga Profesional")
+
+        rivales = rivales_de_division(registry, "nacional", excluir_nombre="Mi Club", cantidad=8, rng=random.Random(1))
+        nombres = {r.nombre for r in rivales}
+        self.assertNotIn("Mi Club", nombres)
+        self.assertNotIn("De Otra Liga", nombres)
+        self.assertEqual(nombres, {"Rival A", "Rival B"})
+
+    def test_sin_rivales_devuelve_vacio(self):
+        registry = ClubRegistry()
+        registry.agregar_club("Mi Club", "Primera Nacional")
+        rivales = rivales_de_division(registry, "nacional", excluir_nombre="Mi Club")
+        self.assertEqual(rivales, [])
 
 
 class TestMotorDePartido(unittest.TestCase):

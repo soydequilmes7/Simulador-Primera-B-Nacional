@@ -272,7 +272,35 @@ CATEGORIA_A_CAMPO_RATING = {
     CategoriaFichaje.ATAQUE: "ataque_visitante",
 }
 
-COSTO_FICHAJE = 25  # en "puntos de plantel" del presupuesto abstracto de pretemporada
+def presupuesto_inicial(factor_prestigio: float) -> int:
+    """Presupuesto de pretemporada según el prestigio del club -- antes
+    era un fijo de 100 para cualquier club, lo cual no tenía sentido
+    (un equipo de Primera C y Boca arrancando con la misma plata) Y
+    además alcanzaba justo para fichar en las 4 categorías siempre,
+    sin ninguna decisión real de por medio.
+
+    factor 0.0 (la inmensa mayoría de los clubes, sin historial) -> 60.
+    factor 0.5 (el techo, Boca/River/Racing/Independiente) -> 160.
+    Con el costo creciente de abajo, ni el club más grande alcanza para
+    fichar sin límite -- siempre hay que elegir dónde reforzar."""
+    factor = max(0.0, min(0.5, factor_prestigio))
+    return round(60 + factor * 200)
+
+
+# Costo de la N-ésima compra EN LA MISMA categoría esa temporada (N
+# arranca en 0 = primera compra). Crece geométrico -- ya no alcanza
+# para "comprar las 4 categorías siempre": o reforzás una sola zona a
+# fondo, o repartís poco en varias, pero no las dos cosas.
+_MULTIPLICADOR_COSTO_REPETIDO = 1.6
+
+
+def costo_fichaje(intento: int, costo_base: int = 25) -> int:
+    """`intento` es cuántas veces ya se fichó en ESA categoría esta
+    temporada (0 = todavía ninguna). La capa de arriba es responsable
+    de llevar la cuenta por categoría -- este módulo no guarda estado
+    entre llamadas a propósito (mismo criterio que el resto del
+    archivo: puro, sin I/O)."""
+    return round(costo_base * (_MULTIPLICADOR_COSTO_REPETIDO ** max(0, intento)))
 
 
 @dataclass(frozen=True)
@@ -281,23 +309,26 @@ class Fichaje:
     resultado: ResultadoFichaje
     delta_rating: float
     texto: str
+    costo: int
 
 
-def fichar(categoria: CategoriaFichaje, rng: random.Random | None = None) -> Fichaje:
+def fichar(categoria: CategoriaFichaje, intento: int = 0, rng: random.Random | None = None) -> Fichaje:
     """Una tirada de mercado para la categoría dada. No cobra el
-    presupuesto -- la capa de arriba resta COSTO_FICHAJE y decide si
-    hay plata para llamar a esta función."""
+    presupuesto -- la capa de arriba resta `fichaje.costo` (ya
+    calculado acá con costo_fichaje(intento)) y decide si hay plata
+    para llamar a esta función."""
     rng = rng or random.Random()
+    costo = costo_fichaje(intento)
     r = rng.random()
     acumulado = 0.0
     for probabilidad, delta, resultado, texto in _TIRADAS_FICHAJE:
         acumulado += probabilidad
         if r <= acumulado:
-            return Fichaje(categoria=categoria, resultado=resultado, delta_rating=delta, texto=texto)
+            return Fichaje(categoria=categoria, resultado=resultado, delta_rating=delta, texto=texto, costo=costo)
     # Por redondeo de floats podría no entrar en ningún tramo -- cae
     # en el último definido en vez de reventar.
     probabilidad, delta, resultado, texto = _TIRADAS_FICHAJE[-1]
-    return Fichaje(categoria=categoria, resultado=resultado, delta_rating=delta, texto=texto)
+    return Fichaje(categoria=categoria, resultado=resultado, delta_rating=delta, texto=texto, costo=costo)
 
 
 # ---------------------------------------------------------------------
@@ -412,6 +443,29 @@ def candidatos_desde_registry(club_registry, divisiones: tuple[str, ...] | None 
                 factor_prestigio=factor_resistencia(club.name),
             ))
     return candidatos
+
+
+def rivales_de_division(
+    club_registry,
+    division_slug: str,
+    excluir_nombre: str,
+    cantidad: int = 8,
+    rng: random.Random | None = None,
+) -> list[ClubCandidato]:
+    """Pool de rivales de la misma división para toda la temporada,
+    a partir de un ClubRegistry YA CONSTRUIDO -- pensado para que la
+    capa de API arme esto en la MISMA llamada que ya usó para el
+    objetivo del club elegido, sin un segundo
+    ClubRegistry.build_from_current_data() (eso duplicaba la lectura
+    completa de las 5 divisiones contra Supabase por cada club que
+    elegía el usuario -- la causa real de la lentitud al firmar
+    contrato, no la cantidad de pantallas)."""
+    rng = rng or random.Random()
+    candidatos = [c for c in candidatos_desde_registry(club_registry, divisiones=(division_slug,)) if c.nombre != excluir_nombre]
+    if not candidatos:
+        return []
+    cantidad = min(cantidad, len(candidatos))
+    return rng.sample(candidatos, cantidad)
 
 
 def lambda_partido(
