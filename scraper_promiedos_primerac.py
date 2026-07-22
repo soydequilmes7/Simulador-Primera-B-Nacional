@@ -249,10 +249,18 @@ def escribir_csvs(partidos, fixture_path=FIXTURE_CSV, resultados_path=RESULTADOS
 
 def obtener_partidos_jugados_primerac():
     """Igual que obtener_partidos_primerac(), pero solo los jugados, en
-    el formato que espera actualizar_resultados_primerac.py."""
+    el formato que espera actualizar_resultados_primerac.py.
+
+    Incluye "jornada" (a diferencia de antes, que solo traía los 4
+    campos del cruce) para que actualizar_resultados_primerac.py pueda
+    detectar partidos reprogramados con local/visitante invertido --
+    ver el fallback de esa función, agregado tras el caso real
+    reportado por Pablo (Fecha 20, Puerto Nuevo vs CA Fenix apareció
+    invertido respecto al fixture guardado en Supabase, 22/07/2026)."""
     jugados = [p for p in obtener_partidos_primerac(verbose=False) if p["jugado"]]
     return [
         {
+            "jornada": p["jornada"],
             "equipo_local": p["equipo_local"],
             "equipo_visitante": p["equipo_visitante"],
             "goles_local": p["goles_local"],

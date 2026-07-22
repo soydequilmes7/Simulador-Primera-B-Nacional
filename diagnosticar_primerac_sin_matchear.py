@@ -99,16 +99,26 @@ def diagnosticar(equipo_a: str, equipo_b: str) -> None:
               f"{r['goles_visitante']} {r['equipo_visitante']}")
 
     print("\n--- Diagnóstico ---")
-    if encontrados_promiedos and en_fixture:
-        p, f = encontrados_promiedos[0], en_fixture[0]
-        if (p["equipo_local"], p["equipo_visitante"]) != (f["equipo_local"], f["equipo_visitante"]):
-            print("  => Local/visitante INVERTIDO entre Promiedos y el fixture guardado.")
-            print("     Esto es lo que hace que quede 'sin matchear' -- avisame y armo el")
-            print("     fallback para que actualizar_resultados_primerac.py tolere el swap.")
-        else:
-            print("  => Mismo orden en ambos lados, raro que haya quedado sin matchear.")
-            print("     Puede ser un problema de timing (se resolvió entre que se generó")
-            print("     el aviso y ahora). Corré 'Actualizar Resultados' de nuevo.")
+    # Emparejar por jornada (no por índice 0 a ciegas -- bug del primer
+    # borrador de este script: comparaba la primera fila de Promiedos
+    # contra la primera del fixture aunque fueran jornadas distintas).
+    swap_detectado = False
+    for f in en_fixture:
+        p_misma_jornada = next(
+            (p for p in encontrados_promiedos if p["jornada"] == f.get("jornada")), None,
+        )
+        if p_misma_jornada is None:
+            continue
+        orden_fixture = (f["equipo_local"], f["equipo_visitante"])
+        orden_promiedos = (p_misma_jornada["equipo_local"], p_misma_jornada["equipo_visitante"])
+        if orden_fixture != orden_promiedos:
+            swap_detectado = True
+            print(f"  => Fecha {f.get('jornada')}: local/visitante INVERTIDO. Fixture tenía "
+                  f"{orden_fixture[0]!r} de local, Promiedos ahora dice {orden_promiedos[0]!r}.")
+            print("     Esto es lo que hace que quede 'sin matchear'.")
+    if not swap_detectado and encontrados_promiedos and en_fixture:
+        print("  => Mismo orden en las jornadas que se pudieron comparar, raro que haya")
+        print("     quedado sin matchear. Puede ser timing -- corré 'Actualizar Resultados' de nuevo.")
     elif encontrados_promiedos and not en_fixture and not en_resultados:
         print("  => Promiedos tiene el partido pero NO hay fila pendiente NI cargada en")
         print("     Supabase para este cruce -- puede ser un partido de una fase que no")
