@@ -129,14 +129,24 @@ class EstadisticasLibertadores(Estadisticas):
     # ------------------------------------------------------------------
     # Un partido de ida/vuelta (una llave completa)
     # ------------------------------------------------------------------
-    def jugar_llave_ida_vuelta(self, local_ida, local_vuelta):
+    def jugar_llave_ida_vuelta(self, local_ida, local_vuelta, gl_ida_real=None, gv_ida_real=None):
         """Simula una llave a dos partidos: <local_ida> de local en la
         ida, <local_vuelta> de local en la vuelta. Si la suma queda
         igual, se define en alargue de la vuelta (30') y, si sigue
         empatado, por penales (50/50) -- sin ventaja de gol de
-        visitante, como rige la Libertadores desde 2019."""
+        visitante, como rige la Libertadores desde 2019.
 
-        gl_ida, gv_ida = self.simular_partido(local_ida, local_vuelta)
+        Si <gl_ida_real>/<gv_ida_real> vienen cargados (la ida ya se
+        jugó de verdad pero la vuelta todavía no), se usan esos goles
+        en vez de simular la ida -- solo se simula la vuelta. Con
+        ambos en None (default) se simula la llave completa, como
+        antes."""
+
+        ida_real = gl_ida_real is not None and gv_ida_real is not None
+        if ida_real:
+            gl_ida, gv_ida = gl_ida_real, gv_ida_real
+        else:
+            gl_ida, gv_ida = self.simular_partido(local_ida, local_vuelta)
         gl_vta, gv_vta = self.simular_partido(local_vuelta, local_ida)
 
         agregado_ida = gl_ida + gv_vta       # goles totales de "local_ida" en la llave
@@ -147,6 +157,7 @@ class EstadisticasLibertadores(Estadisticas):
             "vuelta": {"local": local_vuelta, "visitante": local_ida, "golesLocal": gl_vta, "golesVisitante": gv_vta},
             "agregado": {local_ida: agregado_ida, local_vuelta: agregado_vuelta},
             "penales": None,
+            "ida_jugada": ida_real,
         }
 
         if agregado_ida != agregado_vuelta:

@@ -122,7 +122,13 @@ class EstadisticasSudamericana(EstadisticasLibertadores):
         ganadores_playoffs: dict[int, str] = {}
         for cruce in self.cuadro_playoffs:
             llave = int(cruce["llave"])
-            detalle = self.jugar_llave_ida_vuelta(cruce["equipo_ida_local"], cruce["equipo_vuelta_local"])
+            gl_ida_real = cruce.get("goles_ida_local") or None
+            gv_ida_real = cruce.get("goles_ida_visitante") or None
+            detalle = self.jugar_llave_ida_vuelta(
+                cruce["equipo_ida_local"], cruce["equipo_vuelta_local"],
+                gl_ida_real=int(gl_ida_real) if gl_ida_real is not None else None,
+                gv_ida_real=int(gv_ida_real) if gv_ida_real is not None else None,
+            )
             detalle["jugado"] = False
             detalle_playoffs.append(detalle)
             ganadores_playoffs[llave] = detalle["avanza"]
