@@ -14403,6 +14403,85 @@ function resultadoEurocopa(anio){
   return CAMPEONES_EUROCOPA_CACHE[anio];
 }
 
+// Champions League: a diferencia del Mundial/Copa América/Eurocopa (sorteo
+// UNIFORME entre selecciones, todas con la misma chance), acá el sorteo es
+// PONDERADO por fuerza -- pedido explícito de Pablo ("lista fija de clubes
+// top con peso/fuerza"). Es sólo un dato de sabor para el dashboard (no hay
+// fase de grupos ni eliminación directa real detrás, mismo criterio que el
+// resto de esta sección) y se juega TODOS los años (a diferencia de las
+// selecciones, que son cada 4) porque la Champions es anual de verdad.
+//
+// `nombre` tiene que resolver a un archivo real de public/escudos/ (probado
+// contra el repo real) para que escudoHTML() lo encuentre por el fallback
+// de slugifyEquipo() sin necesitar tocar el diccionario ESCUDOS -- por eso
+// varios nombres llevan el sufijo "FC"/"CF"/etc. tal cual figura en el
+// archivo (ej. "Juventus FC" -> juventusfc.png, no "juventus.png").
+const CLUBES_CHAMPIONS = [
+  { nombre: "Real Madrid", fuerza: 100 },
+  { nombre: "Manchester City", fuerza: 96 },
+  { nombre: "Bayern Múnich", fuerza: 94 },
+  { nombre: "FC Barcelona", fuerza: 88 },
+  { nombre: "Paris Saint-Germain", fuerza: 89 },
+  { nombre: "Liverpool FC", fuerza: 90 },
+  { nombre: "Arsenal FC", fuerza: 87 },
+  { nombre: "Atlético de Madrid", fuerza: 84 },
+  { nombre: "Inter Milan", fuerza: 85 },
+  { nombre: "Chelsea FC", fuerza: 77 },
+  { nombre: "AC Milan", fuerza: 80 },
+  { nombre: "Bayer 04 Leverkusen", fuerza: 79 },
+  { nombre: "Juventus FC", fuerza: 78 },
+  { nombre: "Borussia Dortmund", fuerza: 76 },
+  { nombre: "Manchester United", fuerza: 75 },
+  { nombre: "Tottenham Hotspur", fuerza: 74 },
+  { nombre: "SSC Napoli", fuerza: 73 },
+  { nombre: "RB Leipzig", fuerza: 72 },
+  { nombre: "Newcastle United", fuerza: 68 },
+  { nombre: "SL Benfica", fuerza: 68 },
+  { nombre: "FC Porto", fuerza: 66 },
+  { nombre: "Sporting CP", fuerza: 65 },
+  { nombre: "Villarreal CF", fuerza: 63 },
+  { nombre: "Ajax Amsterdam", fuerza: 62 },
+  { nombre: "AS Monaco", fuerza: 62 },
+  { nombre: "Galatasaray", fuerza: 62 },
+  { nombre: "Sevilla FC", fuerza: 61 },
+  { nombre: "PSV Eindhoven", fuerza: 60 },
+  { nombre: "Feyenoord Rotterdam", fuerza: 58 },
+  { nombre: "Olympique Lyon", fuerza: 60 },
+  { nombre: "Olympique Marseille", fuerza: 60 },
+  { nombre: "LOSC Lille", fuerza: 58 },
+  { nombre: "Club Brugge KV", fuerza: 57 },
+  { nombre: "Fenerbahçe", fuerza: 60 },
+  { nombre: "Beşiktaş JK", fuerza: 55 },
+  { nombre: "Celtic FC", fuerza: 55 },
+  { nombre: "Rangers FC", fuerza: 54 },
+  { nombre: "Red Bull Salzburg", fuerza: 55 },
+];
+
+// Sorteo ponderado genérico: cada club entra al bombo proporcional a su
+// `fuerza` (no todos con la misma chance, a diferencia de
+// sortearResultadoFinalSelecciones() de arriba, que es uniforme).
+function sortearClubPonderado(clubes){
+  const pesoTotal = clubes.reduce((acc, c) => acc + c.fuerza, 0);
+  let r = Math.random() * pesoTotal;
+  for (const c of clubes){
+    r -= c.fuerza;
+    if (r <= 0) return c;
+  }
+  return clubes[clubes.length - 1];
+}
+
+let CAMPEONES_CHAMPIONS_CACHE = {};
+function resultadoChampions(anio){
+  if (!(anio in CAMPEONES_CHAMPIONS_CACHE)){
+    const campeon = sortearClubPonderado(CLUBES_CHAMPIONS);
+    let subcampeon;
+    do { subcampeon = sortearClubPonderado(CLUBES_CHAMPIONS); } while (subcampeon.nombre === campeon.nombre);
+    const marcador = MARCADORES_FINAL_SELECCIONES[Math.floor(Math.random() * MARCADORES_FINAL_SELECCIONES.length)];
+    CAMPEONES_CHAMPIONS_CACHE[anio] = { campeon: campeon.nombre, subcampeon: subcampeon.nombre, marcador };
+  }
+  return CAMPEONES_CHAMPIONS_CACHE[anio];
+}
+
 // Bandera de cualquier selección ya definida arriba, sin importar de qué
 // pool (Mundial/Copa América/Eurocopa) viene -- lo usan la Finalissima y el
 // historial de abajo, que mezclan selecciones de los tres pools.
@@ -15389,7 +15468,20 @@ function renderDashboardTemporada(datos){
   // Recopa (siempre) + Mundial de selecciones (sólo años mundialistas: 2026,
   // 2030, 2034...) van en una fila aparte, centrada, en vez de la grilla fija
   // de 4 -- son "extras" que no siempre están en la misma cantidad.
+  // Champions League: club europeo, no selección -- por eso usa
+  // escudoHTML()/nombreMostrable() (mismo patrón que las métricas de
+  // clubes de arriba) en vez de bandera+nombre de país. Se juega TODOS
+  // los años (ver resultadoChampions()), a diferencia de Mundial/Copa
+  // América/Eurocopa que son cada 4 -- por eso entra siempre en la fila
+  // de extras, sin ningún esAnioX() que la condicione.
+  const { campeon: campeonChampions, subcampeon: subChampions, marcador: marcadorChampions } = resultadoChampions(anioTemporada);
   const extras = [
+    {
+      lbl: `<img src="logos-torneos/champions-league.png" alt="" class="temporada-metric-logo" onerror="this.remove()">Champions League`,
+      val: `${escudoHTML(campeonChampions)}${nombreMostrable(campeonChampions)}`,
+      clase: '',
+      sub: `le ganó la final a ${nombreMostrable(subChampions)} (${marcadorChampions})`,
+    },
     {
       lbl: `<img src="logos-torneos/${LOGO_COMPETENCIA.recopa}.png" alt="" class="temporada-metric-logo" onerror="this.remove()">Recopa Sudamericana`,
       val: compRecopa && compRecopa.avanza ? `${escudoHTML(compRecopa.avanza)}${nombreMostrable(compRecopa.avanza)}` : 'Sin definir',
@@ -16020,6 +16112,7 @@ function reiniciarTemporada(){
   CAMPEONES_COPA_AMERICA_CACHE = {};
   CAMPEONES_EUROCOPA_CACHE = {};
   CAMPEONES_FINALISSIMA_CACHE = {};
+  CAMPEONES_CHAMPIONS_CACHE = {};
   renderPalmares();
   renderPalmaresSelecciones();
   TEMPORADA_META_CACHE = null;
