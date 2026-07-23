@@ -59,16 +59,26 @@ class EventoService:
         self,
         categoria: CategoriaEvento | None = None,
         entrenador: Entrenador | None = None,
+        club_clasifica_copas: bool = False,
     ) -> Evento:
         """Elige un evento del catálogo.
 
         Args:
           categoria: si se pasa, restringe la elección a esa categoría
-            (elección uniforme dentro de ella, sin ponderar).
+            (elección uniforme dentro de ella, sin ponderar). Se
+            respeta tal cual la pida el llamador, incluso si es
+            LIBERTADORES/SUDAMERICANA y `club_clasifica_copas` es
+            False -- la responsabilidad de no pedir una categoría que
+            no corresponde es del llamador en ese caso.
           entrenador: si se pasa (y `categoria` es None), pondera la
             probabilidad de cada evento según
             PESOS_CATEGORIA_POR_IDENTIDAD para su identidad táctica
             (ej. un Formador ve más seguido eventos de Juveniles).
+          club_clasifica_copas: si es False (default) y `categoria` es
+            None, excluye del sorteo las categorías LIBERTADORES y
+            SUDAMERICANA -- esos eventos solo tienen sentido para
+            clubes con PerfilClub.clasifica_copas_internacionales=True
+            (los grandes de Primera).
         """
         if categoria is not None:
             candidatos = eventos_por_categoria(categoria)
@@ -77,6 +87,12 @@ class EventoService:
             return self._rng.choice(candidatos)
 
         candidatos = list(CATALOGO_EVENTOS.values())
+        if not club_clasifica_copas:
+            candidatos = [
+                evento for evento in candidatos
+                if evento.categoria not in (CategoriaEvento.LIBERTADORES, CategoriaEvento.SUDAMERICANA)
+            ]
+
         if entrenador is None:
             return self._rng.choice(candidatos)
 

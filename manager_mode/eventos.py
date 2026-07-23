@@ -30,6 +30,8 @@ class CategoriaEvento(str, Enum):
     CRISIS = "crisis"
     SELECCIONES = "selecciones"
     COPAS = "copas"
+    LIBERTADORES = "libertadores"
+    SUDAMERICANA = "sudamericana"
     RUMORES = "rumores"
     ARBITROS_HINCHADA = "arbitros_hinchada"
     VIDA_PLANTEL = "vida_plantel"
@@ -472,6 +474,61 @@ _EVENTOS: list[Evento] = [
                 (Efecto("confianza", 1),)),
             _op("apostar_todo", "Ir a fondo por la clasificación", Intensidad.NEUTRA,
                 (Efecto("presupuesto", -300),)),
+        )),
+
+    # ---------------------------------------------------------- LIBERTADORES
+    # Solo aplican a clubes con PerfilClub.clasifica_copas_internacionales=True
+    # (los grandes de Primera). Ver manager_mode/copas_continentales.py.
+    _ev("grupo_muerte_libertadores", CategoriaEvento.LIBERTADORES, "Grupo de la Muerte",
+        "El sorteo te cruzó con dos candidatos al título en la misma zona.",
+        (
+            _op("priorizar_libertadores", "Priorizar la Copa desde la fase de grupos", Intensidad.NEUTRA,
+                (Efecto("reputacion", 1), Efecto("confianza", -1))),
+            _op("priorizar_liga", "Priorizar el torneo local", Intensidad.NEUTRA,
+                (Efecto("confianza", 2),)),
+        )),
+    _ev("viaje_altura", CategoriaEvento.LIBERTADORES, "Viaje a la Altura",
+        "Toca visitar a un rival boliviano a más de 3.000 metros de altura.",
+        (
+            _op("concentrar_antes", "Concentrar varios días antes para aclimatarse", Intensidad.NEUTRA,
+                (Efecto("presupuesto", -400), Efecto("moral", 2))),
+            _op("viajar_mismo_dia", "Viajar el mismo día del partido", Intensidad.NEGATIVA,
+                (Efecto("moral", -3),)),
+        )),
+    _ev("prestigio_continental", CategoriaEvento.LIBERTADORES, "Prestigio en Juego",
+        "Toda Sudamérica sigue la serie por televisión: es tu vidriera internacional.",
+        (
+            _op("disfrutar_vidriera", "Disfrutar la vidriera y hablar con confianza", Intensidad.POSITIVA,
+                (Efecto("reputacion", 2),), TipoReaccion.PRENSA),
+            _op("bajar_presion", "Bajarle el precio en la conferencia previa", Intensidad.NEUTRA,
+                (Efecto("confianza", 1),)),
+        )),
+
+    # ----------------------------------------------------------- SUDAMERICANA
+    # Idem Libertadores: solo para clubes con clasifica_copas_internacionales.
+    _ev("el_hermano_menor", CategoriaEvento.SUDAMERICANA, "El Hermano Menor",
+        "La prensa compara todo el tiempo la Sudamericana con la Libertadores.",
+        (
+            _op("reivindicar_torneo", "Reivindicar la importancia del torneo", Intensidad.POSITIVA,
+                (Efecto("hinchada", 2),), TipoReaccion.PRENSA),
+            _op("restarle_valor", "Restarle valor frente a la prensa", Intensidad.NEGATIVA,
+                (Efecto("hinchada", -2),), TipoReaccion.HINCHADA),
+        )),
+    _ev("playoff_ida_vuelta", CategoriaEvento.SUDAMERICANA, "Playoff de Ida y Vuelta",
+        "Un cruce a partido de ida y vuelta define la clasificación a octavos.",
+        (
+            _op("resguardar_titulares", "Resguardar a los titulares para la vuelta", Intensidad.NEUTRA,
+                (Efecto("confianza", 1),)),
+            _op("arriesgar_todo", "Arriesgar todo en la ida", Intensidad.NEUTRA,
+                (Efecto("reputacion", 1),)),
+        )),
+    _ev("rival_sorpresa_brasil", CategoriaEvento.SUDAMERICANA, "Rival Sorpresa",
+        "Te toca un equipo chico de Brasil que viene de eliminar a un grande.",
+        (
+            _op("tomarlo_en_serio", "Tomarlo en serio desde el análisis", Intensidad.POSITIVA,
+                (Efecto("vestuario", 2),)),
+            _op("subestimarlo", "Subestimarlo en la previa", Intensidad.NEGATIVA,
+                (Efecto("vestuario", -3),), TipoReaccion.PRENSA),
         )),
 
     # -------------------------------------------------------------- RUMORES

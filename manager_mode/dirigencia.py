@@ -76,6 +76,12 @@ class PerfilClub:
       es_seleccion: True si el "club" es en realidad un seleccionado
         nacional (cambia el pool de objetivos y las reglas de
         aparición en el pool de ofertas -- ver ofertas.py).
+      clasifica_copas_internacionales: True solo para los grandes de
+        Primera (River, Boca, Independiente en este catálogo). Habilita
+        los eventos de CategoriaEvento.LIBERTADORES/SUDAMERICANA y la
+        chance de ganarlas -- ver copas_continentales.py. Deliberadamente
+        NO conectado a los motores reales de Libertadores/Sudamericana
+        de season/ (simulación simplificada, propia del Modo DT).
     """
 
     nombre: str
@@ -83,6 +89,7 @@ class PerfilClub:
     exigencia: float
     escudo: str | None = None
     es_seleccion: bool = False
+    clasifica_copas_internacionales: bool = False
 
 
 CATALOGO_PERFILES_CLUB: dict[str, PerfilClub] = {
@@ -92,18 +99,21 @@ CATALOGO_PERFILES_CLUB: dict[str, PerfilClub] = {
          TipoObjetivo.PROMOVER_JUVENILES),
         exigencia=0.9,
         escudo="river.png",
+        clasifica_copas_internacionales=True,
     ),
     "Boca": PerfilClub(
         "Boca",
         (TipoObjetivo.SALIR_CAMPEON, TipoObjetivo.PELEAR_ARRIBA),
         exigencia=0.85,
         escudo="boca.png",
+        clasifica_copas_internacionales=True,
     ),
     "Independiente": PerfilClub(
         "Independiente",
         (TipoObjetivo.SALIR_CAMPEON, TipoObjetivo.SEMIFINAL_COPA_CONTINENTAL),
         exigencia=0.75,
         escudo="independiente.png",
+        clasifica_copas_internacionales=True,
     ),
     "Quilmes": PerfilClub(
         "Quilmes",

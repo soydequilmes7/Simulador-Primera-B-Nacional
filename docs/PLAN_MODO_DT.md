@@ -145,6 +145,35 @@ Falta (siguiente incremento):
   del frontend) para que el hub y las tarjetas de oferta puedan
   mostrar el escudo real sin re-mapear nombres.
 
+## Fase 2.5 — Libertadores y Sudamericana simplificadas (a pedido de Pablo)
+
+Decisión explícita: **no conectar con los motores reales** de
+Libertadores/Sudamericana de `season/` (sorteo CONMEBOL, grupos,
+llaves) -- eso queda para Modo Temporada. El Modo DT tiene su propia
+simulación aislada, más simple, con la sola chance de ganar la copa.
+
+- Dos categorías de evento nuevas: `LIBERTADORES` y `SUDAMERICANA`
+  (3 eventos cada una: Grupo de la Muerte / Viaje a la Altura /
+  Prestigio en Juego; El Hermano Menor / Playoff de Ida y Vuelta /
+  Rival Sorpresa). Total del catálogo: 51 eventos, 18 categorías.
+- `PerfilClub.clasifica_copas_internacionales`: solo True para River,
+  Boca e Independiente ("los grandes de Primera", tal cual lo pediste)
+  -- Quilmes, San Martín de Tucumán, Temperley e Instituto no clasifican.
+- `EventoService.elegir_evento(..., club_clasifica_copas=False)`:
+  las categorías LIBERTADORES/SUDAMERICANA quedan excluidas del sorteo
+  aleatorio salvo que el llamador indique que el club clasifica (o pida
+  la categoría explícitamente).
+- `manager_mode/copas_continentales.py`: `simular_copa_continental()`
+  tira fase por fase (grupos→octavos→cuartos→semifinal→final→campeón)
+  con probabilidad de avance según reputación del DT + exigencia del
+  club -- nunca garantizado, pero un DT de alta reputación en River
+  avanza en promedio mucho más lejos que uno de baja reputación
+  (verificado con test estadístico). `aplicar_resultado_copa()` conecta
+  el resultado con título + logro "campeon_continental" + reputación.
+- Lanza `ValueError` si se intenta simular la copa para un club que no
+  clasifica -- no hay forma de que Quilmes "gane la Libertadores" por
+  accidente en este sistema.
+
 ## Fase 3 — Frontend cinematográfico
 
 - Pantallas: intro (país/división/nombre/identidad), hub principal
