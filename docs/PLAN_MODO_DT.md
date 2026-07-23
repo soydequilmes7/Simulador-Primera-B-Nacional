@@ -182,6 +182,25 @@ simulación aislada, más simple, con la sola chance de ganar la copa.
   conecta el resultado con título + logro "campeon_continental" +
   reputación.
 
+## Fase 2.6 — Pool de arranque separado (corrigiendo el diseño de Claude Design)
+
+Claude Design armó una primera pantalla de "Elegir Club" mostrando los
+16 clubes de golpe, River/Boca incluidos -- no correspondía: la carrera
+tiene que arrancar en Primera Nacional/Primera C, no en Liga
+Profesional. Se corrige en el backend, no solo en el prompt visual:
+
+- `PerfilClub.division`: nuevo campo ("Liga Profesional" por defecto;
+  "Primera Nacional" para Quilmes/San Martín de Tucumán/Temperley,
+  "Primera C" para Instituto).
+- `generar_ofertas_iniciales(rng, cantidad=3)` en `ofertas.py`: pool de
+  arranque de carrera, SEPARADO de `generar_pool_ofertas`. Filtra por
+  `division != "Liga Profesional"` y elige uniformemente sin ponderar
+  por reputación (un DT que arranca no tiene ninguna todavía). Con el
+  catálogo actual rota entre los mismos 4 clubes chicos (Quilmes, San
+  Martín de Tucumán, Temperley, Instituto) -- nunca aparecen River,
+  Boca ni ningún club de Liga Profesional acá. Los grandes se ganan
+  más adelante, subiendo reputación, vía `generar_pool_ofertas` (Fase 2).
+
 ## Fase 3 — Frontend cinematográfico
 
 - Pantallas: intro (país/división/nombre/identidad), hub principal

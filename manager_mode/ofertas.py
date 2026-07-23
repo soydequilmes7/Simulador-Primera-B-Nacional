@@ -132,3 +132,32 @@ def generar_pool_ofertas(
             objetivos=tuple(objetivos),
         ))
     return ofertas
+
+
+def generar_ofertas_iniciales(rng: random.Random, cantidad: int = 3) -> list[OfertaClub]:
+    """Pool de arranque de carrera: SOLO clubes de Primera Nacional o
+    Primera C (`PerfilClub.division != "Liga Profesional"`). Los
+    clubes grandes (River, Boca, etc.) nunca aparecen acá -- se ganan
+    más adelante subiendo reputación, vía `generar_pool_ofertas`.
+
+    A diferencia de `generar_pool_ofertas`, esto no pondera por
+    reputación (un DT que arranca no tiene ninguna todavía): elige
+    uniformemente entre los clubes de arranque disponibles, sin
+    repetir, para que la elección inicial rote entre las mismas pocas
+    bancas en vez de mostrar el catálogo completo.
+    """
+    candidatos = [perfil for perfil in CATALOGO_PERFILES_CLUB.values() if perfil.division != "Liga Profesional"]
+    cantidad = min(cantidad, len(candidatos))
+    elegidos = rng.sample(candidatos, k=cantidad)
+
+    ofertas = []
+    for perfil in elegidos:
+        objetivos = generar_objetivos_temporada(perfil, rng, cantidad=2)
+        ofertas.append(OfertaClub(
+            perfil=perfil,
+            presupuesto=_presupuesto_base(perfil),
+            sueldo=_sueldo_base(perfil),
+            duracion_temporadas=rng.randint(1, 2),
+            objetivos=tuple(objetivos),
+        ))
+    return ofertas

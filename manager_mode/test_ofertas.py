@@ -9,9 +9,11 @@ from __future__ import annotations
 import random
 import unittest
 
+from manager_mode.dirigencia import CATALOGO_PERFILES_CLUB
 from manager_mode.domain import Entrenador, IdentidadTactica
 from manager_mode.ofertas import (
     UMBRAL_REPUTACION_SELECCION,
+    generar_ofertas_iniciales,
     generar_pool_ofertas,
 )
 
@@ -91,6 +93,40 @@ class TestGenerarPoolOfertas(unittest.TestCase):
         ofertas = generar_pool_ofertas(entrenador, rng=random.Random(4), cantidad=1000)
         cantidad_no_seleccion = sum(1 for p in CATALOGO_PERFILES_CLUB.values() if not p.es_seleccion)
         self.assertEqual(len(ofertas), cantidad_no_seleccion)
+
+
+class TestGenerarOfertasIniciales(unittest.TestCase):
+    def test_nunca_incluye_clubes_de_liga_profesional(self) -> None:
+        rng = random.Random(1)
+        for _ in range(100):
+            ofertas = generar_ofertas_iniciales(rng, cantidad=3)
+            for oferta in ofertas:
+                self.assertNotEqual(oferta.perfil.division, "Liga Profesional")
+
+    def test_nunca_aparecen_river_ni_boca(self) -> None:
+        rng = random.Random(2)
+        for _ in range(100):
+            nombres = {o.nombre for o in generar_ofertas_iniciales(rng, cantidad=3)}
+            self.assertNotIn("River", nombres)
+            self.assertNotIn("Boca", nombres)
+
+    def test_devuelve_la_cantidad_pedida_sin_repetir(self) -> None:
+        rng = random.Random(3)
+        ofertas = generar_ofertas_iniciales(rng, cantidad=3)
+        nombres = [o.nombre for o in ofertas]
+        self.assertEqual(len(nombres), 3)
+        self.assertEqual(len(nombres), len(set(nombres)))
+
+    def test_rota_entre_los_mismos_clubes_de_arranque(self) -> None:
+        rng = random.Random(5)
+        clubes_de_arranque = {
+            nombre for nombre, perfil in CATALOGO_PERFILES_CLUB.items()
+            if perfil.division != "Liga Profesional"
+        }
+        vistos = set()
+        for _ in range(50):
+            vistos.update(o.nombre for o in generar_ofertas_iniciales(rng, cantidad=3))
+        self.assertTrue(vistos.issubset(clubes_de_arranque))
 
 
 if __name__ == "__main__":

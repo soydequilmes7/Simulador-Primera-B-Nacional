@@ -86,6 +86,11 @@ class PerfilClub:
         Deliberadamente NO conectado a los motores reales de
         Libertadores/Sudamericana de season/ (simulación simplificada,
         propia del Modo DT).
+      division: división del club. Los de "Liga Profesional" son los
+        de arriba (solo aparecen como ofertas post-reputación, nunca
+        como club inicial); los de "Primera Nacional"/"Primera C" son
+        los de arranque de carrera (ver generar_ofertas_iniciales en
+        ofertas.py).
     """
 
     nombre: str
@@ -95,6 +100,7 @@ class PerfilClub:
     es_seleccion: bool = False
     clasifica_libertadores: bool = False
     clasifica_sudamericana: bool = False
+    division: str = "Liga Profesional"
 
     @property
     def clasifica_alguna_copa_continental(self) -> bool:
@@ -198,24 +204,28 @@ CATALOGO_PERFILES_CLUB: dict[str, PerfilClub] = {
         (TipoObjetivo.ASCENDER, TipoObjetivo.REDUCIR_DEUDA),
         exigencia=0.4,
         escudo="quilmes.png",
+        division="Primera Nacional",
     ),
     "San Martín de Tucumán": PerfilClub(
         "San Martín de Tucumán",
         (TipoObjetivo.PELEAR_ARRIBA, TipoObjetivo.NO_VENDER_FIGURAS),
         exigencia=0.5,
         escudo="sanmartintuc.png",
+        division="Primera Nacional",
     ),
     "Temperley": PerfilClub(
         "Temperley",
         (TipoObjetivo.CONSOLIDARSE,),
         exigencia=0.3,
         escudo="temperley.png",
+        division="Primera Nacional",
     ),
     "Instituto": PerfilClub(
         "Instituto",
         (TipoObjetivo.PROYECTO_LARGO,),
         exigencia=0.25,
         escudo="instituto.png",
+        division="Primera C",
     ),
     "Selección Argentina": PerfilClub(
         "Selección Argentina",
