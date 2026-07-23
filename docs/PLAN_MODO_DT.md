@@ -32,25 +32,48 @@ Capas (Clean Architecture):
   shadow de Modo Temporada, para no acoplar a Supabase antes de validar
   el diseño.
 
-## Fase 0 — Núcleo (MVP actual)
+## Fase 0 — Núcleo (COMPLETA)
 
-1. `IdentidadTactica`: enum con las 4 filosofías (Pragmático, Ofensivo,
-   Formador, Motivador), cada una con modificadores sobre
-   ataque/defensa/juveniles/moral.
+1. `IdentidadTactica`: enum con 5 filosofías (Pragmático, Ofensivo,
+   Formador, Motivador, Revolucionario), cada una con modificadores
+   sobre ataque/defensa/juveniles/moral.
 2. `Entrenador`: entidad con reputación, contrato actual, historial de
-   clubes, récord (PJ/PG/PE/PP), títulos.
+   clubes, récord (PJ/PG/PE/PP), títulos, logros desbloqueados.
 3. `PartidoDTService.simular_partido(...)`: aplica los modificadores de
    `IdentidadTactica` sobre los ratings de ataque/defensa del club y
    delega en el motor vectorizado existente para el resultado.
-4. Tests unitarios de dominio + servicio (happy path + edge cases:
-   identidad sin modificador, contrato vencido, etc.).
+4. `CATALOGO_LOGROS`: catálogo estático de logros de carrera (Rey del
+   Ascenso, Invicto, Leyenda, etc.), desbloqueo idempotente vía
+   `Entrenador.desbloquear_logro(codigo)`.
+5. Tests unitarios de dominio + servicio (happy path + edge cases).
 
-## Fase 1 — Sistema de eventos y noticias
+## Fase 1 — Narrativa y eventos (en progreso)
 
-- Máquina de estados simple: evento → opciones → efectos sobre
-  variables (confianza, hinchada, vestuario, presupuesto).
-- Generador de noticias de fin de temporada, mismo patrón que las
-  portadas de Modo Carrera.
+**Decisión de diseño confirmada:** los textos (reacciones de prensa,
+hinchada, vestuario, dirigencia; portadas) se generan con un banco de
+frases fijas por categoría/intensidad **más** interpolación de
+variables (`{club}`, `{rival}`, `{entrenador}`, `{racha}`) — sin
+llamadas a la API de Claude en runtime. Sin costo ni latencia; la
+variedad sale de combinar plantilla × contexto, no de generar texto
+nuevo cada vez.
+
+Hecho:
+- `manager_mode/narrativa.py`: `NarrativaService` con `reaccion(tipo,
+  intensidad, contexto)` y `portada(intensidad, contexto)`. Banco
+  cubre las 4×3 combinaciones de `TipoReaccion` × `Intensidad`.
+
+Falta (siguiente incremento):
+- Ampliar el banco de frases (hoy 2-3 por combinación; para que no se
+  note la repetición en una carrera larga conviene 8-10 por
+  combinación antes de integrar al frontend).
+- Motor de eventos: catálogo de eventos (viajes, vestuario, mercado,
+  dirigencia, prensa, lesiones, promesas, sponsors, infraestructura,
+  juveniles, clásicos, crisis, conflictos, selecciones, rumores,
+  escándalos, clima, árbitros, hinchada) con 2-3 opciones cada uno y
+  efectos sobre variables internas (moral, confianza, presupuesto).
+- Conectar `NarrativaService` a los efectos del evento: cada opción
+  elegida dispara una reacción de uno o más `TipoReaccion` según
+  corresponda.
 
 ## Fase 2 — Dirigencia y ofertas
 

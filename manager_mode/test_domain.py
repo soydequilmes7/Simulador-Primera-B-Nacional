@@ -9,6 +9,7 @@ from __future__ import annotations
 import unittest
 
 from manager_mode.domain import (
+    CATALOGO_LOGROS,
     Contrato,
     Entrenador,
     IdentidadTactica,
@@ -96,6 +97,21 @@ class TestEntrenador(unittest.TestCase):
     def test_objetivo_temporada_cumplido_por_defecto_none(self) -> None:
         objetivo = ObjetivoTemporada(descripcion="Ascender")
         self.assertIsNone(objetivo.cumplido)
+
+    def test_desbloquear_logro_valido_devuelve_true_una_sola_vez(self) -> None:
+        entrenador = Entrenador(nombre="Marcelo", identidad=IdentidadTactica.REVOLUCIONARIO)
+        self.assertTrue(entrenador.desbloquear_logro("rey_del_ascenso"))
+        self.assertFalse(entrenador.desbloquear_logro("rey_del_ascenso"))
+        self.assertEqual(entrenador.logros_desbloqueados, ["rey_del_ascenso"])
+
+    def test_desbloquear_logro_inexistente_devuelve_false(self) -> None:
+        entrenador = Entrenador(nombre="Marcelo", identidad=IdentidadTactica.PRAGMATICO)
+        self.assertFalse(entrenador.desbloquear_logro("logro_que_no_existe"))
+        self.assertEqual(entrenador.logros_desbloqueados, [])
+
+    def test_catalogo_logros_tiene_codigo_consistente_con_su_clave(self) -> None:
+        for codigo, logro in CATALOGO_LOGROS.items():
+            self.assertEqual(codigo, logro.codigo)
 
 
 if __name__ == "__main__":
