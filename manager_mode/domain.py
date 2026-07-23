@@ -74,10 +74,16 @@ MODIFICADORES_POR_IDENTIDAD: dict[IdentidadTactica, ModificadorTactico] = {
 class ObjetivoTemporada:
     """Objetivo que la dirigencia le fija al DT para la temporada
     (ej. River: 'Salir campeón'; Quilmes: 'Ascender'). `cumplido` queda
-    en None hasta que EvaluadorDirigenciaService lo resuelva (Fase 2)."""
+    en None hasta que EvaluadorDirigenciaService lo resuelva (Fase 2).
+
+    `tipo` es el código de TipoObjetivo (manager_mode/dirigencia.py)
+    cuando el objetivo viene del catálogo medible -- queda en None si
+    se crea a mano solo con descripción (ej. objetivos puramente
+    narrativos, no evaluables contra datos objetivos)."""
 
     descripcion: str
     cumplido: bool | None = None
+    tipo: str | None = None
 
 
 @dataclass

@@ -94,13 +94,36 @@ Falta (siguiente incremento):
   Rumores/Crisis/Vida de Plantel). Solo aplica cuando se elige sin
   categoría explícita.
 
-## Fase 2 — Dirigencia y ofertas (próxima)
+## Fase 2 — Dirigencia y ofertas (en progreso)
 
-- Objetivos por club (ej. River: salir campeón / semifinal Libertadores;
-  Quilmes: ascender / reducir deuda) y evaluación de continuidad.
+Hecho:
+- `manager_mode/dirigencia.py`: `CATALOGO_PERFILES_CLUB` con 7 clubes
+  (River, Boca, Independiente, Quilmes, San Martín de Tucumán,
+  Temperley, Instituto), cada uno con su pool de `TipoObjetivo` posibles
+  y un nivel de `exigencia` (0.0-1.0).
+- `generar_objetivos_temporada(perfil, rng, cantidad)`: elige objetivos
+  del pool del club sin repetir.
+- `EvaluadorDirigenciaService`: evalúa cada objetivo contra un
+  `ResultadoTemporada` (posición final, título, ascenso/descenso,
+  juveniles debutados, venta de figuras) y decide continuidad
+  (`RENOVAR` / `EN_OBSERVACION` / `DESPEDIR`) combinando el % de
+  objetivos cumplidos con la confianza acumulada de `EstadoClub` --
+  un descenso en un club exigente (River, Boca, Independiente) es
+  causal de despido automática, sin importar el resto.
+- `aplicar_decision(entrenador, evaluacion)`: efectiviza la decisión
+  sobre el `Entrenador` (renueva contrato / libera al DT / sin cambios).
+- No todos los objetivos del brief son medibles con datos objetivos
+  ("jugar con intensidad" es subjetivo) -- se modelaron solo los
+  medibles; el resto queda como posible objetivo narrativo sin `tipo`
+  asignado, evaluable a mano si hiciera falta más adelante.
+
+Falta (siguiente incremento):
 - Pool de 4 ofertas de club al finalizar cada temporada, ponderado por
   reputación del DT (igual criterio que el pool de fichajes de Modo
   Carrera, pero del lado club→DT en vez de club→jugador).
+- Conectar `ResultadoTemporada` con datos reales de Modo Temporada
+  (hoy se arma a mano para testear; en integración real debería salir
+  de `season_engine`/`PromotionManager`).
 
 ## Fase 3 — Frontend cinematográfico
 
