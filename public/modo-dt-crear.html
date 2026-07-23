@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>El Míster · Creá tu DT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: #070b0f;
+    font-family: 'Inter', sans-serif;
+    color: #eef2f4;
+  }
+  ::selection { background: rgba(52,211,153,0.35); }
+  @keyframes glowpulse { 0%,100% { opacity: 0.55; } 50% { opacity: 0.9; } }
+  .page {
+    min-height: 100vh;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 18% -10%, oklch(0.32 0.09 190 / 0.55), transparent 55%),
+      radial-gradient(circle at 85% 10%, oklch(0.30 0.10 250 / 0.45), transparent 50%),
+      #070b0f;
+  }
+  .grid-overlay {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 42px 42px;
+    pointer-events: none;
+  }
+  .content { position: relative; max-width: 1180px; margin: 0 auto; padding: 56px 32px 80px; }
+  .eyebrow { display: flex; align-items: center; gap: 10px; margin-bottom: 22px; }
+  .eyebrow .dot {
+    width: 8px; height: 8px; border-radius: 50%; background: #34d399;
+    box-shadow: 0 0 12px 2px #34d399; animation: glowpulse 2.4s ease-in-out infinite;
+  }
+  .eyebrow span {
+    font-family: 'Rajdhani', sans-serif; font-weight: 600; font-size: 13px;
+    letter-spacing: 0.22em; text-transform: uppercase; color: rgba(255,255,255,0.55);
+  }
+  h1 {
+    font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 56px;
+    line-height: 1.02; margin: 0 0 12px; letter-spacing: -0.01em;
+  }
+  h1 .accent { color: #34d399; }
+  .subtitle { font-size: 16px; color: rgba(255,255,255,0.6); margin: 0 0 40px; max-width: 560px; }
+  .layout { display: grid; grid-template-columns: 280px 1fr; gap: 28px; align-items: start; }
+  @media (max-width: 820px) { .layout { grid-template-columns: 1fr; } }
+
+  .datos-card {
+    background: rgba(255,255,255,0.035);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px; padding: 26px;
+    backdrop-filter: blur(14px);
+    display: flex; flex-direction: column; gap: 22px;
+  }
+  .campo { display: flex; flex-direction: column; gap: 6px; }
+  .campo label {
+    font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: rgba(255,255,255,0.45); font-family: 'Rajdhani', sans-serif; font-weight: 600;
+  }
+  .campo input {
+    background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px; padding: 12px 14px; color: #fff; font-size: 15px;
+    font-family: 'Inter', sans-serif;
+  }
+  .campo input::placeholder { color: rgba(255,255,255,0.35); }
+  .campo input:focus { outline: none; border-color: rgba(52,211,153,0.5); }
+  .edad-valor { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 26px; color: #fff; }
+  .nota-edad {
+    border-top: 1px solid rgba(255,255,255,0.07); padding-top: 16px;
+    font-size: 12px; color: rgba(255,255,255,0.4); line-height: 1.5;
+  }
+
+  .identidades-header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .identidades-header h2 { font-family: 'Rajdhani', sans-serif; font-weight: 600; font-size: 20px; margin: 0; letter-spacing: 0.01em; }
+  .identidades-header span { font-size: 12px; color: rgba(255,255,255,0.4); }
+
+  .identidades-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 16px; }
+  @media (max-width: 640px) { .identidades-grid { grid-template-columns: 1fr; } }
+
+  .identidad-card {
+    cursor: pointer; position: relative; border-radius: 16px; padding: 20px 18px 18px;
+    background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+    transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+    display: flex; flex-direction: column; gap: 10px; min-height: 150px;
+  }
+  .identidad-card:hover { transform: translateY(-2px); }
+  .identidad-card.selected { box-shadow: 0 0 26px var(--glow); }
+  .identidad-top { display: flex; align-items: center; justify-content: space-between; }
+  .identidad-icon {
+    width: 38px; height: 38px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 17px; color: #04140f;
+  }
+  .identidad-check {
+    width: 20px; height: 20px; border-radius: 50%; background: #34d399;
+    display: none; align-items: center; justify-content: center; font-size: 12px; color: #04140f; font-weight: 700;
+  }
+  .identidad-card.selected .identidad-check { display: flex; }
+  .identidad-nombre { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 17px; color: #fff; }
+  .identidad-desc { font-size: 12.5px; color: rgba(255,255,255,0.62); line-height: 1.45; flex: 1; }
+  .identidad-tag { font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; font-family: 'Rajdhani', sans-serif; font-weight: 600; }
+
+  .mas-estilos {
+    margin-top: 4px; font-size: 12px; color: rgba(255,255,255,0.4); line-height: 1.5;
+  }
+
+  .cita-box {
+    margin-top: 8px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 14px; padding: 16px 18px; min-height: 20px;
+  }
+  .cita-box .con-seleccion { font-size: 13px; color: rgba(255,255,255,0.75); }
+  .cita-box .con-seleccion strong { color: #34d399; }
+  .cita-box .sin-seleccion { font-size: 13px; color: rgba(255,255,255,0.35); }
+
+  button.firmar {
+    margin-top: 6px; align-self: flex-start; padding: 15px 32px; border-radius: 12px; border: none;
+    font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 0.03em;
+    text-transform: uppercase; cursor: pointer; transition: opacity 0.15s;
+    background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.35);
+  }
+  button.firmar.activo { background: #34d399; color: #04140f; box-shadow: 0 0 22px rgba(52,211,153,0.35); }
+  button.firmar:disabled { cursor: not-allowed; }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="grid-overlay"></div>
+  <div class="content">
+
+    <div class="eyebrow"><div class="dot"></div><span>Manager Mode · Ficha de Alta</span></div>
+
+    <h1>Creá tu <span class="accent">DT</span></h1>
+    <p class="subtitle">Un nombre y una forma de ver el fútbol. Lo demás — la presión, los memes de la hinchada, las conferencias tensas — lo vas a construir en la cancha.</p>
+
+    <div class="layout">
+      <div class="datos-card">
+        <div class="campo">
+          <label for="nombre-dt">Nombre y apellido</label>
+          <input id="nombre-dt" type="text" placeholder="Ej: Marcelo Bielsa Jr." />
+        </div>
+        <div class="campo">
+          <label>Edad</label>
+          <span class="edad-valor">30 años</span>
+        </div>
+        <div class="nota-edad">Arrancás a los 30. Con suerte llegás al retiro (75) con la reputación intacta.</div>
+      </div>
+
+      <div>
+        <div class="identidades-header">
+          <h2>Elegí tu identidad táctica</h2>
+          <span>define cómo reacciona el plantel a cada decisión tuya</span>
+        </div>
+
+        <div class="identidades-grid" id="identidades-grid"></div>
+
+        <p class="mas-estilos" id="mas-estilos-nota"></p>
+
+        <div class="cita-box" id="cita-box">
+          <span class="sin-seleccion">Todavía no elegiste identidad. El plantel espera, con cara de desconfianza.</span>
+        </div>
+
+        <button class="firmar" id="btn-firmar" disabled>Firmar contrato</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Mismo catálogo conceptual que manager_mode/domain.py (IdentidadTactica).
+// El Revolucionario queda siempre visible; las otras 4 rotan de a 2 por
+// carrera nueva, con un aviso de que hay más estilos disponibles.
+const REVOLUCIONARIO = {
+  key: 'revolucionario', letra: 'R', nombre: 'Revolucionario', hue: 280,
+  desc: 'Ideas raras, prensa dividida. O te consagra o te saca en un móvil en vivo.',
+  tag: 'Polémica · Método',
+  cita: 'Sí, jugamos con línea de tres y el arquero de enganche. Confíen.',
+};
+const ROTABLES = [
+  { key: 'pragmatico', letra: 'P', nombre: 'Pragmático', hue: 200,
+    desc: 'Resultados por encima de la estética. Cero romanticismo, mucho 1-0.',
+    tag: 'Control · Resultados', cita: 'El fútbol lindo lo ponen en la tele, yo pongo puntos en la tabla.' },
+  { key: 'ofensivo', letra: 'O', nombre: 'Ofensivo', hue: 150,
+    desc: 'Prioriza el gol por sobre la prudencia. La hinchada te ama, la ansiedad también.',
+    tag: 'Riesgo · Espectáculo', cita: 'Defender no gana partidos. Defender gana paciencia, y no la tengo.' },
+  { key: 'formador', letra: 'F', nombre: 'Formador', hue: 170,
+    desc: 'Apuesta a la cantera y a proyectos largos. La dirigencia lo tolera, por ahora.',
+    tag: 'Cantera · Paciencia', cita: 'Los pibes necesitan minutos, no memes en las redes.' },
+  { key: 'motivador', letra: 'M', nombre: 'Motivador', hue: 40,
+    desc: 'Carisma de vestuario. Gana partidos con discursos que ni él mismo entiende del todo.',
+    tag: 'Carisma · Vestuario', cita: 'No les hablo de táctica, les hablo del corazón. Después Dios.' },
+];
+
+function elegirRotables() {
+  const copia = [...ROTABLES];
+  for (let i = copia.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copia[i], copia[j]] = [copia[j], copia[i]];
+  }
+  return copia.slice(0, 2);
+}
+
+const mostradas = [REVOLUCIONARIO, ...elegirRotables()];
+const nombresNoMostrados = ROTABLES
+  .filter(r => !mostradas.some(m => m.key === r.key))
+  .map(r => r.nombre);
+
+document.getElementById('mas-estilos-nota').textContent =
+  `Hay 4 estilos posibles además del Revolucionario — cada carrera nueva te muestra una combinación distinta (esta vez no salieron: ${nombresNoMostrados.join(' y ')}).`;
+
+let seleccion = null;
+
+function accentDe(hue) { return `oklch(0.75 0.14 ${hue})`; }
+
+function render() {
+  const grid = document.getElementById('identidades-grid');
+  grid.innerHTML = '';
+  mostradas.forEach(id => {
+    const selected = seleccion === id.key;
+    const accent = accentDe(id.hue);
+    const card = document.createElement('div');
+    card.className = 'identidad-card' + (selected ? ' selected' : '');
+    card.style.setProperty('--glow', `oklch(0.6 0.16 ${id.hue} / 0.25)`);
+    if (selected) {
+      card.style.background = `oklch(0.24 0.05 ${id.hue} / 0.55)`;
+      card.style.borderColor = `oklch(0.7 0.14 ${id.hue} / 0.7)`;
+    }
+    card.innerHTML = `
+      <div class="identidad-top">
+        <div class="identidad-icon" style="background:${accent};">${id.letra}</div>
+        <div class="identidad-check">✓</div>
+      </div>
+      <div class="identidad-nombre">${id.nombre}</div>
+      <div class="identidad-desc">${id.desc}</div>
+      <div class="identidad-tag" style="color:${accent};">${id.tag}</div>
+    `;
+    card.addEventListener('click', () => { seleccion = id.key; render(); });
+    grid.appendChild(card);
+  });
+
+  const elegida = mostradas.find(id => id.key === seleccion);
+  const citaBox = document.getElementById('cita-box');
+  citaBox.innerHTML = elegida
+    ? `<span class="con-seleccion"><strong>${elegida.nombre}:</strong> ${elegida.cita}</span>`
+    : `<span class="sin-seleccion">Todavía no elegiste identidad. El plantel espera, con cara de desconfianza.</span>`;
+
+  const nombre = document.getElementById('nombre-dt').value.trim();
+  const puedeFirmar = nombre.length > 1 && !!elegida;
+  const btn = document.getElementById('btn-firmar');
+  btn.disabled = !puedeFirmar;
+  btn.classList.toggle('activo', puedeFirmar);
+}
+
+document.getElementById('nombre-dt').addEventListener('input', render);
+
+document.getElementById('btn-firmar').addEventListener('click', () => {
+  const nombre = document.getElementById('nombre-dt').value.trim();
+  const elegida = mostradas.find(id => id.key === seleccion);
+  if (!(nombre.length > 1 && elegida)) return;
+
+  const dt = { nombre, identidad: elegida.key, identidadNombre: elegida.nombre, edad: 30 };
+  sessionStorage.setItem('modoDT_dt', JSON.stringify(dt));
+  window.location.href = 'modo-dt-elegir-club.html';
+});
+
+render();
+</script>
+</body>
+</html>
