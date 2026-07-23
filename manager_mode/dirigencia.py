@@ -33,6 +33,8 @@ class TipoObjetivo(str, Enum):
     NO_VENDER_FIGURAS = "no_vender_figuras"
     CONSOLIDARSE = "consolidarse"
     PROYECTO_LARGO = "proyecto_largo"
+    CLASIFICAR_MUNDIAL = "clasificar_mundial"
+    GANAR_COPA_AMERICA = "ganar_copa_america"
 
 
 DESCRIPCION_OBJETIVO: dict[TipoObjetivo, str] = {
@@ -45,6 +47,8 @@ DESCRIPCION_OBJETIVO: dict[TipoObjetivo, str] = {
     TipoObjetivo.NO_VENDER_FIGURAS: "No vender a las figuras del plantel",
     TipoObjetivo.CONSOLIDARSE: "Consolidarse en la categoría",
     TipoObjetivo.PROYECTO_LARGO: "Sostener un proyecto a largo plazo",
+    TipoObjetivo.CLASIFICAR_MUNDIAL: "Clasificar al Mundial",
+    TipoObjetivo.GANAR_COPA_AMERICA: "Ganar la Copa América",
 }
 
 
@@ -66,11 +70,19 @@ class PerfilClub:
       exigencia: 0.0 (muy tolerante, ej. Instituto) a 1.0 (exige todo,
         ej. River). Sube el umbral de puntaje necesario para renovar y
         determina si un descenso es causal automática de despido.
+      escudo: nombre de archivo bajo public/escudos/ (mismo criterio
+        que ESCUDOS/slugifyEquipo del frontend). None si todavía no
+        hay asset cargado (ej. Selección Argentina).
+      es_seleccion: True si el "club" es en realidad un seleccionado
+        nacional (cambia el pool de objetivos y las reglas de
+        aparición en el pool de ofertas -- ver ofertas.py).
     """
 
     nombre: str
     objetivos_posibles: tuple[TipoObjetivo, ...]
     exigencia: float
+    escudo: str | None = None
+    es_seleccion: bool = False
 
 
 CATALOGO_PERFILES_CLUB: dict[str, PerfilClub] = {
@@ -79,36 +91,53 @@ CATALOGO_PERFILES_CLUB: dict[str, PerfilClub] = {
         (TipoObjetivo.SALIR_CAMPEON, TipoObjetivo.SEMIFINAL_COPA_CONTINENTAL,
          TipoObjetivo.PROMOVER_JUVENILES),
         exigencia=0.9,
+        escudo="river.png",
     ),
     "Boca": PerfilClub(
         "Boca",
         (TipoObjetivo.SALIR_CAMPEON, TipoObjetivo.PELEAR_ARRIBA),
         exigencia=0.85,
+        escudo="boca.png",
     ),
     "Independiente": PerfilClub(
         "Independiente",
         (TipoObjetivo.SALIR_CAMPEON, TipoObjetivo.SEMIFINAL_COPA_CONTINENTAL),
         exigencia=0.75,
+        escudo="independiente.png",
     ),
     "Quilmes": PerfilClub(
         "Quilmes",
         (TipoObjetivo.ASCENDER, TipoObjetivo.REDUCIR_DEUDA),
         exigencia=0.4,
+        escudo="quilmes.png",
     ),
     "San Martín de Tucumán": PerfilClub(
         "San Martín de Tucumán",
         (TipoObjetivo.PELEAR_ARRIBA, TipoObjetivo.NO_VENDER_FIGURAS),
         exigencia=0.5,
+        escudo="sanmartintuc.png",
     ),
     "Temperley": PerfilClub(
         "Temperley",
         (TipoObjetivo.CONSOLIDARSE,),
         exigencia=0.3,
+        escudo="temperley.png",
     ),
     "Instituto": PerfilClub(
         "Instituto",
         (TipoObjetivo.PROYECTO_LARGO,),
         exigencia=0.25,
+        escudo="instituto.png",
+    ),
+    "Selección Argentina": PerfilClub(
+        "Selección Argentina",
+        (TipoObjetivo.CLASIFICAR_MUNDIAL, TipoObjetivo.GANAR_COPA_AMERICA),
+        exigencia=0.95,
+        escudo=None,  # TODO(Pablo): falta el asset -- no hay escudo de
+        # seleccionados en public/escudos/ hoy. Mientras tanto el
+        # frontend puede resolver con la bandera de Argentina en su
+        # lugar (banderaHTML() ya existe para el resto del sitio).
+        es_seleccion=True,
     ),
 }
 
@@ -142,6 +171,8 @@ class ResultadoTemporada:
     juveniles_debutados: int = 0
     vendio_figura: bool = False
     deuda_reducida: bool = False
+    clasifico_mundial: bool = False
+    gano_copa_america: bool = False
 
 
 _EVALUADORES: dict[TipoObjetivo, Callable[[ResultadoTemporada], bool]] = {
@@ -154,6 +185,8 @@ _EVALUADORES: dict[TipoObjetivo, Callable[[ResultadoTemporada], bool]] = {
     TipoObjetivo.NO_VENDER_FIGURAS: lambda r: not r.vendio_figura,
     TipoObjetivo.CONSOLIDARSE: lambda r: not r.descendio,
     TipoObjetivo.PROYECTO_LARGO: lambda r: not r.descendio,
+    TipoObjetivo.CLASIFICAR_MUNDIAL: lambda r: r.clasifico_mundial,
+    TipoObjetivo.GANAR_COPA_AMERICA: lambda r: r.gano_copa_america,
 }
 
 

@@ -118,12 +118,32 @@ Hecho:
   asignado, evaluable a mano si hiciera falta más adelante.
 
 Falta (siguiente incremento):
-- Pool de 4 ofertas de club al finalizar cada temporada, ponderado por
-  reputación del DT (igual criterio que el pool de fichajes de Modo
-  Carrera, pero del lado club→DT en vez de club→jugador).
 - Conectar `ResultadoTemporada` con datos reales de Modo Temporada
   (hoy se arma a mano para testear; en integración real debería salir
   de `season_engine`/`PromotionManager`).
+- Escudo de la Selección Argentina: no existe el asset en
+  `public/escudos/` -- el frontend puede resolver con la bandera (ya
+  existe `banderaHTML()` para el resto del sitio) hasta que se cargue
+  uno dedicado.
+
+## Fase 2 — cerrada
+
+- `manager_mode/ofertas.py`: `generar_pool_ofertas(entrenador, rng,
+  cantidad=4)` arma el pool de fin de temporada, ponderado por
+  cercanía entre la reputación del DT y la exigencia de cada club
+  (un DT de reputación baja rara vez ve una oferta de River).
+  Verificado con test estadístico: un DT de reputación 90 recibe
+  significativamente más ofertas de River que uno de reputación 20.
+- **Selección Argentina** agregada como "club" especial
+  (`es_seleccion=True`, objetivos propios: Clasificar al Mundial /
+  Ganar la Copa América): solo entra al pool si la reputación del DT
+  supera `UMBRAL_REPUTACION_SELECCION` (85) y aun así aparece con
+  `FACTOR_RAREZA_SELECCION` (0.3x) para que sea una oferta poco
+  frecuente, no un club más.
+- Cada `PerfilClub` ahora expone `escudo` (nombre de archivo bajo
+  `public/escudos/`, misma convención que `ESCUDOS`/`slugifyEquipo`
+  del frontend) para que el hub y las tarjetas de oferta puedan
+  mostrar el escudo real sin re-mapear nombres.
 
 ## Fase 3 — Frontend cinematográfico
 
