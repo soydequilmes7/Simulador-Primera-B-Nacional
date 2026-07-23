@@ -1,0 +1,102 @@
+# -*- coding: utf-8 -*-
+"""manager_mode/test_domain.py
+
+Tests de dominio del Modo DT. Ejecutar con:
+    python -m unittest manager_mode.test_domain -v
+"""
+from __future__ import annotations
+
+import unittest
+
+from manager_mode.domain import (
+    Contrato,
+    Entrenador,
+    IdentidadTactica,
+    ObjetivoTemporada,
+    RecordEntrenador,
+)
+
+
+class TestContrato(unittest.TestCase):
+    def test_avanzar_temporada_descuenta_un_anio(self) -> None:
+        contrato = Contrato(club_id=1, temporadas_restantes=2, sueldo=1000.0)
+        contrato.avanzar_temporada()
+        self.assertEqual(contrato.temporadas_restantes, 1)
+        self.assertFalse(contrato.vencido)
+
+    def test_avanzar_temporada_no_baja_de_cero(self) -> None:
+        contrato = Contrato(club_id=1, temporadas_restantes=0, sueldo=1000.0)
+        contrato.avanzar_temporada()
+        self.assertEqual(contrato.temporadas_restantes, 0)
+        self.assertTrue(contrato.vencido)
+
+    def test_renovar_suma_temporadas(self) -> None:
+        contrato = Contrato(club_id=1, temporadas_restantes=1, sueldo=1000.0)
+        contrato.renovar(2)
+        self.assertEqual(contrato.temporadas_restantes, 3)
+
+    def test_renovar_con_valor_invalido_lanza_error(self) -> None:
+        contrato = Contrato(club_id=1, temporadas_restantes=1, sueldo=1000.0)
+        with self.assertRaises(ValueError):
+            contrato.renovar(0)
+
+    def test_objetivos_por_defecto_vacios(self) -> None:
+        contrato = Contrato(club_id=1, temporadas_restantes=1, sueldo=1000.0)
+        self.assertEqual(contrato.objetivos, [])
+
+
+class TestRecordEntrenador(unittest.TestCase):
+    def test_registrar_victoria(self) -> None:
+        record = RecordEntrenador()
+        record.registrar_resultado(goles_propios=2, goles_rival=1)
+        self.assertEqual(record.victorias, 1)
+        self.assertEqual(record.partidos_jugados, 1)
+
+    def test_registrar_empate(self) -> None:
+        record = RecordEntrenador()
+        record.registrar_resultado(goles_propios=1, goles_rival=1)
+        self.assertEqual(record.empates, 1)
+
+    def test_registrar_derrota(self) -> None:
+        record = RecordEntrenador()
+        record.registrar_resultado(goles_propios=0, goles_rival=2)
+        self.assertEqual(record.derrotas, 1)
+
+
+class TestEntrenador(unittest.TestCase):
+    def test_entrenador_nuevo_esta_libre(self) -> None:
+        entrenador = Entrenador(nombre="Marcelo", identidad=IdentidadTactica.OFENSIVO)
+        self.assertTrue(entrenador.libre)
+
+    def test_firmar_contrato_deja_de_estar_libre(self) -> None:
+        entrenador = Entrenador(nombre="Marcelo", identidad=IdentidadTactica.OFENSIVO)
+        entrenador.firmar_contrato(Contrato(club_id=5, temporadas_restantes=2, sueldo=500.0))
+        self.assertFalse(entrenador.libre)
+        self.assertEqual(entrenador.contrato.club_id, 5)
+
+    def test_firmar_nuevo_contrato_registra_historial(self) -> None:
+        entrenador = Entrenador(nombre="Marcelo", identidad=IdentidadTactica.PRAGMATICO)
+        entrenador.firmar_contrato(Contrato(club_id=1, temporadas_restantes=1, sueldo=100.0))
+        entrenador.firmar_contrato(Contrato(club_id=2, temporadas_restantes=1, sueldo=200.0))
+        self.assertEqual(entrenador.historial_clubes, [1])
+        self.assertEqual(entrenador.contrato.club_id, 2)
+
+    def test_sumar_titulo_sube_reputacion_sin_pasar_100(self) -> None:
+        entrenador = Entrenador(
+            nombre="Marcelo", identidad=IdentidadTactica.MOTIVADOR, reputacion=95.0,
+        )
+        entrenador.sumar_titulo("Campeón LPF 2026", bonus_reputacion=10.0)
+        self.assertEqual(entrenador.reputacion, 100.0)
+        self.assertEqual(entrenador.titulos, ["Campeón LPF 2026"])
+
+    def test_modificador_tactico_segun_identidad(self) -> None:
+        formador = Entrenador(nombre="Pedro", identidad=IdentidadTactica.FORMADOR)
+        self.assertGreater(formador.modificador_tactico.peso_eventos_juveniles, 1.0)
+
+    def test_objetivo_temporada_cumplido_por_defecto_none(self) -> None:
+        objetivo = ObjetivoTemporada(descripcion="Ascender")
+        self.assertIsNone(objetivo.cumplido)
+
+
+if __name__ == "__main__":
+    unittest.main()
