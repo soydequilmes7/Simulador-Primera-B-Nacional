@@ -201,6 +201,24 @@ Profesional. Se corrige en el backend, no solo en el prompt visual:
   Boca ni ningún club de Liga Profesional acá. Los grandes se ganan
   más adelante, subiendo reputación, vía `generar_pool_ofertas` (Fase 2).
 
+## Fase 2.7 — Edad y retiro (feedback del export de Claude Design)
+
+Al revisar el export de Claude Design, el mock de "Panel del DT" mostraba
+una edad fija (30 años) que no existía en el backend. Se agregó real:
+
+- `Entrenador.edad`: arranca en 30 (fijo, coincide con el texto del
+  frontend "Arrancás a los 30"), sube de a un año por temporada vía
+  `avanzar_edad()`.
+- `Entrenador.EDAD_RETIRO = 75` / `Entrenador.retirado` (property):
+  el DT se retira a los 75. `avanzar_edad()` devuelve True el año en
+  que se alcanza el retiro, para que el llamador dispare el cierre de
+  carrera (Fase 3/4) -- no fuerza ningún efecto por sí solo, solo
+  informa el hito.
+- La identidad "El Revolucionario" fijo + rotación entre las otras 4
+  en la pantalla de creación del DT es diseño intencional (no un bug
+  como se reportó inicialmente) -- Pablo pidió sumarle al frontend un
+  aviso de que hay más estilos disponibles además de los mostrados.
+
 ## Fase 3 — Frontend cinematográfico
 
 - Pantallas: intro (país/división/nombre/identidad), hub principal

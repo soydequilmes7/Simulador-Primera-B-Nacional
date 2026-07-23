@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
+from typing import ClassVar
 
 
 class IdentidadTactica(str, Enum):
@@ -182,6 +183,9 @@ class Entrenador:
       record: RecordEntrenador acumulado histórico (todos los clubes).
       titulos: lista de descripciones de títulos ganados.
       historial_clubes: ids de clubes dirigidos, en orden cronológico.
+      edad: edad del DT. Arranca en 30 (fijo, como muestra el
+        frontend) y sube de a un año por temporada vía
+        `avanzar_edad()`. El retiro es a los 75 -- ver `retirado`.
     """
 
     nombre: str
@@ -192,6 +196,21 @@ class Entrenador:
     titulos: list[str] = field(default_factory=list)
     historial_clubes: list[int] = field(default_factory=list)
     logros_desbloqueados: list[str] = field(default_factory=list)
+    edad: int = 30
+
+    EDAD_RETIRO: ClassVar[int] = 75
+
+    @property
+    def retirado(self) -> bool:
+        return self.edad >= self.EDAD_RETIRO
+
+    def avanzar_edad(self) -> bool:
+        """Suma un año a la edad tras cerrar una temporada. Devuelve
+        True si con este año el DT llega (o ya estaba en) la edad de
+        retiro -- el llamador decide qué hacer con eso (fin de carrera,
+        pantalla de despedida, etc.), esto solo informa el hito."""
+        self.edad += 1
+        return self.retirado
 
     @property
     def modificador_tactico(self) -> ModificadorTactico:

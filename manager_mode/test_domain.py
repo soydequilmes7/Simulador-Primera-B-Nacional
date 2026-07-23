@@ -98,6 +98,27 @@ class TestEntrenador(unittest.TestCase):
         objetivo = ObjetivoTemporada(descripcion="Ascender")
         self.assertIsNone(objetivo.cumplido)
 
+    def test_entrenador_arranca_con_30_anios(self) -> None:
+        entrenador = Entrenador(nombre="Marcelo", identidad=IdentidadTactica.PRAGMATICO)
+        self.assertEqual(entrenador.edad, 30)
+        self.assertFalse(entrenador.retirado)
+
+    def test_avanzar_edad_suma_un_anio(self) -> None:
+        entrenador = Entrenador(nombre="Marcelo", identidad=IdentidadTactica.PRAGMATICO)
+        entrenador.avanzar_edad()
+        self.assertEqual(entrenador.edad, 31)
+
+    def test_avanzar_edad_devuelve_true_al_llegar_al_retiro(self) -> None:
+        entrenador = Entrenador(nombre="Marcelo", identidad=IdentidadTactica.PRAGMATICO, edad=74)
+        retirado = entrenador.avanzar_edad()
+        self.assertTrue(retirado)
+        self.assertEqual(entrenador.edad, 75)
+        self.assertTrue(entrenador.retirado)
+
+    def test_retirado_es_false_antes_de_los_75(self) -> None:
+        entrenador = Entrenador(nombre="Marcelo", identidad=IdentidadTactica.PRAGMATICO, edad=74)
+        self.assertFalse(entrenador.retirado)
+
     def test_desbloquear_logro_valido_devuelve_true_una_sola_vez(self) -> None:
         entrenador = Entrenador(nombre="Marcelo", identidad=IdentidadTactica.REVOLUCIONARIO)
         self.assertTrue(entrenador.desbloquear_logro("rey_del_ascenso"))
