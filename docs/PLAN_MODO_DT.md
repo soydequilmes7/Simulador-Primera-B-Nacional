@@ -61,19 +61,30 @@ Hecho:
 - `manager_mode/narrativa.py`: `NarrativaService` con `reaccion(tipo,
   intensidad, contexto)` y `portada(intensidad, contexto)`. Banco
   cubre las 4×3 combinaciones de `TipoReaccion` × `Intensidad`.
+- `manager_mode/eventos.py`: catálogo de 45 eventos en 16 categorías
+  (viajes, vestuario, mercado, dirigencia, prensa, lesiones, juveniles,
+  sponsors, infraestructura, clásicos, crisis, selecciones, copas,
+  rumores, árbitros/hinchada, y **Vida de Plantel** -- el costado
+  humano/gracioso pedido por Pablo: peleas de pareja cruzadas, salidas
+  de joda, cargadas, cábalas grupales). Cada evento tiene 2-3 opciones
+  con efectos sobre `EstadoClub` (moral, confianza, hinchada, vestuario,
+  presupuesto, reputación).
+- `manager_mode/evento_service.py`: `EventoService` conecta el catálogo
+  con `NarrativaService` -- elige un evento (opcionalmente por
+  categoría), aplica los efectos de la opción elegida y devuelve la
+  frase narrativa correspondiente (o None si la opción no dispara
+  reacción pública).
 
 Falta (siguiente incremento):
-- Ampliar el banco de frases (hoy 2-3 por combinación; para que no se
-  note la repetición en una carrera larga conviene 8-10 por
-  combinación antes de integrar al frontend).
-- Motor de eventos: catálogo de eventos (viajes, vestuario, mercado,
-  dirigencia, prensa, lesiones, promesas, sponsors, infraestructura,
-  juveniles, clásicos, crisis, conflictos, selecciones, rumores,
-  escándalos, clima, árbitros, hinchada) con 2-3 opciones cada uno y
-  efectos sobre variables internas (moral, confianza, presupuesto).
-- Conectar `NarrativaService` a los efectos del evento: cada opción
-  elegida dispara una reacción de uno o más `TipoReaccion` según
-  corresponda.
+- Ampliar el banco de frases de `narrativa.py` (hoy 2-3 por
+  combinación; conviene 8-10 antes de integrar al frontend).
+- Ponderar la frecuencia de aparición de eventos por `IdentidadTactica`
+  (ej. el Formador debería ver más eventos de Juveniles) y por momento
+  de la temporada (Clásicos/Copas en fechas específicas, no al azar
+  puro).
+- Reputación/objetivo de temporada todavía no consumen los eventos --
+  falta `EvaluadorDirigenciaService` (Fase 2) para que el estado del
+  club influya en continuidad y ofertas.
 
 ## Fase 2 — Dirigencia y ofertas
 
