@@ -60,12 +60,18 @@ def simular_copa_continental(
     grandes rinden mejor en promedio, pero nunca es un resultado
     garantizado).
 
-    Lanza ValueError si `perfil` no clasifica a copas internacionales
-    -- esta simulación es exclusiva de los grandes de Primera.
+    Lanza ValueError si `perfil` no clasifica a la copa pedida -- la
+    Libertadores y la Sudamericana tienen elegibilidad independiente
+    (`PerfilClub.clasifica_libertadores` / `clasifica_sudamericana`);
+    un club puede jugar una sin jugar la otra.
     """
-    if not perfil.clasifica_copas_internacionales:
+    clasifica = (
+        perfil.clasifica_libertadores if copa == CopaContinental.LIBERTADORES
+        else perfil.clasifica_sudamericana
+    )
+    if not clasifica:
         raise ValueError(
-            f"{perfil.nombre} no clasifica a copas internacionales (solo grandes de Primera)"
+            f"{perfil.nombre} no clasifica a la {NOMBRE_COPA[copa]} en este catálogo"
         )
 
     prob_avance = 0.30 + (entrenador.reputacion / 100.0) * 0.25 + perfil.exigencia * 0.15

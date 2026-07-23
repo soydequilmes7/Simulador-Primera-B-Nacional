@@ -76,12 +76,16 @@ class PerfilClub:
       es_seleccion: True si el "club" es en realidad un seleccionado
         nacional (cambia el pool de objetivos y las reglas de
         aparición en el pool de ofertas -- ver ofertas.py).
-      clasifica_copas_internacionales: True solo para los grandes de
-        Primera (River, Boca, Independiente en este catálogo). Habilita
-        los eventos de CategoriaEvento.LIBERTADORES/SUDAMERICANA y la
-        chance de ganarlas -- ver copas_continentales.py. Deliberadamente
-        NO conectado a los motores reales de Libertadores/Sudamericana
-        de season/ (simulación simplificada, propia del Modo DT).
+      clasifica_libertadores: True si el club puede jugar (y ganar) la
+        Copa Libertadores en el Modo DT -- reservado a los clubes de
+        mayor nivel, como en la realidad (Argentina tiene pocos cupos
+        directos a Libertadores frente a los de Sudamericana).
+      clasifica_sudamericana: True si el club puede jugar (y ganar) la
+        Copa Sudamericana -- pool más amplio que Libertadores, incluye
+        a la mitad de la tabla de Primera. Ver copas_continentales.py.
+        Deliberadamente NO conectado a los motores reales de
+        Libertadores/Sudamericana de season/ (simulación simplificada,
+        propia del Modo DT).
     """
 
     nombre: str
@@ -89,7 +93,12 @@ class PerfilClub:
     exigencia: float
     escudo: str | None = None
     es_seleccion: bool = False
-    clasifica_copas_internacionales: bool = False
+    clasifica_libertadores: bool = False
+    clasifica_sudamericana: bool = False
+
+    @property
+    def clasifica_alguna_copa_continental(self) -> bool:
+        return self.clasifica_libertadores or self.clasifica_sudamericana
 
 
 CATALOGO_PERFILES_CLUB: dict[str, PerfilClub] = {
@@ -99,21 +108,90 @@ CATALOGO_PERFILES_CLUB: dict[str, PerfilClub] = {
          TipoObjetivo.PROMOVER_JUVENILES),
         exigencia=0.9,
         escudo="river.png",
-        clasifica_copas_internacionales=True,
+        clasifica_libertadores=True,
+        clasifica_sudamericana=True,
     ),
     "Boca": PerfilClub(
         "Boca",
         (TipoObjetivo.SALIR_CAMPEON, TipoObjetivo.PELEAR_ARRIBA),
         exigencia=0.85,
         escudo="boca.png",
-        clasifica_copas_internacionales=True,
+        clasifica_libertadores=True,
+        clasifica_sudamericana=True,
     ),
     "Independiente": PerfilClub(
         "Independiente",
         (TipoObjetivo.SALIR_CAMPEON, TipoObjetivo.SEMIFINAL_COPA_CONTINENTAL),
         exigencia=0.75,
         escudo="independiente.png",
-        clasifica_copas_internacionales=True,
+        clasifica_libertadores=True,
+        clasifica_sudamericana=True,
+    ),
+    "Racing": PerfilClub(
+        "Racing",
+        (TipoObjetivo.SALIR_CAMPEON, TipoObjetivo.SEMIFINAL_COPA_CONTINENTAL, TipoObjetivo.PELEAR_ARRIBA),
+        exigencia=0.7,
+        escudo="racing.png",
+        clasifica_libertadores=True,
+        clasifica_sudamericana=True,
+    ),
+    "San Lorenzo": PerfilClub(
+        "San Lorenzo",
+        (TipoObjetivo.PELEAR_ARRIBA, TipoObjetivo.SEMIFINAL_COPA_CONTINENTAL),
+        exigencia=0.65,
+        escudo="sanlorenzo.png",
+        clasifica_libertadores=True,
+        clasifica_sudamericana=True,
+    ),
+    "Vélez": PerfilClub(
+        "Vélez",
+        (TipoObjetivo.PELEAR_ARRIBA, TipoObjetivo.PROMOVER_JUVENILES),
+        exigencia=0.6,
+        escudo="velez.png",
+        clasifica_libertadores=True,
+        clasifica_sudamericana=True,
+    ),
+    "Talleres": PerfilClub(
+        "Talleres",
+        (TipoObjetivo.PELEAR_ARRIBA, TipoObjetivo.NO_VENDER_FIGURAS),
+        exigencia=0.55,
+        escudo="talleres.png",
+        clasifica_sudamericana=True,
+    ),
+    "Estudiantes": PerfilClub(
+        "Estudiantes",
+        (TipoObjetivo.PELEAR_ARRIBA, TipoObjetivo.SEMIFINAL_COPA_CONTINENTAL),
+        exigencia=0.6,
+        escudo="estudiantes.png",
+        clasifica_sudamericana=True,
+    ),
+    "Newell's Old Boys": PerfilClub(
+        "Newell's Old Boys",
+        (TipoObjetivo.PELEAR_ARRIBA, TipoObjetivo.NO_VENDER_FIGURAS),
+        exigencia=0.5,
+        escudo="newells.png",
+        clasifica_sudamericana=True,
+    ),
+    "Huracán": PerfilClub(
+        "Huracán",
+        (TipoObjetivo.PELEAR_ARRIBA, TipoObjetivo.CONSOLIDARSE),
+        exigencia=0.45,
+        escudo="huracan.png",
+        clasifica_sudamericana=True,
+    ),
+    "Godoy Cruz": PerfilClub(
+        "Godoy Cruz",
+        (TipoObjetivo.CONSOLIDARSE, TipoObjetivo.NO_VENDER_FIGURAS),
+        exigencia=0.4,
+        escudo="godoycruz.png",
+        clasifica_sudamericana=True,
+    ),
+    "Lanús": PerfilClub(
+        "Lanús",
+        (TipoObjetivo.PELEAR_ARRIBA, TipoObjetivo.SEMIFINAL_COPA_CONTINENTAL),
+        exigencia=0.5,
+        escudo="lanus.png",
+        clasifica_sudamericana=True,
     ),
     "Quilmes": PerfilClub(
         "Quilmes",

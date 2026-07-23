@@ -85,9 +85,12 @@ class TestGenerarPoolOfertas(unittest.TestCase):
         self.fail("la Seleccion nunca aparecio en 100 pooles con reputacion 100")
 
     def test_pool_pedido_mayor_al_catalogo_no_rompe(self) -> None:
+        from manager_mode.dirigencia import CATALOGO_PERFILES_CLUB
+
         entrenador = Entrenador(nombre="Marcelo", identidad=IdentidadTactica.PRAGMATICO, reputacion=50.0)
-        ofertas = generar_pool_ofertas(entrenador, rng=random.Random(4), cantidad=100)
-        self.assertEqual(len(ofertas), 7)  # 7 perfiles no-seleccion en el catalogo
+        ofertas = generar_pool_ofertas(entrenador, rng=random.Random(4), cantidad=1000)
+        cantidad_no_seleccion = sum(1 for p in CATALOGO_PERFILES_CLUB.values() if not p.es_seleccion)
+        self.assertEqual(len(ofertas), cantidad_no_seleccion)
 
 
 if __name__ == "__main__":

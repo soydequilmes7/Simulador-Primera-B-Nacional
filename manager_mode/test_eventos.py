@@ -135,11 +135,21 @@ class TestEventoService(unittest.TestCase):
         rng = random.Random(23)
         service = EventoService(rng=rng)
         categorias_vistas = {
-            service.elegir_evento(club_clasifica_copas=True).categoria for _ in range(300)
+            service.elegir_evento(
+                club_clasifica_libertadores=True, club_clasifica_sudamericana=True,
+            ).categoria
+            for _ in range(300)
         }
         self.assertTrue(
             {CategoriaEvento.LIBERTADORES, CategoriaEvento.SUDAMERICANA} & categorias_vistas
         )
+
+    def test_solo_sudamericana_habilitada_no_saca_libertadores(self) -> None:
+        rng = random.Random(29)
+        service = EventoService(rng=rng)
+        for _ in range(300):
+            evento = service.elegir_evento(club_clasifica_sudamericana=True)
+            self.assertNotEqual(evento.categoria, CategoriaEvento.LIBERTADORES)
 
     def test_categoria_explicita_libertadores_funciona_sin_flag(self) -> None:
         evento = self.service.elegir_evento(categoria=CategoriaEvento.LIBERTADORES)

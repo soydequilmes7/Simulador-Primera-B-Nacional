@@ -28,6 +28,17 @@ class TestSimularCopaContinental(unittest.TestCase):
         with self.assertRaises(ValueError):
             simular_copa_continental(entrenador, quilmes, CopaContinental.LIBERTADORES, random.Random(1))
 
+    def test_club_solo_sudamericana_no_puede_jugar_libertadores(self) -> None:
+        entrenador = Entrenador(nombre="Marcelo", identidad=IdentidadTactica.PRAGMATICO, reputacion=60.0)
+        talleres = CATALOGO_PERFILES_CLUB["Talleres"]
+        self.assertFalse(talleres.clasifica_libertadores)
+        self.assertTrue(talleres.clasifica_sudamericana)
+        with self.assertRaises(ValueError):
+            simular_copa_continental(entrenador, talleres, CopaContinental.LIBERTADORES, random.Random(1))
+        # No lanza al pedir la copa para la que sí clasifica:
+        resultado = simular_copa_continental(entrenador, talleres, CopaContinental.SUDAMERICANA, random.Random(1))
+        self.assertIn(resultado.fase_alcanzada, FASES)
+
     def test_river_puede_salir_campeon(self) -> None:
         entrenador = Entrenador(nombre="Marcelo", identidad=IdentidadTactica.OFENSIVO, reputacion=90.0)
         river = CATALOGO_PERFILES_CLUB["River"]

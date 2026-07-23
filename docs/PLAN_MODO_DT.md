@@ -156,23 +156,31 @@ simulación aislada, más simple, con la sola chance de ganar la copa.
   (3 eventos cada una: Grupo de la Muerte / Viaje a la Altura /
   Prestigio en Juego; El Hermano Menor / Playoff de Ida y Vuelta /
   Rival Sorpresa). Total del catálogo: 51 eventos, 18 categorías.
-- `PerfilClub.clasifica_copas_internacionales`: solo True para River,
-  Boca e Independiente ("los grandes de Primera", tal cual lo pediste)
-  -- Quilmes, San Martín de Tucumán, Temperley e Instituto no clasifican.
-- `EventoService.elegir_evento(..., club_clasifica_copas=False)`:
-  las categorías LIBERTADORES/SUDAMERICANA quedan excluidas del sorteo
-  aleatorio salvo que el llamador indique que el club clasifica (o pida
-  la categoría explícitamente).
+- **Catálogo de clubes ampliado de 7 a 16** (a pedido de Pablo, para
+  que no sea solo River/Boca/Independiente): se sumó Racing, San
+  Lorenzo, Vélez, Talleres, Estudiantes, Newell's, Huracán, Godoy Cruz
+  y Lanús, todos con escudo real de `public/escudos/`.
+- `PerfilClub.clasifica_libertadores` / `clasifica_sudamericana`: dos
+  flags independientes en vez de uno solo, para reflejar que en la
+  realidad la Sudamericana tiene bastantes más cupos que la
+  Libertadores. River/Boca/Independiente/Racing/San
+  Lorenzo/Vélez clasifican a ambas; Talleres/Estudiantes/Newell's/
+  Huracán/Godoy Cruz/Lanús solo a Sudamericana; Quilmes/San Martín de
+  Tucumán/Temperley/Instituto no clasifican a ninguna (categorías
+  inferiores).
+- `EventoService.elegir_evento(..., club_clasifica_libertadores=False,
+  club_clasifica_sudamericana=False)`: cada categoría se filtra de
+  forma independiente según el club del usuario.
 - `manager_mode/copas_continentales.py`: `simular_copa_continental()`
-  tira fase por fase (grupos→octavos→cuartos→semifinal→final→campeón)
-  con probabilidad de avance según reputación del DT + exigencia del
-  club -- nunca garantizado, pero un DT de alta reputación en River
-  avanza en promedio mucho más lejos que uno de baja reputación
-  (verificado con test estadístico). `aplicar_resultado_copa()` conecta
-  el resultado con título + logro "campeon_continental" + reputación.
-- Lanza `ValueError` si se intenta simular la copa para un club que no
-  clasifica -- no hay forma de que Quilmes "gane la Libertadores" por
-  accidente en este sistema.
+  valida contra el flag correspondiente a la copa pedida (ya no un
+  solo flag genérico) -- un club puede jugar Sudamericana sin poder
+  jugar Libertadores. Tira fase por fase (grupos→octavos→cuartos→
+  semifinal→final→campeón) con probabilidad de avance según reputación
+  del DT + exigencia del club -- nunca garantizado, pero un DT de alta
+  reputación en un club grande avanza en promedio mucho más lejos
+  (verificado con test estadístico). `aplicar_resultado_copa()`
+  conecta el resultado con título + logro "campeon_continental" +
+  reputación.
 
 ## Fase 3 — Frontend cinematográfico
 
