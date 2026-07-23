@@ -38,49 +38,67 @@ BANCO_REACCIONES: dict[tuple[TipoReaccion, Intensidad], list[str]] = {
         "La prensa destacó el andar de {club} bajo tu mando.",
         "Los diarios hablan de un {club} irreconocible con {entrenador}.",
         "\"Encontró la fórmula\", tituló la prensa deportiva sobre {entrenador}.",
+        "Los cronistas más duros empiezan a rendirse ante {entrenador}.",
+        "\"Un cambio de era en {club}\", resumió un móvil deportivo.",
+        "La radio del gremio elogió el funcionamiento de {club} en la última fecha.",
     ],
     (TipoReaccion.PRENSA, Intensidad.NEUTRA): [
         "La prensa pide paciencia con el proceso de {entrenador} en {club}.",
         "Los cronistas todavía no se deciden sobre este {club}.",
+        "\"Hay que verlo en el tiempo\", tituló un diario sobre {entrenador}.",
+        "Los micrófonos esperan una racha más larga para opinar de {club}.",
     ],
     (TipoReaccion.PRENSA, Intensidad.NEGATIVA): [
         "La prensa destrozó la decisión de {entrenador}.",
         "\"Se le acaba el tiempo\", advirtieron los diarios sobre {club}.",
         "Los micrófonos ya piden la cabeza de {entrenador} tras la caída ante {rival}.",
+        "\"Sin ideas\", tituló un matutino sobre el funcionamiento de {club}.",
+        "La transmisión no perdonó ni un minuto la actuación de {club} ante {rival}.",
     ],
     (TipoReaccion.HINCHADA, Intensidad.POSITIVA): [
         "La hinchada de {club} empieza a ilusionarse en serio.",
         "Bancazo de la gente para {entrenador} después de vencer a {rival}.",
+        "Las redes explotaron de alegría tras el triunfo de {club}.",
+        "La gente ya canta el nombre de {entrenador} en la cancha.",
     ],
     (TipoReaccion.HINCHADA, Intensidad.NEUTRA): [
         "La hinchada de {club} observa con cautela.",
         "Todavía no hay veredicto de la gente sobre {entrenador}.",
+        "El clima entre los hinchas de {club} es de expectativa, sin euforia.",
     ],
     (TipoReaccion.HINCHADA, Intensidad.NEGATIVA): [
         "Los hinchas no le perdonan la derrota ante {rival}.",
         "Silbatina para {entrenador} en la salida del estadio.",
+        "Las redes de {club} se llenaron de reclamos tras el partido.",
+        "Un grupo de socios pidió la salida de {entrenador} a la salida de la cancha.",
     ],
     (TipoReaccion.VESTUARIO, Intensidad.POSITIVA): [
         "El vestuario de {club} empezó a creer en el proyecto de {entrenador}.",
         "Los referentes respaldan a {entrenador} puertas adentro.",
+        "El grupo cerró filas en torno a {entrenador} tras la seguidilla de triunfos.",
     ],
     (TipoReaccion.VESTUARIO, Intensidad.NEUTRA): [
         "El vestuario de {club} sigue el proceso sin sobresaltos.",
+        "Puertas adentro de {club} el clima es de trabajo, sin grandes definiciones.",
     ],
     (TipoReaccion.VESTUARIO, Intensidad.NEGATIVA): [
         "Rumores de quiebre en el vestuario de {club}.",
         "Algunos jugadores ya cuestionan a {entrenador} puertas adentro.",
+        "El clima interno de {club} empieza a resentirse.",
     ],
     (TipoReaccion.DIRIGENCIA, Intensidad.POSITIVA): [
         "La dirigencia de {club} quedó encantada con {entrenador}.",
         "Arriba respaldan el ciclo de {entrenador} sin condiciones.",
+        "El presidente de {club} elogió públicamente el trabajo de {entrenador}.",
     ],
     (TipoReaccion.DIRIGENCIA, Intensidad.NEUTRA): [
         "La dirigencia de {club} evalúa el proceso mes a mes.",
+        "Arriba prefieren esperar antes de sacar conclusiones sobre {entrenador}.",
     ],
     (TipoReaccion.DIRIGENCIA, Intensidad.NEGATIVA): [
         "La paciencia de la dirigencia con {entrenador} se agota.",
         "Arriba ya no ocultan su malestar con el rumbo de {club}.",
+        "Circulan versiones de una reunión de urgencia por la continuidad de {entrenador}.",
     ],
 }
 

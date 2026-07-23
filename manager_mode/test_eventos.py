@@ -9,6 +9,7 @@ from __future__ import annotations
 import random
 import unittest
 
+from manager_mode.domain import Entrenador, IdentidadTactica
 from manager_mode.eventos import (
     CATALOGO_EVENTOS,
     CategoriaEvento,
@@ -99,6 +100,29 @@ class TestEventoService(unittest.TestCase):
         evento = CATALOGO_EVENTOS["vuelo_cancelado"]
         frase = self.service.resolver_opcion(estado, evento, "aceptar", self.contexto)
         self.assertIsNone(frase)
+
+    def test_formador_ve_mas_eventos_de_juveniles_que_sin_ponderar(self) -> None:
+        formador = Entrenador(nombre="Pedro", identidad=IdentidadTactica.FORMADOR)
+        rng_ponderado = random.Random(123)
+        rng_sin_ponderar = random.Random(123)
+        service_ponderado = EventoService(rng=rng_ponderado)
+        service_sin_ponderar = EventoService(rng=rng_sin_ponderar)
+
+        n = 300
+        conteo_ponderado = sum(
+            1 for _ in range(n)
+            if service_ponderado.elegir_evento(entrenador=formador).categoria == CategoriaEvento.JUVENILES
+        )
+        conteo_sin_ponderar = sum(
+            1 for _ in range(n)
+            if service_sin_ponderar.elegir_evento().categoria == CategoriaEvento.JUVENILES
+        )
+        self.assertGreater(conteo_ponderado, conteo_sin_ponderar)
+
+    def test_elegir_evento_con_categoria_ignora_ponderacion_por_identidad(self) -> None:
+        formador = Entrenador(nombre="Pedro", identidad=IdentidadTactica.FORMADOR)
+        evento = self.service.elegir_evento(categoria=CategoriaEvento.MERCADO, entrenador=formador)
+        self.assertEqual(evento.categoria, CategoriaEvento.MERCADO)
 
 
 if __name__ == "__main__":

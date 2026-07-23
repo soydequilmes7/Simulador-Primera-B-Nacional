@@ -76,17 +76,25 @@ Hecho:
   reacción pública).
 
 Falta (siguiente incremento):
-- Ampliar el banco de frases de `narrativa.py` (hoy 2-3 por
-  combinación; conviene 8-10 antes de integrar al frontend).
-- Ponderar la frecuencia de aparición de eventos por `IdentidadTactica`
-  (ej. el Formador debería ver más eventos de Juveniles) y por momento
-  de la temporada (Clásicos/Copas en fechas específicas, no al azar
-  puro).
 - Reputación/objetivo de temporada todavía no consumen los eventos --
   falta `EvaluadorDirigenciaService` (Fase 2) para que el estado del
   club influya en continuidad y ofertas.
+- Ponderar también por momento de la temporada (Clásicos/Copas en
+  fechas específicas, no al azar puro) -- hoy solo se pondera por
+  identidad táctica.
 
-## Fase 2 — Dirigencia y ofertas
+## Fase 1 — cerrada
+
+- Banco de frases ampliado (6-8 variantes por combinación
+  tipo×intensidad en prensa/hinchada/vestuario/dirigencia).
+- `PESOS_CATEGORIA_POR_IDENTIDAD` en `evento_service.py`: cada
+  identidad táctica ve con más frecuencia ciertas categorías (Formador
+  → Juveniles, Motivador → Vestuario/Vida de Plantel, Pragmático →
+  Dirigencia, Ofensivo → Clásicos/Copas, Revolucionario →
+  Rumores/Crisis/Vida de Plantel). Solo aplica cuando se elige sin
+  categoría explícita.
+
+## Fase 2 — Dirigencia y ofertas (próxima)
 
 - Objetivos por club (ej. River: salir campeón / semifinal Libertadores;
   Quilmes: ascender / reducir deuda) y evaluación de continuidad.
