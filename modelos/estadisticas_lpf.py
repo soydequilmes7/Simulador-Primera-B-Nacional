@@ -663,7 +663,7 @@ class EstadisticasLPF(Estadisticas):
     # Losses, promotionProbabilityAtTarget) quedan intactas.
     # ------------------------------------------------------------------
     @staticmethod
-    def _texto_requisitos_descenso(equipo, r, pct_desc_promedios=0.0, pct_desc_tabla_anual=0.0):
+    def _texto_requisitos_descenso(equipo, r, pct_desc_promedios=0.0, pct_desc_tabla_anual=0.0, r_promedios=None):
         """pct_desc_promedios / pct_desc_tabla_anual: % de TODAS las
         simulaciones (no solo las que desciende) en que el equipo desciende
         específicamente por cada uno de los dos criterios del Art. 26 +
@@ -674,7 +674,18 @@ class EstadisticasLPF(Estadisticas):
         CUÁL de los dos criterios es el que más está complicando a ESE
         equipo en particular. La tabla de promedios pesa temporadas
         históricas (no solo el año en curso), así que un equipo puede estar
-        cómodo en la Tabla Anual y aun así arriesgado por promedios."""
+        cómodo en la Tabla Anual y aun así arriesgado por promedios.
+
+        r_promedios: dict de construir_requisitos_ascenso() calculado con
+        asciende_sims=evita_descenso_promedios_flags (éxito = evitar
+        PUNTUALMENTE el descenso por promedios, no cualquiera de los dos).
+        Da un objetivo de puntos en la Tabla Anual específico para ese
+        criterio, que puede ser distinto del objetivo genérico de `r`
+        cuando el criterio de promedios es más (o menos) exigente que la
+        Tabla Anual para este equipo en particular. Si no se pasa (o no
+        hay ninguna simulación exitosa de la que sacarlo), no se agrega
+        nada -- no inventamos un número.
+        """
         if r["targetPoints"] is None:
             r["summary"] = (
                 f"Según las simulaciones, {equipo} no logra evitar el descenso en "
@@ -697,11 +708,29 @@ class EstadisticasLPF(Estadisticas):
             )
         else:
             nota_criterio = ""
+
+        nota_promedios = ""
+        if r_promedios is not None and r_promedios["targetPoints"] is not None and pct_desc_promedios > 0:
+            r["targetPointsPromedios"] = r_promedios["targetPoints"]
+            r["remainingPointsPromedios"] = r_promedios["remainingPoints"]
+            r["requiredPPGPromedios"] = r_promedios["requiredPPG"]
+            r["averageWinsPromedios"] = r_promedios["averageWins"]
+            r["averageDrawsPromedios"] = r_promedios["averageDraws"]
+            r["averageLossesPromedios"] = r_promedios["averageLosses"]
+            # Solo lo mencionamos en el texto si aporta algo -- si el
+            # objetivo puntual por promedios coincide con el genérico, no
+            # hace falta un segundo número que diga lo mismo dos veces.
+            if r_promedios["targetPoints"] != r["targetPoints"]:
+                nota_promedios = (
+                    f" Puntualmente para no descender por promedios, el número que le "
+                    f"alcanza suele ser algo distinto: {r_promedios['targetPoints']} puntos "
+                    f"en la Tabla Anual (le faltan {r_promedios['remainingPoints']})."
+                )
         r["summary"] = (
             f"Según las simulaciones, {equipo} normalmente necesita llegar a los "
             f"{r['targetPoints']} puntos en la Tabla Anual para asegurarse la "
             f"permanencia. Con ese rendimiento evita el descenso en alrededor "
-            f"del {prob_texto}% de las simulaciones.{nota_criterio}"
+            f"del {prob_texto}% de las simulaciones.{nota_criterio}{nota_promedios}"
         )
         r["descensoPromediosPct"] = pct_desc_promedios
         r["descensoTablaAnualPct"] = pct_desc_tabla_anual
@@ -771,6 +800,15 @@ class EstadisticasLPF(Estadisticas):
         evita_descenso_flags = {
             nombre: np.ones(n_simulaciones, dtype=bool) for nombre in self.equipos
         }
+        # Específico del criterio de promedios (a diferencia de
+        # evita_descenso_flags, que se marca en False ante CUALQUIERA de
+        # los dos descensos) -- para poder calcular, aparte, el objetivo
+        # puntual de puntos que le hace falta a cada equipo PARA NO
+        # DESCENDER POR PROMEDIOS específicamente, que puede ser distinto
+        # del objetivo genérico (ver _texto_requisitos_descenso).
+        evita_descenso_promedios_flags = {
+            nombre: np.ones(n_simulaciones, dtype=bool) for nombre in self.equipos
+        }
         clasifica_copas_flags = {
             nombre: np.zeros(n_simulaciones, dtype=bool) for nombre in self.equipos
         }
@@ -811,6 +849,7 @@ class EstadisticasLPF(Estadisticas):
             contador[descendido_promedios_i]["descenso"] += 1
             contador[descendido_promedios_i]["descenso_promedios"] += 1
             evita_descenso_flags[descendido_promedios_i][i] = False
+            evita_descenso_promedios_flags[descendido_promedios_i][i] = False
 
             contador[descendido_anual_i]["descenso"] += 1
             contador[descendido_anual_i]["descenso_tabla_anual"] += 1
@@ -893,8 +932,20 @@ class EstadisticasLPF(Estadisticas):
             )
             pct_desc_promedios = round(100 * contador[nombre]["descenso_promedios"] / n_simulaciones, 1)
             pct_desc_tabla_anual = round(100 * contador[nombre]["descenso_tabla_anual"] / n_simulaciones, 1)
+            r_promedios = None
+            if pct_desc_promedios > 0:
+                r_promedios = construir_requisitos_ascenso(
+                    equipo=nombre,
+                    puntos_actuales=puntos_actuales_anual,
+                    partidos_restantes=partidos_restantes_por_equipo[nombre],
+                    puntos_final_sims=tabla_anual_arr["puntos"][idx],
+                    victorias_restantes_sims=clausura_tot[nombre]["victorias"],
+                    empates_restantes_sims=clausura_tot[nombre]["empates"],
+                    derrotas_restantes_sims=clausura_tot[nombre]["derrotas"],
+                    asciende_sims=evita_descenso_promedios_flags[nombre],
+                )
             self.requisitos_descenso[nombre] = self._texto_requisitos_descenso(
-                nombre, r_descenso, pct_desc_promedios, pct_desc_tabla_anual
+                nombre, r_descenso, pct_desc_promedios, pct_desc_tabla_anual, r_promedios
             )
 
             r_copas = construir_requisitos_ascenso(

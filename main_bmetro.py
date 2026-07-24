@@ -77,6 +77,8 @@ def correr_simulacion_bmetro(n_sims=1000, imprimir=True, guardar_json=True):
         "partidos_simulados": e.partidos_simulados_oficiales,
         "monte_carlo": resumen_mc.to_dict(orient="records"),
         "tabla_esperada": tabla_esperada_mc.to_dict(orient="records"),
+        "requisitos_ascenso": getattr(e, "requisitos_ascenso", {}),
+        "requisitos_descenso": getattr(e, "requisitos_descenso", {}),
         "rachas": {
             nombre: equipo.ultimos10[-5:]
             for nombre, equipo in e.equipos.items()

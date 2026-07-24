@@ -7,6 +7,7 @@ import data_access
 from modelos import equipo
 from modelos.motor_vectorizado import muestrear_marcador_dixon_coles
 from modelos.equipo import Equipo
+from modelos.promotion_requirements import construir_requisitos_ascenso
 
 class Estadisticas:
     """Motor de simulación de la Primera C. Calcado de
@@ -776,6 +777,22 @@ class Estadisticas:
 
         paso_reporte = max(1, n_simulaciones // 10)
 
+        # Flags por-simulación de "esta simulación terminó en ascenso /
+        # evitando terminar último de zona para este equipo". Se usan
+        # después del loop para armar "¿Qué necesita [Equipo]?" (ver
+        # modelos/promotion_requirements.py), igual que Nacional/LPF/B
+        # Metro. Primera C no tiene descenso tradicional (ya es la
+        # categoría más baja de AFA) -- lo más parecido es evitar el
+        # partido por la Suspensión de Afiliación que juega el último de
+        # cada zona (Boletín 6825, punto 7), por eso "requisitos_descenso"
+        # acá se llama requisitos_riesgo_ultimo.
+        asciende_flags = {
+            nombre: np.zeros(n_simulaciones, dtype=bool) for nombre in self.equipos
+        }
+        evita_ultimo_flags = {
+            nombre: np.ones(n_simulaciones, dtype=bool) for nombre in self.equipos
+        }
+
         totales_vectorizados = self._simular_fase_regular_vectorizado(n_simulaciones)
 
         for i in range(n_simulaciones):
@@ -803,14 +820,18 @@ class Estadisticas:
 
             ganador, perdedor, _ = self.jugar_final_ascenso(tablas)
             contador[ganador]["ascenso_directo"] += 1
+            asciende_flags[ganador][i] = True
 
             campeon_reducido, _ = self.jugar_reducido(tablas, perdedor)
             contador[campeon_reducido]["ascenso_reducido"] += 1
+            asciende_flags[campeon_reducido][i] = True
 
             ultimo_a = tablas["A"].iloc[-1]["equipo"]
             ultimo_b = tablas["B"].iloc[-1]["equipo"]
             contador[ultimo_a]["riesgo_ultimo"] += 1
             contador[ultimo_b]["riesgo_ultimo"] += 1
+            evita_ultimo_flags[ultimo_a][i] = False
+            evita_ultimo_flags[ultimo_b][i] = False
 
             if (i + 1) % paso_reporte == 0:
                 print(f"  {i + 1}/{n_simulaciones} simulaciones...")
@@ -848,7 +869,74 @@ class Estadisticas:
             tabla_esperada_por_zona[zona] = tabla_zona
 
         print("Monte Carlo terminado.")
+
+        # --- "¿Qué necesita [Equipo]?" (ascenso / evitar terminar
+        # último de zona): mismo mecanismo que Nacional/LPF/B Metro, a
+        # partir de los arrays por-simulación que ya calculó
+        # _simular_fase_regular_vectorizado() y de los flags armados
+        # arriba, en este mismo loop.
+        partidos_restantes_por_equipo = {nombre: 0 for nombre in self.equipos}
+        for local, visitante in self._pares_fixture():
+            partidos_restantes_por_equipo[local] += 1
+            partidos_restantes_por_equipo[visitante] += 1
+
+        self.requisitos_ascenso = {
+            nombre: construir_requisitos_ascenso(
+                equipo=nombre,
+                puntos_actuales=self.equipos[nombre].puntos,
+                partidos_restantes=partidos_restantes_por_equipo[nombre],
+                puntos_final_sims=totales_vectorizados[nombre]["puntos"],
+                victorias_restantes_sims=totales_vectorizados[nombre]["victorias"],
+                empates_restantes_sims=totales_vectorizados[nombre]["empates"],
+                derrotas_restantes_sims=totales_vectorizados[nombre]["derrotas"],
+                asciende_sims=asciende_flags[nombre],
+            )
+            for nombre in self.equipos
+        }
+        self.requisitos_riesgo_ultimo = {
+            nombre: self._texto_requisitos_riesgo_ultimo(
+                nombre,
+                construir_requisitos_ascenso(
+                    equipo=nombre,
+                    puntos_actuales=self.equipos[nombre].puntos,
+                    partidos_restantes=partidos_restantes_por_equipo[nombre],
+                    puntos_final_sims=totales_vectorizados[nombre]["puntos"],
+                    victorias_restantes_sims=totales_vectorizados[nombre]["victorias"],
+                    empates_restantes_sims=totales_vectorizados[nombre]["empates"],
+                    derrotas_restantes_sims=totales_vectorizados[nombre]["derrotas"],
+                    asciende_sims=evita_ultimo_flags[nombre],
+                ),
+            )
+            for nombre in self.equipos
+        }
+
         return resumen, tabla_esperada_por_zona
+
+    # ------------------------------------------------------------------
+    # "¿Qué necesita [Equipo] para evitar terminar último de su zona?"
+    # -- reusa construir_requisitos_ascenso() tal cual y solo reescribe
+    # el 'summary'. NO se llama "requisitos_descenso" porque Primera C
+    # no tiene descenso tradicional: el riesgo real es el partido por
+    # la Suspensión de Afiliación que juega el último de cada zona
+    # contra el rival del Torneo Promocional Amateur (Boletín 6825,
+    # punto 7, que este motor no simula).
+    # ------------------------------------------------------------------
+    @staticmethod
+    def _texto_requisitos_riesgo_ultimo(equipo, r):
+        if r["targetPoints"] is None:
+            r["summary"] = (
+                f"Según las simulaciones, {equipo} no logra evitar terminar último "
+                f"de su zona en ninguno de los escenarios simulados esta temporada."
+            )
+            return r
+        prob_texto = int(round(r["promotionProbabilityAtTarget"]))
+        r["summary"] = (
+            f"Según las simulaciones, {equipo} normalmente necesita llegar a los "
+            f"{r['targetPoints']} puntos para no terminar último de su zona. Con ese "
+            f"rendimiento evita el partido por la Suspensión de Afiliación en "
+            f"alrededor del {prob_texto}% de las simulaciones."
+        )
+        return r
 
     K_REGRESION_GOLEADOR = 4  # "partidos virtuales" de peso hacia el ritmo promedio de goleador
     PROB_DISPONIBLE = 0.85    # probabilidad genérica de que un jugador esté disponible en un partido dado

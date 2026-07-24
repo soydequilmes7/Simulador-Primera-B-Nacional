@@ -8796,6 +8796,8 @@ function buildTeamIndexPrimeraC(){
     const mc = DATA_PRIMERAC.monte_carlo[zona];
     const esperada = DATA_PRIMERAC.tabla_esperada[zona];
     const rachasZona = (DATA_PRIMERAC.rachas && DATA_PRIMERAC.rachas[zona]) || {};
+    const reqAscenso = DATA_PRIMERAC.requisitos_ascenso || {};
+    const reqRiesgoUltimo = DATA_PRIMERAC.requisitos_riesgo_ultimo || {};
     actual.forEach((f, i) => {
       const mcRow = mc.find(m => m.equipo === f.equipo) || {};
       const espRow = esperada.find(e => e.equipo === f.equipo) || {};
@@ -8810,6 +8812,8 @@ function buildTeamIndexPrimeraC(){
         riesgo_ultimo: mcRow['riesgo_ultimo'] ?? 0,
         puntos_prom: espRow['puntos_prom'] ?? '—',
         posicion_prom: espRow['posicion_prom'] ?? '—',
+        requisitos_ascenso: reqAscenso[f.equipo] || null,
+        requisitos_riesgo_ultimo: reqRiesgoUltimo[f.equipo] || null,
         ultimos5
       };
     });
@@ -8821,6 +8825,101 @@ function poblarDatalistPrimeraC(index){
   const dl = document.getElementById('team-list-primerac');
   if (!dl) return;
   dl.innerHTML = Object.keys(index).sort().map(nombre => `<option value="${nombre}">`).join('');
+}
+
+// "¿Qué necesita [Equipo]?" para Primera C -- mismo mecanismo que
+// renderRequisitosAscenso (Nacional). Primera C NO tiene descenso
+// tradicional (ya es la categoría más baja de AFA); en cambio, el
+// último de cada zona juega el partido por la Suspensión de Afiliación
+// (Boletín 6825, punto 7) -- por eso el segundo bloque se llama
+// "evitar terminar último" y no "evitar el descenso" (ver
+// modelos/estadisticas_primerac.py, requisitos_riesgo_ultimo).
+function renderRequisitosAscensoPrimeraC(t){
+  const r = t.requisitos_ascenso;
+  const nombre = nombreMostrable(t.equipo);
+
+  if (!r){
+    return `
+      <div class="tc-req">
+        <div class="tc-mc-title">🎯 ¿Qué necesita ${nombre} para ascender?</div>
+        <p class="tc-req-vacio">Todavía no hay datos suficientes de las simulaciones para este equipo.</p>
+      </div>
+    `;
+  }
+
+  if (r.targetPoints === null){
+    return `
+      <div class="tc-req">
+        <div class="tc-mc-title">🎯 ¿Qué necesita ${nombre} para ascender?</div>
+        <p class="tc-req-vacio">${r.summary}</p>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="tc-req">
+      <div class="tc-mc-title">🎯 ¿Qué necesita ${nombre} para ascender?</div>
+      <div class="tc-req-metas">
+        <div class="tc-req-meta"><div class="v">${r.targetPoints}</div><div class="l">Objetivo recomendado</div></div>
+        <div class="tc-req-meta"><div class="v">${r.currentPoints}</div><div class="l">Actualmente</div></div>
+        <div class="tc-req-meta"><div class="v">${r.remainingPoints}</div><div class="l">Restan</div></div>
+      </div>
+      <div class="tc-req-sep"></div>
+      <p class="tc-req-texto">Quedan ${r.matchesRemaining} partido${r.matchesRemaining === 1 ? '' : 's'}. Para alcanzar ese objetivo necesita sumar aproximadamente:</p>
+      <div class="tc-req-combo">
+        <span class="tc-req-pill v">🟢 ${r.averageWins} victoria${r.averageWins === 1 ? '' : 's'}</span>
+        <span class="tc-req-pill e">🟡 ${r.averageDraws} empate${r.averageDraws === 1 ? '' : 's'}</span>
+        <span class="tc-req-pill d">🔴 ${r.averageLosses} derrota${r.averageLosses === 1 ? '' : 's'}</span>
+      </div>
+      <p class="tc-req-ppg">Promedio necesario: <b>${r.requiredPPG.toFixed(2)}</b> puntos por partido</p>
+      <div class="tc-req-sep"></div>
+      <p class="tc-req-resumen">${r.summary}</p>
+    </div>
+  `;
+}
+
+function renderRequisitosRiesgoUltimoPrimeraC(t){
+  const r = t.requisitos_riesgo_ultimo;
+  const nombre = nombreMostrable(t.equipo);
+
+  if (!r){
+    return `
+      <div class="tc-req">
+        <div class="tc-mc-title">🛡️ ¿Qué necesita ${nombre} para no terminar último?</div>
+        <p class="tc-req-vacio">Todavía no hay datos suficientes de las simulaciones para este equipo.</p>
+      </div>
+    `;
+  }
+
+  if (r.targetPoints === null){
+    return `
+      <div class="tc-req">
+        <div class="tc-mc-title">🛡️ ¿Qué necesita ${nombre} para no terminar último?</div>
+        <p class="tc-req-vacio">${r.summary}</p>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="tc-req">
+      <div class="tc-mc-title">🛡️ ¿Qué necesita ${nombre} para no terminar último?</div>
+      <div class="tc-req-metas">
+        <div class="tc-req-meta"><div class="v">${r.targetPoints}</div><div class="l">Objetivo recomendado</div></div>
+        <div class="tc-req-meta"><div class="v">${r.currentPoints}</div><div class="l">Actualmente</div></div>
+        <div class="tc-req-meta"><div class="v">${r.remainingPoints}</div><div class="l">Restan</div></div>
+      </div>
+      <div class="tc-req-sep"></div>
+      <p class="tc-req-texto">Quedan ${r.matchesRemaining} partido${r.matchesRemaining === 1 ? '' : 's'}. Para alcanzar ese objetivo necesita sumar aproximadamente:</p>
+      <div class="tc-req-combo">
+        <span class="tc-req-pill v">🟢 ${r.averageWins} victoria${r.averageWins === 1 ? '' : 's'}</span>
+        <span class="tc-req-pill e">🟡 ${r.averageDraws} empate${r.averageDraws === 1 ? '' : 's'}</span>
+        <span class="tc-req-pill d">🔴 ${r.averageLosses} derrota${r.averageLosses === 1 ? '' : 's'}</span>
+      </div>
+      <p class="tc-req-ppg">Promedio necesario: <b>${r.requiredPPG.toFixed(2)}</b> puntos por partido</p>
+      <div class="tc-req-sep"></div>
+      <p class="tc-req-resumen">${r.summary}</p>
+    </div>
+  `;
 }
 
 function renderTeamCardPrimeraC(t){
@@ -8846,6 +8945,8 @@ function renderTeamCardPrimeraC(t){
         <div class="mc-bar-fill reducido" style="left:${t.ascenso_directo}%; width:${t.ascenso_reducido}%; background:${zoneColor}"></div>
       </div>
       <div class="tc-pos">Posición final promedio: <b>${t.posicion_prom}°</b> — Puntos promedio: <b>${t.puntos_prom}</b></div>
+      ${renderRequisitosAscensoPrimeraC(t)}
+      ${renderRequisitosRiesgoUltimoPrimeraC(t)}
       <div class="tc-racha">
         <div class="tc-racha-title">Últimos partidos</div>
         ${renderRacha(t.ultimos5)}
@@ -9903,6 +10004,8 @@ function buildTeamIndexBMetro(){
   const mc = DATA_BMETRO.monte_carlo || [];
   const esperada = DATA_BMETRO.tabla_esperada || [];
   const rachas = DATA_BMETRO.rachas || {};
+  const reqAscenso = DATA_BMETRO.requisitos_ascenso || {};
+  const reqDescenso = DATA_BMETRO.requisitos_descenso || {};
   const nDesc = DATA_BMETRO.descensos_n || 2;
   const nRed = DATA_BMETRO.reducido_n || 9;
   actual.forEach((f, i) => {
@@ -9924,6 +10027,8 @@ function buildTeamIndexBMetro(){
       descenso: mcRow['descenso'] ?? 0,
       puntos_prom: espRow['puntos_prom'] ?? '—',
       posicion_prom: espRow['posicion_prom'] ?? '—',
+      requisitos_ascenso: reqAscenso[f.equipo] || null,
+      requisitos_descenso: reqDescenso[f.equipo] || null,
       ultimos5
     };
   });
@@ -9942,6 +10047,98 @@ const BADGE_ESTADO_BMETRO = {
   descenso: { bg: 'var(--danger-dim)',  color: 'var(--danger)', label: 'ZONA DESCENSO', accent: 'var(--danger)' },
   medio:    { bg: 'var(--line)',        color: 'var(--muted)',  label: 'MITAD DE TABLA', accent: 'var(--zone-a)' },
 };
+
+// "¿Qué necesita [Equipo]?" para B Metro -- mismo mecanismo que
+// renderRequisitosAscenso (Nacional) y renderRequisitosDescensoLPF,
+// leyendo t.requisitos_ascenso / t.requisitos_descenso (armados 100% en
+// el backend, ver modelos/estadisticas_bmetro.py).
+function renderRequisitosAscensoBMetro(t){
+  const r = t.requisitos_ascenso;
+  const nombre = nombreMostrable(t.equipo);
+
+  if (!r){
+    return `
+      <div class="tc-req">
+        <div class="tc-mc-title">🎯 ¿Qué necesita ${nombre} para ascender?</div>
+        <p class="tc-req-vacio">Todavía no hay datos suficientes de las simulaciones para este equipo.</p>
+      </div>
+    `;
+  }
+
+  if (r.targetPoints === null){
+    return `
+      <div class="tc-req">
+        <div class="tc-mc-title">🎯 ¿Qué necesita ${nombre} para ascender?</div>
+        <p class="tc-req-vacio">${r.summary}</p>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="tc-req">
+      <div class="tc-mc-title">🎯 ¿Qué necesita ${nombre} para ascender?</div>
+      <div class="tc-req-metas">
+        <div class="tc-req-meta"><div class="v">${r.targetPoints}</div><div class="l">Objetivo recomendado</div></div>
+        <div class="tc-req-meta"><div class="v">${r.currentPoints}</div><div class="l">Actualmente</div></div>
+        <div class="tc-req-meta"><div class="v">${r.remainingPoints}</div><div class="l">Restan</div></div>
+      </div>
+      <div class="tc-req-sep"></div>
+      <p class="tc-req-texto">Quedan ${r.matchesRemaining} partido${r.matchesRemaining === 1 ? '' : 's'}. Para alcanzar ese objetivo necesita sumar aproximadamente:</p>
+      <div class="tc-req-combo">
+        <span class="tc-req-pill v">🟢 ${r.averageWins} victoria${r.averageWins === 1 ? '' : 's'}</span>
+        <span class="tc-req-pill e">🟡 ${r.averageDraws} empate${r.averageDraws === 1 ? '' : 's'}</span>
+        <span class="tc-req-pill d">🔴 ${r.averageLosses} derrota${r.averageLosses === 1 ? '' : 's'}</span>
+      </div>
+      <p class="tc-req-ppg">Promedio necesario: <b>${r.requiredPPG.toFixed(2)}</b> puntos por partido</p>
+      <div class="tc-req-sep"></div>
+      <p class="tc-req-resumen">${r.summary}</p>
+    </div>
+  `;
+}
+
+function renderRequisitosDescensoBMetro(t){
+  const r = t.requisitos_descenso;
+  const nombre = nombreMostrable(t.equipo);
+
+  if (!r){
+    return `
+      <div class="tc-req">
+        <div class="tc-mc-title">🛡️ ¿Qué necesita ${nombre} para evitar el descenso?</div>
+        <p class="tc-req-vacio">Todavía no hay datos suficientes de las simulaciones para este equipo.</p>
+      </div>
+    `;
+  }
+
+  if (r.targetPoints === null){
+    return `
+      <div class="tc-req">
+        <div class="tc-mc-title">🛡️ ¿Qué necesita ${nombre} para evitar el descenso?</div>
+        <p class="tc-req-vacio">${r.summary}</p>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="tc-req">
+      <div class="tc-mc-title">🛡️ ¿Qué necesita ${nombre} para evitar el descenso?</div>
+      <div class="tc-req-metas">
+        <div class="tc-req-meta"><div class="v">${r.targetPoints}</div><div class="l">Objetivo recomendado</div></div>
+        <div class="tc-req-meta"><div class="v">${r.currentPoints}</div><div class="l">Actualmente</div></div>
+        <div class="tc-req-meta"><div class="v">${r.remainingPoints}</div><div class="l">Restan</div></div>
+      </div>
+      <div class="tc-req-sep"></div>
+      <p class="tc-req-texto">Quedan ${r.matchesRemaining} partido${r.matchesRemaining === 1 ? '' : 's'}. Para alcanzar ese objetivo necesita sumar aproximadamente:</p>
+      <div class="tc-req-combo">
+        <span class="tc-req-pill v">🟢 ${r.averageWins} victoria${r.averageWins === 1 ? '' : 's'}</span>
+        <span class="tc-req-pill e">🟡 ${r.averageDraws} empate${r.averageDraws === 1 ? '' : 's'}</span>
+        <span class="tc-req-pill d">🔴 ${r.averageLosses} derrota${r.averageLosses === 1 ? '' : 's'}</span>
+      </div>
+      <p class="tc-req-ppg">Promedio necesario: <b>${r.requiredPPG.toFixed(2)}</b> puntos por partido</p>
+      <div class="tc-req-sep"></div>
+      <p class="tc-req-resumen">${r.summary}</p>
+    </div>
+  `;
+}
 
 function renderTeamCardBMetro(t){
   const badge = BADGE_ESTADO_BMETRO[t.estado] || BADGE_ESTADO_BMETRO.medio;
@@ -9965,6 +10162,8 @@ function renderTeamCardBMetro(t){
         <div class="mc-bar-fill reducido" style="left:${t.puntero}%; width:${t.ascenso_reducido}%; background:${badge.accent}"></div>
       </div>
       <div class="tc-pos">Posición final promedio: <b>${t.posicion_prom}°</b> — Puntos promedio: <b>${t.puntos_prom}</b></div>
+      ${renderRequisitosAscensoBMetro(t)}
+      ${renderRequisitosDescensoBMetro(t)}
       <div class="tc-racha">
         <div class="tc-racha-title">Últimos partidos</div>
         ${renderRacha(t.ultimos5)}

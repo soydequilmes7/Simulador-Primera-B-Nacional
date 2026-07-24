@@ -41,6 +41,7 @@ import pandas as pd
 import data_access
 import rutas
 from modelos.estadisticas import Estadisticas
+from modelos.promotion_requirements import construir_requisitos_ascenso
 
 
 class EstadisticasBMetro(Estadisticas):
@@ -200,6 +201,18 @@ class EstadisticasBMetro(Estadisticas):
 
         paso_reporte = max(1, n_simulaciones // 10)
 
+        # Flags por-simulación de "esta simulación terminó en ascenso /
+        # evitando el descenso para este equipo". Se usan después del
+        # loop, sin volver a simular nada, para armar "¿Qué necesita
+        # [Equipo]?" (ver modelos/promotion_requirements.py), igual que
+        # Nacional y LPF.
+        asciende_flags = {
+            nombre: np.zeros(n_simulaciones, dtype=bool) for nombre in self.equipos
+        }
+        evita_descenso_flags = {
+            nombre: np.ones(n_simulaciones, dtype=bool) for nombre in self.equipos
+        }
+
         totales_vectorizados = self._simular_fase_regular_vectorizado(n_simulaciones)
 
         for i in range(n_simulaciones):
@@ -223,13 +236,16 @@ class EstadisticasBMetro(Estadisticas):
             puntero = self.obtener_puntero(tabla_unica)
             contador[puntero]["puntero"] += 1
             contador[puntero]["ascenso_directo"] += 1
+            asciende_flags[puntero][i] = True
 
             campeon_reducido, _ = self.jugar_reducido_bmetro(tabla_unica)
             contador[campeon_reducido]["ascenso_reducido"] += 1
+            asciende_flags[campeon_reducido][i] = True
 
             descendidos = tabla_unica.iloc[-self.DESCENSOS_N:]["equipo"].tolist()
             for descendido in descendidos:
                 contador[descendido]["descenso"] += 1
+                evita_descenso_flags[descendido][i] = False
 
             if (i + 1) % paso_reporte == 0:
                 print(f"  {i + 1}/{n_simulaciones} simulaciones...")
@@ -258,5 +274,70 @@ class EstadisticasBMetro(Estadisticas):
         tabla_esperada = pd.DataFrame(filas_tabla).sort_values("posicion_prom").reset_index(drop=True)
         tabla_esperada.index = tabla_esperada.index + 1
 
+        # --- "¿Qué necesita [Equipo]?" (ascenso / descenso): igual que
+        # Nacional (requisitos_ascenso) y LPF (requisitos_descenso), a
+        # partir de los arrays por-simulación que ya calculó
+        # _simular_fase_regular_vectorizado() y de los flags armados
+        # arriba en este mismo loop -- sin volver a correr Monte Carlo.
+        partidos_restantes_por_equipo = {nombre: 0 for nombre in self.equipos}
+        for local, visitante in self._pares_fixture():
+            partidos_restantes_por_equipo[local] += 1
+            partidos_restantes_por_equipo[visitante] += 1
+
+        self.requisitos_ascenso = {
+            nombre: construir_requisitos_ascenso(
+                equipo=nombre,
+                puntos_actuales=self.equipos[nombre].puntos,
+                partidos_restantes=partidos_restantes_por_equipo[nombre],
+                puntos_final_sims=totales_vectorizados[nombre]["puntos"],
+                victorias_restantes_sims=totales_vectorizados[nombre]["victorias"],
+                empates_restantes_sims=totales_vectorizados[nombre]["empates"],
+                derrotas_restantes_sims=totales_vectorizados[nombre]["derrotas"],
+                asciende_sims=asciende_flags[nombre],
+            )
+            for nombre in self.equipos
+        }
+        self.requisitos_descenso = {
+            nombre: self._texto_requisitos_descenso(
+                nombre,
+                construir_requisitos_ascenso(
+                    equipo=nombre,
+                    puntos_actuales=self.equipos[nombre].puntos,
+                    partidos_restantes=partidos_restantes_por_equipo[nombre],
+                    puntos_final_sims=totales_vectorizados[nombre]["puntos"],
+                    victorias_restantes_sims=totales_vectorizados[nombre]["victorias"],
+                    empates_restantes_sims=totales_vectorizados[nombre]["empates"],
+                    derrotas_restantes_sims=totales_vectorizados[nombre]["derrotas"],
+                    asciende_sims=evita_descenso_flags[nombre],
+                ),
+            )
+            for nombre in self.equipos
+        }
+
         print("Monte Carlo B Metropolitana terminado.")
         return resumen, tabla_esperada
+
+    # ------------------------------------------------------------------
+    # "¿Qué necesita [Equipo] para evitar el descenso?" -- reusa
+    # construir_requisitos_ascenso() tal cual (targetPoints/requiredPPG/
+    # etc. son genéricos) y solo reescribe el 'summary', que por defecto
+    # habla de "ascenso". B Metro desciende por tabla de posiciones nomás
+    # (no usa promedios como LPF/Nacional -- ver el docstring de la
+    # clase), así que acá no hace falta ningún desglose de criterio.
+    # ------------------------------------------------------------------
+    @staticmethod
+    def _texto_requisitos_descenso(equipo, r):
+        if r["targetPoints"] is None:
+            r["summary"] = (
+                f"Según las simulaciones, {equipo} no logra evitar el descenso en "
+                f"ninguno de los escenarios simulados esta temporada."
+            )
+            return r
+        prob_texto = int(round(r["promotionProbabilityAtTarget"]))
+        r["summary"] = (
+            f"Según las simulaciones, {equipo} normalmente necesita llegar a los "
+            f"{r['targetPoints']} puntos para asegurarse la permanencia. Con ese "
+            f"rendimiento evita el descenso en alrededor del {prob_texto}% de las "
+            f"simulaciones."
+        )
+        return r

@@ -127,6 +127,8 @@ def correr_simulacion(n_sims=1000, imprimir=True, guardar_json=True):
             "B": tabla_esperada_mc["B"].to_dict(orient="records")
         },
         "goleadores": goleadores_df.head(20).to_dict(orient="records"),
+        "requisitos_ascenso": getattr(estadisticas_obj, "requisitos_ascenso", {}),
+        "requisitos_riesgo_ultimo": getattr(estadisticas_obj, "requisitos_riesgo_ultimo", {}),
         "rachas": {
             zona: {
                 nombre: equipo_obj.ultimos10[-5:]
