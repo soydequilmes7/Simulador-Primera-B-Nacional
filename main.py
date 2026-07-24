@@ -143,6 +143,7 @@ def correr_simulacion(n_sims=1000, imprimir=True, guardar_json=True):
         # exitosas (ver modelos/promotion_requirements.py). El frontend
         # solo lo renderiza, no recalcula nada.
         "requisitos_ascenso": estadisticas_obj.requisitos_ascenso,
+        "requisitos_descenso": getattr(estadisticas_obj, "requisitos_descenso", {}),
         "tabla_esperada": {
             "A": tabla_esperada_mc["A"].to_dict(orient="records"),
             "B": tabla_esperada_mc["B"].to_dict(orient="records")

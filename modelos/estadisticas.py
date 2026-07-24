@@ -803,12 +803,16 @@ class Estadisticas:
 
         paso_reporte = max(1, n_simulaciones // 10)
 
-        # Flags por-simulación de "esta simulación terminó en ascenso para
-        # este equipo" (directo o por Reducido). Se usan después del loop,
-        # sin volver a simular nada, para armar "¿Qué necesita [Equipo]?"
-        # (ver modelos/promotion_requirements.py).
+        # Flags por-simulación de "esta simulación terminó en ascenso /
+        # evitando el descenso para este equipo" (directo o por
+        # Reducido). Se usan después del loop, sin volver a simular
+        # nada, para armar "¿Qué necesita [Equipo]?" (ver
+        # modelos/promotion_requirements.py).
         asciende_flags = {
             nombre: np.zeros(n_simulaciones, dtype=bool) for nombre in self.equipos
+        }
+        evita_descenso_flags = {
+            nombre: np.ones(n_simulaciones, dtype=bool) for nombre in self.equipos
         }
 
         # Resuelve TODOS los partidos pendientes de TODAS las simulaciones
@@ -861,6 +865,7 @@ class Estadisticas:
             descendidos_b = tablas["B"].iloc[-2:]["equipo"].tolist()
             for descendido in descendidos_a + descendidos_b:
                 contador[descendido]["descenso"] += 1
+                evita_descenso_flags[descendido][i] = False
 
             if (i + 1) % paso_reporte == 0:
                 print(f"  {i + 1}/{n_simulaciones} simulaciones...")
@@ -924,9 +929,49 @@ class Estadisticas:
             )
             for nombre in self.equipos
         }
+        self.requisitos_descenso = {
+            nombre: self._texto_requisitos_descenso(
+                nombre,
+                construir_requisitos_ascenso(
+                    equipo=nombre,
+                    puntos_actuales=self.equipos[nombre].puntos,
+                    partidos_restantes=partidos_restantes_por_equipo[nombre],
+                    puntos_final_sims=totales_vectorizados[nombre]["puntos"],
+                    victorias_restantes_sims=totales_vectorizados[nombre]["victorias"],
+                    empates_restantes_sims=totales_vectorizados[nombre]["empates"],
+                    derrotas_restantes_sims=totales_vectorizados[nombre]["derrotas"],
+                    asciende_sims=evita_descenso_flags[nombre],
+                ),
+            )
+            for nombre in self.equipos
+        }
 
         print("Monte Carlo terminado.")
         return resumen, tabla_esperada_por_zona
+
+    # ------------------------------------------------------------------
+    # "¿Qué necesita [Equipo] para evitar el descenso?" -- reusa
+    # construir_requisitos_ascenso() tal cual (targetPoints/requiredPPG/
+    # etc. son genéricos) y solo reescribe el 'summary', que por defecto
+    # habla de "ascenso". Nacional desciende por tabla de posiciones de
+    # zona nomás (2 por zona, sin promedios), mismo criterio que B Metro.
+    # ------------------------------------------------------------------
+    @staticmethod
+    def _texto_requisitos_descenso(equipo, r):
+        if r["targetPoints"] is None:
+            r["summary"] = (
+                f"Según las simulaciones, {equipo} no logra evitar el descenso en "
+                f"ninguno de los escenarios simulados esta temporada."
+            )
+            return r
+        prob_texto = int(round(r["promotionProbabilityAtTarget"]))
+        r["summary"] = (
+            f"Según las simulaciones, {equipo} normalmente necesita llegar a los "
+            f"{r['targetPoints']} puntos para asegurarse la permanencia. Con ese "
+            f"rendimiento evita el descenso en alrededor del {prob_texto}% de las "
+            f"simulaciones."
+        )
+        return r
     
     K_REGRESION_GOLEADOR = 4  # "partidos virtuales" de peso hacia el ritmo promedio de goleador
 
