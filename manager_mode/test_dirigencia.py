@@ -10,8 +10,11 @@ import random
 import unittest
 
 from manager_mode.dirigencia import (
+    BANCO_CONTINUIDAD,
+    BANCO_DECISION_DT,
     CATALOGO_PERFILES_CLUB,
     DecisionContinuidad,
+    DecisionDT,
     EvaluadorDirigenciaService,
     ResultadoTemporada,
     TipoObjetivo,
@@ -128,6 +131,36 @@ class TestEvaluadorDirigenciaService(unittest.TestCase):
         self.assertTrue(entrenador.libre)
         self.assertEqual(entrenador.historial_clubes, [1])
         self.assertEqual(entrenador.reputacion, 40.0)
+
+
+class TestBancosDialogo(unittest.TestCase):
+    """Cubre BANCO_CONTINUIDAD/BANCO_DECISION_DT: diálogos argentinizados
+    de fin de temporada, agregados a pedido de Pablo (nada de comunicado
+    institucional acartonado)."""
+
+    def test_las_3_decisiones_tienen_banco_no_vacio(self) -> None:
+        for decision in DecisionContinuidad:
+            self.assertIn(decision, BANCO_CONTINUIDAD)
+            self.assertGreater(len(BANCO_CONTINUIDAD[decision]), 0)
+
+    def test_frases_de_continuidad_interpolan_sin_romper(self) -> None:
+        contexto = {"club": "Quilmes", "entrenador": "Marcelo Bielsa Jr."}
+        for decision, frases in BANCO_CONTINUIDAD.items():
+            for frase in frases:
+                resultado = frase.format(**contexto)
+                self.assertNotIn("{", resultado)
+
+    def test_las_2_decisiones_dt_tienen_banco_no_vacio(self) -> None:
+        for decision in DecisionDT:
+            self.assertIn(decision, BANCO_DECISION_DT)
+            self.assertGreater(len(BANCO_DECISION_DT[decision]), 0)
+
+    def test_frases_de_decision_dt_interpolan_sin_romper(self) -> None:
+        contexto = {"club": "Quilmes", "entrenador": "Marcelo Bielsa Jr."}
+        for decision, frases in BANCO_DECISION_DT.items():
+            for frase in frases:
+                resultado = frase.format(**contexto)
+                self.assertNotIn("{", resultado)
 
 
 if __name__ == "__main__":

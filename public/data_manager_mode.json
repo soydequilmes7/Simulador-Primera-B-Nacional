@@ -2071,6 +2071,58 @@
           ]
         }
       ]
+    },
+    {
+      "codigo": "el_que_se_zarpa",
+      "categoria": "vida_plantel",
+      "titulo": "El Que Se Zarpa",
+      "descripcion": "En la cena de fin de año del club, uno de los jugadores se pasó de la raya tirándole onda a tu mujer delante de todo el mundo. El plantel entero ya se enteró y espera ver qué hacés.",
+      "opciones": [
+        {
+          "codigo": "hablarlo_en_privado",
+          "texto": "Hablarlo con él a solas, sin quilombo",
+          "intensidad": "positiva",
+          "tipoReaccion": null,
+          "efectos": [
+            {
+              "variable": "vestuario",
+              "delta": 2
+            },
+            {
+              "variable": "moral",
+              "delta": 1
+            }
+          ]
+        },
+        {
+          "codigo": "hacerse_el_boludo",
+          "texto": "Hacerte el boludo y mirar para otro lado",
+          "intensidad": "negativa",
+          "tipoReaccion": null,
+          "efectos": [
+            {
+              "variable": "moral",
+              "delta": -4
+            }
+          ]
+        },
+        {
+          "codigo": "cagarlo_a_pedos",
+          "texto": "Cagarlo a pedos delante de todo el plantel",
+          "intensidad": "negativa",
+          "tipoReaccion": "prensa",
+          "efectos": [
+            {
+              "variable": "vestuario",
+              "delta": -5
+            },
+            {
+              "variable": "hinchada",
+              "delta": 2
+            }
+          ]
+        }
+      ]
     }
   ],
   "reacciones": {
@@ -2157,5 +2209,282 @@
       "{club} TOCA FONDO",
       "SE ACABÓ LA PACIENCIA CON {entrenador}"
     ]
-  }
+  },
+  "clubes": [
+    {
+      "nombre": "River",
+      "escudo": "river.png",
+      "division": "Liga Profesional",
+      "exigencia": 0.9,
+      "esSeleccion": false,
+      "clasificaLibertadores": true,
+      "clasificaSudamericana": true,
+      "objetivosPosibles": [
+        "salir_campeon",
+        "semifinal_copa_continental",
+        "promover_juveniles"
+      ]
+    },
+    {
+      "nombre": "Boca",
+      "escudo": "boca.png",
+      "division": "Liga Profesional",
+      "exigencia": 0.85,
+      "esSeleccion": false,
+      "clasificaLibertadores": true,
+      "clasificaSudamericana": true,
+      "objetivosPosibles": [
+        "salir_campeon",
+        "pelear_arriba"
+      ]
+    },
+    {
+      "nombre": "Independiente",
+      "escudo": "independiente.png",
+      "division": "Liga Profesional",
+      "exigencia": 0.75,
+      "esSeleccion": false,
+      "clasificaLibertadores": true,
+      "clasificaSudamericana": true,
+      "objetivosPosibles": [
+        "salir_campeon",
+        "semifinal_copa_continental"
+      ]
+    },
+    {
+      "nombre": "Racing",
+      "escudo": "racing.png",
+      "division": "Liga Profesional",
+      "exigencia": 0.7,
+      "esSeleccion": false,
+      "clasificaLibertadores": true,
+      "clasificaSudamericana": true,
+      "objetivosPosibles": [
+        "salir_campeon",
+        "semifinal_copa_continental",
+        "pelear_arriba"
+      ]
+    },
+    {
+      "nombre": "San Lorenzo",
+      "escudo": "sanlorenzo.png",
+      "division": "Liga Profesional",
+      "exigencia": 0.65,
+      "esSeleccion": false,
+      "clasificaLibertadores": true,
+      "clasificaSudamericana": true,
+      "objetivosPosibles": [
+        "pelear_arriba",
+        "semifinal_copa_continental"
+      ]
+    },
+    {
+      "nombre": "Vélez",
+      "escudo": "velez.png",
+      "division": "Liga Profesional",
+      "exigencia": 0.6,
+      "esSeleccion": false,
+      "clasificaLibertadores": true,
+      "clasificaSudamericana": true,
+      "objetivosPosibles": [
+        "pelear_arriba",
+        "promover_juveniles"
+      ]
+    },
+    {
+      "nombre": "Talleres",
+      "escudo": "talleres.png",
+      "division": "Liga Profesional",
+      "exigencia": 0.55,
+      "esSeleccion": false,
+      "clasificaLibertadores": false,
+      "clasificaSudamericana": true,
+      "objetivosPosibles": [
+        "pelear_arriba",
+        "no_vender_figuras"
+      ]
+    },
+    {
+      "nombre": "Estudiantes",
+      "escudo": "estudiantes.png",
+      "division": "Liga Profesional",
+      "exigencia": 0.6,
+      "esSeleccion": false,
+      "clasificaLibertadores": false,
+      "clasificaSudamericana": true,
+      "objetivosPosibles": [
+        "pelear_arriba",
+        "semifinal_copa_continental"
+      ]
+    },
+    {
+      "nombre": "Newell's Old Boys",
+      "escudo": "newells.png",
+      "division": "Liga Profesional",
+      "exigencia": 0.5,
+      "esSeleccion": false,
+      "clasificaLibertadores": false,
+      "clasificaSudamericana": true,
+      "objetivosPosibles": [
+        "pelear_arriba",
+        "no_vender_figuras"
+      ]
+    },
+    {
+      "nombre": "Huracán",
+      "escudo": "huracan.png",
+      "division": "Liga Profesional",
+      "exigencia": 0.45,
+      "esSeleccion": false,
+      "clasificaLibertadores": false,
+      "clasificaSudamericana": true,
+      "objetivosPosibles": [
+        "pelear_arriba",
+        "consolidarse"
+      ]
+    },
+    {
+      "nombre": "Godoy Cruz",
+      "escudo": "godoycruz.png",
+      "division": "Liga Profesional",
+      "exigencia": 0.4,
+      "esSeleccion": false,
+      "clasificaLibertadores": false,
+      "clasificaSudamericana": true,
+      "objetivosPosibles": [
+        "consolidarse",
+        "no_vender_figuras"
+      ]
+    },
+    {
+      "nombre": "Lanús",
+      "escudo": "lanus.png",
+      "division": "Liga Profesional",
+      "exigencia": 0.5,
+      "esSeleccion": false,
+      "clasificaLibertadores": false,
+      "clasificaSudamericana": true,
+      "objetivosPosibles": [
+        "pelear_arriba",
+        "semifinal_copa_continental"
+      ]
+    },
+    {
+      "nombre": "Quilmes",
+      "escudo": "quilmes.png",
+      "division": "Primera Nacional",
+      "exigencia": 0.4,
+      "esSeleccion": false,
+      "clasificaLibertadores": false,
+      "clasificaSudamericana": false,
+      "objetivosPosibles": [
+        "ascender",
+        "reducir_deuda"
+      ]
+    },
+    {
+      "nombre": "San Martín de Tucumán",
+      "escudo": "sanmartintuc.png",
+      "division": "Primera Nacional",
+      "exigencia": 0.5,
+      "esSeleccion": false,
+      "clasificaLibertadores": false,
+      "clasificaSudamericana": false,
+      "objetivosPosibles": [
+        "pelear_arriba",
+        "no_vender_figuras"
+      ]
+    },
+    {
+      "nombre": "Temperley",
+      "escudo": "temperley.png",
+      "division": "Primera Nacional",
+      "exigencia": 0.3,
+      "esSeleccion": false,
+      "clasificaLibertadores": false,
+      "clasificaSudamericana": false,
+      "objetivosPosibles": [
+        "consolidarse"
+      ]
+    },
+    {
+      "nombre": "Instituto",
+      "escudo": "instituto.png",
+      "division": "Primera C",
+      "exigencia": 0.25,
+      "esSeleccion": false,
+      "clasificaLibertadores": false,
+      "clasificaSudamericana": false,
+      "objetivosPosibles": [
+        "proyecto_largo"
+      ]
+    },
+    {
+      "nombre": "Selección Argentina",
+      "escudo": null,
+      "division": "Liga Profesional",
+      "exigencia": 0.95,
+      "esSeleccion": true,
+      "clasificaLibertadores": false,
+      "clasificaSudamericana": false,
+      "objetivosPosibles": [
+        "clasificar_mundial",
+        "ganar_copa_america"
+      ]
+    }
+  ],
+  "descripcionObjetivo": {
+    "salir_campeon": "Salir campeón",
+    "semifinal_copa_continental": "Llegar a semifinales de Copa continental",
+    "promover_juveniles": "Promover juveniles de cantera",
+    "ascender": "Ascender de categoría",
+    "reducir_deuda": "Reducir la deuda del club",
+    "pelear_arriba": "Pelear en la parte alta de la tabla",
+    "no_vender_figuras": "No vender a las figuras del plantel",
+    "consolidarse": "Consolidarse en la categoría",
+    "proyecto_largo": "Sostener un proyecto a largo plazo",
+    "clasificar_mundial": "Clasificar al Mundial",
+    "ganar_copa_america": "Ganar la Copa América"
+  },
+  "continuidad": {
+    "renovar": [
+      "La dirigencia de {club} te renueva. Como quien dice: \"quedate, total peor es nada\".",
+      "Reunión de comisión directiva: aplausos, asado y contrato nuevo para {entrenador}.",
+      "Te renuevan en {club}. El presidente hasta te dio un abrazo largo, de esos que dan miedo.",
+      "{club} te banca una temporada más. La hinchada, cautelosamente ilusionada; vos, aliviado como quien esquiva una citación.",
+      "Sigue {entrenador} al mando de {club}. \"Ni loco lo raja\", dijo el presidente -- el mismo que hace tres meses juraba lo contrario.",
+      "Contrato nuevo para {entrenador}. En {club} ya te tienen la silla marcada en la mesa de los importantes."
+    ],
+    "en_observacion": [
+      "{club} no te confirma ni te raja: quedaste \"en observación\", que en criollo es \"la seguimos viendo, con el diario en la mano\".",
+      "Ni sí ni no: la dirigencia de {club} te deja en el limbo. Bienvenido a la incertidumbre, terreno conocido para todo DT argentino.",
+      "Te dan un voto de confianza tibio. Como el mate que se quedó horas en el termo: toma, pero no calienta.",
+      "{club} decide \"esperar y ver\". Traducción: si el semestre que viene sale mal, esta charla nunca existió.",
+      "Seguís en {club}, pero con el famoso \"ojo puesto encima\". La preocupación, como el asado, se cocina lenta."
+    ],
+    "despedir": [
+      "Te rajaron de {club}. Como en el tango: sabe el empedrado lo que sufre el corazón, pero en versión comunicado de prensa.",
+      "Se terminó el ciclo de {entrenador} en {club}. \"Le agradecemos los servicios prestados\" -- la frase más fría del fútbol argentino.",
+      "La dirigencia de {club} decidió no continuar con vos. Ni cena de despedida hubo, directo el comunicado a las redes.",
+      "Te echaron de {club}. La hinchada ya te tiene un apodo nuevo, y no es cariñoso.",
+      "Fin de la aventura en {club}. Al menos te queda el buzo del club, que ya nadie te lo va a pedir de vuelta.",
+      "{entrenador} deja de ser DT de {club}. Un clásico: entraste con look de salvador, salís con cara de \"y yo qué hice\"."
+    ]
+  },
+  "decisionDT": {
+    "quedarse": [
+      "Decidís quedarte en {club}. Por ahora, el barrio te banca y no hay apuro por rajar.",
+      "Te quedás. Total, ¿para qué arriesgar si acá ya sabés dónde está el buen asador de la concentración?",
+      "Elegís seguir en {club}. Lealtad, cábala, o simple fiaca de armar valijas -- vos sabrás.",
+      "Te quedás en {club} una temporada más. El hincha, agradecido; vos, con la conciencia de no abandonar el barco."
+    ],
+    "irse": [
+      "Decidís armar las valijas y probar suerte en otro lado. {club} se entera por streaming, como todo hoy en día.",
+      "Preferís rajar vos antes de que te rajen. Estrategia clásica: pegar el portazo con el buzo puesto.",
+      "Dejás {club} para agarrar viaje. Nadie te vio hacer las valijas, pero ya estabas con un pie afuera hace rato.",
+      "Te vas de {club}. Como en toda salida de DT argentino, hay un audio filtrado dando vueltas antes de que lo confirmes vos."
+    ]
+  },
+  "umbralReputacionSeleccion": 85.0,
+  "factorRarezaSeleccion": 0.3
 }

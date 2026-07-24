@@ -290,6 +290,42 @@
   .evento-resultado { margin-top: 22px; padding-top: 22px; border-top: 1px solid rgba(255,255,255,0.08); }
   .evento-resultado-frase { font-size: 14px; color: rgba(255,255,255,0.75); line-height: 1.55; font-style: italic; margin: 0 0 20px; }
   .evento-resultado-frase.vacia { color: rgba(255,255,255,0.35); font-style: normal; }
+
+  /* ============ VISTA 5: FIN DE TEMPORADA ============ */
+  .temporada-card {
+    max-width: 720px; background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 22px; padding: 34px; backdrop-filter: blur(16px);
+  }
+  .temporada-resumen-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 26px; }
+  .temporada-objetivos { display: flex; flex-direction: column; gap: 10px; margin-bottom: 26px; }
+  .temporada-objetivo-item {
+    display: flex; align-items: center; gap: 12px; padding: 13px 16px; border-radius: 12px;
+    background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); font-size: 13.5px;
+  }
+  .temporada-objetivo-icono { font-size: 16px; flex-shrink: 0; }
+  .temporada-objetivo-item.cumplido { border-color: rgba(52,211,153,0.3); }
+  .temporada-objetivo-item.incumplido { color: rgba(255,255,255,0.55); }
+
+  .temporada-decision-banner {
+    border-radius: 16px; padding: 22px 24px; margin-bottom: 24px;
+  }
+  .temporada-decision-banner.renovar { background: rgba(52,211,153,0.08); border: 1px solid rgba(52,211,153,0.3); }
+  .temporada-decision-banner.en_observacion { background: rgba(251,191,36,0.08); border: 1px solid rgba(251,191,36,0.3); }
+  .temporada-decision-banner.despedir { background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.3); }
+  .temporada-decision-etiqueta {
+    display: inline-block; font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 11px;
+    letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 11px; border-radius: 20px; margin-bottom: 10px;
+  }
+  .temporada-decision-banner.renovar .temporada-decision-etiqueta { background: rgba(52,211,153,0.2); color: #6ee7b7; }
+  .temporada-decision-banner.en_observacion .temporada-decision-etiqueta { background: rgba(251,191,36,0.2); color: #fbbf24; }
+  .temporada-decision-banner.despedir .temporada-decision-etiqueta { background: rgba(248,113,113,0.2); color: #f87171; }
+  .temporada-decision-texto { font-size: 14.5px; color: rgba(255,255,255,0.8); line-height: 1.55; margin: 0; }
+
+  /* ============ VISTA 6: OFERTAS ============ */
+  .ofertas-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  @media (max-width: 720px) { .ofertas-grid { grid-template-columns: 1fr; } }
+  .oferta-exigencia-track { height: 5px; border-radius: 5px; background: rgba(255,255,255,0.08); margin-top: 8px; }
+  .oferta-exigencia-fill { height: 100%; border-radius: 5px; background: linear-gradient(90deg, #93c5fd, #f472b6); }
 </style>
 </head>
 <body>
@@ -428,6 +464,46 @@
           <p class="evento-resultado-frase" id="evento-resultado-frase"></p>
           <button class="boton-primario activo" id="btn-volver-hub">Volver al hub</button>
         </div>
+      </div>
+    </div>
+
+    <!-- ============ VISTA 5: FIN DE TEMPORADA ============ -->
+    <div class="dt-view" data-view="fin-temporada">
+      <div class="eyebrow"><div class="dot"></div><span>Manager Mode · Fin de Temporada</span></div>
+      <h1>Balance de <span class="accent">temporada</span></h1>
+      <p class="subtitle" id="temporada-subtitulo"></p>
+
+      <div class="temporada-card">
+        <div class="temporada-resumen-grid">
+          <div class="hub-record-item"><div class="hub-record-valor" id="temporada-pj">0</div><div class="hub-record-label">PJ</div></div>
+          <div class="hub-record-item"><div class="hub-record-valor" id="temporada-pg">0</div><div class="hub-record-label">PG</div></div>
+          <div class="hub-record-item"><div class="hub-record-valor" id="temporada-pe">0</div><div class="hub-record-label">PE</div></div>
+          <div class="hub-record-item"><div class="hub-record-valor" id="temporada-pp">0</div><div class="hub-record-label">PP</div></div>
+        </div>
+
+        <div class="hub-seccion-titulo" style="margin-top:0;">Objetivos de la dirigencia</div>
+        <div class="temporada-objetivos" id="temporada-objetivos"></div>
+
+        <div class="temporada-decision-banner" id="temporada-decision-banner">
+          <span class="temporada-decision-etiqueta" id="temporada-decision-etiqueta"></span>
+          <p class="temporada-decision-texto" id="temporada-decision-texto"></p>
+        </div>
+
+        <button class="boton-primario activo" id="btn-continuar-temporada">Continuar</button>
+      </div>
+    </div>
+
+    <!-- ============ VISTA 6: OFERTAS ============ -->
+    <div class="dt-view" data-view="ofertas">
+      <div class="eyebrow"><div class="dot"></div><span>Manager Mode · Mercado de Bancas</span></div>
+      <h1>Nueva <span class="accent">banca</span></h1>
+      <p class="subtitle" id="ofertas-subtitulo">Estos clubes se fijaron en vos. Elegí dónde firmar.</p>
+
+      <div class="ofertas-grid" id="ofertas-grid"></div>
+
+      <div class="footer-bar">
+        <div class="footer-texto" id="ofertas-footer-texto">Elegí una oferta para firmar.</div>
+        <button class="boton-primario" id="btn-confirmar-oferta" disabled>Firmar</button>
       </div>
     </div>
 
@@ -802,7 +878,14 @@ function contextoNarrativo(rival){
   };
 }
 
+// Duración abstracta de una temporada, en jornadas simuladas (no hay
+// fixture real todavía -- ver docs/PLAN_MODO_DT.md Fase 4). 20 alcanza
+// para que el loop de jornada->evento/partido cierre en un rato
+// razonable de juego sin sentirse eterno.
+const TEMPORADA_DURACION_JORNADAS = 20;
+
 function simularJornada(){
+  estadoDT.dt.jornadaTemporada = (estadoDT.dt.jornadaTemporada || 0) + 1;
   // Mitad de las veces, un evento con decisión (lo que pidió Pablo:
   // consecuencias distintas, no siempre positivas, a veces elegir el
   // mal menor). La otra mitad, un partido silencioso -- no cada
@@ -840,7 +923,7 @@ function simularPartidoSilencioso(){
   }
   guardarEstadoDT(estadoDT);
   document.getElementById('hub-cta-texto').innerHTML = `<strong>Último resultado:</strong> ${resultadoTexto}`;
-  renderHub();
+  verificarFinDeTemporada();
 }
 
 function mostrarEvento(){
@@ -883,14 +966,332 @@ function resolverOpcionEvento(evento, opcion){
     fraseP.classList.add('vacia');
   }
   resultadoDiv.style.display = 'block';
+
+  // .onclick (no addEventListener) a propósito -- este botón se
+  // reutiliza también para la decisión "¿te querés quedar?"
+  // (resolverDecisionDT), que pisa este mismo handler temporalmente.
+  // Con addEventListener se acumularían handlers viejos y el click
+  // dispararía los dos a la vez.
+  const btnVolver = document.getElementById('btn-volver-hub');
+  btnVolver.textContent = 'Volver al hub';
+  btnVolver.onclick = () => verificarFinDeTemporada();
 }
 
-document.getElementById('btn-volver-hub').addEventListener('click', () => {
+document.getElementById('btn-simular-jornada').addEventListener('click', simularJornada);
+
+function verificarFinDeTemporada(){
+  if ((estadoDT.dt.jornadaTemporada || 0) >= TEMPORADA_DURACION_JORNADAS){
+    finDeTemporada();
+  } else {
+    renderHub();
+    mostrarVistaDT('hub');
+  }
+}
+
+/* ==========================================================================
+   VISTA 5: FIN DE TEMPORADA
+   ========================================================================== */
+// Mismos evaluadores que _EVALUADORES de manager_mode/dirigencia.py --
+// deciden si un TipoObjetivo se cumple contra un ResultadoTemporada.
+const EVALUADORES_OBJETIVO = {
+  salir_campeon: r => r.ganoTitulo,
+  semifinal_copa_continental: r => r.llegoSemifinalCopaContinental,
+  promover_juveniles: r => r.juvenilesDebutados >= 2,
+  ascender: r => r.ascendio,
+  reducir_deuda: r => r.deudaReducida,
+  pelear_arriba: r => r.posicionFinal <= Math.max(1, Math.floor(r.totalEquipos / 3)),
+  no_vender_figuras: r => !r.vendioFigura,
+  consolidarse: r => !r.descendio,
+  proyecto_largo: r => !r.descendio,
+  clasificar_mundial: r => r.clasificoMundial,
+  ganar_copa_america: r => r.ganoCopaAmerica,
+};
+
+function buscarPerfilClub(nombre){
+  return DATOS_MANAGER_MODE.clubes.find(c => c.nombre === nombre) || null;
+}
+
+// Elige `cantidad` objetivos sin repetir del pool de un perfil -- mismo
+// mecanismo que generar_objetivos_temporada() de dirigencia.py.
+function elegirObjetivos(perfil, cantidad){
+  const tipos = [...perfil.objetivosPosibles];
+  for (let i = tipos.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [tipos[i], tipos[j]] = [tipos[j], tipos[i]];
+  }
+  return tipos.slice(0, Math.min(cantidad, tipos.length));
+}
+
+// Construye un ResultadoTemporada aproximado a partir del récord de la
+// temporada -- no hay tabla de posiciones real detrás todavía (eso es
+// Fase 4). totalEquipos=20 es una abstracción fija, no sale de ninguna
+// liga real. Pablo confirmó que el motor no necesita ser tan real.
+function armarResultadoTemporada(){
+  const record = estadoDT.dt.record;
+  const winRate = record.pj > 0 ? record.pg / record.pj : 0.4;
+  const totalEquipos = 20;
+  const posicionFinal = Math.max(1, Math.min(totalEquipos, Math.round(totalEquipos - winRate * (totalEquipos - 1))));
+  const identidad = estadoDT.dt.identidad;
+  return {
+    posicionFinal, totalEquipos,
+    ganoTitulo: posicionFinal === 1,
+    ascendio: posicionFinal <= 2,
+    descendio: posicionFinal >= totalEquipos - 1,
+    llegoSemifinalCopaContinental: false, // no aplica a los clubes de arranque
+    juvenilesDebutados: identidad === 'formador' ? 1 + Math.floor(Math.random() * 3) : Math.floor(Math.random() * 3),
+    vendioFigura: Math.random() < 0.25,
+    deudaReducida: Math.random() < 0.5,
+    clasificoMundial: false,
+    ganoCopaAmerica: false,
+  };
+}
+
+function finDeTemporada(){
+  const record = estadoDT.dt.record;
+  document.getElementById('temporada-pj').textContent = record.pj;
+  document.getElementById('temporada-pg').textContent = record.pg;
+  document.getElementById('temporada-pe').textContent = record.pe;
+  document.getElementById('temporada-pp').textContent = record.pp;
+  document.getElementById('temporada-subtitulo').textContent =
+    `Se cerró la temporada en ${estadoDT.club.nombre}. La dirigencia ya tomó una decisión sobre tu continuidad.`;
+
+  const perfil = buscarPerfilClub(estadoDT.club.nombre);
+  const resultado = armarResultadoTemporada();
+  const objetivos = elegirObjetivos(perfil, 2);
+
+  let cumplidos = 0;
+  const objetivosDiv = document.getElementById('temporada-objetivos');
+  objetivosDiv.innerHTML = objetivos.map(tipo => {
+    const cumplido = EVALUADORES_OBJETIVO[tipo](resultado);
+    if (cumplido) cumplidos++;
+    return `
+      <div class="temporada-objetivo-item ${cumplido ? 'cumplido' : 'incumplido'}">
+        <span class="temporada-objetivo-icono">${cumplido ? '✅' : '❌'}</span>
+        <span>${DATOS_MANAGER_MODE.descripcionObjetivo[tipo]}</span>
+      </div>
+    `;
+  }).join('');
+
+  const proporcionCumplida = objetivos.length ? cumplidos / objetivos.length : 1.0;
+  const confianza = (estadoDT.club.estadoClub || ESTADO_CLUB_DEFAULT()).confianza;
+  const puntaje = proporcionCumplida * 0.6 + (confianza / 100) * 0.4;
+  const umbralRenovar = 0.5 + perfil.exigencia * 0.3;
+  const umbralObservacion = 0.3;
+
+  let decision;
+  if (resultado.descendio && perfil.exigencia >= 0.6){
+    decision = 'despedir';
+  } else if (puntaje >= umbralRenovar){
+    decision = 'renovar';
+  } else if (puntaje >= umbralObservacion){
+    decision = 'en_observacion';
+  } else {
+    decision = 'despedir';
+  }
+
+  // Efectos sobre el DT -- mismo criterio que aplicar_decision() de
+  // EvaluadorDirigenciaService (dirigencia.py).
+  if (decision === 'renovar'){
+    estadoDT.dt.reputacion = Math.min(100, estadoDT.dt.reputacion + 5);
+  } else if (decision === 'despedir'){
+    estadoDT.dt.reputacion = Math.max(0, estadoDT.dt.reputacion - 10);
+  }
+
+  const contexto = contextoNarrativo();
+  const banco = DATOS_MANAGER_MODE.continuidad[decision];
+  const frase = interpolarNarrativa(banco[Math.floor(Math.random() * banco.length)], contexto);
+
+  const banner = document.getElementById('temporada-decision-banner');
+  banner.className = `temporada-decision-banner ${decision}`;
+  document.getElementById('temporada-decision-etiqueta').textContent =
+    decision === 'renovar' ? 'Te renuevan' : decision === 'en_observacion' ? 'En observación' : 'Te rajaron';
+  document.getElementById('temporada-decision-texto').textContent = frase;
+
+  const btnContinuar = document.getElementById('btn-continuar-temporada');
+  btnContinuar.textContent = decision === 'despedir' ? 'Buscar nueva banca' : 'Continuar';
+  btnContinuar.onclick = () => {
+    if (decision === 'despedir'){
+      mostrarOfertas();
+      return;
+    }
+    // Renovar / en observación: el club te banca, pero el DT también
+    // puede querer irse (a pedido de Pablo -- agencia de tu lado, no
+    // solo del club). Chance de que llegue un llamado de afuera,
+    // proporcional a la reputación.
+    const probLlamado = Math.max(0, Math.min(0.6, estadoDT.dt.reputacion / 150));
+    if (Math.random() < probLlamado){
+      mostrarDecisionQuedarseOIrse();
+    } else {
+      continuarMismoClub();
+    }
+  };
+
+  guardarEstadoDT(estadoDT);
+  mostrarVistaDT('fin-temporada');
+}
+
+function continuarMismoClub(){
+  estadoDT.dt.record = { pj: 0, pg: 0, pe: 0, pp: 0 };
+  estadoDT.dt.jornadaTemporada = 0;
+  guardarEstadoDT(estadoDT);
+  renderHub();
+  mostrarVistaDT('hub');
+}
+
+// Reusa el mismo layout de la vista 'evento' (categoría/título/
+// descripción/opciones) para la decisión "¿te querés quedar?", sin
+// duplicar CSS. La diferencia es que acá resolvemos con
+// continuarMismoClub()/mostrarOfertas() en vez de aplicarEfectosEvento().
+function mostrarDecisionQuedarseOIrse(){
+  document.getElementById('evento-categoria').textContent = 'decisión personal';
+  document.getElementById('evento-titulo').textContent = '¿Te querés quedar?';
+  document.getElementById('evento-descripcion').textContent =
+    `Te llega un llamado de otro lado. ${estadoDT.club.nombre} te banca, pero quizás en otro lado te espera algo mejor -- o no.`;
+  document.getElementById('evento-resultado').style.display = 'none';
+
+  const opcionesDiv = document.getElementById('evento-opciones');
+  opcionesDiv.innerHTML = '';
+
+  const btnQuedarse = document.createElement('button');
+  btnQuedarse.className = 'evento-opcion';
+  btnQuedarse.textContent = `Quedarte en ${estadoDT.club.nombre}`;
+  btnQuedarse.addEventListener('click', () => resolverDecisionDT('quedarse'));
+  opcionesDiv.appendChild(btnQuedarse);
+
+  const btnIrse = document.createElement('button');
+  btnIrse.className = 'evento-opcion';
+  btnIrse.textContent = 'Escuchar la otra oferta';
+  btnIrse.addEventListener('click', () => resolverDecisionDT('irse'));
+  opcionesDiv.appendChild(btnIrse);
+
+  mostrarVistaDT('evento');
+}
+
+function resolverDecisionDT(decision){
+  const contexto = contextoNarrativo();
+  const banco = DATOS_MANAGER_MODE.decisionDT[decision];
+  const frase = interpolarNarrativa(banco[Math.floor(Math.random() * banco.length)], contexto);
+
+  document.getElementById('evento-opciones').innerHTML = '';
+  const resultadoDiv = document.getElementById('evento-resultado');
+  document.getElementById('evento-resultado-frase').textContent = frase;
+  document.getElementById('evento-resultado-frase').classList.remove('vacia');
+  resultadoDiv.style.display = 'block';
+
+  const btnVolver = document.getElementById('btn-volver-hub');
+  btnVolver.textContent = decision === 'irse' ? 'Ver ofertas' : 'Volver al hub';
+  btnVolver.onclick = () => {
+    btnVolver.textContent = 'Volver al hub'; // restaurar para la próxima vez
+    btnVolver.onclick = () => verificarFinDeTemporada();
+    if (decision === 'irse'){
+      mostrarOfertas();
+    } else {
+      continuarMismoClub();
+    }
+  };
+}
+
+/* ==========================================================================
+   VISTA 6: OFERTAS
+   ========================================================================== */
+// Mismo mecanismo que generar_pool_ofertas() de manager_mode/ofertas.py:
+// pondera por cercanía entre la reputación del DT y la exigencia del
+// club (escalada a 0-100), con la Selección Argentina como caso
+// especial (umbral de reputación + factor de rareza).
+function pesoOferta(perfil, reputacion){
+  const cercania = 1.0 - Math.abs(reputacion - perfil.exigencia * 100) / 100;
+  let peso = Math.max(0.05, cercania);
+  if (perfil.esSeleccion) peso *= DATOS_MANAGER_MODE.factorRarezaSeleccion;
+  return peso;
+}
+
+function elegirPoolOfertas(cantidad){
+  const reputacion = estadoDT.dt.reputacion;
+  let candidatos = DATOS_MANAGER_MODE.clubes.filter(c => !c.esSeleccion && c.nombre !== estadoDT.club.nombre);
+  if (reputacion >= DATOS_MANAGER_MODE.umbralReputacionSeleccion){
+    candidatos = candidatos.concat(DATOS_MANAGER_MODE.clubes.filter(c => c.esSeleccion));
+  }
+  const elegidos = [];
+  const pool = [...candidatos];
+  let pesos = pool.map(c => pesoOferta(c, reputacion));
+  for (let i = 0; i < Math.min(cantidad, pool.length); i++){
+    const total = pesos.reduce((a, b) => a + b, 0);
+    let r = Math.random() * total;
+    let idx = pool.length - 1;
+    for (let j = 0; j < pool.length; j++){
+      r -= pesos[j];
+      if (r <= 0) { idx = j; break; }
+    }
+    elegidos.push(pool[idx]);
+    pool.splice(idx, 1);
+    pesos.splice(idx, 1);
+  }
+  return elegidos;
+}
+
+let ofertasDisponibles = [];
+let seleccionOferta = null;
+
+function mostrarOfertas(){
+  ofertasDisponibles = elegirPoolOfertas(4);
+  seleccionOferta = null;
+  document.getElementById('ofertas-subtitulo').textContent = estadoDT.club
+    ? `Dejás ${estadoDT.club.nombre}. Estos clubes se fijaron en vos.`
+    : 'Estos clubes se fijaron en vos. Elegí dónde firmar.';
+  renderOfertas();
+  mostrarVistaDT('ofertas');
+}
+
+function renderOfertas(){
+  const grid = document.getElementById('ofertas-grid');
+  grid.innerHTML = '';
+  ofertasDisponibles.forEach((club, i) => {
+    const selected = seleccionOferta === i;
+    const objetivos = elegirObjetivos(club, 2).map(t => DATOS_MANAGER_MODE.descripcionObjetivo[t]).join(' · ');
+    const card = document.createElement('div');
+    card.className = 'club-card' + (selected ? ' selected' : '');
+    const escudoSrc = club.escudo ? `escudos/${club.escudo}` : '';
+    card.innerHTML = `
+      <div class="club-check">✓</div>
+      <div class="club-escudo"><img src="${escudoSrc}" alt="${club.nombre}" onerror="this.style.display='none'" /></div>
+      <div>
+        <div class="club-nombre">${club.nombre}</div>
+        <div class="club-ciudad">${club.division}</div>
+      </div>
+      <div class="oferta-exigencia-track"><div class="oferta-exigencia-fill" style="width:${club.exigencia * 100}%;"></div></div>
+      <div class="club-objetivo"><span class="label">Objetivos de la dirigencia</span>${objetivos}</div>
+    `;
+    card.addEventListener('click', () => { seleccionOferta = i; renderOfertas(); });
+    grid.appendChild(card);
+  });
+
+  const elegido = seleccionOferta !== null ? ofertasDisponibles[seleccionOferta] : null;
+  const footer = document.getElementById('ofertas-footer-texto');
+  footer.innerHTML = elegido
+    ? `Vas a dirigir a <strong>${elegido.nombre}</strong>.`
+    : 'Elegí una oferta para firmar.';
+
+  const btn = document.getElementById('btn-confirmar-oferta');
+  btn.disabled = !elegido;
+  btn.classList.toggle('activo', !!elegido);
+}
+
+document.getElementById('btn-confirmar-oferta').addEventListener('click', () => {
+  if (seleccionOferta === null) return;
+  const club = ofertasDisponibles[seleccionOferta];
+  estadoDT.club = {
+    nombre: club.nombre,
+    escudo: club.escudo ? `escudos/${club.escudo}` : '',
+    categoria: club.division,
+    objetivo: elegirObjetivos(club, 2).map(t => DATOS_MANAGER_MODE.descripcionObjetivo[t]).join(' Y '),
+    estadoClub: ESTADO_CLUB_DEFAULT(),
+  };
+  estadoDT.dt.record = { pj: 0, pg: 0, pe: 0, pp: 0 };
+  estadoDT.dt.jornadaTemporada = 0;
+  guardarEstadoDT(estadoDT);
   renderHub();
   mostrarVistaDT('hub');
 });
-
-document.getElementById('btn-simular-jornada').addEventListener('click', simularJornada);
 
 
 async function arrancarDT() {

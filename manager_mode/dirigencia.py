@@ -294,6 +294,63 @@ class DecisionContinuidad(str, Enum):
     DESPEDIR = "despedir"
 
 
+# Diálogos de fin de temporada -- a pedido de Pablo, bien argentinizados
+# y con humor, nada de comunicado institucional acartonado. Interpolan
+# {club}/{entrenador} igual que BANCO_REACCIONES de narrativa.py.
+BANCO_CONTINUIDAD: dict[DecisionContinuidad, list[str]] = {
+    DecisionContinuidad.RENOVAR: [
+        "La dirigencia de {club} te renueva. Como quien dice: \"quedate, total peor es nada\".",
+        "Reunión de comisión directiva: aplausos, asado y contrato nuevo para {entrenador}.",
+        "Te renuevan en {club}. El presidente hasta te dio un abrazo largo, de esos que dan miedo.",
+        "{club} te banca una temporada más. La hinchada, cautelosamente ilusionada; vos, aliviado como quien esquiva una citación.",
+        "Sigue {entrenador} al mando de {club}. \"Ni loco lo raja\", dijo el presidente -- el mismo que hace tres meses juraba lo contrario.",
+        "Contrato nuevo para {entrenador}. En {club} ya te tienen la silla marcada en la mesa de los importantes.",
+    ],
+    DecisionContinuidad.EN_OBSERVACION: [
+        "{club} no te confirma ni te raja: quedaste \"en observación\", que en criollo es \"la seguimos viendo, con el diario en la mano\".",
+        "Ni sí ni no: la dirigencia de {club} te deja en el limbo. Bienvenido a la incertidumbre, terreno conocido para todo DT argentino.",
+        "Te dan un voto de confianza tibio. Como el mate que se quedó horas en el termo: toma, pero no calienta.",
+        "{club} decide \"esperar y ver\". Traducción: si el semestre que viene sale mal, esta charla nunca existió.",
+        "Seguís en {club}, pero con el famoso \"ojo puesto encima\". La preocupación, como el asado, se cocina lenta.",
+    ],
+    DecisionContinuidad.DESPEDIR: [
+        "Te rajaron de {club}. Como en el tango: sabe el empedrado lo que sufre el corazón, pero en versión comunicado de prensa.",
+        "Se terminó el ciclo de {entrenador} en {club}. \"Le agradecemos los servicios prestados\" -- la frase más fría del fútbol argentino.",
+        "La dirigencia de {club} decidió no continuar con vos. Ni cena de despedida hubo, directo el comunicado a las redes.",
+        "Te echaron de {club}. La hinchada ya te tiene un apodo nuevo, y no es cariñoso.",
+        "Fin de la aventura en {club}. Al menos te queda el buzo del club, que ya nadie te lo va a pedir de vuelta.",
+        "{entrenador} deja de ser DT de {club}. Un clásico: entraste con look de salvador, salís con cara de \"y yo qué hice\".",
+    ],
+}
+
+
+class DecisionDT(str, Enum):
+    """Del lado del entrenador, no del club: aunque la dirigencia lo
+    renueve (o lo deje en observación), el DT puede igual decidir irse
+    si le tiran de otro lado -- ver frontend (público.modo-dt.html),
+    donde esto se ofrece como un evento con dos opciones cuando la
+    reputación del DT alcanza para tener otro llamado."""
+
+    QUEDARSE = "quedarse"
+    IRSE = "irse"
+
+
+BANCO_DECISION_DT: dict[DecisionDT, list[str]] = {
+    DecisionDT.QUEDARSE: [
+        "Decidís quedarte en {club}. Por ahora, el barrio te banca y no hay apuro por rajar.",
+        "Te quedás. Total, ¿para qué arriesgar si acá ya sabés dónde está el buen asador de la concentración?",
+        "Elegís seguir en {club}. Lealtad, cábala, o simple fiaca de armar valijas -- vos sabrás.",
+        "Te quedás en {club} una temporada más. El hincha, agradecido; vos, con la conciencia de no abandonar el barco.",
+    ],
+    DecisionDT.IRSE: [
+        "Decidís armar las valijas y probar suerte en otro lado. {club} se entera por streaming, como todo hoy en día.",
+        "Preferís rajar vos antes de que te rajen. Estrategia clásica: pegar el portazo con el buzo puesto.",
+        "Dejás {club} para agarrar viaje. Nadie te vio hacer las valijas, pero ya estabas con un pie afuera hace rato.",
+        "Te vas de {club}. Como en toda salida de DT argentino, hay un audio filtrado dando vueltas antes de que lo confirmes vos.",
+    ],
+}
+
+
 @dataclass(frozen=True)
 class EvaluacionTemporada:
     """Resultado de evaluar una temporada completa: cuántos objetivos

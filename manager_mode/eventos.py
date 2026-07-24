@@ -645,6 +645,18 @@ _EVENTOS: list[Evento] = [
             _op("dejar_que_termine", "Dejar que termine con horario límite", Intensidad.NEUTRA,
                 (Efecto("moral", 1),)),
         )),
+    _ev("el_que_se_zarpa", CategoriaEvento.VIDA_PLANTEL, "El Que Se Zarpa",
+        "En la cena de fin de año del club, uno de los jugadores se pasó de la raya "
+        "tirándole onda a tu mujer delante de todo el mundo. El plantel entero ya se "
+        "enteró y espera ver qué hacés.",
+        (
+            _op("hablarlo_en_privado", "Hablarlo con él a solas, sin quilombo", Intensidad.POSITIVA,
+                (Efecto("vestuario", 2), Efecto("moral", 1))),
+            _op("hacerse_el_boludo", "Hacerte el boludo y mirar para otro lado", Intensidad.NEGATIVA,
+                (Efecto("moral", -4),)),
+            _op("cagarlo_a_pedos", "Cagarlo a pedos delante de todo el plantel", Intensidad.NEGATIVA,
+                (Efecto("vestuario", -5), Efecto("hinchada", 2)), TipoReaccion.PRENSA),
+        )),
 ]
 
 CATALOGO_EVENTOS: dict[str, Evento] = {evento.codigo: evento for evento in _EVENTOS}

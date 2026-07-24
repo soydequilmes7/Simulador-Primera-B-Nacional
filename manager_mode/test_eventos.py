@@ -18,7 +18,7 @@ from manager_mode.eventos import (
     eventos_por_categoria,
 )
 from manager_mode.evento_service import EventoService
-from manager_mode.narrativa import NarrativaService
+from manager_mode.narrativa import NarrativaService, TipoReaccion
 
 
 class TestCatalogoEventos(unittest.TestCase):
@@ -41,6 +41,18 @@ class TestCatalogoEventos(unittest.TestCase):
         evento = CATALOGO_EVENTOS["el_capitan"]
         with self.assertRaises(KeyError):
             evento.opcion("opcion_que_no_existe")
+
+    def test_el_que_se_zarpa_tiene_3_opciones_y_reaccion_de_prensa(self) -> None:
+        # Evento agregado a pedido de Pablo: un jugador le tira onda a
+        # la mujer del DT. Cubre que la opción pública (cagarlo a
+        # pedos delante de todos) sí dispara reacción -- las privadas no.
+        evento = CATALOGO_EVENTOS["el_que_se_zarpa"]
+        self.assertEqual(evento.categoria, CategoriaEvento.VIDA_PLANTEL)
+        self.assertEqual(len(evento.opciones), 3)
+        publica = evento.opcion("cagarlo_a_pedos")
+        self.assertEqual(publica.tipo_reaccion, TipoReaccion.PRENSA)
+        privada = evento.opcion("hablarlo_en_privado")
+        self.assertIsNone(privada.tipo_reaccion)
 
 
 class TestEfecto(unittest.TestCase):

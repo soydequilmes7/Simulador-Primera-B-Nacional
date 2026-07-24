@@ -266,6 +266,50 @@ Valores default del hub calcados de `manager_mode/domain.py`:
 en 0. Edad 30 (coincide con `Entrenador.edad` inicial y con el texto ya
 existente en la pantalla de creación).
 
+### Fase 3.2 — Fin de Temporada, ofertas y decisión del propio DT
+
+A pedido de Pablo: cerrar el loop. Cada 20 jornadas simuladas
+(`TEMPORADA_DURACION_JORNADAS`, abstracción -- no hay fixture real
+todavía) se dispara **Fin de Temporada**:
+
+1. Se arma un `ResultadoTemporada` aproximado a partir del récord de la
+   temporada (winRate → posición final en una tabla abstracta de 20).
+   Pablo confirmó explícitamente que el motor no necesita ser tan real
+   acá.
+2. Se sortean 2 objetivos del pool real del club (mismo mecanismo que
+   `generar_objetivos_temporada()` de `dirigencia.py`, portado a JS) y
+   se evalúan contra el resultado (mismos evaluadores que
+   `_EVALUADORES` de Python, portados 1 a 1).
+3. La dirigencia decide RENOVAR / EN_OBSERVACIÓN / DESPEDIR con la
+   misma fórmula que `EvaluadorDirigenciaService.evaluar_temporada()`
+   (60% objetivos cumplidos + 40% confianza acumulada; descenso en
+   club exigente = despido automático).
+4. **Diálogos bien argentinizados y con humor** (pedido explícito de
+   Pablo, nada de comunicado institucional): `BANCO_CONTINUIDAD` nuevo
+   en `manager_mode/dirigencia.py`, 3-6 variantes por decisión.
+5. **Agencia del lado del DT** (pedido explícito): aunque el club te
+   renueve o te deje en observación, hay una chance (proporcional a tu
+   reputación) de que te llegue un llamado externo -- ahí elegís vos
+   si te quedás o "escuchás la otra oferta" (`DecisionDT`/
+   `BANCO_DECISION_DT`, mismo criterio de humor argentino).
+6. Si te despiden (o elegís irte), pantalla de **Ofertas**: pool de 4
+   clubes ponderado por cercanía reputación↔exigencia, igual que
+   `generar_pool_ofertas()` de `ofertas.py` (Selección Argentina como
+   caso especial, con su umbral de reputación y factor de rareza).
+
+**Evento nuevo agregado** (pedido explícito de Pablo, categoría Vida
+de Plantel): `el_que_se_zarpa` -- un jugador le tira onda a la mujer
+del DT en la cena de fin de año. 3 opciones (hablarlo en privado,
+hacerse el boludo, cagarlo a pedos delante de todos -- esta última con
+reacción de prensa). Mismo tono cómico que el resto de la categoría
+(Guerra de Faldas, Noche de Joda, etc.), nada explícito.
+
+`manager_mode/exportar_datos_frontend.py` ahora también exporta el
+catálogo completo de clubes/objetivos (`CATALOGO_PERFILES_CLUB`,
+`DESCRIPCION_OBJETIVO`) y los bancos de continuidad -- sigue siendo la
+única fuente de verdad, hay que re-correrlo si se toca
+`dirigencia.py`/`ofertas.py`/`eventos.py`/`narrativa.py`.
+
 ## Fase 4 — Integración
 
 - Endpoints `/api/dt/...` en `api/index.py`, sin tocar los existentes.
