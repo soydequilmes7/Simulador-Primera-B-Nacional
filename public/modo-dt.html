@@ -742,7 +742,7 @@ function renderHub() {
   document.getElementById('hub-reputacion-valor').textContent = `${Math.round(dt.reputacion)}/100`;
   document.getElementById('hub-rep-fill').style.width = `${Math.max(0, Math.min(100, dt.reputacion))}%`;
 
-  document.getElementById('hub-club-escudo').querySelector('img').src = club.escudo;
+  document.getElementById('hub-club-escudo').src = club.escudo;
   document.getElementById('hub-club-nombre').textContent = club.nombre;
   document.getElementById('hub-club-categoria').textContent = club.categoria;
   if (!club.estadoClub) club.estadoClub = ESTADO_CLUB_DEFAULT();
