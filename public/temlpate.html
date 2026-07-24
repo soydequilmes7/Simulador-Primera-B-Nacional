@@ -5493,8 +5493,19 @@
     </div>
   </section>
 
+  <section id="sec-lpf-clausura-actual">
+    <div class="section-head"><span class="idx">02</span><h2>Tabla del Clausura — a hoy</h2><div class="rule"></div></div>
+    <p class="section-note">Torneo en curso (dato real): solo los partidos ya jugados del Clausura, tal como quedaron cargados. No incluye ningún partido simulado.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>PJ</th><th>GF</th><th>GC</th><th>DG</th></tr></thead>
+        <tbody id="clausura-actual-lpf-body"></tbody>
+      </table>
+    </div>
+  </section>
+
   <section id="sec-lpf-clausura">
-    <div class="section-head"><span class="idx">02</span><h2>Tabla del Clausura (simulada)</h2><div class="rule"></div></div>
+    <div class="section-head"><span class="idx">03</span><h2>Tabla del Clausura (simulada)</h2><div class="rule"></div></div>
     <p class="section-note">Resultado de una corrida puntual del Clausura: se simulan los partidos pendientes del fixture. Los primeros 8 de cada zona clasifican a los Playoffs cruzados.</p>
     <div class="table-wrap">
       <table>
@@ -5505,7 +5516,7 @@
   </section>
 
   <section id="sec-lpf-playoffs">
-    <div class="section-head"><span class="idx">03</span><h2>Playoffs del Clausura</h2><div class="rule"></div></div>
+    <div class="section-head"><span class="idx">04</span><h2>Playoffs del Clausura</h2><div class="rule"></div></div>
     <p class="section-note">Cruzados entre zonas desde Octavos de Final, todo a partido único a cancha neutral (con alargue y penales si hace falta).</p>
     <div class="bracket-scroll">
       <div class="bracket" id="bracket-lpf"></div>
@@ -5514,7 +5525,7 @@
   </section>
 
   <section id="sec-lpf-mc">
-    <div class="section-head"><span class="idx">04</span><h2>Monte Carlo — Probabilidades del Clausura</h2><div class="rule"></div></div>
+    <div class="section-head"><span class="idx">05</span><h2>Monte Carlo — Probabilidades del Clausura</h2><div class="rule"></div></div>
     <p class="section-note">Resultado de simular el Clausura y los playoffs hasta cinco mil veces. % playoffs = veces que terminó entre los primeros 8 de su zona. % campeón = veces que salió campeón del Clausura.</p>
     <div id="mc-list-lpf"></div>
     <div class="table-wrap" style="margin-top:20px">
@@ -5526,7 +5537,7 @@
   </section>
 
   <section id="sec-lpf-anual">
-    <div class="section-head"><span class="idx">04</span><h2>Tabla Anual 2026</h2><div class="rule"></div></div>
+    <div class="section-head"><span class="idx">06</span><h2>Tabla Anual 2026</h2><div class="rule"></div></div>
     <p class="section-note">Suma de puntos, GF y GC del Apertura (real) más el Clausura (simulado), sin distinguir zona. Define al Campeón de Liga, los cupos a copas internacionales y los descensos.</p>
     <div class="table-wrap">
       <table>
@@ -5537,7 +5548,7 @@
   </section>
 
   <section id="sec-lpf-descensos">
-    <div class="section-head"><span class="idx">05</span><h2>Descensos</h2><div class="rule"></div></div>
+    <div class="section-head"><span class="idx">07</span><h2>Descensos</h2><div class="rule"></div></div>
     <p class="section-note">2 descensos: el último de la Tabla de Promedios y el último de la Tabla Anual. Si es el mismo equipo en ambas, ese cupo lo hereda el penúltimo de la Tabla Anual.</p>
     <p class="section-note" style="margin-top:6px">Tabla de Promedios: puntos por partido jugado en las últimas ~3 temporadas (los recién ascendidos solo computan desde su ascenso).</p>
     <div class="table-wrap">
@@ -5550,7 +5561,7 @@
   </section>
 
   <section id="sec-lpf-copas">
-    <div class="section-head"><span class="idx">06</span><h2>Copas internacionales 2027</h2><div class="rule"></div></div>
+    <div class="section-head"><span class="idx">08</span><h2>Copas internacionales 2027</h2><div class="rule"></div></div>
     <p class="section-note">Cupos a Libertadores y Sudamericana según la Tabla Anual, más los campeones de Apertura y Clausura. La Copa Argentina no está simulada, así que el cupo que le corresponde se completa con un candidato elegido al azar entre los equipos de la Tabla Anual.</p>
     <div class="copas-grid">
       <div class="copa-card libertadores">
@@ -5565,7 +5576,7 @@
   </section>
 
   <section id="sec-lpf-trofeo">
-    <div class="section-head"><span class="idx">07</span><h2>Trofeo de Campeones</h2><div class="rule"></div></div>
+    <div class="section-head"><span class="idx">09</span><h2>Trofeo de Campeones</h2><div class="rule"></div></div>
     <p class="section-note">Campeón del Apertura vs. campeón del Clausura, partido único a cancha neutral (con alargue y penales si hace falta).</p>
     <div id="trofeo-lpf-normal">
       <div class="ascenso-card">
@@ -5578,7 +5589,7 @@
   </section>
 
   <section id="sec-lpf-como-funciona">
-    <div class="section-head"><span class="idx">08</span><h2>¿Cómo funciona?</h2><div class="rule"></div></div>
+    <div class="section-head"><span class="idx">10</span><h2>¿Cómo funciona?</h2><div class="rule"></div></div>
     <p class="section-note">Todo lo que hay detrás del simulador: el modelo, los datos y las reglas del torneo.</p>
     <div class="faq">
       <details>
@@ -9164,10 +9175,29 @@ function renderTablaZonaLPF(tipo, zona){
   body.innerHTML = filas.map((f, i) => filaTablaLPFHTML(f, i, filas.length, tipo === 'clausura')).join('');
 }
 
+function filaTablaActualClausuraLPFHTML(f, i){
+  const dg = f.dg > 0 ? '+' + f.dg : f.dg;
+  return `<tr class="${i === 0 ? 'punta' : ''}">
+    <td>${f.posicion ?? (i + 1)}</td><td>${escudoHTML(f.equipo)}${nombreMostrable(f.equipo)}</td>
+    <td>${f.puntos}</td><td>${f.partidos_jugados ?? '—'}</td><td>${f.gf}</td><td>${f.gc}</td><td>${dg}</td>
+  </tr>`;
+}
+
+function renderTablaActualClausuraLPF(zona){
+  const body = document.getElementById('clausura-actual-lpf-body');
+  // Si data_lpf.json es viejo y no trae tabla_actual, la sección queda
+  // vacía en vez de romper (mismo criterio que el resto de los usos de
+  // tabla_actual en esta página).
+  if (!body || !DATA_LPF.tabla_actual) return;
+  const filas = DATA_LPF.tabla_actual[zona] || [];
+  body.innerHTML = filas.map((f, i) => filaTablaActualClausuraLPFHTML(f, i)).join('');
+}
+
 function setZonaLPF(zona){
   zonaActualLPF = zona;
   document.querySelectorAll('#zone-tabs-lpf .zone-tab').forEach(b => b.classList.toggle('active', b.dataset.zona === zona));
   renderTablaZonaLPF('apertura', zona);
+  renderTablaActualClausuraLPF(zona);
   renderTablaZonaLPF('clausura', zona);
   renderMCLPF(zona);
   renderEsperadaLPF(zona);
@@ -9510,6 +9540,11 @@ function buildTeamIndexLPF(){
         descenso: mcRow['descenso'] ?? 0,
         puntos_prom: espRow['puntos_prom'] ?? '—',
         posicion_prom: espRow['posicion_prom'] ?? '—',
+        // "¿Qué necesita [Equipo]?" -- objetos armados 100% en el backend
+        // (EstadisticasLPF.monte_carlo_lpf(), ver modelos/promotion_requirements.py).
+        // null si data_lpf.json es viejo y todavía no los trae.
+        requisitos_descenso: (DATA_LPF.requisitos_descenso && DATA_LPF.requisitos_descenso[f.equipo]) || null,
+        requisitos_copas: (DATA_LPF.requisitos_copas && DATA_LPF.requisitos_copas[f.equipo]) || null,
         ultimos5
       };
     });
@@ -9521,6 +9556,101 @@ function poblarDatalistLPF(index){
   const dl = document.getElementById('team-list-lpf');
   if (!dl) return;
   dl.innerHTML = Object.keys(index).sort().map(nombre => `<option value="${nombre}">`).join('');
+}
+
+// "¿Qué necesita [Equipo] para evitar el descenso?" -- lee t.requisitos_descenso
+// (armado 100% en el backend, ver EstadisticasLPF.monte_carlo_lpf(), que reusa
+// el mismo módulo genérico de Nacional pero reescribiendo el summary con
+// redacción de descenso). Si no hay datos, muestra un estado vacío.
+function renderRequisitosDescensoLPF(t){
+  const r = t.requisitos_descenso;
+  const nombre = nombreMostrable(t.equipo);
+
+  if (!r){
+    return `
+      <div class="tc-req">
+        <div class="tc-mc-title">🛡️ ¿Qué necesita ${nombre} para evitar el descenso?</div>
+        <p class="tc-req-vacio">Todavía no hay datos suficientes de las simulaciones para este equipo.</p>
+      </div>
+    `;
+  }
+
+  if (r.targetPoints === null){
+    return `
+      <div class="tc-req">
+        <div class="tc-mc-title">🛡️ ¿Qué necesita ${nombre} para evitar el descenso?</div>
+        <p class="tc-req-vacio">${r.summary}</p>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="tc-req">
+      <div class="tc-mc-title">🛡️ ¿Qué necesita ${nombre} para evitar el descenso?</div>
+      <div class="tc-req-metas">
+        <div class="tc-req-meta"><div class="v">${r.targetPoints}</div><div class="l">Objetivo recomendado</div></div>
+        <div class="tc-req-meta"><div class="v">${r.currentPoints}</div><div class="l">Actualmente</div></div>
+        <div class="tc-req-meta"><div class="v">${r.remainingPoints}</div><div class="l">Restan</div></div>
+      </div>
+      <div class="tc-req-sep"></div>
+      <p class="tc-req-texto">Quedan ${r.matchesRemaining} partido${r.matchesRemaining === 1 ? '' : 's'}. Para alcanzar ese objetivo necesita sumar aproximadamente:</p>
+      <div class="tc-req-combo">
+        <span class="tc-req-pill v">🟢 ${r.averageWins} victoria${r.averageWins === 1 ? '' : 's'}</span>
+        <span class="tc-req-pill e">🟡 ${r.averageDraws} empate${r.averageDraws === 1 ? '' : 's'}</span>
+        <span class="tc-req-pill d">🔴 ${r.averageLosses} derrota${r.averageLosses === 1 ? '' : 's'}</span>
+      </div>
+      <p class="tc-req-ppg">Promedio necesario: <b>${r.requiredPPG.toFixed(2)}</b> puntos por partido</p>
+      <div class="tc-req-sep"></div>
+      <p class="tc-req-resumen">${r.summary}</p>
+    </div>
+  `;
+}
+
+// "¿Qué necesita [Equipo] para clasificar a copas?" -- lee t.requisitos_copas,
+// mismo mecanismo que renderRequisitosDescensoLPF pero con la redacción de
+// clasificación a Copa Libertadores/Sudamericana.
+function renderRequisitosCopasLPF(t){
+  const r = t.requisitos_copas;
+  const nombre = nombreMostrable(t.equipo);
+
+  if (!r){
+    return `
+      <div class="tc-req">
+        <div class="tc-mc-title">🌎 ¿Qué necesita ${nombre} para clasificar a copas?</div>
+        <p class="tc-req-vacio">Todavía no hay datos suficientes de las simulaciones para este equipo.</p>
+      </div>
+    `;
+  }
+
+  if (r.targetPoints === null){
+    return `
+      <div class="tc-req">
+        <div class="tc-mc-title">🌎 ¿Qué necesita ${nombre} para clasificar a copas?</div>
+        <p class="tc-req-vacio">${r.summary}</p>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="tc-req">
+      <div class="tc-mc-title">🌎 ¿Qué necesita ${nombre} para clasificar a copas?</div>
+      <div class="tc-req-metas">
+        <div class="tc-req-meta"><div class="v">${r.targetPoints}</div><div class="l">Objetivo recomendado</div></div>
+        <div class="tc-req-meta"><div class="v">${r.currentPoints}</div><div class="l">Actualmente</div></div>
+        <div class="tc-req-meta"><div class="v">${r.remainingPoints}</div><div class="l">Restan</div></div>
+      </div>
+      <div class="tc-req-sep"></div>
+      <p class="tc-req-texto">Quedan ${r.matchesRemaining} partido${r.matchesRemaining === 1 ? '' : 's'}. Para alcanzar ese objetivo necesita sumar aproximadamente:</p>
+      <div class="tc-req-combo">
+        <span class="tc-req-pill v">🟢 ${r.averageWins} victoria${r.averageWins === 1 ? '' : 's'}</span>
+        <span class="tc-req-pill e">🟡 ${r.averageDraws} empate${r.averageDraws === 1 ? '' : 's'}</span>
+        <span class="tc-req-pill d">🔴 ${r.averageLosses} derrota${r.averageLosses === 1 ? '' : 's'}</span>
+      </div>
+      <p class="tc-req-ppg">Promedio necesario: <b>${r.requiredPPG.toFixed(2)}</b> puntos por partido</p>
+      <div class="tc-req-sep"></div>
+      <p class="tc-req-resumen">${r.summary}</p>
+    </div>
+  `;
 }
 
 function renderTeamCardLPF(t){
@@ -9549,6 +9679,8 @@ function renderTeamCardLPF(t){
         <div class="mc-bar-fill directo" style="width:${t.playoffs}%; background:${zoneColor}"></div>
       </div>
       <div class="tc-pos">Posición final promedio (Clausura): <b>${t.posicion_prom}°</b> — Puntos promedio: <b>${t.puntos_prom}</b></div>
+      ${renderRequisitosDescensoLPF(t)}
+      ${renderRequisitosCopasLPF(t)}
       <div class="tc-racha">
         <div class="tc-racha-title">Últimos partidos</div>
         ${renderRacha(t.ultimos5)}

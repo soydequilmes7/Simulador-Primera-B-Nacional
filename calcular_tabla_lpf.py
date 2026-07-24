@@ -28,6 +28,8 @@ Uso programático:
 import csv
 import os
 
+from mapeo_equipos_lpf import resolver_equipo_lpf as _resolver_lpf
+
 CAMPOS_TABLA = ["zona", "posicion", "equipo", "partidos_jugados", "ganados",
                 "empatados", "perdidos", "gf", "gc", "dg", "puntos"]
 
@@ -52,11 +54,34 @@ def _escribir_tabla(path, filas):
         writer.writerows(filas)
 
 
+def _buscar_en_indice(indice_por_equipo, nombre):
+    """Busca `nombre` en el índice del standings. Primero exacto; si no
+    matchea (típico cuando el standings tiene el nombre corto, ej.
+    "Sarmiento" en vez de "Sarmiento Junín" -- ver mapeo_equipos_lpf.py),
+    reintenta comparando formas normalizadas de todas las claves del
+    índice."""
+    fila = indice_por_equipo.get(nombre)
+    if fila is not None:
+        return fila
+
+    # Resuelve el nombre buscado a su forma canónica (ej. "Sarmiento Junín"
+    # venga como venga) y lo compara contra la forma canónica de cada
+    # clave del índice -- así matchea sin importar si el standings tiene
+    # el nombre corto ("Sarmiento") o el completo.
+    canon_buscado = _resolver_lpf(nombre)
+    if canon_buscado is None:
+        return None
+    for clave, fila in indice_por_equipo.items():
+        if _resolver_lpf(clave) == canon_buscado:
+            return fila
+    return None
+
+
 def _aplicar_partido(indice_por_equipo, equipo_local, equipo_visitante, gl, gv):
-    local = indice_por_equipo.get(equipo_local)
-    visitante = indice_por_equipo.get(equipo_visitante)
+    local = _buscar_en_indice(indice_por_equipo, equipo_local)
+    visitante = _buscar_en_indice(indice_por_equipo, equipo_visitante)
     if local is None or visitante is None:
-        faltantes = [e for e in (equipo_local, equipo_visitante) if indice_por_equipo.get(e) is None]
+        faltantes = [e for e in (equipo_local, equipo_visitante) if _buscar_en_indice(indice_por_equipo, e) is None]
         raise KeyError(f"Equipo(s) no encontrados en tabla_lpf.csv: {faltantes}")
 
     local["partidos_jugados"] += 1

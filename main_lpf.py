@@ -172,6 +172,14 @@ def armar_datos_web_lpf(e, tablas_clausura, campeon_clausura, detalle_playoffs,
         "copas": copas,
         "trofeo": trofeo,
         "monte_carlo": {"A": mc_A, "B": mc_B},
+        # "¿Qué necesita [Equipo] para evitar el descenso / clasificar a
+        # copas?" -- un objeto por equipo, ya calculado por
+        # EstadisticasLPF.monte_carlo_lpf() a partir de las simulaciones
+        # (ver modelos/promotion_requirements.py). El frontend solo lo
+        # renderiza, no recalcula nada. Mismo patrón que
+        # "requisitos_ascenso" en Nacional/main.py.
+        "requisitos_descenso": getattr(e, "requisitos_descenso", {}),
+        "requisitos_copas": getattr(e, "requisitos_copas", {}),
         "tabla_esperada": {
             "A": tabla_esperada_mc["A"].to_dict(orient="records"),
             "B": tabla_esperada_mc["B"].to_dict(orient="records"),

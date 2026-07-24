@@ -8,9 +8,12 @@ original (Nacional):
   1. Usa scraper_promiedos_lpf.py en vez de scraper_promiedos.py.
   2. Lee/escribe fixture_lpf.csv, resultados_lpf.csv y tabla_lpf.csv
      (no pisa los archivos de Nacional).
-  3. NO usa mapeo_equipos.py: los nombres de equipo de Promiedos ya
-     coinciden tal cual con los de tabla_lpf.csv, así que no hace falta
-     traducir nada.
+  3. Los nombres de equipo de Promiedos NO siempre coinciden tal cual
+     con fixture_lpf.csv/resultados_lpf.csv -- Promiedos usa nombre
+     completo o corto según la sección/endpoint (ver
+     mapeo_equipos_lpf.py). El matcheo contra el fixture pendiente
+     (más abajo) resuelve ambos lados a su nombre canónico antes de
+     comparar.
   4. NO toca goleadores: esta API de Promiedos no expone goleadores
      para la LPF, así que ese paso queda salteado (a diferencia de
      Nacional, que sí lo hace).
@@ -21,6 +24,28 @@ original (Nacional):
      ya tenés (o armamos) un correr_simulacion_lpf(), pasalo por el
      parámetro correr_simulacion_fn y se llama solo cuando haya
      partidos nuevos, igual que en Nacional.
+  6. NO toca `standings` en Supabase (repo.upsert_standings). ¡OJO,
+     ESTO ES A PROPÓSITO Y NO UN OLVIDO! `standings` para "lpf" es
+     self.apertura en modelos/estadisticas_lpf.py: la tabla FINAL y
+     CONGELADA del Apertura 2026 (30 equipos, se valida que no cambie
+     de tamaño), usada solo como base histórica para ratings iniciales
+     y para la Tabla Anual (que suma puntos_apertura + puntos_clausura
+     por separado, ver EstadisticasLPF líneas ~390-414). La tabla real
+     del Clausura NO vive en `standings`: se recalcula desde cero cada
+     vez a partir de resultados_lpf.csv (ver main_lpf._tabla_actual_
+     clausura() y EstadisticasLPF.cargar_datos_lpf(), self.tabla =
+     self.apertura.copy() con las columnas puestas en 0).
+     Versión anterior de este archivo SÍ llamaba _aplicar_partido() +
+     repo.upsert_standings("lpf", ...) sobre esa misma fila -- eso
+     sumaba cada partido del Clausura ARRIBA de la tabla del Apertura,
+     corrompiendo la base histórica (partidos_jugados subía de 16 a 17,
+     etc.) y haciendo que la Tabla Anual contara esos partidos DOS
+     VECES (una vía Apertura contaminado, otra vía Clausura real). Si
+     en algún momento hace falta persistir la tabla del Clausura en
+     Supabase para otra cosa, tiene que ser en una fila/tabla distinta
+     a la de "standings" de LPF -- nunca pisando self.apertura.
+     (Ver revertir_standings_lpf_apertura.py para deshacer el daño ya
+     hecho por la versión vieja de este archivo.)
 
 Uso manual:
     python actualizar_resultados_lpf.py
@@ -36,7 +61,7 @@ from datetime import datetime
 from db.repository import transaction
 
 from scraper_promiedos_lpf import obtener_partidos_jugados_lpf
-from calcular_tabla_lpf import _aplicar_partido, _reordenar_posiciones
+from mapeo_equipos_lpf import resolver_equipo_lpf
 
 CAMPOS_FIXTURE = ["fecha", "jornada", "equipo_local", "equipo_visitante"]
 CAMPOS_RESULTADOS = ["fecha", "jornada", "equipo_local", "equipo_visitante",
@@ -68,11 +93,23 @@ def actualizar(n_sims=1000, correr_simulacion_fn=None, imprimir=True):
     if imprimir:
         print(f"  {len(partidos_jugados)} partidos jugados vistos en Promiedos")
 
-    # Como no hace falta traducir nombres, matcheamos directo contra el
-    # fixture pendiente por (equipo_local, equipo_visitante).
+    # El fixture pendiente y lo que devuelve Promiedos pueden venir con
+    # distinto formato de nombre para el mismo club (nombre completo vs.
+    # corto -- Promiedos usa ambos según la sección, ver
+    # mapeo_equipos_lpf.py). Se resuelve cada nombre a su forma canónica
+    # ANTES de armar la clave de matcheo, así no importa qué formato haya
+    # usado cada lado. Si un nombre no resuelve (equipo desconocido), se
+    # deja tal cual -- no va a matchear nada y va a caer a sin_matchear,
+    # que es lo correcto (no ocultar un problema real).
+    def _clave(equipo_local, equipo_visitante):
+        return (
+            resolver_equipo_lpf(equipo_local) or equipo_local,
+            resolver_equipo_lpf(equipo_visitante) or equipo_visitante,
+        )
+
     indice_fixture = {}
     for i, fila in enumerate(fixture):
-        clave = (fila["equipo_local"], fila["equipo_visitante"])
+        clave = _clave(fila["equipo_local"], fila["equipo_visitante"])
         indice_fixture[clave] = i
 
     sin_matchear = []
@@ -81,15 +118,19 @@ def actualizar(n_sims=1000, correr_simulacion_fn=None, imprimir=True):
     indices_a_borrar = []
 
     for p in partidos_jugados:
-        clave = (p["equipo_local"], p["equipo_visitante"])
+        clave = _clave(p["equipo_local"], p["equipo_visitante"])
         if clave in indice_fixture:
             idx = indice_fixture[clave]
             fila_fixture = fixture[idx]
             resultado_cargado = {
                 "fecha": fila_fixture.get("fecha", ""),
                 "jornada": fila_fixture.get("jornada", ""),
-                "equipo_local": p["equipo_local"],
-                "equipo_visitante": p["equipo_visitante"],
+                # Se guarda el nombre TAL COMO ESTABA en el fixture
+                # pendiente (no el que trajo Promiedos), para no
+                # introducir una tercera variante de nombre más allá de
+                # las que ya conviven en el sistema.
+                "equipo_local": fila_fixture["equipo_local"],
+                "equipo_visitante": fila_fixture["equipo_visitante"],
                 "goles_local": p["goles_local"],
                 "goles_visitante": p["goles_visitante"],
             }
@@ -123,15 +164,12 @@ def actualizar(n_sims=1000, correr_simulacion_fn=None, imprimir=True):
     fixture_restante = [f for i, f in enumerate(fixture) if i not in indices_a_borrar]
 
     with transaction() as repo:
+        # OJO: acá NO se toca repo.standing_records("lpf") / no se
+        # llama repo.upsert_standings("lpf", ...). Ver punto 6 del
+        # docstring del módulo -- esa tabla es el Apertura congelado,
+        # no la tabla del Clausura. Solo se reemplazan los partidos
+        # (fixture pendiente / resultados jugados).
         repo.replace_matches("lpf", fixture_restante, resultados)
-        filas = repo.standing_records("lpf")
-        indice = {f["equipo"]: f for f in filas}
-        for p in cargados:
-            _aplicar_partido(
-                indice, p["equipo_local"], p["equipo_visitante"],
-                int(p["goles_local"]), int(p["goles_visitante"]),
-            )
-        repo.upsert_standings("lpf", _reordenar_posiciones(filas))
         elo_actualizados = repo.apply_club_rating_events(
             "lpf", elo_cargados, source="real_results", metadata={"origen": "actualizar_resultados_lpf.py"}
         )

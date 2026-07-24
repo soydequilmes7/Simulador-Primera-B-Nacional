@@ -25,6 +25,7 @@ import numpy as np
 import data_access
 import rutas
 from modelos.estadisticas import Estadisticas
+from modelos.promotion_requirements import construir_requisitos_ascenso
 from fixture_generator import generar_fixture_ida_vuelta
 
 
@@ -163,22 +164,36 @@ class EstadisticasLPF(Estadisticas):
         # particular -- si se genera una temporada nueva con otra
         # cantidad de fechas, sigue siendo válida mientras sea pareja.
         if conteo_fixture.nunique() > 1:
-            # Caso frecuente y confuso: un club asciende con un alias
-            # corto sin desambiguar (ver PromotionManager._mover_club,
-            # que ahora normaliza esto en el momento del ascenso -- si
-            # de todos modos se llega hasta acá, probablemente entró
-            # por otro camino, ej. datos cargados a mano o Supabase con
-            # el alias corto todavía sin arreglar). El síntoma es
-            # SIEMPRE el mismo: un nombre con exactamente el DOBLE de
-            # partidos que el resto -- normalizar() fusionó dos clubes
-            # distintos en un solo nombre. Se lo señala explícito para
-            # no perder tiempo interpretando la tabla de conteos.
+            # Dos causas posibles para un fixture desparejo, y se
+            # distinguen por la forma del desvío:
+            #
+            #   a) Colisión de nombres: normalizar()/NORMALIZACION_NOMBRES
+            #      fusionó dos clubes distintos en un solo nombre (típico:
+            #      un club recién ascendido con un alias corto sin
+            #      desambiguar). El síntoma es SIEMPRE el mismo: un nombre
+            #      con EXACTAMENTE el doble de partidos que el resto. Esto
+            #      sí es un bug de datos -> corta la simulación.
+            #
+            #   b) Fecha a medio jugar: en un fixture real los partidos de
+            #      una misma fecha se juegan escalonados en varios días
+            #      (viernes a lunes), así que es normal que algunos
+            #      equipos ya tengan un partido menos pendiente que el
+            #      resto mientras la fecha no está 100% completa. Esto NO
+            #      es un bug -> se avisa pero se simula igual, cada equipo
+            #      con los partidos que realmente le quedan.
             maximo = conteo_fixture.max()
+            minimo = conteo_fixture.min()
             sospechosos = conteo_fixture[conteo_fixture == maximo].index.tolist()
-            pista = ""
-            if len(sospechosos) < len(conteo_fixture) and maximo == 2 * conteo_fixture.min():
-                pista = (
-                    f"\nPinta a colisión de nombres, no a un fixture mal generado: "
+            es_colision = (
+                minimo > 0
+                and maximo == 2 * minimo
+                and len(sospechosos) < len(conteo_fixture)
+            )
+            if es_colision:
+                raise ValueError(
+                    f"Los equipos no tienen la misma cantidad de partidos en fixture_lpf.csv "
+                    f"(debería ser pareja para todos):\n{conteo_fixture}\n"
+                    f"Pinta a colisión de nombres, no a un fixture mal generado: "
                     f"{sospechosos} tiene(n) EXACTAMENTE el doble de partidos que el "
                     f"resto -- normalizar()/NORMALIZACION_NOMBRES probablemente fusionó "
                     f"dos clubes distintos en un solo nombre (típico: un club recién "
@@ -186,9 +201,10 @@ class EstadisticasLPF(Estadisticas):
                     f"origen de datos). Revisar el nombre real de ese club en el origen "
                     f"(Supabase/tablalpf.csv) antes de re-simular."
                 )
-            raise ValueError(
-                f"Los equipos no tienen la misma cantidad de partidos en fixture_lpf.csv "
-                f"(debería ser pareja para todos):\n{conteo_fixture}{pista}"
+            print(
+                f"Aviso: fixture desparejo (fecha a medio jugar, no es colisión de "
+                f"nombres) -- se simula igual, cada equipo con los partidos que le "
+                f"quedan:\n{conteo_fixture}"
             )
 
         equipos_promedios = set(self.promedios_historicos["equipo"])
@@ -490,7 +506,14 @@ class EstadisticasLPF(Estadisticas):
         coincidencia entre el descendido por promedio y el de la tabla
         anual. Esto preserva EXACTAMENTE el mismo comportamiento (incluido
         jugar partidos de desempate) para esos casos, sin pagar el costo
-        de por-simulación en el caso común."""
+        de por-simulación en el caso común.
+
+        Devuelve (descensos_por_sim, orden_anual_por_sim): el segundo es
+        la lista (longitud S) del orden de equipos en la Tabla Anual de
+        cada simulación (mejor a peor), reusando el mismo argsort que ya
+        se calcula acá para el caso común -- así _clasifica_copas_sim()
+        no tiene que volver a ordenar la Tabla Anual desde cero por cada
+        simulación."""
         nombres = tabla_anual_arr["nombres"]
         puntos, gf, gc, dg = (tabla_anual_arr["puntos"], tabla_anual_arr["gf"],
                                tabla_anual_arr["gc"], tabla_anual_arr["dg"])
@@ -520,9 +543,12 @@ class EstadisticasLPF(Estadisticas):
         necesita_fallback = (n_empatados_anual > 1) | (n_empatados_prom > 1) | mismo
 
         descensos_por_sim = [None] * S
+        orden_anual_por_sim = [None] * S
+
         directos = np.where(~necesita_fallback)[0]
         for s in directos:
             descensos_por_sim[s] = [nombres[idx_peor_prom[s]], nombres[idx_ultimo[s]]]
+            orden_anual_por_sim[s] = nombres[orden_anual[:, s]].tolist()
 
         for s in np.where(necesita_fallback)[0]:
             tabla_anual_df = pd.DataFrame({
@@ -540,8 +566,9 @@ class EstadisticasLPF(Estadisticas):
             tabla_prom_df.index = tabla_prom_df.index + 1
 
             descensos_por_sim[s] = self.calcular_descensos(tabla_anual_df, tabla_prom_df)
+            orden_anual_por_sim[s] = tabla_anual_df["equipo"].tolist()
 
-        return descensos_por_sim
+        return descensos_por_sim, orden_anual_por_sim
 
     def _definir_por_desempate(self, candidatos):
         """El reglamento no desempata la posición que define un descenso por
@@ -608,6 +635,97 @@ class EstadisticasLPF(Estadisticas):
 
         return {"libertadores_2027": libertadores, "sudamericana_2027": sudamericana}
 
+    def _clasifica_copas_sim(self, orden_anual_nombres, campeon_clausura):
+        """Misma lógica de calcular_copas() pero recibiendo el orden ya
+        armado (lista de nombres de la Tabla Anual de ESA simulación, ver
+        _calcular_descensos_vectorizado) en vez de un DataFrame, para
+        poder llamarla barato una vez por simulación dentro de
+        monte_carlo_lpf() sin reconstruir un DataFrame de ~30 filas 1000+
+        veces.
+
+        No distingue Libertadores de Sudamericana (para "¿Qué necesita
+        [Equipo]?" solo importa si clasifica a copas o no) -- devuelve el
+        SET de equipos que clasifican a alguna de las dos, sin el
+        placeholder de Copa Argentina (no simulada)."""
+        ya_clasificados = {self.CAMPEON_APERTURA, campeon_clausura}
+        resto = [e for e in orden_anual_nombres if e not in ya_clasificados]
+        # ARGENTINA 4, 5, 6 (Libertadores) + próximos 6 (Sudamericana) = 9.
+        return ya_clasificados | set(resto[:9])
+
+    # ------------------------------------------------------------------
+    # "¿Qué necesita [Equipo]?" para LPF: reusa construir_requisitos_ascenso()
+    # tal cual (el cálculo de targetPoints/requiredPPG/etc. es genérico,
+    # no depende de qué logro se está evaluando), y solo reescribe el
+    # 'summary' en texto -- que sí menciona explícitamente "ascenso" -- con
+    # la redacción que corresponde a evitar el descenso o a clasificar a
+    # copas. El resto de las claves del dict (targetPoints, currentPoints,
+    # remainingPoints, matchesRemaining, requiredPPG, averageWins/Draws/
+    # Losses, promotionProbabilityAtTarget) quedan intactas.
+    # ------------------------------------------------------------------
+    @staticmethod
+    def _texto_requisitos_descenso(equipo, r, pct_desc_promedios=0.0, pct_desc_tabla_anual=0.0):
+        """pct_desc_promedios / pct_desc_tabla_anual: % de TODAS las
+        simulaciones (no solo las que desciende) en que el equipo desciende
+        específicamente por cada uno de los dos criterios del Art. 26 +
+        Estatuto AFA art. 93. Por construcción suman exactamente
+        r-independiente el total de "desciende" de ese equipo -- se agregan
+        acá, en vez de en construir_requisitos_ascenso() (que es genérico y
+        no sabe nada de "promedios" vs. "Tabla Anual"), para dejar claro
+        CUÁL de los dos criterios es el que más está complicando a ESE
+        equipo en particular. La tabla de promedios pesa temporadas
+        históricas (no solo el año en curso), así que un equipo puede estar
+        cómodo en la Tabla Anual y aun así arriesgado por promedios."""
+        if r["targetPoints"] is None:
+            r["summary"] = (
+                f"Según las simulaciones, {equipo} no logra evitar el descenso en "
+                f"ninguno de los escenarios simulados esta temporada."
+            )
+            r["descensoPromediosPct"] = pct_desc_promedios
+            r["descensoTablaAnualPct"] = pct_desc_tabla_anual
+            return r
+        prob_texto = int(round(r["promotionProbabilityAtTarget"]))
+        pct_total_desc = round(pct_desc_promedios + pct_desc_tabla_anual, 1)
+        if pct_total_desc > 0:
+            criterio_principal = (
+                "la tabla de promedios" if pct_desc_promedios >= pct_desc_tabla_anual
+                else "la Tabla Anual"
+            )
+            nota_criterio = (
+                f" El riesgo de descenso de {equipo} viene sobre todo de {criterio_principal}: "
+                f"desciende por promedios en el {pct_desc_promedios}% de las simulaciones, y "
+                f"por la Tabla Anual en el {pct_desc_tabla_anual}%."
+            )
+        else:
+            nota_criterio = ""
+        r["summary"] = (
+            f"Según las simulaciones, {equipo} normalmente necesita llegar a los "
+            f"{r['targetPoints']} puntos en la Tabla Anual para asegurarse la "
+            f"permanencia. Con ese rendimiento evita el descenso en alrededor "
+            f"del {prob_texto}% de las simulaciones.{nota_criterio}"
+        )
+        r["descensoPromediosPct"] = pct_desc_promedios
+        r["descensoTablaAnualPct"] = pct_desc_tabla_anual
+        return r
+
+    @staticmethod
+    def _texto_requisitos_copas(equipo, r):
+        if r["targetPoints"] is None:
+            r["summary"] = (
+                f"Según las simulaciones, {equipo} no logra clasificar a copas "
+                f"internacionales en ninguno de los escenarios simulados esta "
+                f"temporada."
+            )
+            return r
+        prob_texto = int(round(r["promotionProbabilityAtTarget"]))
+        r["summary"] = (
+            f"Según las simulaciones, {equipo} normalmente necesita llegar a los "
+            f"{r['targetPoints']} puntos en la Tabla Anual para ser un candidato "
+            f"claro a clasificar a copas internacionales (Libertadores o "
+            f"Sudamericana). Con ese rendimiento clasifica en alrededor del "
+            f"{prob_texto}% de las simulaciones."
+        )
+        return r
+
     # ------------------------------------------------------------------
     # Monte Carlo: corre el Clausura + playoffs + tabla anual n veces.
     # Calcado del patrón de monte_carlo() en Nacional (estadisticas.py).
@@ -617,6 +735,14 @@ class EstadisticasLPF(Estadisticas):
 
         contador = {
             nombre: {"playoffs": 0, "campeon_clausura": 0, "descenso": 0,
+                      # Desglose del descenso por criterio (Art. 26 + Estatuto
+                      # AFA art. 93): el cupo de "descenso" ya suma ambos,
+                      # pero para "¿Qué necesita [Equipo]?" conviene saber
+                      # POR CUÁL de los dos criterios viene el riesgo real de
+                      # cada equipo -- no es lo mismo estar complicado por la
+                      # Tabla Anual (2026 puro) que por la tabla de
+                      # promedios (arrastra ~3 temporadas históricas).
+                      "descenso_promedios": 0, "descenso_tabla_anual": 0,
                       "puntos_total": 0, "posicion_total": 0}
             for nombre in self.equipos
         }
@@ -633,7 +759,21 @@ class EstadisticasLPF(Estadisticas):
         clausura_tot = self._simular_clausura_vectorizado(n_simulaciones)
         tabla_anual_arr = self._calcular_tabla_anual_arrays(clausura_tot)
         tabla_promedios_arr = self._calcular_tabla_promedios_arrays(tabla_anual_arr)
-        descensos_por_sim = self._calcular_descensos_vectorizado(tabla_anual_arr, tabla_promedios_arr)
+        descensos_por_sim, orden_anual_por_sim = self._calcular_descensos_vectorizado(
+            tabla_anual_arr, tabla_promedios_arr
+        )
+
+        # Flags por-simulación de "esta simulación terminó [evitando el
+        # descenso / clasificando a copas] para este equipo". Se usan
+        # después del loop, sin volver a simular nada, para armar
+        # "¿Qué necesita [Equipo]?" (ver modelos/promotion_requirements.py
+        # y _texto_requisitos_descenso/_texto_requisitos_copas arriba).
+        evita_descenso_flags = {
+            nombre: np.ones(n_simulaciones, dtype=bool) for nombre in self.equipos
+        }
+        clasifica_copas_flags = {
+            nombre: np.zeros(n_simulaciones, dtype=bool) for nombre in self.equipos
+        }
 
         for i in range(n_simulaciones):
             totales_i = {
@@ -661,8 +801,23 @@ class EstadisticasLPF(Estadisticas):
             campeon_clausura, _ = self.jugar_playoffs(tablas_clausura)
             contador[campeon_clausura]["campeon_clausura"] += 1
 
-            for descendido in descensos_por_sim[i]:
-                contador[descendido]["descenso"] += 1
+            # calcular_descensos() / _calcular_descensos_vectorizado() SIEMPRE
+            # devuelven 2 equipos distintos en este orden: [descendido por
+            # promedios, descendido por Tabla Anual] (si coinciden, el
+            # segundo ya viene reemplazado por el penúltimo de la Tabla
+            # Anual -- ver calcular_descensos()). Por eso podemos desarmar
+            # la tupla acá en vez de iterar genéricamente.
+            descendido_promedios_i, descendido_anual_i = descensos_por_sim[i]
+            contador[descendido_promedios_i]["descenso"] += 1
+            contador[descendido_promedios_i]["descenso_promedios"] += 1
+            evita_descenso_flags[descendido_promedios_i][i] = False
+
+            contador[descendido_anual_i]["descenso"] += 1
+            contador[descendido_anual_i]["descenso_tabla_anual"] += 1
+            evita_descenso_flags[descendido_anual_i][i] = False
+
+            for clasificado in self._clasifica_copas_sim(orden_anual_por_sim[i], campeon_clausura):
+                clasifica_copas_flags[clasificado][i] = True
 
             if (i + 1) % paso_reporte == 0:
                 print(f"  {i + 1}/{n_simulaciones} simulaciones...")
@@ -675,6 +830,11 @@ class EstadisticasLPF(Estadisticas):
                 "%playoffs": round(100 * datos["playoffs"] / n_simulaciones, 1),
                 "%campeon_clausura": round(100 * datos["campeon_clausura"] / n_simulaciones, 1),
                 "descenso": round(100 * datos["descenso"] / n_simulaciones, 1),
+                # Mismo total que "descenso", desglosado por criterio (Art.
+                # 26 + Estatuto AFA art. 93) -- por construcción,
+                # descenso_promedios + descenso_tabla_anual == descenso.
+                "descenso_promedios": round(100 * datos["descenso_promedios"] / n_simulaciones, 1),
+                "descenso_tabla_anual": round(100 * datos["descenso_tabla_anual"] / n_simulaciones, 1),
             })
         resumen = pd.DataFrame(filas).sort_values("%playoffs", ascending=False).reset_index(drop=True)
         resumen.index = resumen.index + 1
@@ -695,6 +855,59 @@ class EstadisticasLPF(Estadisticas):
             tabla_zona = tabla_zona.sort_values("posicion_prom").reset_index(drop=True)
             tabla_zona.index = tabla_zona.index + 1
             tabla_esperada_por_zona[zona] = tabla_zona
+
+        # --- "¿Qué necesita [Equipo]?" (descenso / copas): objetos por
+        # equipo para la ficha, armados acá, una sola vez, a partir de los
+        # arrays por-simulación que ya calculó _simular_clausura_vectorizado()
+        # (victorias/empates/derrotas en el Clausura pendiente),
+        # _calcular_tabla_anual_arrays() (puntos finales de Tabla Anual) y
+        # de evita_descenso_flags / clasifica_copas_flags (armados arriba,
+        # en este mismo loop). No se vuelve a correr Monte Carlo ni se
+        # recalcula nada del motor de simulación -- ver
+        # modelos/promotion_requirements.py.
+        apertura_puntos_idx = self.apertura.set_index("equipo")["puntos"]
+        idx_por_nombre_anual = {n: i for i, n in enumerate(tabla_anual_arr["nombres"].tolist())}
+
+        partidos_restantes_por_equipo = {nombre: 0 for nombre in self.equipos}
+        for local, visitante in self._pares_fixture():
+            partidos_restantes_por_equipo[local] += 1
+            partidos_restantes_por_equipo[visitante] += 1
+
+        self.requisitos_descenso = {}
+        self.requisitos_copas = {}
+        for nombre in self.equipos:
+            idx = idx_por_nombre_anual[nombre]
+            # Puntos de HOY en la Tabla Anual (Apertura real + Clausura
+            # jugado hasta ahora) -- no depende de la simulación.
+            puntos_actuales_anual = int(apertura_puntos_idx.loc[nombre]) + self.equipos[nombre].puntos
+
+            r_descenso = construir_requisitos_ascenso(
+                equipo=nombre,
+                puntos_actuales=puntos_actuales_anual,
+                partidos_restantes=partidos_restantes_por_equipo[nombre],
+                puntos_final_sims=tabla_anual_arr["puntos"][idx],
+                victorias_restantes_sims=clausura_tot[nombre]["victorias"],
+                empates_restantes_sims=clausura_tot[nombre]["empates"],
+                derrotas_restantes_sims=clausura_tot[nombre]["derrotas"],
+                asciende_sims=evita_descenso_flags[nombre],
+            )
+            pct_desc_promedios = round(100 * contador[nombre]["descenso_promedios"] / n_simulaciones, 1)
+            pct_desc_tabla_anual = round(100 * contador[nombre]["descenso_tabla_anual"] / n_simulaciones, 1)
+            self.requisitos_descenso[nombre] = self._texto_requisitos_descenso(
+                nombre, r_descenso, pct_desc_promedios, pct_desc_tabla_anual
+            )
+
+            r_copas = construir_requisitos_ascenso(
+                equipo=nombre,
+                puntos_actuales=puntos_actuales_anual,
+                partidos_restantes=partidos_restantes_por_equipo[nombre],
+                puntos_final_sims=tabla_anual_arr["puntos"][idx],
+                victorias_restantes_sims=clausura_tot[nombre]["victorias"],
+                empates_restantes_sims=clausura_tot[nombre]["empates"],
+                derrotas_restantes_sims=clausura_tot[nombre]["derrotas"],
+                asciende_sims=clasifica_copas_flags[nombre],
+            )
+            self.requisitos_copas[nombre] = self._texto_requisitos_copas(nombre, r_copas)
 
         print("Monte Carlo LPF terminado.")
         return resumen, tabla_esperada_por_zona
