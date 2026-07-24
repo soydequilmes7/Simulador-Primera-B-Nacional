@@ -227,6 +227,45 @@ una edad fija (30 años) que no existía en el backend. Se agregó real:
 - Reutiliza componentes visuales existentes (glow, tarjetas con
   profundidad) donde aplique, sin copiar contenido de otros juegos.
 
+### Fase 3.1 — Unificación a un solo archivo (a pedido de Pablo)
+
+Las pantallas de "Crear DT" y "Elegir Club" habían arrancado como dos
+archivos HTML separados (`modo-dt-crear.html` → `modo-dt-elegir-club.html`,
+navegando con `window.location.href` + una clave de sessionStorage por
+pantalla). Pablo pidió unificarlo porque con cada pantalla nueva (previa,
+resumen, fin de temporada, ofertas...) esto se iba a convertir en un
+quilombo de archivos sueltos.
+
+Decisión: **`public/modo-dt.html`** único, con las 3 pantallas (por ahora)
+como `<div class="dt-view" data-view="...">` y un router mínimo en JS
+(`mostrarVistaDT(nombre)`) que oculta/muestra sin recargar la página. Los
+`modo-dt-crear.html`/`modo-dt-elegir-club.html` viejos se borraron (nada
+más los referenciaba). **Importante**: esto es un archivo separado de
+`public/index.html`/`template.html` (el dashboard de Nacional/LPF/B
+Metro/Primera C) -- no se tocan entre sí. `index.html` ya pesa 825 KB;
+mezclar Modo DT ahí adentro lo haría más pesado y frágil sin necesidad,
+ya que Modo DT no comparte nada real con ese dashboard.
+
+Estado compartido: una sola clave de sessionStorage (`modoDT_estado`,
+`{ dt: {...}, club: {...} }`) en vez de una clave por pantalla. Al cargar
+la página, `arrancarDT()` decide con qué vista abrir según lo que ya haya
+en sessionStorage (permite refrescar sin perder progreso).
+
+**Hub principal (Panel del DT) agregado** como tercera vista: tarjeta de
+DT (identidad, edad, reputación con barra 0-100), tarjeta de club actual
+(escudo real, categoría, objetivo), récord de carrera (PJ/PG/PE/PP,
+arranca en 0), sección de objetivos (por ahora solo el texto del club
+elegido -- no está conectado a
+`manager_mode.dirigencia.generar_objetivos_temporada()` todavía, eso
+necesita el backend real) y logros (estado vacío). El CTA de "próximo
+partido" queda deshabilitado ("próximamente") -- la previa de partido es
+el siguiente incremento.
+
+Valores default del hub calcados de `manager_mode/domain.py`:
+`Entrenador.reputacion` arranca en 50.0, `RecordEntrenador` arranca todo
+en 0. Edad 30 (coincide con `Entrenador.edad` inicial y con el texto ya
+existente en la pantalla de creación).
+
 ## Fase 4 — Integración
 
 - Endpoints `/api/dt/...` en `api/index.py`, sin tocar los existentes.
