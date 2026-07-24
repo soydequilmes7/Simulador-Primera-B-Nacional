@@ -255,6 +255,41 @@
   }
   .hub-cta-texto { font-size: 13.5px; color: rgba(255,255,255,0.7); max-width: 480px; line-height: 1.5; }
   .hub-cta-texto strong { color: #6ee7b7; }
+
+  /* Estado del club (moral/confianza/hinchada/vestuario) -- variables
+     internas de manager_mode.eventos.EstadoClub, ver hub-estado-*. */
+  .hub-estado-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 20px; }
+  .hub-estado-item { display: flex; flex-direction: column; gap: 6px; }
+  .hub-estado-top { display: flex; align-items: center; justify-content: space-between; }
+  .hub-estado-label { font-size: 11px; color: rgba(255,255,255,0.45); font-family: 'Rajdhani', sans-serif; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+  .hub-estado-valor { font-size: 12px; color: rgba(255,255,255,0.6); font-weight: 600; }
+  .hub-estado-track { height: 6px; border-radius: 5px; background: rgba(255,255,255,0.08); overflow: hidden; }
+  .hub-estado-fill { height: 100%; border-radius: 5px; transition: width 0.3s ease; }
+
+  /* ============ VISTA 4: EVENTO ============ */
+  .evento-card {
+    max-width: 720px; background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 22px; padding: 34px; backdrop-filter: blur(16px);
+  }
+  .evento-categoria {
+    display: inline-block; font-size: 10.5px; font-family: 'Rajdhani', sans-serif; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase; color: #93c5fd;
+    background: rgba(147,197,253,0.12); padding: 4px 12px; border-radius: 20px; margin-bottom: 14px;
+  }
+  .evento-titulo { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 30px; margin: 0 0 12px; color: #fff; }
+  .evento-descripcion { font-size: 14.5px; color: rgba(255,255,255,0.68); line-height: 1.6; margin: 0 0 26px; }
+  .evento-opciones { display: flex; flex-direction: column; gap: 12px; }
+  .evento-opcion {
+    text-align: left; cursor: pointer; padding: 16px 20px; border-radius: 14px;
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+    color: #eef2f4; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 500;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  .evento-opcion:hover { border-color: rgba(52,211,153,0.5); background: rgba(52,211,153,0.06); }
+
+  .evento-resultado { margin-top: 22px; padding-top: 22px; border-top: 1px solid rgba(255,255,255,0.08); }
+  .evento-resultado-frase { font-size: 14px; color: rgba(255,255,255,0.75); line-height: 1.55; font-style: italic; margin: 0 0 20px; }
+  .evento-resultado-frase.vacia { color: rgba(255,255,255,0.35); font-style: normal; }
 </style>
 </head>
 <body>
@@ -353,6 +388,9 @@
               <div class="hub-club-categoria" id="hub-club-categoria"></div>
             </div>
           </div>
+
+          <div class="hub-seccion-titulo">Estado del club</div>
+          <div class="hub-estado-grid" id="hub-estado-grid"></div>
         </div>
 
         <div>
@@ -371,9 +409,24 @@
           <div class="hub-vacio" id="hub-logros-vacio">Todavía no desbloqueaste ningún logro. Se van a ir sumando acá a medida que avance tu carrera.</div>
 
           <div class="hub-cta-bar">
-            <div class="hub-cta-texto">Simular el próximo partido y el resto de la temporada — <strong>previa, resumen y fin de temporada</strong> — está en construcción.</div>
-            <button class="boton-primario" disabled>Próximo partido (próximamente)</button>
+            <div class="hub-cta-texto" id="hub-cta-texto">Avanzá tu carrera: cada jornada puede traer un partido tranquilo o una <strong>decisión</strong> que te va a pedir elegir entre distintas consecuencias.</div>
+            <button class="boton-primario activo" id="btn-simular-jornada">Simular próxima jornada</button>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ VISTA 4: EVENTO ============ -->
+    <div class="dt-view" data-view="evento">
+      <div class="eyebrow"><div class="dot"></div><span>Manager Mode · Jornada</span></div>
+      <div class="evento-card">
+        <span class="evento-categoria" id="evento-categoria"></span>
+        <h2 class="evento-titulo" id="evento-titulo"></h2>
+        <p class="evento-descripcion" id="evento-descripcion"></p>
+        <div class="evento-opciones" id="evento-opciones"></div>
+        <div class="evento-resultado" id="evento-resultado" style="display:none;">
+          <p class="evento-resultado-frase" id="evento-resultado-frase"></p>
+          <button class="boton-primario activo" id="btn-volver-hub">Volver al hub</button>
         </div>
       </div>
     </div>
@@ -581,6 +634,7 @@ function renderElegirClub() {
 document.getElementById('btn-confirmar-club').addEventListener('click', () => {
   if (seleccionClub === null) return;
   estadoDT.club = opcionesClub[seleccionClub];
+  estadoDT.club.estadoClub = ESTADO_CLUB_DEFAULT();
   guardarEstadoDT(estadoDT);
   renderHub();
   mostrarVistaDT('hub');
@@ -615,6 +669,8 @@ function renderHub() {
   document.getElementById('hub-club-escudo').querySelector('img').src = club.escudo;
   document.getElementById('hub-club-nombre').textContent = club.nombre;
   document.getElementById('hub-club-categoria').textContent = club.categoria;
+  if (!club.estadoClub) club.estadoClub = ESTADO_CLUB_DEFAULT();
+  renderEstadoClub();
 
   const record = dt.record || { pj: 0, pg: 0, pe: 0, pp: 0 };
   document.getElementById('hub-pj').textContent = record.pj;
@@ -631,11 +687,221 @@ function renderHub() {
 }
 
 /* ==========================================================================
-   ARRANQUE: decide con qué vista abrir según lo que ya haya en sessionStorage
-   (permite refrescar la página sin perder el progreso, y saltar directo al
-   hub si ya se creó DT + club en esta sesión).
+   CATÁLOGO DE EVENTOS -- se trae de data_manager_mode.json, exportado
+   por manager_mode/exportar_datos_frontend.py a partir del catálogo
+   REAL de manager_mode/eventos.py + manager_mode/narrativa.py (58
+   eventos). Es la única fuente de verdad -- FUENTE, no una copia a
+   mano en JS. Si se agregan eventos nuevos en Python, hay que volver a
+   correr ese script para que este JSON se actualice.
    ========================================================================== */
-function arrancarDT() {
+let DATOS_MANAGER_MODE = null;
+async function cargarDatosManagerMode(){
+  try {
+    const resp = await fetch('data_manager_mode.json');
+    DATOS_MANAGER_MODE = await resp.json();
+  } catch (err) {
+    console.error('No se pudo cargar data_manager_mode.json', err);
+    DATOS_MANAGER_MODE = { eventos: [], reacciones: {}, portadas: {} };
+  }
+}
+
+// Mismo mapa que PESOS_CATEGORIA_POR_IDENTIDAD de
+// manager_mode/evento_service.py -- cada identidad ve con más
+// frecuencia ciertas categorías cuando se sortea SIN categoría
+// explícita. Categoría no listada = peso 1.0 (normal).
+const PESOS_CATEGORIA_POR_IDENTIDAD = {
+  formador: { juveniles: 2.5 },
+  motivador: { vestuario: 1.8, vida_plantel: 1.5 },
+  pragmatico: { dirigencia: 1.5, crisis: 0.7 },
+  ofensivo: { clasicos: 1.5, copas: 1.5 },
+  revolucionario: { rumores: 1.6, crisis: 1.6, vida_plantel: 1.3 },
+};
+
+// Nuestros clubes de arranque (ver POOL_CLUBES_ARRANQUE) son todos de
+// Primera Nacional/Primera C -- ninguno clasifica a copas continentales
+// todavía, así que excluimos siempre esas 2 categorías del sorteo,
+// mismo criterio que club_clasifica_libertadores/sudamericana=False en
+// EventoService.elegir_evento().
+const CATEGORIAS_EXCLUIDAS_SIEMPRE = new Set(['libertadores', 'sudamericana']);
+
+function elegirEvento(identidadKey){
+  const candidatos = DATOS_MANAGER_MODE.eventos.filter(e => !CATEGORIAS_EXCLUIDAS_SIEMPRE.has(e.categoria));
+  const pesosIdentidad = PESOS_CATEGORIA_POR_IDENTIDAD[identidadKey] || {};
+  const pesos = candidatos.map(e => pesosIdentidad[e.categoria] ?? 1.0);
+  const pesoTotal = pesos.reduce((a, b) => a + b, 0);
+  let r = Math.random() * pesoTotal;
+  for (let i = 0; i < candidatos.length; i++){
+    r -= pesos[i];
+    if (r <= 0) return candidatos[i];
+  }
+  return candidatos[candidatos.length - 1];
+}
+
+// Interpola {club}/{rival}/{entrenador}/{racha} -- mismo formato que el
+// banco de manager_mode/narrativa.py (str.format en Python, replace acá).
+function interpolarNarrativa(texto, contexto){
+  return texto.replace(/\{(\w+)\}/g, (match, clave) => contexto[clave] ?? match);
+}
+
+function elegirReaccion(tipoReaccion, intensidad, contexto){
+  const banco = DATOS_MANAGER_MODE.reacciones[`${tipoReaccion}|${intensidad}`] || [];
+  if (banco.length === 0) return null;
+  const frase = banco[Math.floor(Math.random() * banco.length)];
+  return interpolarNarrativa(frase, contexto);
+}
+
+// Aplica los efectos de una opción sobre estadoClub, clampeando 0-100
+// salvo presupuesto (moneda libre) -- mismo criterio que
+// EstadoClub.aplicar() en manager_mode/eventos.py.
+function aplicarEfectosEvento(estadoClub, efectos){
+  efectos.forEach(efecto => {
+    let nuevo = (estadoClub[efecto.variable] ?? 50) + efecto.delta;
+    if (efecto.variable !== 'presupuesto') nuevo = Math.max(0, Math.min(100, nuevo));
+    estadoClub[efecto.variable] = nuevo;
+  });
+}
+
+const ESTADO_CLUB_DEFAULT = () => ({ moral: 50, confianza: 50, hinchada: 50, vestuario: 50, presupuesto: 0, reputacion: 50 });
+
+const ETIQUETAS_ESTADO_CLUB = [
+  { clave: 'moral', label: 'Moral del plantel', color: '#34d399' },
+  { clave: 'confianza', label: 'Confianza dirigencia', color: '#93c5fd' },
+  { clave: 'hinchada', label: 'Relación hinchada', color: '#fbbf24' },
+  { clave: 'vestuario', label: 'Clima de vestuario', color: '#f472b6' },
+];
+
+function renderEstadoClub(){
+  const estado = estadoDT.club.estadoClub || ESTADO_CLUB_DEFAULT();
+  const grid = document.getElementById('hub-estado-grid');
+  grid.innerHTML = ETIQUETAS_ESTADO_CLUB.map(({ clave, label, color }) => `
+    <div class="hub-estado-item">
+      <div class="hub-estado-top">
+        <span class="hub-estado-label">${label}</span>
+        <span class="hub-estado-valor">${Math.round(estado[clave])}</span>
+      </div>
+      <div class="hub-estado-track"><div class="hub-estado-fill" style="width:${Math.max(0, Math.min(100, estado[clave]))}%; background:${color};"></div></div>
+    </div>
+  `).join('');
+}
+
+/* -------------------- Simular jornada (botón del hub) -------------------- */
+// Pool chico de rivales de sabor -- no viene de un fixture real todavía
+// (eso necesita la integración de Fase 4). Alcanza para que la crónica
+// tenga un {rival} creíble para el nivel de arranque de carrera.
+const RIVALES_DE_SABOR = [
+  'Puerto Nuevo', 'CA Fenix', 'Berazategui', 'Sacachispas', 'Muñiz',
+  'Deportivo Merlo', 'Flandria', 'Almirante Brown', 'Talleres (RE)', 'Colegiales',
+];
+
+function contextoNarrativo(rival){
+  return {
+    club: estadoDT.club.nombre,
+    entrenador: estadoDT.dt.nombre,
+    rival: rival || RIVALES_DE_SABOR[Math.floor(Math.random() * RIVALES_DE_SABOR.length)],
+    racha: '', // sin racha real todavía -- se completa cuando haya historial de partidos
+  };
+}
+
+function simularJornada(){
+  // Mitad de las veces, un evento con decisión (lo que pidió Pablo:
+  // consecuencias distintas, no siempre positivas, a veces elegir el
+  // mal menor). La otra mitad, un partido silencioso -- no cada
+  // jornada necesita una previa/decisión.
+  if (Math.random() < 0.5){
+    mostrarEvento();
+  } else {
+    simularPartidoSilencioso();
+  }
+}
+
+function simularPartidoSilencioso(){
+  const rival = RIVALES_DE_SABOR[Math.floor(Math.random() * RIVALES_DE_SABOR.length)];
+  // Sorteo simple ponderado por reputación del DT (más reputación, algo
+  // mejor de resultado en promedio) -- placeholder hasta que Fase 4
+  // conecte esto con el motor vectorizado real (PartidoDTService).
+  const rep = estadoDT.dt.reputacion;
+  const pesoVictoria = 30 + rep * 0.3;
+  const pesoEmpate = 30;
+  const pesoDerrota = 40 - rep * 0.2;
+  const total = pesoVictoria + pesoEmpate + pesoDerrota;
+  const r = Math.random() * total;
+  const record = estadoDT.dt.record;
+  record.pj += 1;
+  let resultadoTexto;
+  if (r < pesoVictoria){
+    record.pg += 1;
+    resultadoTexto = `Ganó ${estadoDT.club.nombre} ante ${rival}.`;
+  } else if (r < pesoVictoria + pesoEmpate){
+    record.pe += 1;
+    resultadoTexto = `Empate de ${estadoDT.club.nombre} ante ${rival}.`;
+  } else {
+    record.pp += 1;
+    resultadoTexto = `Derrota de ${estadoDT.club.nombre} ante ${rival}.`;
+  }
+  guardarEstadoDT(estadoDT);
+  document.getElementById('hub-cta-texto').innerHTML = `<strong>Último resultado:</strong> ${resultadoTexto}`;
+  renderHub();
+}
+
+function mostrarEvento(){
+  const evento = elegirEvento(estadoDT.dt.identidad);
+  document.getElementById('evento-categoria').textContent = evento.categoria.replace('_', ' ');
+  document.getElementById('evento-titulo').textContent = evento.titulo;
+  document.getElementById('evento-descripcion').textContent = evento.descripcion;
+  document.getElementById('evento-resultado').style.display = 'none';
+
+  const opcionesDiv = document.getElementById('evento-opciones');
+  opcionesDiv.innerHTML = '';
+  evento.opciones.forEach(opcion => {
+    const btn = document.createElement('button');
+    btn.className = 'evento-opcion';
+    btn.textContent = opcion.texto;
+    btn.addEventListener('click', () => resolverOpcionEvento(evento, opcion));
+    opcionesDiv.appendChild(btn);
+  });
+
+  mostrarVistaDT('evento');
+}
+
+function resolverOpcionEvento(evento, opcion){
+  if (!estadoDT.club.estadoClub) estadoDT.club.estadoClub = ESTADO_CLUB_DEFAULT();
+  aplicarEfectosEvento(estadoDT.club.estadoClub, opcion.efectos);
+  guardarEstadoDT(estadoDT);
+
+  const frase = opcion.tipoReaccion
+    ? elegirReaccion(opcion.tipoReaccion, opcion.intensidad, contextoNarrativo())
+    : null;
+
+  document.getElementById('evento-opciones').innerHTML = '';
+  const resultadoDiv = document.getElementById('evento-resultado');
+  const fraseP = document.getElementById('evento-resultado-frase');
+  if (frase){
+    fraseP.textContent = frase;
+    fraseP.classList.remove('vacia');
+  } else {
+    fraseP.textContent = 'La decisión queda puertas adentro -- no trasciende a la prensa ni a la hinchada.';
+    fraseP.classList.add('vacia');
+  }
+  resultadoDiv.style.display = 'block';
+}
+
+document.getElementById('btn-volver-hub').addEventListener('click', () => {
+  renderHub();
+  mostrarVistaDT('hub');
+});
+
+document.getElementById('btn-simular-jornada').addEventListener('click', simularJornada);
+
+
+async function arrancarDT() {
+  // El catálogo de eventos hace falta antes de habilitar "Simular
+  // jornada" -- si el fetch todavía no terminó, el botón deshabilitado
+  // evita que se dispare un evento con DATOS_MANAGER_MODE vacío.
+  const btnJornada = document.getElementById('btn-simular-jornada');
+  btnJornada.disabled = true;
+  await cargarDatosManagerMode();
+  btnJornada.disabled = false;
+
   if (estadoDT.dt && estadoDT.club) {
     renderHub();
     mostrarVistaDT('hub');
