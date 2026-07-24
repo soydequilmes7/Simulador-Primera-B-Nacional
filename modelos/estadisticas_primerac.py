@@ -394,6 +394,11 @@ class Estadisticas:
                     "puntos": np.full(S, puntos_base[i], dtype=np.int64),
                     "gf": np.full(S, gf_base[i], dtype=np.int64),
                     "gc": np.full(S, gc_base[i], dtype=np.int64),
+                    # Sin partidos pendientes no hay victorias/empates/derrotas
+                    # que sumar de acá en más.
+                    "victorias": np.zeros(S, dtype=np.int64),
+                    "empates": np.zeros(S, dtype=np.int64),
+                    "derrotas": np.zeros(S, dtype=np.int64),
                 }
                 for i, nombre in enumerate(nombres_equipos)
             }
@@ -420,6 +425,15 @@ class Estadisticas:
         puntos_tot[:] = puntos_base[:, None]
         gf_tot[:] = gf_base[:, None]
         gc_tot[:] = gc_base[:, None]
+
+        # Victorias/empates/derrotas de CADA simulación, contando solo los
+        # partidos pendientes que se sortean acá (no arrastran base como
+        # puntos/gf/gc, porque esa base ya está implícita en puntos_base).
+        # Se usan para "¿Qué necesita [Equipo]?": el rendimiento que
+        # necesita el equipo en lo que queda de temporada.
+        victorias_tot = np.zeros((n_equipos, S), dtype=np.int64)
+        empates_tot = np.zeros((n_equipos, S), dtype=np.int64)
+        derrotas_tot = np.zeros((n_equipos, S), dtype=np.int64)
 
         tanda = max(1, min(S, max_elems_por_bloque // max(1, M * n_marcadores)))
 
@@ -454,6 +468,9 @@ class Estadisticas:
             bloque_puntos = puntos_tot[:, inicio:inicio + s]
             bloque_gf = gf_tot[:, inicio:inicio + s]
             bloque_gc = gc_tot[:, inicio:inicio + s]
+            bloque_victorias = victorias_tot[:, inicio:inicio + s]
+            bloque_empates = empates_tot[:, inicio:inicio + s]
+            bloque_derrotas = derrotas_tot[:, inicio:inicio + s]
 
             np.add.at(bloque_puntos, idx_local, pts_local)
             np.add.at(bloque_puntos, idx_visitante, pts_visitante)
@@ -462,11 +479,25 @@ class Estadisticas:
             np.add.at(bloque_gc, idx_local, goles_visitante)
             np.add.at(bloque_gc, idx_visitante, goles_local)
 
+            gana_local_i = gana_local.astype(np.int64)
+            gana_visitante_i = gana_visitante.astype(np.int64)
+            empate_i = empate.astype(np.int64)
+
+            np.add.at(bloque_victorias, idx_local, gana_local_i)
+            np.add.at(bloque_victorias, idx_visitante, gana_visitante_i)
+            np.add.at(bloque_empates, idx_local, empate_i)
+            np.add.at(bloque_empates, idx_visitante, empate_i)
+            np.add.at(bloque_derrotas, idx_local, gana_visitante_i)
+            np.add.at(bloque_derrotas, idx_visitante, gana_local_i)
+
         return {
             nombre: {
                 "puntos": puntos_tot[i],
                 "gf": gf_tot[i],
                 "gc": gc_tot[i],
+                "victorias": victorias_tot[i],
+                "empates": empates_tot[i],
+                "derrotas": derrotas_tot[i],
             }
             for i, nombre in enumerate(nombres_equipos)
         }
