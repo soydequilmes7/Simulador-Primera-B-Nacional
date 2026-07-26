@@ -108,5 +108,50 @@ class AutoSyncFixtureLPFTests(unittest.TestCase):
         self.assertEqual(len(played_guardado), 2)  # Apertura (previo) + Clausura (nuevo)
 
 
+    def test_partido_ya_cargado_que_promiedos_sigue_mostrando_no_es_falso_positivo(self) -> None:
+        # El bug real reportado por Pablo (26/07/2026, segunda vuelta):
+        # 12 partidos YA estaban bien cargados en resultados, pero
+        # Promiedos los seguía devolviendo (ventana de "últimos ~100")
+        # y el matcheo principal, al no encontrarlos en el fixture
+        # pendiente (correctamente consumido), los mandaba a
+        # sin_matchear de nuevo -- un falso positivo perpetuo.
+        jugado_previo = {"fecha": "", "jornada": 2, "equipo_local": "Sarmiento Junín",
+                          "equipo_visitante": "Argentinos Juniors", "goles_local": 2, "goles_visitante": 3}
+        fake_repo = _FakeRepoLPF(pending=[], played=[jugado_previo])
+        # Promiedos sigue reportando el MISMO partido, con el MISMO marcador.
+        partido_repetido = {"equipo_local": "Sarmiento Junín", "equipo_visitante": "Argentinos Juniors",
+                             "goles_local": 2, "goles_visitante": 3,
+                             "goleadores_local": {}, "goleadores_visitante": {}}
+
+        with _patch_transaction(fake_repo), \
+             patch.object(modulo, "obtener_partidos_jugados_lpf", return_value=[partido_repetido]), \
+             patch.object(modulo, "calcular_filas_nuevas", return_value=([], 2)):
+            resultado = modulo.actualizar(imprimir=False)
+
+        self.assertEqual(resultado["sin_matchear"], [])  # antes del fix, esto daba 1
+        self.assertEqual(resultado["cargados"], [])  # tampoco se re-carga como si fuera nuevo
+        self.assertFalse(resultado["actualizado"])
+        # No se llama a replace_matches para nada -- no hay ni fixture
+        # nuevo ni resultados nuevos, así que no hace falta persistir.
+        self.assertEqual(len(fake_repo.replace_calls), 0)
+
+    def test_partido_ya_cargado_pero_con_marcador_distinto_si_es_sin_matchear(self) -> None:
+        # Si el marcador NO coincide con lo ya cargado, es un caso real
+        # (nombre que no matchea con nada) y sí tiene que aparecer.
+        jugado_previo = {"fecha": "", "jornada": 2, "equipo_local": "Sarmiento Junín",
+                          "equipo_visitante": "Argentinos Juniors", "goles_local": 2, "goles_visitante": 3}
+        fake_repo = _FakeRepoLPF(pending=[], played=[jugado_previo])
+        partido_distinto = {"equipo_local": "Sarmiento Junín", "equipo_visitante": "Argentinos Juniors",
+                             "goles_local": 0, "goles_visitante": 0,
+                             "goleadores_local": {}, "goleadores_visitante": {}}
+
+        with _patch_transaction(fake_repo), \
+             patch.object(modulo, "obtener_partidos_jugados_lpf", return_value=[partido_distinto]), \
+             patch.object(modulo, "calcular_filas_nuevas", return_value=([], 2)):
+            resultado = modulo.actualizar(imprimir=False)
+
+        self.assertEqual(len(resultado["sin_matchear"]), 1)
+
+
 if __name__ == "__main__":
     unittest.main()

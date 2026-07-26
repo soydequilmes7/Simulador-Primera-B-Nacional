@@ -140,6 +140,20 @@ def actualizar(n_sims=1000, correr_simulacion_fn=None, imprimir=True):
         clave = _clave(fila["equipo_local"], fila["equipo_visitante"])
         indice_fixture[clave] = i
 
+    # BUG REAL reportado por Pablo (26/07/2026): un partido que YA está
+    # bien cargado en `resultados` sigue apareciendo en lo que devuelve
+    # Promiedos (se queda un buen rato en la ventana de "últimos ~100"
+    # después de jugado). Sin este chequeo, cada corrida posterior lo
+    # mandaba a sin_matchear otra vez -- un falso positivo perpetuo, no
+    # un problema real. Mismo criterio de "clave + marcador" que ya usa
+    # calcular_filas_nuevas() para no duplicar fixture.
+    marcadores_ya_cargados = {}
+    for f in resultados:
+        clave = _clave(f["equipo_local"], f["equipo_visitante"])
+        marcadores_ya_cargados.setdefault(clave, set()).add(
+            (f.get("goles_local"), f.get("goles_visitante"))
+        )
+
     sin_matchear = []
     cargados = []
     elo_cargados = []
@@ -166,9 +180,15 @@ def actualizar(n_sims=1000, correr_simulacion_fn=None, imprimir=True):
             indices_a_borrar.append(idx)
             cargados.append(p)
             elo_cargados.append(resultado_cargado)
+        elif (p["goles_local"], p["goles_visitante"]) in marcadores_ya_cargados.get(clave, set()):
+            # Ya está cargado con este mismo resultado -- Promiedos lo
+            # sigue mostrando, pero no es un problema real, no va a
+            # sin_matchear.
+            continue
         else:
-            # O ya estaba cargado de una corrida anterior, o el nombre
-            # no matchea con fixture_lpf.csv por algún motivo raro.
+            # Acá sí es un caso real: no hay fixture pendiente para esta
+            # pareja NI un resultado ya cargado que coincida -- el
+            # nombre no matchea con nada por algún motivo genuino.
             sin_matchear.append(p)
 
     if not cargados:
