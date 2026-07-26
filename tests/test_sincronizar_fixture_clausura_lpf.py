@@ -47,13 +47,42 @@ class CalcularFilasNuevasTests(unittest.TestCase):
         self.assertEqual(filas_nuevas[0]["equipo_local"], "Sarmiento Junín")
         self.assertEqual(filas_nuevas[0]["equipo_visitante"], "Argentinos Juniors")
 
-    def test_partido_ya_jugado_en_promiedos_no_se_agrega(self) -> None:
-        # Si Promiedos ya lo tiene como jugado, ese es trabajo de
-        # actualizar_resultados_lpf.py, no de este script.
+    def test_partido_ya_jugado_en_promiedos_SI_se_agrega_si_no_esta_cargado(self) -> None:
+        # Este es el bug real reportado por Pablo (26/07/2026, después
+        # de mergear el primer fix): para cuando se corre "Actualizar
+        # Resultados", el partido del Clausura casi siempre YA está
+        # jugado en Promiedos -- si lo descartáramos acá, nunca se
+        # crea la fila de fixture que el matcheo principal necesita.
         with patch("sincronizar_fixture_clausura_lpf.obtener_partidos_lpf",
                    return_value=[_promiedos(1, "Boca Juniors", "River Plate", jugado=True)]):
             filas_nuevas, _ = calcular_filas_nuevas([], [])
+        self.assertEqual(len(filas_nuevas), 1)
+        self.assertEqual(filas_nuevas[0]["equipo_local"], "Boca Juniors")
+        self.assertEqual(filas_nuevas[0]["equipo_visitante"], "River Plate")
+
+    def test_partido_jugado_con_mismo_marcador_ya_cargado_no_se_duplica(self) -> None:
+        # Si Promiedos sigue mostrando en su ventana un partido del
+        # Apertura que YA está en resultados con el MISMO marcador,
+        # no hay que crear una fila de fixture nueva para él (sería
+        # un duplicado del mismo partido histórico, no uno nuevo).
+        jugados_actual = [{"jornada": 1, "equipo_local": "Boca Juniors", "equipo_visitante": "River Plate",
+                            "goles_local": 2, "goles_visitante": 1}]
+        partido_promiedos = _promiedos(1, "Boca Juniors", "River Plate", jugado=True)
+        partido_promiedos["goles_local"], partido_promiedos["goles_visitante"] = 2, 1
+        with patch("sincronizar_fixture_clausura_lpf.obtener_partidos_lpf", return_value=[partido_promiedos]):
+            filas_nuevas, _ = calcular_filas_nuevas([], jugados_actual)
         self.assertEqual(filas_nuevas, [])
+
+    def test_partido_jugado_con_marcador_distinto_al_ya_cargado_se_agrega(self) -> None:
+        # Mismos equipos, pero un marcador que nunca se cargó -- es el
+        # partido de la revancha (Clausura), no el mismo de antes.
+        jugados_actual = [{"jornada": 1, "equipo_local": "Boca Juniors", "equipo_visitante": "River Plate",
+                            "goles_local": 2, "goles_visitante": 1}]
+        partido_promiedos = _promiedos(1, "Boca Juniors", "River Plate", jugado=True)
+        partido_promiedos["goles_local"], partido_promiedos["goles_visitante"] = 0, 0
+        with patch("sincronizar_fixture_clausura_lpf.obtener_partidos_lpf", return_value=[partido_promiedos]):
+            filas_nuevas, _ = calcular_filas_nuevas([], jugados_actual)
+        self.assertEqual(len(filas_nuevas), 1)
 
     def test_partido_ya_en_fixture_pendiente_no_se_duplica(self) -> None:
         # Idempotencia: correr el script dos veces no debe duplicar filas.

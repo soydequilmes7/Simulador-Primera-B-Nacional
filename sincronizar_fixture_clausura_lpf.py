@@ -70,29 +70,60 @@ def _clave(equipo_local: str, equipo_visitante: str) -> tuple[str, str]:
 def calcular_filas_nuevas(pending_actual: list[dict], jugados_actual: list[dict]) -> tuple[list[dict], int]:
     """Función pura (sin DB) para poder testearla -- ver
     test_sincronizar_fixture_clausura_lpf.py. Devuelve (filas_nuevas,
-    jornada_offset_usado)."""
+    jornada_offset_usado).
+
+    BUG DE LA PRIMERA VERSIÓN (reportado por Pablo, 26/07/2026, seguía
+    tirando "sin identificar" después de mergear el fix): esta función
+    filtraba `if p["jugado"]: continue`, o sea que solo agregaba al
+    fixture los partidos que Promiedos TODAVÍA no había jugado. Pero
+    para cuando alguien aprieta "Actualizar Resultados", lo más común
+    es que el partido del Clausura YA esté jugado en Promiedos -- ese
+    filtro lo descartaba antes de siquiera intentar agregarlo, así que
+    nunca llegaba a existir la fila de fixture que el matcheo principal
+    de actualizar_resultados_lpf.py necesita para encontrarlo.
+
+    Ahora se agregan partidos jugados Y pendientes por igual. Para no
+    reintroducir como "nuevo" un partido del Apertura que Promiedos
+    todavía muestre en su ventana de "últimos ~100" (y así generar una
+    fila de fixture pendiente duplicada, con riesgo de recargar el
+    mismo resultado dos veces), se compara el marcador: si ya hay un
+    resultado cargado para esa pareja de equipos con el MISMO marcador,
+    se asume que es el mismo partido de vuelta apareciendo en la
+    ventana de Promiedos (no uno nuevo) y no se agrega. Si el marcador
+    es distinto (o la pareja no tiene ningún resultado cargado
+    todavía), es un partido genuinamente nuevo -- se agrega.
+    """
     jornada_offset = max(
         (int(fila.get("jornada") or 0) for fila in pending_actual + jugados_actual),
         default=0,
     )
 
-    claves_existentes = {_clave(f["equipo_local"], f["equipo_visitante"]) for f in pending_actual}
+    claves_pendientes = {_clave(f["equipo_local"], f["equipo_visitante"]) for f in pending_actual}
+
+    marcadores_ya_cargados: dict[tuple[str, str], set[tuple]] = {}
+    for f in jugados_actual:
+        clave = _clave(f["equipo_local"], f["equipo_visitante"])
+        marcadores_ya_cargados.setdefault(clave, set()).add(
+            (f.get("goles_local"), f.get("goles_visitante"))
+        )
 
     partidos_promiedos = obtener_partidos_lpf()
     filas_nuevas = []
     for p in partidos_promiedos:
-        if p["jugado"]:
-            continue  # esto es lo que ACTUALIZAR_RESULTADOS ya sabe cargar
         clave = _clave(p["equipo_local"], p["equipo_visitante"])
-        if clave in claves_existentes:
-            continue  # ya está en el fixture pendiente (corrida anterior, o Apertura todavía sin jugarse)
+        if clave in claves_pendientes:
+            continue  # ya está en el fixture pendiente (corrida anterior)
+        if p["jugado"]:
+            marcador = (p["goles_local"], p["goles_visitante"])
+            if marcador in marcadores_ya_cargados.get(clave, set()):
+                continue  # mismo partido y mismo resultado ya cargados -- no es uno nuevo
         filas_nuevas.append({
             "fecha": "",
             "jornada": jornada_offset + p["jornada"],
             "equipo_local": clave[0],
             "equipo_visitante": clave[1],
         })
-        claves_existentes.add(clave)  # por si Promiedos repitiera la fila
+        claves_pendientes.add(clave)  # por si Promiedos repitiera la fila
 
     return filas_nuevas, jornada_offset
 
