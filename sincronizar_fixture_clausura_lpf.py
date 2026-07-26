@@ -42,6 +42,14 @@ Supabase). Para aplicar de verdad:
 Es seguro correrlo más de una vez: si un partido del Clausura ya está en
 el fixture pendiente (por ejemplo porque ya lo agregaste en una corrida
 anterior), no se vuelve a agregar.
+
+NOTA: desde que se agregó este script, actualizar_resultados_lpf.py
+llama a calcular_filas_nuevas() (la función de acá) automáticamente en
+cada corrida -- no hace falta acordarse de correr este archivo a mano
+en cada transición de fase. Se deja como está (con su modo --aplicar
+manual) por si en algún momento hace falta correr la sincronización
+sola, sin tocar resultados, o para inspeccionar en dry-run qué agregaría
+antes de que corra solo.
 """
 from __future__ import annotations
 

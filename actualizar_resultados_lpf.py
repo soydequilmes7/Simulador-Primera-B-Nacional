@@ -46,6 +46,15 @@ original (Nacional):
      a la de "standings" de LPF -- nunca pisando self.apertura.
      (Ver revertir_standings_lpf_apertura.py para deshacer el daño ya
      hecho por la versión vieja de este archivo.)
+  7. Auto-sincroniza el fixture pendiente en cada corrida (ver
+     sincronizar_fixture_clausura_lpf.calcular_filas_nuevas(), importada
+     acá). Promiedos reusa "Fecha N" para cada torneo/fase nueva
+     (Apertura, Clausura, playoffs, el próximo Apertura...) sin
+     distinguir cuál es -- sin este paso, cada transición de fase
+     volvería a generar partidos "sin identificar" hasta que alguien se
+     acuerde de correr el script de sync a mano. El offset de jornada
+     que usa evita pisar resultados ya jugados de la fase anterior (ver
+     el docstring de ese módulo para el detalle completo).
 
 Uso manual:
     python actualizar_resultados_lpf.py
@@ -62,6 +71,7 @@ from db.repository import transaction
 
 from scraper_promiedos_lpf import obtener_partidos_jugados_lpf
 from mapeo_equipos_lpf import resolver_equipo_lpf
+from sincronizar_fixture_clausura_lpf import calcular_filas_nuevas
 
 CAMPOS_FIXTURE = ["fecha", "jornada", "equipo_local", "equipo_visitante"]
 CAMPOS_RESULTADOS = ["fecha", "jornada", "equipo_local", "equipo_visitante",
@@ -84,6 +94,24 @@ def actualizar(n_sims=1000, correr_simulacion_fn=None, imprimir=True):
     with transaction() as repo:
         fixture = repo.match_records("lpf", "pending")
         resultados = repo.match_records("lpf", "played")
+
+    # Auto-sincronización del fixture: cada vez que Promiedos arranca un
+    # torneo/fase nueva (Clausura, playoffs, el próximo Apertura...) vuelve
+    # a numerar "Fecha 1, 2, 3..." desde cero SIN avisar de qué torneo es
+    # (ver docstring de sincronizar_fixture_clausura_lpf.py). El fixture
+    # pendiente de la fase anterior para esa jornada ya se consumió, así
+    # que sin este paso esos partidos quedarían "sin identificar" cada vez
+    # que arranca una fase nueva -- exactamente el bug real reportado por
+    # Pablo (26/07/2026, transición Apertura -> Clausura). En vez de que
+    # alguien tenga que acordarse de correr el script aparte a mano, se
+    # corre automáticamente ACÁ, siempre, con el mismo offset de jornada
+    # (jornada máxima ya usada) para no pisar resultados ya jugados.
+    filas_nuevas_fixture, _jornada_offset = calcular_filas_nuevas(fixture, resultados)
+    if filas_nuevas_fixture:
+        if imprimir:
+            print(f"  [auto-sync] {len(filas_nuevas_fixture)} partido(s) nuevo(s) de fixture "
+                  f"detectado(s) en Promiedos (torneo/fase nueva) -- agregados al fixture pendiente.")
+        fixture = fixture + filas_nuevas_fixture
 
     if imprimir:
         print(f"[{ahora}] Scrapeando Promiedos (LPF)...")
@@ -144,7 +172,17 @@ def actualizar(n_sims=1000, correr_simulacion_fn=None, imprimir=True):
             sin_matchear.append(p)
 
     if not cargados:
-        if imprimir:
+        if filas_nuevas_fixture:
+            # No hay resultados nuevos para cargar todavía, pero sí
+            # apareció fixture nuevo (fase que arrancó pero sin partidos
+            # jugados aún) -- lo guardamos igual para que quede reflejado
+            # ya mismo, no recién en la próxima corrida que traiga resultados.
+            with transaction() as repo:
+                repo.replace_matches("lpf", fixture, resultados)
+            if imprimir:
+                print(f"  Fixture sincronizado ({len(filas_nuevas_fixture)} partido(s) nuevo(s)), "
+                      f"pero todavía no hay resultados nuevos para cargar.")
+        elif imprimir:
             print("  No hay partidos nuevos para cargar (todo ya estaba al día).")
         _guardar_log(ahora, cargados, sin_matchear, simulacion_corrida=False)
         # Aunque no haya partidos nuevos, re-simulamos con los datos
@@ -157,6 +195,7 @@ def actualizar(n_sims=1000, correr_simulacion_fn=None, imprimir=True):
             "actualizado": False,
             "cargados": cargados,
             "sin_matchear": sin_matchear,
+            "fixture_sincronizado": len(filas_nuevas_fixture),
             "datos": datos,
             "mensaje": "No había partidos nuevos jugados que coincidan con el fixture pendiente.",
         }
@@ -193,6 +232,7 @@ def actualizar(n_sims=1000, correr_simulacion_fn=None, imprimir=True):
         "actualizado": True,
         "cargados": cargados,
         "sin_matchear": sin_matchear,
+        "fixture_sincronizado": len(filas_nuevas_fixture),
         "datos": datos,
     }
 
