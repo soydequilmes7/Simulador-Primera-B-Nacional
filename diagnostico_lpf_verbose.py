@@ -31,32 +31,50 @@ print("cargados:", len(r["cargados"]))
 print("sin_matchear:", len(r["sin_matchear"]))
 print("fixture_sincronizado:", r.get("fixture_sincronizado"))
 
-# Para cada partido sin matchear, buscamos en el fixture pendiente
-# original (los 228) cualquier fila que mencione a alguno de los dos
-# equipos, para comparar el string EXACTO guardado en Supabase contra
-# el que devuelve Promiedos/resolver_equipo_lpf. Si es un problema de
-# nombres, acá se va a ver clarito la diferencia.
+# Reconstruimos indice_fixture EXACTAMENTE como actualizar_resultados_lpf.py,
+# y probamos membership DIRECTO (no substring) para cada partido sin
+# matchear. Si calcular_filas_nuevas() dice "ya existe" pero el matcheo
+# principal dice "sin_matchear" usando la MISMA función de resolución,
+# tiene que haber una diferencia invisible (espacio, unicode, etc.) en
+# algún lado -- repr() la va a mostrar.
 from mapeo_equipos_lpf import resolver_equipo_lpf
 
 with transaction() as repo2:
     pending_ahora = repo2.match_records("lpf", "pending")
 
-print("\n--- Búsqueda de coincidencias parciales para cada partido sin matchear ---")
+def _clave(local, visit):
+    return (resolver_equipo_lpf(local) or local, resolver_equipo_lpf(visit) or visit)
+
+indice_fixture = {}
+for i, fila in enumerate(pending_ahora):
+    clave = _clave(fila["equipo_local"], fila["equipo_visitante"])
+    indice_fixture.setdefault(clave, []).append((i, fila))
+
+print(f"\n--- Membership EXACTO para cada partido sin matchear (indice_fixture tiene {len(indice_fixture)} claves únicas) ---")
 for p in r["sin_matchear"]:
-    local_raw = p["equipo_local"]
-    visit_raw = p["equipo_visitante"]
-    local_resuelto = resolver_equipo_lpf(local_raw)
-    visit_resuelto = resolver_equipo_lpf(visit_raw)
-    print(f"\n{local_raw!r} vs {visit_raw!r}")
-    print(f"  resolver_equipo_lpf: {local_resuelto!r} vs {visit_resuelto!r}")
-    encontrados = [
-        f for f in pending_ahora
-        if local_raw.split()[0].lower() in f["equipo_local"].lower() + f["equipo_visitante"].lower()
-        or visit_raw.split()[0].lower() in f["equipo_local"].lower() + f["equipo_visitante"].lower()
-    ]
-    if encontrados:
-        for f in encontrados[:3]:
-            print(f"  candidato en pending (jornada {f.get('jornada')}): "
-                  f"{f['equipo_local']!r} vs {f['equipo_visitante']!r}")
+    clave = _clave(p["equipo_local"], p["equipo_visitante"])
+    print(f"\nPromiedos: {p['equipo_local']!r} vs {p['equipo_visitante']!r} -> clave resuelta: {clave!r}")
+    if clave in indice_fixture:
+        print(f"  ENCONTRADO en indice_fixture ({len(indice_fixture[clave])} fila(s)):")
+        for i, fila in indice_fixture[clave]:
+            print(f"    fila #{i}, jornada {fila.get('jornada')}: "
+                  f"equipo_local={fila['equipo_local']!r} equipo_visitante={fila['equipo_visitante']!r}")
     else:
-        print("  (ningún candidato parecido encontrado en pending)")
+        print("  NO encontrado en indice_fixture -- buscando la clave INVERTIDA (posible swap local/visitante):")
+        clave_invertida = (clave[1], clave[0])
+        if clave_invertida in indice_fixture:
+            for i, fila in indice_fixture[clave_invertida]:
+                print(f"    SWAP encontrado -- fila #{i}, jornada {fila.get('jornada')}: "
+                      f"equipo_local={fila['equipo_local']!r} equipo_visitante={fila['equipo_visitante']!r}")
+        else:
+            print("    Tampoco está invertida. Buscando por nombre de cada equipo por separado:")
+            for nombre in (clave[0], clave[1]):
+                filas_con_ese_equipo = [
+                    (i, f) for i, f in enumerate(pending_ahora)
+                    if _clave(f["equipo_local"], f["equipo_visitante"])[0] == nombre
+                    or _clave(f["equipo_local"], f["equipo_visitante"])[1] == nombre
+                ]
+                print(f"    {nombre!r} aparece en {len(filas_con_ese_equipo)} fila(s) de pending:")
+                for i, f in filas_con_ese_equipo[:5]:
+                    print(f"      fila #{i}, jornada {f.get('jornada')}: "
+                          f"{f['equipo_local']!r} vs {f['equipo_visitante']!r}")
