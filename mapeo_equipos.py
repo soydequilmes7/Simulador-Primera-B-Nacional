@@ -44,6 +44,7 @@ EQUIPOS_LOCALES = [
 OVERRIDES = {
     "Alte. Brown": ["almirante brown"],
     "Atlético Rafaela": ["atletico rafaela", "atletico de rafaela", "rafaela"],
+    "Bolivar": ["ciudad de bolivar", "ciudad de bolivar (bs.as.)"],
     "CA Mitre": ["mitre santiago del estero", "mitre (sde)", "mitre de santiago"],
     "Central Norte": ["central norte salta", "central norte (salta)"],
     "Chaco For Ever": ["for ever", "chaco for ever"],
