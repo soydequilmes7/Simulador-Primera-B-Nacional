@@ -356,6 +356,42 @@ def evolucion_posiciones_nacional():
         _lock_nacional.release_read()
 
 
+@app.get("/api/evolucion-posiciones-lpf")
+def evolucion_posiciones_lpf():
+    """Igual que /api/evolucion-posiciones-nacional pero para LPF (2
+    zonas, igual formato que Nacional/Primera C).
+
+    OJO -- limitación real de datos, no un bug: a diferencia de
+    Nacional, LPF no persiste cada partido individual del Apertura en
+    la tabla `matches` (ver el punto 6 del docstring de
+    actualizar_resultados_lpf.py -- el Apertura vive como tabla
+    FINAL y CONGELADA en `standings`, no partido a partido). Así que
+    esta evolución arranca recién desde que empezaron a cargarse
+    partidos del Clausura -- no cubre el Apertura. No hay forma de
+    reconstruir movimiento fecha a fecha de algo que nunca se guardó
+    partido por partido."""
+    ocupado = _adquirir_lectura(
+        _lock_lpf,
+        "Hay una actualización de LPF en curso. Esperá unos segundos y probá de nuevo.",
+    )
+    if ocupado:
+        return ocupado
+    try:
+        with transaction() as repo:
+            tabla_actual = repo.standing_records("lpf")
+            zona_por_club = {fila["equipo"]: fila["zona"] for fila in tabla_actual}
+            partidos_jugados = repo.match_records("lpf", "played")
+        evolucion = calcular_evolucion(partidos_jugados, zona_por_club)
+        return {
+            "evolucion": evolucion,
+            "zonas": tamano_por_zona(zona_por_club),
+        }
+    except Exception as e:
+        return _error_response(e)
+    finally:
+        _lock_lpf.release_read()
+
+
 @app.get("/api/evolucion-posiciones-bmetro")
 def evolucion_posiciones_bmetro():
     """Igual que /api/evolucion-posiciones-nacional pero para B

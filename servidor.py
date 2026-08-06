@@ -138,6 +138,8 @@ class Handler(SimpleHTTPRequestHandler):
             self._manejar_datos_nacional()
         elif self.path == "/api/evolucion-posiciones-nacional":
             self._manejar_evolucion_posiciones_nacional()
+        elif self.path == "/api/evolucion-posiciones-lpf":
+            self._manejar_evolucion_posiciones_lpf()
         elif self.path == "/api/datos-copa":
             self._manejar_datos_csv(["copa_argentina.csv"])
         elif self.path == "/api/datos-lpf":
@@ -198,6 +200,29 @@ class Handler(SimpleHTTPRequestHandler):
                 tabla_actual = repo.standing_records("nacional")
                 zona_por_club = {fila["equipo"]: fila["zona"] for fila in tabla_actual}
                 partidos_jugados = repo.match_records("nacional", "played")
+            evolucion = calcular_evolucion(partidos_jugados, zona_por_club)
+            self._responder_json(200, {
+                "evolucion": evolucion,
+                "zonas": tamano_por_zona(zona_por_club),
+            })
+        except Exception as e:
+            self._responder_json(*_error_http(e))
+
+    def _manejar_evolucion_posiciones_lpf(self):
+        """Igual que _manejar_evolucion_posiciones_nacional pero para
+        LPF (2 zonas, igual formato que Nacional/Primera C).
+
+        OJO -- limitación real de datos, no un bug: LPF no persiste
+        cada partido individual del Apertura en `matches` (vive como
+        tabla final congelada en `standings`, ver el punto 6 del
+        docstring de actualizar_resultados_lpf.py). Esta evolución
+        arranca recién desde que empezaron a cargarse partidos del
+        Clausura -- no cubre el Apertura."""
+        try:
+            with transaction() as repo:
+                tabla_actual = repo.standing_records("lpf")
+                zona_por_club = {fila["equipo"]: fila["zona"] for fila in tabla_actual}
+                partidos_jugados = repo.match_records("lpf", "played")
             evolucion = calcular_evolucion(partidos_jugados, zona_por_club)
             self._responder_json(200, {
                 "evolucion": evolucion,

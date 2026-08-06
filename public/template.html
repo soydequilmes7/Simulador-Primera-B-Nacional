@@ -5504,6 +5504,28 @@
     </div>
   </section>
 
+  <section class="evolucion-posiciones" id="sec-evolucion-lpf">
+    <div class="section-head"><h2>📈 Evolución de posiciones</h2><div class="rule"></div></div>
+    <p class="section-note">Cómo varió la posición de cada equipo, fecha a fecha, a lo largo del Clausura. El Apertura no está incluido: no se guardó partido a partido (queda solo como tabla final, arriba).</p>
+    <button type="button" class="evolucion-toggle" id="evolucion-toggle-lpf" aria-expanded="false" aria-controls="evolucion-body-lpf">
+      <span class="evolucion-toggle-label">Ver gráfico interactivo</span>
+      <span class="evolucion-toggle-caret">▼</span>
+    </button>
+    <div class="evolucion-body" id="evolucion-body-lpf" hidden>
+      <div class="evolucion-picker">
+        <div class="evolucion-picker-head">
+          <span class="evolucion-picker-title">Equipos visibles</span>
+          <input type="text" id="evolucion-buscar-lpf" class="evolucion-picker-search" placeholder="Buscar equipo…" autocomplete="off">
+        </div>
+        <div class="evolucion-picker-list" id="evolucion-picker-list-lpf"></div>
+      </div>
+      <div class="evolucion-chart-wrap">
+        <div class="evolucion-chart" id="evolucion-chart-lpf"></div>
+      </div>
+      <div class="evolucion-status" id="evolucion-status-lpf"></div>
+    </div>
+  </section>
+
   <section id="sec-lpf-clausura">
     <div class="section-head"><span class="idx">03</span><h2>Tabla del Clausura (simulada)</h2><div class="rule"></div></div>
     <p class="section-note">Resultado de una corrida puntual del Clausura: se simulan los partidos pendientes del fixture. Los primeros 8 de cada zona clasifican a los Playoffs cruzados.</p>
@@ -7394,6 +7416,21 @@ const EVOLUCION_CONFIG = {
       { nombre: 'reducido', desde: 2, hasta: Math.min(8, totalEquipos - 1), color: '#C9A227' },
       { nombre: 'descenso', desde: Math.max(1, totalEquipos - 1), hasta: totalEquipos, color: '#DC2626' },
     ]),
+  },
+  lpf: {
+    endpoint: '/api/evolucion-posiciones-lpf',
+    // Zona que se está mostrando ahora mismo (pestañas Zona A / Zona B
+    // propias de LPF, igual que Nacional).
+    zonaActiva: () => zonaActualLPF,
+    // SIN bandas de color a propósito: a diferencia de Nacional/Primera
+    // C/B Metro, en LPF la clasificación a copas y el descenso NO
+    // dependen de la posición dentro de la zona -- dependen de la Tabla
+    // Anual (Apertura + Clausura combinados, ver _clasifica_copas_sim()
+    // en modelos/estadisticas_lpf.py) y de si sos o no campeón de
+    // Apertura/Clausura. Pintar una banda "1° = Libertadores" acá sería
+    // directamente incorrecto (la posición de zona no determina nada
+    // de eso), así que se deja sin franjas de fondo.
+    banda: () => [],
   },
   bmetro: {
     endpoint: '/api/evolucion-posiciones-bmetro',

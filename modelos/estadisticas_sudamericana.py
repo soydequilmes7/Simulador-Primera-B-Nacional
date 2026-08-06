@@ -122,13 +122,24 @@ class EstadisticasSudamericana(EstadisticasLibertadores):
         ganadores_playoffs: dict[int, str] = {}
         for cruce in self.cuadro_playoffs:
             llave = int(cruce["llave"])
-            gl_ida_real = cruce.get("goles_ida_local") or None
-            gv_ida_real = cruce.get("goles_ida_visitante") or None
-            detalle = self.jugar_llave_ida_vuelta(
-                cruce["equipo_ida_local"], cruce["equipo_vuelta_local"],
-                gl_ida_real=int(gl_ida_real) if gl_ida_real is not None else None,
-                gv_ida_real=int(gv_ida_real) if gv_ida_real is not None else None,
-            )
+            # Mismo criterio que ya usa simular_libertadores() para
+            # octavos en adelante: si el CSV ya trae ida Y vuelta reales
+            # (los 4 goles cargados), se usa ese resultado tal cual --
+            # antes acá SIEMPRE se simulaba la vuelta al azar, aunque el
+            # CSV ya tuviera el resultado real cargado (bug real
+            # reportado por Pablo, 06/08/2026: los cruces de Playoffs de
+            # la Sudamericana no se actualizaban con los resultados
+            # reales de la vuelta).
+            if self._llave_tiene_resultado_real(cruce):
+                detalle = self._detalle_real_llave(cruce)
+            else:
+                gl_ida_real = cruce.get("goles_ida_local") or None
+                gv_ida_real = cruce.get("goles_ida_visitante") or None
+                detalle = self.jugar_llave_ida_vuelta(
+                    cruce["equipo_ida_local"], cruce["equipo_vuelta_local"],
+                    gl_ida_real=int(gl_ida_real) if gl_ida_real is not None else None,
+                    gv_ida_real=int(gv_ida_real) if gv_ida_real is not None else None,
+                )
             detalle["jugado"] = False
             detalle_playoffs.append(detalle)
             ganadores_playoffs[llave] = detalle["avanza"]

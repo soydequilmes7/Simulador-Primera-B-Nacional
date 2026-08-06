@@ -30,7 +30,19 @@ class TestSimularSudamericanaNoMutaPermanente(unittest.TestCase):
         """En al menos una de 30 corridas, el lado 'playoffs' de la
         llave 1 de octavos tiene que dar un ganador DISTINTO al de
         otra corrida -- si el bug de mutación permanente estuviera de
-        vuelta, siempre daría el mismo (el de la primera corrida)."""
+        vuelta, siempre daría el mismo (el de la primera corrida).
+
+        Fuerza a que la llave 1 de Playoffs NO tenga resultado real
+        cargado (le borra los goles), para probar específicamente el
+        camino de simulación al azar -- independiente de qué datos
+        reales haya en datos/sudamericana_cuadro.csv en un momento
+        dado (ver test_playoff_con_ida_y_vuelta_reales_no_se_simula
+        para el camino de datos reales)."""
+        cruce = self.motor.cuadro_playoffs[0]
+        cruce["goles_vuelta_local"] = ""
+        cruce["goles_vuelta_visitante"] = ""
+        cruce["ganador"] = ""
+
         rivales_vistos = set()
         for _ in range(30):
             rondas, _ = self.motor.simular_sudamericana()
@@ -60,6 +72,35 @@ class TestSimularSudamericanaNoMutaPermanente(unittest.TestCase):
         rondas, _ = self.motor.simular_sudamericana()
         equipos_llave1 = set(rondas["octavos"][0]["agregado"].keys())
         self.assertIn(equipo_confirmado, equipos_llave1)
+
+    def test_playoff_con_ida_y_vuelta_reales_no_se_simula(self):
+        """Caso real reportado por Pablo (06/08/2026): si una llave de
+        Playoffs ya tiene ida Y vuelta cargadas de verdad en el CSV
+        (los 4 goles), simular_sudamericana() tiene que usar ESE
+        resultado tal cual -- antes de este fix, la vuelta SIEMPRE se
+        simulaba al azar, aunque el CSV ya trajera el resultado real
+        (mismo mecanismo que ya usan octavos en adelante vía
+        _llave_tiene_resultado_real()/_detalle_real_llave(), que acá
+        nunca se aplicaba a Playoffs)."""
+        cruce = self.motor.cuadro_playoffs[0]
+        local_ida, local_vuelta = cruce["equipo_ida_local"], cruce["equipo_vuelta_local"]
+        # Cargamos un resultado real inventado, con la vuelta ganada
+        # clarísimo por el lado de la ida (para que sea imposible que
+        # el ganador real coincida con un 50/50 simulado por azar).
+        cruce["goles_ida_local"] = "5"
+        cruce["goles_ida_visitante"] = "0"
+        cruce["goles_vuelta_local"] = "0"
+        cruce["goles_vuelta_visitante"] = "5"
+        cruce["ganador"] = local_ida
+
+        for _ in range(20):
+            rondas, _ = self.motor.simular_sudamericana()
+            detalle = rondas["playoffs"][0]
+            self.assertEqual(detalle["avanza"], local_ida)
+            self.assertEqual(detalle["vuelta"]["golesLocal"], 0)
+            self.assertEqual(detalle["vuelta"]["golesVisitante"], 5)
+            self.assertEqual(detalle["agregado"][local_ida], 10)
+            self.assertEqual(detalle["agregado"][local_vuelta], 0)
 
 
 class TestMonteCarloSudamericana(unittest.TestCase):
