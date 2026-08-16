@@ -36,7 +36,7 @@ from sincronizar_fixture_clausura_lpf import APERTURA_TOTAL_JORNADAS
 
 
 def main(equipo_local: str, equipo_visitante: str, goles_local: int, goles_visitante: int,
-         jornada: int, aplicar: bool) -> None:
+         jornada: int, aplicar: bool, forzar: bool = False) -> None:
     local = resolver_equipo_lpf(equipo_local) or equipo_local
     visitante = resolver_equipo_lpf(equipo_visitante) or equipo_visitante
 
@@ -62,6 +62,32 @@ def main(equipo_local: str, equipo_visitante: str, goles_local: int, goles_visit
     )
     if ya_cargado:
         print("Este resultado (mismos equipos y mismo marcador) YA está cargado -- no se hace nada.")
+        return
+
+    # Caso real (16/08/2026): Newell's vs Riestra ya estaba cargado como
+    # 2-0, pero se volvió a cargar a mano como "2-1" (marcador mal leído
+    # de una captura) -- el chequeo de arriba no lo agarra porque el
+    # marcador es DISTINTO, así que quedó duplicado con un resultado
+    # incorrecto. LPF juega todos contra todos una vez por Clausura, así
+    # que un resultado YA cargado para esta pareja, con OTRO marcador,
+    # es casi siempre indicio de un dato mal tipeado, no un partido
+    # distinto -- frenamos y pedimos confirmación en vez de cargar de
+    # una. Si de verdad es correcto (rarísimo), usar --forzar.
+    otro_marcador = [
+        f for f in jugados
+        if (resolver_equipo_lpf(f["equipo_local"]) or f["equipo_local"]) == local
+        and (resolver_equipo_lpf(f["equipo_visitante"]) or f["equipo_visitante"]) == visitante
+    ]
+    if otro_marcador and not forzar:
+        print("\n⚠️  ALARMA: ya hay un resultado cargado para esta pareja, con OTRO marcador:")
+        for f in otro_marcador:
+            print(f"    jornada {f.get('jornada')}: {f['equipo_local']} {f['goles_local']}-{f['goles_visitante']} {f['equipo_visitante']}")
+        print(f"    (lo que vos me pasaste: {local} {goles_local}-{goles_visitante} {visitante})")
+        print("\n    LPF no repite cruces en el Clausura -- esto casi seguro es el MISMO partido")
+        print("    con un marcador mal leído (de vos o mío). Verificá cuál es el correcto antes de")
+        print("    seguir -- si el que ya está cargado es el equivocado, borralo primero con")
+        print("    eliminar_resultado_lpf.py. Si estás seguro de que este SÍ es un partido distinto")
+        print("    y hay que cargarlo igual, corré de nuevo con --forzar.")
         return
 
     idx_pendiente = next(
@@ -135,6 +161,8 @@ if __name__ == "__main__":
     parser.add_argument("--jornada", type=int, required=True,
                          help="Número de fecha del Clausura (1, 2, 3... el mismo que muestra Promiedos)")
     parser.add_argument("--aplicar", action="store_true")
+    parser.add_argument("--forzar", action="store_true",
+                         help="Cargar igual aunque ya haya un resultado con otro marcador para esta pareja.")
     args = parser.parse_args()
     main(args.equipo_local, args.equipo_visitante, args.goles_local, args.goles_visitante,
-         args.jornada, args.aplicar)
+         args.jornada, args.aplicar, args.forzar)
