@@ -113,6 +113,18 @@ def main(equipo_local: str, equipo_visitante: str, goles_local: int, goles_visit
         repo.replace_matches("lpf", pending_final, jugados_final)
     print("\n✓ Guardado en Supabase.")
 
+    # Sin esto, la web sigue mostrando el último snapshot de simulación
+    # guardado (lo que devuelve /api/estado-lpf) -- que NO se actualiza
+    # solo por cambiar la tabla `matches`. Bug real que le pasó a Pablo
+    # (16/08/2026): cargó un resultado a mano, Supabase quedó bien, pero
+    # "Tabla del Clausura -- a hoy" seguía mostrando los PJ viejos hasta
+    # correr una simulación nueva. Se corre acá mismo para que quede
+    # reflejado altiro, sin un paso manual aparte.
+    print("\nCorriendo una simulación para que la web refleje el resultado nuevo...")
+    from main_lpf import correr_simulacion_lpf
+    correr_simulacion_lpf(imprimir=False, guardar_json=True)
+    print("✓ Snapshot actualizado -- refrescá la página (Ctrl+F5) para verlo.")
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
