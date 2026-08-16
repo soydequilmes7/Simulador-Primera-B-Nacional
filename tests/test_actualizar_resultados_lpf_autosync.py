@@ -83,11 +83,14 @@ class AutoSyncFixtureLPFTests(unittest.TestCase):
     def test_partido_del_clausura_matchea_en_la_misma_corrida_que_se_sincroniza(self) -> None:
         # Caso real completo: el fixture nuevo aparece Y Promiedos ya
         # tiene el resultado -- todo en la misma corrida, sin pasos
-        # manuales intermedios.
+        # manuales intermedios. Jornada 17 (offset fijo, por encima de
+        # APERTURA_TOTAL_JORNADAS=16) -- una jornada <=16 acá sería una
+        # fila fantasma del Apertura y quedaría filtrada del matcheo
+        # (ver el fix del 16/08/2026 en actualizar_resultados_lpf.py).
         played_previo = [{"fecha": "", "jornada": 1, "equipo_local": "Sarmiento Junín",
                            "equipo_visitante": "Argentinos Juniors", "goles_local": 1, "goles_visitante": 0}]
         fake_repo = _FakeRepoLPF(pending=[], played=played_previo)
-        filas_nuevas = [{"fecha": "", "jornada": 2, "equipo_local": "Sarmiento Junín",
+        filas_nuevas = [{"fecha": "", "jornada": 17, "equipo_local": "Sarmiento Junín",
                           "equipo_visitante": "Argentinos Juniors"}]
         partido_jugado = {"equipo_local": "Sarmiento Junín", "equipo_visitante": "Argentinos Juniors",
                            "goles_local": 2, "goles_visitante": 1,
@@ -95,7 +98,7 @@ class AutoSyncFixtureLPFTests(unittest.TestCase):
 
         with _patch_transaction(fake_repo), \
              patch.object(modulo, "obtener_partidos_jugados_lpf", return_value=[partido_jugado]), \
-             patch.object(modulo, "calcular_filas_nuevas", return_value=(filas_nuevas, 1)):
+             patch.object(modulo, "calcular_filas_nuevas", return_value=(filas_nuevas, 16)):
             resultado = modulo.actualizar(imprimir=False)
 
         self.assertTrue(resultado["actualizado"])
@@ -151,6 +154,36 @@ class AutoSyncFixtureLPFTests(unittest.TestCase):
             resultado = modulo.actualizar(imprimir=False)
 
         self.assertEqual(len(resultado["sin_matchear"]), 1)
+
+    def test_fila_fantasma_del_apertura_no_se_consume_por_error(self) -> None:
+        # Caso real reportado por Pablo (16/08/2026): "Instituto vs
+        # Talleres de Córdoba" del Clausura consumió una fila pendiente
+        # VIEJA del Apertura (jornada 10, nunca jugada a través de este
+        # sistema) en vez de generar una fila nueva con la numeración
+        # correcta del Clausura (17+). El fix filtra del matcheo
+        # cualquier fila pendiente con jornada <= APERTURA_TOTAL_JORNADAS
+        # (16) -- son fantasmas, no fixture real del Clausura.
+        fantasma_apertura = {"fecha": "", "jornada": 10, "equipo_local": "Instituto",
+                              "equipo_visitante": "Talleres de Córdoba"}
+        fake_repo = _FakeRepoLPF(pending=[fantasma_apertura], played=[])
+        partido_jugado = {"equipo_local": "Instituto", "equipo_visitante": "Talleres de Córdoba",
+                           "goles_local": 2, "goles_visitante": 1,
+                           "goleadores_local": {}, "goleadores_visitante": {}}
+
+        with _patch_transaction(fake_repo), \
+             patch.object(modulo, "obtener_partidos_jugados_lpf", return_value=[partido_jugado]), \
+             patch.object(modulo, "calcular_filas_nuevas", return_value=([], 16)):
+            resultado = modulo.actualizar(imprimir=False)
+
+        # No debería matchear contra la fila fantasma -- queda sin
+        # identificar (síntoma correcto: hace falta cargarlo a mano con
+        # cargar_resultado_manual_lpf.py, que SÍ calcula bien la
+        # jornada, en vez de heredar la "10" vieja en silencio).
+        self.assertEqual(len(resultado["sin_matchear"]), 1)
+        self.assertEqual(resultado["cargados"], [])
+        # La fila fantasma sigue ahí, intacta, sin consumirse.
+        self.assertEqual(len(fake_repo._pending), 1)
+        self.assertEqual(fake_repo._pending[0]["jornada"], 10)
 
 
 if __name__ == "__main__":

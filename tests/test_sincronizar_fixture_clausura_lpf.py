@@ -41,9 +41,9 @@ class CalcularFilasNuevasTests(unittest.TestCase):
                    return_value=[_promiedos(1, "Sarmiento Junín", "Argentinos Juniors", jugado=False)]):
             filas_nuevas, offset = calcular_filas_nuevas(pending_actual, jugados_actual)
 
-        self.assertEqual(offset, 1)  # jornada máxima ya usada (por el Apertura jugado)
+        self.assertEqual(offset, 16)  # offset FIJO -- el Apertura 2026 tuvo 16 fechas reales
         self.assertEqual(len(filas_nuevas), 1)
-        self.assertEqual(filas_nuevas[0]["jornada"], 2)  # offset(1) + jornada de Promiedos(1)
+        self.assertEqual(filas_nuevas[0]["jornada"], 17)  # offset fijo(16) + jornada de Promiedos(1)
         self.assertEqual(filas_nuevas[0]["equipo_local"], "Sarmiento Junín")
         self.assertEqual(filas_nuevas[0]["equipo_visitante"], "Argentinos Juniors")
 
@@ -92,14 +92,29 @@ class CalcularFilasNuevasTests(unittest.TestCase):
             filas_nuevas, _ = calcular_filas_nuevas(pending_actual, [])
         self.assertEqual(filas_nuevas, [])
 
-    def test_offset_toma_el_maximo_entre_jugados_y_pendientes(self) -> None:
+    def test_offset_es_fijo_no_depende_de_lo_que_haya_pendiente(self) -> None:
+        # Antes el offset era "la jornada máxima ya usada" -- daba un
+        # número impredecible según qué basura vieja del Apertura
+        # hubiera quedado pendiente sin jugar (acá, jornada 16 de un
+        # cruce que nunca se jugó). Ahora es SIEMPRE 16 (offset fijo,
+        # ver APERTURA_TOTAL_JORNADAS), sin importar qué haya en
+        # pending/jugados.
         jugados_actual = [_pendiente(14, "Boca Juniors", "River Plate")]
         pending_actual = [_pendiente(16, "Talleres de Córdoba", "Instituto")]  # remanente Apertura sin jugar
         with patch("sincronizar_fixture_clausura_lpf.obtener_partidos_lpf",
                    return_value=[_promiedos(1, "Huracán", "Banfield", jugado=False)]):
             filas_nuevas, offset = calcular_filas_nuevas(pending_actual, jugados_actual)
-        self.assertEqual(offset, 16)  # el máximo de los dos, no solo de jugados
+        self.assertEqual(offset, 16)
         self.assertEqual(filas_nuevas[0]["jornada"], 17)
+
+        # Aunque el "remanente Apertura" tuviera una jornada más alta
+        # (ej. 30, un dato corrupto o de otra temporada), el offset NO
+        # cambia -- ya no depende de max(pending + jugados).
+        pending_con_basura_rara = [_pendiente(30, "Talleres de Córdoba", "Instituto")]
+        with patch("sincronizar_fixture_clausura_lpf.obtener_partidos_lpf",
+                   return_value=[_promiedos(1, "Huracán", "Banfield", jugado=False)]):
+            _, offset2 = calcular_filas_nuevas(pending_con_basura_rara, jugados_actual)
+        self.assertEqual(offset2, 16)
 
     def test_resuelve_nombres_no_canonicos_de_promiedos(self) -> None:
         # Si Promiedos manda el nombre corto en vez del canónico de

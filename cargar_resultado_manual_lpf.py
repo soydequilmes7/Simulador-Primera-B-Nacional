@@ -32,6 +32,7 @@ import argparse
 
 from db.repository import transaction
 from mapeo_equipos_lpf import resolver_equipo_lpf
+from sincronizar_fixture_clausura_lpf import APERTURA_TOTAL_JORNADAS
 
 
 def main(equipo_local: str, equipo_visitante: str, goles_local: int, goles_visitante: int,
@@ -76,21 +77,18 @@ def main(equipo_local: str, equipo_visitante: str, goles_local: int, goles_visit
         jornada_final = fila_fixture.get("jornada", jornada)
         pending_final = [f for i, f in enumerate(pending) if i != idx_pendiente]
     else:
-        # Mismo offset que calcular_filas_nuevas() (sincronizar_fixture_
-        # clausura_lpf.py): la jornada que puso Pablo es la del Clausura
-        # tal como la muestra Promiedos (reinicia en 1), pero acá adentro
-        # las jornadas ya cargadas van todas por encima de eso para no
-        # chocar con el Apertura -- si le pusiéramos la jornada cruda,
-        # este partido quedaría mal ubicado en la evolución de posiciones
-        # (que ordena por jornada).
-        jornada_offset = max((int(f.get("jornada") or 0) for f in pending + jugados), default=0)
-        # Si la jornada cruda que pasó Pablo ya es mayor al offset actual
-        # (algo ya se cargó con esa numeración "final"), no le sumamos
-        # el offset de nuevo -- asumimos que ya viene en la numeración
-        # correcta.
+        # Mismo offset FIJO que calcular_filas_nuevas() (sincronizar_
+        # fixture_clausura_lpf.py): el Apertura 2026 tuvo 16 fechas
+        # reales, así que Clausura Fecha 1 = jornada 17, Fecha 2 =
+        # jornada 18, etc. -- siempre igual, no depende de qué haya
+        # quedado pendiente de antes (ver APERTURA_TOTAL_JORNADAS).
+        jornada_offset = APERTURA_TOTAL_JORNADAS
+        # Si la jornada que pasó Pablo ya viene con el offset sumado
+        # (mayor a 16), no se lo sumamos de nuevo -- asumimos que ya
+        # viene en la numeración final.
         jornada_final = jornada if jornada > jornada_offset else jornada_offset + jornada
         print(f"No hay fila pendiente para esta pareja -- se carga el resultado directo, sin consumir "
-              f"fixture, con jornada {jornada_final} (offset {jornada_offset} + fecha {jornada} de Promiedos).")
+              f"fixture, con jornada {jornada_final} (offset fijo {jornada_offset} + fecha {jornada} de Promiedos).")
         pending_final = pending
 
     resultado_nuevo = {

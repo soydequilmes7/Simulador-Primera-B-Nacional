@@ -71,7 +71,7 @@ from db.repository import transaction
 
 from scraper_promiedos_lpf import obtener_partidos_jugados_lpf
 from mapeo_equipos_lpf import resolver_equipo_lpf
-from sincronizar_fixture_clausura_lpf import calcular_filas_nuevas
+from sincronizar_fixture_clausura_lpf import APERTURA_TOTAL_JORNADAS, calcular_filas_nuevas
 
 CAMPOS_FIXTURE = ["fecha", "jornada", "equipo_local", "equipo_visitante"]
 CAMPOS_RESULTADOS = ["fecha", "jornada", "equipo_local", "equipo_visitante",
@@ -137,6 +137,21 @@ def actualizar(n_sims=1000, correr_simulacion_fn=None, imprimir=True):
 
     indice_fixture = {}
     for i, fila in enumerate(fixture):
+        # Filas "fantasma" del Apertura: quedaron pendientes en Supabase
+        # sin jugarse nunca a través de este sistema de partidos (el
+        # Apertura real se cargó aparte, como tabla final congelada --
+        # ver punto 6 arriba). Si el Clausura repite la misma pareja de
+        # equipos, el matcheo por (equipo_local, equipo_visitante) las
+        # encontraba igual y las consumía, heredando su jornada VIEJA
+        # (1-16) para un partido que en realidad es del Clausura --
+        # justo el bug real que reportó Pablo (16/08/2026): un partido
+        # nuevo quedaba con jornada interna "10" en vez de un número
+        # que tuviera sentido. Se excluyen acá: cualquier jornada <=
+        # APERTURA_TOTAL_JORNADAS no puede ser un fixture pendiente
+        # real del Clausura (que siempre arranca en 17, ver
+        # sincronizar_fixture_clausura_lpf.APERTURA_TOTAL_JORNADAS).
+        if int(fila.get("jornada") or 0) <= APERTURA_TOTAL_JORNADAS:
+            continue
         clave = _clave(fila["equipo_local"], fila["equipo_visitante"])
         indice_fixture[clave] = i
 

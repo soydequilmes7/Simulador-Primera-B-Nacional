@@ -27,12 +27,14 @@ OJO CON LA JORNADA: la tabla `matches` tiene una constraint única de
 Si insertáramos el Clausura con la MISMA jornada que usó Promiedos (que
 vuelve a arrancar en 1), pisaríamos -- vía "on conflict do update" -- la
 fila YA JUGADA del Apertura para esa jornada/pareja, perdiendo el
-resultado real. Por eso acá se le suma un offset: se toma el jornada
-máximo que ya existe en Supabase (jugado o pendiente) para "lpf" y el
-Clausura arranca justo después. La jornada de Promiedos para el Clausura
-(que reinicia en 1) se guarda en la columna "jornada_torneo" -- si esa
-columna no existe en tu esquema todavía, se ignora sin romper nada (ver
-más abajo).
+resultado real. Por eso acá se le suma un offset FIJO de 16 (ver
+APERTURA_TOTAL_JORNADAS más abajo: el Apertura 2026 tuvo exactamente 16
+fechas reales) -- Clausura Fecha 1 siempre queda como jornada 17,
+Fecha 2 como jornada 18, etc. Antes era un offset DINÁMICO ("la
+jornada máxima ya usada en Supabase"), pero eso daba números
+impredecibles según qué fixture viejo del Apertura hubiera quedado
+pendiente sin jugar nunca -- Pablo se encontró con esto en la
+práctica (16/08/2026).
 
 Por defecto corre en modo DRY-RUN (solo imprime qué agregaría, no toca
 Supabase). Para aplicar de verdad:
@@ -58,6 +60,20 @@ import argparse
 from db.repository import transaction
 from mapeo_equipos_lpf import resolver_equipo_lpf
 from scraper_promiedos_lpf import obtener_partidos_lpf
+
+# El Apertura 2026 tuvo 16 fechas reales (confirmado: el fixture
+# original con el que arrancó el proyecto -- antes de que se jugara un
+# solo partido -- va de jornada 1 a 16, datos/fixture_lpf.csv). Es una
+# constante FIJA a propósito: antes acá se usaba "la jornada máxima ya
+# usada en Supabase" (pending + played), pero eso da un número
+# impredecible que depende de basura vieja que haya quedado pendiente
+# sin jugar nunca (Pablo se encontró con esto: un partido del Clausura
+# quedó con jornada interna "10" en vez de un número prolijo, porque
+# consumió una fila pendiente vieja del Apertura que nunca se había
+# jugado). Con la constante fija, Clausura Fecha 1 SIEMPRE es jornada
+# 17, Fecha 2 SIEMPRE jornada 18, etc. -- predecible y estable, no
+# importa qué quede pendiente de antes.
+APERTURA_TOTAL_JORNADAS = 16
 
 
 def _clave(equipo_local: str, equipo_visitante: str) -> tuple[str, str]:
@@ -93,10 +109,7 @@ def calcular_filas_nuevas(pending_actual: list[dict], jugados_actual: list[dict]
     es distinto (o la pareja no tiene ningún resultado cargado
     todavía), es un partido genuinamente nuevo -- se agrega.
     """
-    jornada_offset = max(
-        (int(fila.get("jornada") or 0) for fila in pending_actual + jugados_actual),
-        default=0,
-    )
+    jornada_offset = APERTURA_TOTAL_JORNADAS
 
     claves_pendientes = {_clave(f["equipo_local"], f["equipo_visitante"]) for f in pending_actual}
 
