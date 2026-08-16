@@ -66,7 +66,14 @@ def main(equipo_local: str, equipo_visitante: str, goles_local: int, goles_visit
 
     idx_pendiente = next(
         (i for i, f in enumerate(pending)
-         if (resolver_equipo_lpf(f["equipo_local"]) or f["equipo_local"]) == local
+         # Mismo fix que actualizar_resultados_lpf.py (16/08/2026): una
+         # fila pendiente con jornada <= APERTURA_TOTAL_JORNADAS es un
+         # fantasma del Apertura que nunca se jugó por este sistema --
+         # no puede ser el fixture real de este partido del Clausura.
+         # Sin este filtro, la carga manual heredaría la jornada vieja
+         # del fantasma (el mismo bug que ya se arregló del otro lado).
+         if int(f.get("jornada") or 0) > APERTURA_TOTAL_JORNADAS
+         and (resolver_equipo_lpf(f["equipo_local"]) or f["equipo_local"]) == local
          and (resolver_equipo_lpf(f["equipo_visitante"]) or f["equipo_visitante"]) == visitante),
         None,
     )
