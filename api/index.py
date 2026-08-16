@@ -15,6 +15,8 @@ Render:
 """
 import sys
 import threading
+import time
+import os
 from datetime import datetime
 from pathlib import Path
 
@@ -2234,6 +2236,65 @@ def season_generate_next_endpoint(body: GenerarTemporadaBody):
     finally:
         _lock_season.release_write()
 
+
+
+# ----------------------------------------------------------------------
+# Actualización periódica de LPF en segundo plano (sin Render Cron Job)
+# ----------------------------------------------------------------------
+# Pablo pidió automatizar "Actualizar Resultados" de LPF para que la
+# ventana de ~100 partidos "últimos" de Promiedos (ver docstring de
+# scraper_promiedos_lpf.py) nunca llegue a llenarse entre visita y
+# visita -- si nadie entra a la web en un día muy activo, un partido
+# viejo se cae de esa ventana y queda inalcanzable por scraping (caso
+# real: Instituto/Newell's/Riestra/Boca, 16/08/2026, hubo que cargarlos
+# a mano con cargar_resultado_manual_lpf.py).
+#
+# Pablo declinó explícitamente un Render Cron Job (servicio aparte,
+# cuesta extra). Esto es DISTINTO: un hilo de fondo que vive DENTRO de
+# este mismo proceso web -- no suma ningún servicio ni costo nuevo,
+# solo usa ratos del mismo dyno que ya está corriendo 24/7 (plan
+# "starter", no se duerme por inactividad). Si algún día se pasa a un
+# plan que SÍ se duerme, este hilo se duerme con el resto del proceso
+# y listo, no rompe nada.
+#
+# Deshabilitado por default (ACTUALIZACION_PERIODICA_LPF_HORAS=0) para
+# no sorprender en otros entornos (Vercel, local); en Render se prende
+# poniendo esa env var. 4 horas es un default razonable -- ajustable
+# sin tocar código.
+ACTUALIZACION_PERIODICA_LPF_HORAS = float(os.environ.get("ACTUALIZACION_PERIODICA_LPF_HORAS", "0"))
+
+
+def _ciclo_actualizacion_periodica_lpf():
+    if ACTUALIZACION_PERIODICA_LPF_HORAS <= 0:
+        return
+    print(f"[actualizacion-periodica-lpf] activado, cada {ACTUALIZACION_PERIODICA_LPF_HORAS}h.")
+    while True:
+        time.sleep(ACTUALIZACION_PERIODICA_LPF_HORAS * 3600)
+        # No bloqueante: si justo hay alguien usando LPF (lectura o
+        # escritura), no esperamos -- nos salteamos este ciclo y
+        # probamos de nuevo en el próximo. Nunca le hacemos esperar a
+        # un usuario real por esto.
+        if not _lock_lpf.acquire_write(timeout=30):
+            print("[actualizacion-periodica-lpf] lock ocupado, salteo este ciclo.")
+            continue
+        try:
+            resultado = actualizar_lpf(n_sims=1000, correr_simulacion_fn=correr_simulacion_lpf, imprimir=True)
+            print(f"[actualizacion-periodica-lpf] cargados={len(resultado.get('cargados', []))} "
+                  f"sin_matchear={len(resultado.get('sin_matchear', []))} "
+                  f"fixture_sincronizado={resultado.get('fixture_sincronizado')}")
+        except Exception as e:
+            # Nunca dejamos que un error de un ciclo mate el hilo --
+            # si no, un solo fallo (ej. Promiedos caído un rato) apaga
+            # la actualización periódica para siempre hasta el próximo
+            # deploy.
+            print(f"[actualizacion-periodica-lpf] error: {e}")
+        finally:
+            _lock_lpf.release_write()
+
+
+@app.on_event("startup")
+def _iniciar_actualizacion_periodica_lpf():
+    threading.Thread(target=_ciclo_actualizacion_periodica_lpf, daemon=True).start()
 
 
 # En Render este mismo proceso sirve el dashboard de public/. En Vercel,
