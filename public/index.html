@@ -4956,10 +4956,10 @@
     padding:6px 12px; cursor:pointer; font-size:12.5px; color: var(--ink-dim); font-weight:600;
   }
   .calc-puntos-reset:hover{ border-color: var(--ink-dim); color: var(--ink); }
-  .calc-puntos-layout{ display:grid; grid-template-columns: 1fr 320px; gap:18px; align-items:start; }
+  .calc-puntos-layout{ display:grid; grid-template-columns: 1fr 320px; gap:18px; align-items:start; min-width:0; }
   @media (max-width:900px){ .calc-puntos-layout{ grid-template-columns: 1fr; } }
 
-  .calc-puntos-fechas{ display:flex; flex-direction:column; gap:8px; max-height:520px; overflow-y:auto; padding-right:4px; }
+  .calc-puntos-fechas{ display:flex; flex-direction:column; gap:8px; max-height:520px; overflow-y:auto; padding-right:4px; min-width:0; }
   /* Cada fecha es un <details> nativo -- sin overflow:hidden ni
      flex-shrink acá (esa combinación fue justamente lo que causaba que
      el navegador aplastara los bloques en vez de dejar que el
@@ -5088,12 +5088,27 @@
     .calc-puntos-partido{
       flex-direction:column; align-items:stretch; gap:8px;
       padding:10px 0; border-bottom:1px solid var(--line);
+      width:100%; max-width:100%; box-sizing:border-box;
     }
     .calc-puntos-partido:last-child{ border-bottom:none; }
-    .calc-puntos-equipo{ min-width:0; font-size:13px; }
-    .calc-puntos-opciones{ justify-content:center; gap:8px; }
-    .calc-puntos-btn{ flex:1; min-width:0; padding:9px 0; font-size:13px; }
-    .calc-puntos-fecha-partidos{ padding:6px 12px 12px; }
+    .calc-puntos-equipo{ min-width:0; width:100%; font-size:13px; box-sizing:border-box; }
+    .calc-puntos-zona-badge{ align-self:flex-start; }
+    /* Grid en vez de flex acá: con flex, si algo en la cadena de
+       padres no shrinkea del todo, el navegador puede terminar
+       reservándole a cada botón su ancho de CONTENIDO en vez de
+       repartir el 100% disponible -- resultado real reportado por
+       Pablo: el botón "2" quedaba afuera de la pantalla y había que
+       scrollear para tocarlo. Con grid de 3 columnas iguales, cada
+       botón mide SIEMPRE exactamente 1/3 del ancho disponible, sin
+       margen para ese error. */
+    .calc-puntos-opciones{
+      display:grid; grid-template-columns: repeat(3, 1fr); gap:8px;
+      width:100%; max-width:100%; box-sizing:border-box;
+    }
+    .calc-puntos-btn{
+      width:100%; min-width:0; padding:10px 0; font-size:13px; box-sizing:border-box;
+    }
+    .calc-puntos-fecha-partidos{ padding:6px 12px 12px; overflow-x:hidden; }
 
     /* La lista de fechas no necesita 520px fijos en una pantalla
        chica -- una porción de la altura visible se ve y se lee mejor
