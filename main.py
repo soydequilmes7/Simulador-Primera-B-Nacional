@@ -105,10 +105,27 @@ def correr_simulacion(n_sims=1000, imprimir=True, guardar_json=True):
     mc_A = resumen_mc[resumen_mc["zona"] == "A"].drop(columns=["zona"]).to_dict(orient="records")
     mc_B = resumen_mc[resumen_mc["zona"] == "B"].drop(columns=["zona"]).to_dict(orient="records")
 
+    # Fixture pendiente por zona -- lo usa la "Calculadora de puntos" del
+    # frontend (elegís un resultado por partido y te arma la tabla
+    # proyectada, sin correr ninguna simulación). La zona de cada partido
+    # se saca del equipo local en la tabla real (ambos equipos de un
+    # cruce están siempre en la misma zona en Nacional).
+    _zona_por_equipo = dict(zip(estadisticas_obj.tabla["equipo"], estadisticas_obj.tabla["zona"]))
+    fixture_pendiente = {"A": [], "B": []}
+    for _, _fila in estadisticas_obj.fixture.iterrows():
+        _zona = _zona_por_equipo.get(_fila["equipo_local"]) or _zona_por_equipo.get(_fila["equipo_visitante"])
+        if _zona in fixture_pendiente:
+            fixture_pendiente[_zona].append({
+                "jornada": int(_fila["jornada"]),
+                "equipo_local": _fila["equipo_local"],
+                "equipo_visitante": _fila["equipo_visitante"],
+            })
+
     # Armamos el diccionario blindado (sin pedir claves que no existen)
     datos_web = {
         "n_simulaciones": n_sims,
         "generado": datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
+        "fixture_pendiente": fixture_pendiente,
         "tablas": {
             "A": tablas["A"].to_dict(orient="records"),
             "B": tablas["B"].to_dict(orient="records")

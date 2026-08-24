@@ -4938,6 +4938,57 @@
     .evolucion-chart{ min-width:640px; height:420px; }
   }
 
+  /* ---- Calculadora de Puntos (solo Primera Nacional) ----
+     Reusa las clases .evolucion-toggle/.evolucion-body (mismo acordeón)
+     -- lo de acá abajo es específico del contenido de adentro. */
+  .calc-puntos-toolbar{
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    margin-bottom:14px; flex-wrap:wrap;
+  }
+  .calc-puntos-contador{ font-size:12.5px; color: var(--muted); }
+  .calc-puntos-reset{
+    background: var(--bg); border:1px solid var(--line); border-radius: var(--radius-sm);
+    padding:6px 12px; cursor:pointer; font-size:12.5px; color: var(--ink-dim); font-weight:600;
+  }
+  .calc-puntos-reset:hover{ border-color: var(--ink-dim); color: var(--ink); }
+  .calc-puntos-layout{ display:grid; grid-template-columns: 1fr 320px; gap:18px; align-items:start; }
+  @media (max-width:900px){ .calc-puntos-layout{ grid-template-columns: 1fr; } }
+
+  .calc-puntos-fechas{ display:flex; flex-direction:column; gap:8px; max-height:520px; overflow-y:auto; padding-right:4px; }
+  .calc-puntos-fecha{ border:1px solid var(--line); border-radius: var(--radius-sm); overflow:hidden; }
+  .calc-puntos-fecha-head{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    padding:9px 12px; cursor:pointer; background: var(--bg); font-size:13px; font-weight:700; color: var(--ink);
+  }
+  .calc-puntos-fecha-head .caret{ color: var(--muted); font-size:11px; transition: transform 220ms ease; }
+  .calc-puntos-fecha.abierta .calc-puntos-fecha-head .caret{ transform: rotate(180deg); }
+  .calc-puntos-fecha-badge{
+    font-size:10.5px; font-weight:700; color: var(--muted); border:1px solid var(--line);
+    border-radius:999px; padding:1px 8px;
+  }
+  .calc-puntos-fecha-badge.completa{ color: #2E9E5B; border-color: #2E9E5B; }
+  .calc-puntos-fecha-partidos{ display:none; padding:10px 12px; gap:8px; flex-direction:column; }
+  .calc-puntos-fecha.abierta .calc-puntos-fecha-partidos{ display:flex; }
+  .calc-puntos-partido{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .calc-puntos-equipo{
+    flex:1; min-width:110px; display:flex; align-items:center; gap:6px;
+    font-size:12.5px; color: var(--ink-dim);
+  }
+  .calc-puntos-equipo img{ width:16px; height:16px; object-fit:contain; }
+  .calc-puntos-opciones{ display:flex; gap:4px; }
+  .calc-puntos-btn{
+    background: var(--bg); border:1px solid var(--line); border-radius: var(--radius-sm);
+    padding:5px 9px; cursor:pointer; font-size:11.5px; font-weight:700; color: var(--muted); min-width:34px;
+  }
+  .calc-puntos-btn:hover{ border-color: var(--ink-dim); color: var(--ink); }
+  .calc-puntos-btn.activo{ background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+  .calc-puntos-tabla-titulo{ font-size:12.5px; font-weight:700; color: var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px; }
+  .calc-puntos-tabla-wrap table{ font-size:12.5px; }
+  .calc-puntos-mov{ font-size:11px; font-weight:700; }
+  .calc-puntos-mov.sube{ color:#2E9E5B; }
+  .calc-puntos-mov.baja{ color:#DC2626; }
+
   /* =====================================================================
      RETOQUES SOLO PARA MÓVIL
      Todo lo de acá abajo vive dentro de @media (max-width: ...), así que
@@ -5330,6 +5381,33 @@
         <thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>GF</th><th>GC</th><th>DG</th></tr></thead>
         <tbody id="tabla-actual-body"></tbody>
       </table>
+    </div>
+  </section>
+
+  <section id="sec-calc-puntos">
+    <div class="section-head"><h2>🧮 Calcular Puntos</h2><div class="rule"></div></div>
+    <p class="section-note">Elegí un resultado para los partidos que quedan pendientes y mirá cómo quedaría la tabla. Es una cuenta tuya, manual -- no corre ninguna simulación ni cambia nada guardado.</p>
+    <button type="button" class="evolucion-toggle" id="calc-puntos-toggle" aria-expanded="false" aria-controls="calc-puntos-body">
+      <span class="evolucion-toggle-label">Abrir calculadora</span>
+      <span class="evolucion-toggle-caret">▼</span>
+    </button>
+    <div class="evolucion-body calc-puntos-body" id="calc-puntos-body" hidden>
+      <div class="calc-puntos-toolbar">
+        <span class="calc-puntos-contador" id="calc-puntos-contador"></span>
+        <button type="button" class="calc-puntos-reset" id="calc-puntos-reset">Reiniciar elecciones</button>
+      </div>
+      <div class="calc-puntos-layout">
+        <div class="calc-puntos-fechas" id="calc-puntos-fechas"></div>
+        <div class="calc-puntos-tabla-wrap">
+          <div class="calc-puntos-tabla-titulo">Tabla proyectada</div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th></th></tr></thead>
+              <tbody id="calc-puntos-tabla-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -7858,6 +7936,187 @@ document.addEventListener('DOMContentLoaded', () => {
   Object.keys(EVOLUCION_CONFIG).forEach(initEvolucionAcordeon);
 });
 
+/* ==========================================================================
+   CALCULADORA DE PUNTOS (solo Primera Nacional)
+   --------------------------------------------------------------------------
+   Elegís Local/Empate/Visitante para cada partido pendiente y se arma una
+   tabla proyectada = tabla_actual + los puntos de tus elecciones. Todo
+   client-side, no pega contra el backend ni corre ninguna simulación --
+   son 3 valores por partido (L/E/V), nada de marcador exacto, así que el
+   desempate en la tabla proyectada usa el DG real actual (no inventamos
+   goles que el usuario no eligió).
+   ========================================================================== */
+let calcPuntosPicks = {}; // clave "zona|jornada|local|visitante" -> 'L'|'E'|'V'
+let calcPuntosFechasAbiertas = new Set(); // claves "zona|jornada" -- para que no se cierren solas al re-renderizar
+
+function calcPuntosClave(zona, p){
+  return `${zona}|${p.jornada}|${p.equipo_local}|${p.equipo_visitante}`;
+}
+
+function calcPuntosFechasDeZona(zona){
+  const partidos = (DATA.fixture_pendiente && DATA.fixture_pendiente[zona]) || [];
+  const porFecha = new Map();
+  partidos.forEach(p => {
+    if (!porFecha.has(p.jornada)) porFecha.set(p.jornada, []);
+    porFecha.get(p.jornada).push(p);
+  });
+  return [...porFecha.entries()].sort((a, b) => a[0] - b[0]);
+}
+
+function renderCalculadoraPuntos(){
+  const cont = document.getElementById('calc-puntos-fechas');
+  if (!cont) return; // solo existe en la página de Nacional
+
+  const fechas = calcPuntosFechasDeZona(zonaActual);
+  if (fechas.length === 0){
+    cont.innerHTML = `<p class="section-note">No hay partidos pendientes en esta zona -- la temporada regular ya terminó.</p>`;
+  } else {
+    cont.innerHTML = fechas.map(([jornada, partidos], idx) => {
+      const elegidos = partidos.filter(p => calcPuntosPicks[calcPuntosClave(zonaActual, p)]).length;
+      const completa = elegidos === partidos.length;
+      const claveFecha = `${zonaActual}|${jornada}`;
+      if (idx === 0 && !calcPuntosFechasAbiertas.has(claveFecha) && calcPuntosFechasAbiertas.size === 0){
+        calcPuntosFechasAbiertas.add(claveFecha); // la primera fecha arranca abierta la primera vez
+      }
+      const abierta = calcPuntosFechasAbiertas.has(claveFecha);
+      return `
+        <div class="calc-puntos-fecha${abierta ? ' abierta' : ''}" data-jornada="${jornada}">
+          <div class="calc-puntos-fecha-head" data-toggle-fecha="${jornada}">
+            <span>Fecha ${jornada}</span>
+            <span style="display:flex; align-items:center; gap:8px;">
+              <span class="calc-puntos-fecha-badge${completa ? ' completa' : ''}">${elegidos}/${partidos.length}</span>
+              <span class="caret">▼</span>
+            </span>
+          </div>
+          <div class="calc-puntos-fecha-partidos">
+            ${partidos.map(p => calcPuntosPartidoHTML(zonaActual, p)).join('')}
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  renderTablaProyectada();
+  renderCalcPuntosContador();
+}
+
+function calcPuntosPartidoHTML(zona, p){
+  const clave = calcPuntosClave(zona, p);
+  const pick = calcPuntosPicks[clave];
+  return `
+    <div class="calc-puntos-partido" data-clave="${clave}">
+      <span class="calc-puntos-equipo">${escudoHTML(p.equipo_local)}${nombreMostrable(p.equipo_local)}</span>
+      <div class="calc-puntos-opciones">
+        <button type="button" class="calc-puntos-btn${pick === 'L' ? ' activo' : ''}" data-pick="L" title="Gana local">1</button>
+        <button type="button" class="calc-puntos-btn${pick === 'E' ? ' activo' : ''}" data-pick="E" title="Empate">X</button>
+        <button type="button" class="calc-puntos-btn${pick === 'V' ? ' activo' : ''}" data-pick="V" title="Gana visitante">2</button>
+      </div>
+      <span class="calc-puntos-equipo">${escudoHTML(p.equipo_visitante)}${nombreMostrable(p.equipo_visitante)}</span>
+    </div>
+  `;
+}
+
+function renderCalcPuntosContador(){
+  const el = document.getElementById('calc-puntos-contador');
+  if (!el) return;
+  const total = calcPuntosFechasDeZona(zonaActual).reduce((acc, [, partidos]) => acc + partidos.length, 0);
+  const elegidos = Object.keys(calcPuntosPicks).filter(k => k.startsWith(`${zonaActual}|`)).length;
+  el.textContent = total === 0 ? '' : `${elegidos}/${total} partidos elegidos en esta zona`;
+}
+
+function renderTablaProyectada(){
+  const body = document.getElementById('calc-puntos-tabla-body');
+  if (!body) return;
+
+  const actual = (DATA.tabla_actual && DATA.tabla_actual[zonaActual]) || DATA.tablas[zonaActual];
+  const puntosProyectados = {};
+  const posicionOriginal = {};
+  actual.forEach((f, i) => {
+    puntosProyectados[f.equipo] = f.puntos;
+    posicionOriginal[f.equipo] = i + 1;
+  });
+
+  calcPuntosFechasDeZona(zonaActual).forEach(([, partidos]) => {
+    partidos.forEach(p => {
+      const pick = calcPuntosPicks[calcPuntosClave(zonaActual, p)];
+      if (!pick) return;
+      if (!(p.equipo_local in puntosProyectados) || !(p.equipo_visitante in puntosProyectados)) return;
+      if (pick === 'L') puntosProyectados[p.equipo_local] += 3;
+      else if (pick === 'V') puntosProyectados[p.equipo_visitante] += 3;
+      else { puntosProyectados[p.equipo_local] += 1; puntosProyectados[p.equipo_visitante] += 1; }
+    });
+  });
+
+  // Desempate: puntos proyectados desc, y a igualdad el DG real actual
+  // (no inventamos goles que el usuario no eligió) y por último el
+  // orden que ya traía la tabla actual, para que el resultado sea
+  // estable entre re-renders.
+  const dgActual = {};
+  actual.forEach(f => { dgActual[f.equipo] = f.dg; });
+  const ordenados = [...actual].sort((a, b) => {
+    const diff = puntosProyectados[b.equipo] - puntosProyectados[a.equipo];
+    if (diff !== 0) return diff;
+    const diffDg = (dgActual[b.equipo] ?? 0) - (dgActual[a.equipo] ?? 0);
+    if (diffDg !== 0) return diffDg;
+    return posicionOriginal[a.equipo] - posicionOriginal[b.equipo];
+  });
+
+  body.innerHTML = '';
+  ordenados.forEach((f, i) => {
+    const tr = document.createElement('tr');
+    if (i === 0) tr.classList.add('punta');
+    else if (i >= 1 && i <= 7) tr.classList.add('reducido');
+    if (i >= ordenados.length - 2) tr.classList.add('descenso');
+    const movimiento = posicionOriginal[f.equipo] - (i + 1); // positivo = subió
+    let movHTML = '';
+    if (movimiento > 0) movHTML = `<span class="calc-puntos-mov sube">▲${movimiento}</span>`;
+    else if (movimiento < 0) movHTML = `<span class="calc-puntos-mov baja">▼${-movimiento}</span>`;
+    tr.innerHTML = `<td>${i + 1}</td><td>${escudoHTML(f.equipo)}${nombreMostrable(f.equipo)}</td><td>${puntosProyectados[f.equipo]}</td><td>${movHTML}</td>`;
+    body.appendChild(tr);
+  });
+}
+
+function initCalcPuntosAcordeon(){
+  const toggle = document.getElementById('calc-puntos-toggle');
+  const body = document.getElementById('calc-puntos-body');
+  if (!toggle || !body) return; // solo existe en la página de Nacional
+
+  toggle.addEventListener('click', () => {
+    const abierto = toggle.getAttribute('aria-expanded') === 'true';
+    toggle.setAttribute('aria-expanded', String(!abierto));
+    body.hidden = abierto;
+    if (!abierto) renderCalculadoraPuntos(); // recién se arma al abrir por primera vez
+  });
+
+  const fechasCont = document.getElementById('calc-puntos-fechas');
+  fechasCont.addEventListener('click', (e) => {
+    const headEl = e.target.closest('[data-toggle-fecha]');
+    if (headEl){
+      const jornada = headEl.dataset.toggleFecha;
+      const claveFecha = `${zonaActual}|${jornada}`;
+      if (calcPuntosFechasAbiertas.has(claveFecha)) calcPuntosFechasAbiertas.delete(claveFecha);
+      else calcPuntosFechasAbiertas.add(claveFecha);
+      headEl.closest('.calc-puntos-fecha').classList.toggle('abierta');
+      return;
+    }
+    const btn = e.target.closest('.calc-puntos-btn');
+    if (!btn) return;
+    const clave = btn.closest('.calc-puntos-partido').dataset.clave;
+    const pickNuevo = btn.dataset.pick;
+    // Tocar la misma opción activa la deselecciona (vuelve a "sin elegir").
+    calcPuntosPicks[clave] = (calcPuntosPicks[clave] === pickNuevo) ? undefined : pickNuevo;
+    if (calcPuntosPicks[clave] === undefined) delete calcPuntosPicks[clave];
+    renderCalculadoraPuntos();
+  });
+
+  document.getElementById('calc-puntos-reset').addEventListener('click', () => {
+    Object.keys(calcPuntosPicks).forEach(k => { if (k.startsWith(`${zonaActual}|`)) delete calcPuntosPicks[k]; });
+    renderCalculadoraPuntos();
+  });
+}
+
+document.addEventListener('DOMContentLoaded', initCalcPuntosAcordeon);
+
 function renderTabla(zona, equipoDestacado){
   // tabla_actual = posiciones reales de HOY (mismo dato que usa el
   // buscador, ver buildTeamIndex). Si data.json es viejo y no la trae,
@@ -8053,6 +8312,7 @@ function setZone(zona){
   renderMC(zona);
   renderEsperada(zona);
   if (estadoEvolucion('nacional').datos) actualizarZonaEvolucion('nacional');
+  renderCalculadoraPuntos();
 }
 
 /* ---------- BUSCADOR DE EQUIPOS ---------- */
