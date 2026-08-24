@@ -4955,20 +4955,26 @@
   @media (max-width:900px){ .calc-puntos-layout{ grid-template-columns: 1fr; } }
 
   .calc-puntos-fechas{ display:flex; flex-direction:column; gap:8px; max-height:520px; overflow-y:auto; padding-right:4px; }
-  .calc-puntos-fecha{ border:1px solid var(--line); border-radius: var(--radius-sm); overflow:hidden; flex-shrink:0; }
+  /* Cada fecha es un <details> nativo -- sin overflow:hidden ni
+     flex-shrink acá (esa combinación fue justamente lo que causaba que
+     el navegador aplastara los bloques en vez de dejar que el
+     contenedor scrolleara, ver el commit que reemplazó el div+clase
+     manual por esto). <details> siempre ocupa su alto natural. */
+  .calc-puntos-fecha{ border:1px solid var(--line); border-radius: var(--radius-sm); }
   .calc-puntos-fecha-head{
     display:flex; align-items:center; justify-content:space-between; gap:10px;
     padding:9px 12px; cursor:pointer; background: var(--bg); font-size:13px; font-weight:700; color: var(--ink);
+    list-style:none; /* apagar el triángulo nativo de <summary>, usamos nuestro propio caret */
   }
+  .calc-puntos-fecha-head::-webkit-details-marker{ display:none; } /* Chrome/Safari */
   .calc-puntos-fecha-head .caret{ color: var(--muted); font-size:11px; transition: transform 220ms ease; }
-  .calc-puntos-fecha.abierta .calc-puntos-fecha-head .caret{ transform: rotate(180deg); }
+  .calc-puntos-fecha[open] .calc-puntos-fecha-head .caret{ transform: rotate(180deg); }
   .calc-puntos-fecha-badge{
     font-size:10.5px; font-weight:700; color: var(--muted); border:1px solid var(--line);
     border-radius:999px; padding:1px 8px;
   }
   .calc-puntos-fecha-badge.completa{ color: #2E9E5B; border-color: #2E9E5B; }
-  .calc-puntos-fecha-partidos{ display:none; padding:10px 12px; gap:8px; flex-direction:column; }
-  .calc-puntos-fecha.abierta .calc-puntos-fecha-partidos{ display:flex; }
+  .calc-puntos-fecha-partidos{ padding:10px 12px; display:flex; gap:8px; flex-direction:column; }
   .calc-puntos-partido{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
   .calc-puntos-zona-badge{
     flex-shrink:0; width:18px; height:18px; border-radius:5px; display:inline-flex;
@@ -7973,7 +7979,7 @@ document.addEventListener('DOMContentLoaded', () => {
    la calculadora (independiente de las pestañas de zona del resto de la
    página) elige cuál mostrar. */
 let calcPuntosPicks = {}; // clave "zona|jornada|local|visitante" -> 'L'|'E'|'V'
-let calcPuntosFechasAbiertas = new Set(); // claves "jornada" -- para que no se cierren solas al re-renderizar
+let calcPuntosFechasAbiertas = new Set(); // claves "jornada" -- para que <details> no se cierre solo al re-renderizar
 let calcPuntosZonaTabla = 'A'; // qué tabla proyectada mostrar (independiente de zonaActual)
 
 function calcPuntosClave(zona, p){
@@ -7996,6 +8002,15 @@ function calcPuntosFechasCombinadas(){
   return [...porFecha.entries()].sort((a, b) => a[0] - b[0]);
 }
 
+// Cada fecha es un <details>/<summary> NATIVO del navegador en vez de un
+// div con clases + JS haciendo de acordeón -- el enfoque anterior (flex
+// column + overflow-y:auto + una clase "abierta" togliendo display) se
+// aplastaba con muchas fechas cargadas (bug de flexbox: un flex item con
+// overflow:hidden pasa a tener min-height efectivo 0, así que el
+// navegador prefiere achicarlo en vez de dejar que el contenedor
+// scrollee) y el fix de flex-shrink:0 no alcanzó a resolverlo del todo
+// en la práctica. <details> no tiene ese problema -- lo maneja el
+// navegador, no nuestro CSS.
 function renderCalculadoraPuntos(){
   const cont = document.getElementById('calc-puntos-fechas');
   if (!cont) return; // solo existe en la página de Nacional
@@ -8013,20 +8028,34 @@ function renderCalculadoraPuntos(){
       }
       const abierta = calcPuntosFechasAbiertas.has(claveFecha);
       return `
-        <div class="calc-puntos-fecha${abierta ? ' abierta' : ''}" data-jornada="${jornada}">
-          <div class="calc-puntos-fecha-head" data-toggle-fecha="${jornada}">
+        <details class="calc-puntos-fecha" data-jornada="${jornada}"${abierta ? ' open' : ''}>
+          <summary class="calc-puntos-fecha-head">
             <span>Fecha ${jornada}</span>
             <span style="display:flex; align-items:center; gap:8px;">
               <span class="calc-puntos-fecha-badge${completa ? ' completa' : ''}">${elegidos}/${partidos.length}</span>
               <span class="caret">▼</span>
             </span>
-          </div>
+          </summary>
           <div class="calc-puntos-fecha-partidos">
             ${partidos.map(p => calcPuntosPartidoHTML(p)).join('')}
           </div>
-        </div>
+        </details>
       `;
     }).join('');
+
+    // El evento "toggle" de <details> no sirve delegarlo (no burbujea
+    // de forma consistente entre navegadores) -- se engancha uno por
+    // elemento después de cada render, así calcPuntosFechasAbiertas
+    // queda sincronizado con lo que el usuario haya abierto/cerrado a
+    // mano para la próxima vez que se reconstruya el HTML (cada pick
+    // reconstruye todo, ver más abajo).
+    cont.querySelectorAll('.calc-puntos-fecha').forEach(det => {
+      det.addEventListener('toggle', () => {
+        const clave = det.dataset.jornada;
+        if (det.open) calcPuntosFechasAbiertas.add(clave);
+        else calcPuntosFechasAbiertas.delete(clave);
+      });
+    });
   }
 
   renderTablaProyectada();
@@ -8126,14 +8155,6 @@ function initCalcPuntosAcordeon(){
 
   const fechasCont = document.getElementById('calc-puntos-fechas');
   fechasCont.addEventListener('click', (e) => {
-    const headEl = e.target.closest('[data-toggle-fecha]');
-    if (headEl){
-      const claveFecha = headEl.dataset.toggleFecha;
-      if (calcPuntosFechasAbiertas.has(claveFecha)) calcPuntosFechasAbiertas.delete(claveFecha);
-      else calcPuntosFechasAbiertas.add(claveFecha);
-      headEl.closest('.calc-puntos-fecha').classList.toggle('abierta');
-      return;
-    }
     const btn = e.target.closest('.calc-puntos-btn');
     if (!btn) return;
     const clave = btn.closest('.calc-puntos-partido').dataset.clave;
