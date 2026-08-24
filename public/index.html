@@ -4941,6 +4941,11 @@
   /* ---- Calculadora de Puntos (solo Primera Nacional) ----
      Reusa las clases .evolucion-toggle/.evolucion-body (mismo acordeón)
      -- lo de acá abajo es específico del contenido de adentro. */
+  .calc-puntos-aviso{
+    background: rgba(217,164,65,0.1); border:1px solid rgba(217,164,65,0.35);
+    border-radius: var(--radius-sm); padding:10px 14px; font-size:12.5px;
+    color: #D9A441; max-width:none;
+  }
   .calc-puntos-toolbar{
     display:flex; align-items:center; justify-content:space-between; gap:12px;
     margin-bottom:14px; flex-wrap:wrap;
@@ -5074,6 +5079,38 @@
     .temporada-copa-argentina-grupo, .campeon-summary{
       padding-left:16px; padding-right:16px;
     }
+
+    /* Calculadora de Puntos: en desktop es una grilla de 2 columnas
+       (fechas | tabla proyectada) -- en mobile ya se apilan solas por
+       la regla de @media(max-width:900px) de más arriba, esto de acá
+       es afinado extra para que cada partido se lea cómodo con el
+       dedo, sin depender de flex-wrap para acomodarse solo. */
+    .calc-puntos-partido{
+      flex-direction:column; align-items:stretch; gap:8px;
+      padding:10px 0; border-bottom:1px solid var(--line);
+    }
+    .calc-puntos-partido:last-child{ border-bottom:none; }
+    .calc-puntos-equipo{ min-width:0; font-size:13px; }
+    .calc-puntos-opciones{ justify-content:center; gap:8px; }
+    .calc-puntos-btn{ flex:1; min-width:0; padding:9px 0; font-size:13px; }
+    .calc-puntos-fecha-partidos{ padding:6px 12px 12px; }
+
+    /* La lista de fechas no necesita 520px fijos en una pantalla
+       chica -- una porción de la altura visible se ve y se lee mejor
+       (menos scroll "adentro del scroll" de la página completa). */
+    .calc-puntos-fechas{ max-height:60vh; }
+
+    /* Título + selector Zona A/Zona B de la tabla proyectada: en vez
+       de amontonarse en una fila angosta, el selector pasa a ocupar
+       todo el ancho debajo del título. */
+    .calc-puntos-tabla-titulo-row{ flex-direction:column; align-items:stretch; gap:8px; }
+    .calc-puntos-tabla-zonas{ width:100%; }
+    .calc-puntos-tabla-zona-btn{ flex:1; }
+
+    /* Toolbar (contador + reiniciar): apilado, botón a todo el ancho
+       como el resto de los botones de acción en mobile. */
+    .calc-puntos-toolbar{ flex-direction:column; align-items:stretch; }
+    .calc-puntos-reset{ width:100%; }
 
     footer{ padding:44px 16px 0; }
   }
@@ -5407,6 +5444,7 @@
   <section id="sec-calc-puntos">
     <div class="section-head"><h2>🧮 Calcular Puntos</h2><div class="rule"></div></div>
     <p class="section-note">Elegí un resultado para los partidos que quedan pendientes (Zona A y Zona B juntas) y mirá cómo quedaría cada tabla. Es una cuenta tuya, manual -- no corre ninguna simulación ni cambia nada guardado.</p>
+    <p class="section-note calc-puntos-aviso">⚠️ Esta lista se arma con el fixture de la última vez que se corrió "Actualizar Resultados" o "Correr nueva simulación". Si jugaron partidos nuevos y todavía aparecen acá como pendientes, actualizá resultados o corré una simulación nueva primero.</p>
     <button type="button" class="evolucion-toggle" id="calc-puntos-toggle" aria-expanded="false" aria-controls="calc-puntos-body">
       <span class="evolucion-toggle-label">Abrir calculadora</span>
       <span class="evolucion-toggle-caret">▼</span>
