@@ -27,6 +27,18 @@ class ResolverEquipoTests(unittest.TestCase):
     def test_nombre_canonico_resuelve_a_si_mismo(self) -> None:
         self.assertEqual(resolver_equipo("Bolivar"), "Bolivar")
 
+    def test_estudiantes_caseros_resuelve_al_nombre_completo(self) -> None:
+        # Caso real reportado por Pablo (24/08/2026): "Estudiantes (Caseros)"
+        # jugaba sus partidos, pero la Calculadora de Puntos los seguía
+        # mostrando como pendientes -- el nombre canónico en
+        # EQUIPOS_LOCALES estaba incompleto ("Estudiantes" a secas), no
+        # coincidía con el que usan de verdad fixture.csv/tabla.csv
+        # ("Estudiantes (Caseros)"), así que el resultado cargado nunca
+        # consumía la fila pendiente real.
+        for variante in ("Estudiantes", "Estudiantes de Caseros", "estudiantes caseros"):
+            with self.subTest(variante=variante):
+                self.assertEqual(resolver_equipo(variante), "Estudiantes (Caseros)")
+
     def test_nombre_desconocido_no_matchea_nada(self) -> None:
         self.assertIsNone(resolver_equipo("Un Club Que No Existe En Ningún Lado"))
 
