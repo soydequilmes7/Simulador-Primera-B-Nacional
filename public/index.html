@@ -5084,11 +5084,25 @@
        (fechas | tabla proyectada) -- en mobile ya se apilan solas por
        la regla de @media(max-width:900px) de más arriba, esto de acá
        es afinado extra para que cada partido se lea cómodo con el
-       dedo, sin depender de flex-wrap para acomodarse solo. */
+       dedo, sin depender de flex-wrap para acomodarse solo.
+
+       OJO CON min-width:0 -- por default, todo ítem de flex/grid tiene
+       min-width:auto (se resiste a achicarse más allá del ancho
+       mínimo de SU contenido, aunque el padre sea más angosto). Es un
+       problema RECURSIVO: alcanza con que UN solo nivel de esta cadena
+       (<details>, la fila de opciones, etc.) se lo salte para que todo
+       el bloque se desborde de nuevo -- por eso acá abajo se lo pone
+       explícito en CADA nivel anidado, no solo en el de más afuera
+       (eso fue justo lo que pasó la primera vuelta: min-width:0 en
+       .calc-puntos-fechas y .calc-puntos-layout no alcanzó porque
+       .calc-puntos-fecha, el <details> que cuelga adentro, seguía sin
+       tenerlo). */
+    .calc-puntos-fecha{ min-width:0; width:100%; box-sizing:border-box; }
+    .calc-puntos-fecha-partidos{ min-width:0; width:100%; padding:6px 12px 12px; box-sizing:border-box; overflow-x:hidden; }
     .calc-puntos-partido{
       flex-direction:column; align-items:stretch; gap:8px;
       padding:10px 0; border-bottom:1px solid var(--line);
-      width:100%; max-width:100%; box-sizing:border-box;
+      min-width:0; width:100%; max-width:100%; box-sizing:border-box;
     }
     .calc-puntos-partido:last-child{ border-bottom:none; }
     .calc-puntos-equipo{ min-width:0; width:100%; font-size:13px; box-sizing:border-box; }
@@ -5103,12 +5117,11 @@
        margen para ese error. */
     .calc-puntos-opciones{
       display:grid; grid-template-columns: repeat(3, 1fr); gap:8px;
-      width:100%; max-width:100%; box-sizing:border-box;
+      min-width:0; width:100%; max-width:100%; box-sizing:border-box;
     }
     .calc-puntos-btn{
       width:100%; min-width:0; padding:10px 0; font-size:13px; box-sizing:border-box;
     }
-    .calc-puntos-fecha-partidos{ padding:6px 12px 12px; overflow-x:hidden; }
 
     /* La lista de fechas no necesita 520px fijos en una pantalla
        chica -- una porción de la altura visible se ve y se lee mejor
@@ -5117,10 +5130,13 @@
 
     /* Título + selector Zona A/Zona B de la tabla proyectada: en vez
        de amontonarse en una fila angosta, el selector pasa a ocupar
-       todo el ancho debajo del título. */
-    .calc-puntos-tabla-titulo-row{ flex-direction:column; align-items:stretch; gap:8px; }
-    .calc-puntos-tabla-zonas{ width:100%; }
-    .calc-puntos-tabla-zona-btn{ flex:1; }
+       todo el ancho debajo del título. Mismo blindaje min-width:0 que
+       el lado de las fechas -- .calc-puntos-tabla-wrap también es
+       ítem del grid de .calc-puntos-layout. */
+    .calc-puntos-tabla-wrap{ min-width:0; width:100%; box-sizing:border-box; }
+    .calc-puntos-tabla-titulo-row{ flex-direction:column; align-items:stretch; gap:8px; min-width:0; }
+    .calc-puntos-tabla-zonas{ width:100%; min-width:0; box-sizing:border-box; }
+    .calc-puntos-tabla-zona-btn{ flex:1; min-width:0; }
 
     /* Toolbar (contador + reiniciar): apilado, botón a todo el ancho
        como el resto de los botones de acción en mobile. */
