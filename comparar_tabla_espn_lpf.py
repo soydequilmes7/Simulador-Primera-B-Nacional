@@ -2,22 +2,23 @@
 """
 comparar_tabla_espn_lpf.py
 
-Diagnóstico para el problema de fondo que motivó scraper_espn_lpf.py:
-resultados_lpf.csv depende de la ventana de "últimos" partidos que
-expone Promiedos, así que si un partido se cae de esa ventana la tabla
-reconstruida (main_lpf._tabla_actual_clausura(), lo que ve el
-buscador/frontend) queda mal sin que nada avise.
+Desde que main_lpf._tabla_actual_clausura() prioriza ESPN como fuente
+(ver ese módulo), la tabla que muestra el sitio YA no depende de
+resultados_lpf.csv estando completo. Pero resultados_lpf.csv sigue
+siendo la fuente real para todo lo demás del motor (rachas, ratings,
+ELO, simulación) -- así que si le siguen faltando partidos por la
+ventana de Promiedos, ESO sigue siendo un problema real aunque la
+tabla visible ya no lo muestre.
 
-Este script trae AMBAS tablas del Clausura -- la real (reconstruida
-desde resultados_lpf.csv, igual que hace el servidor) y la de ESPN
-(scraper_espn_lpf.py, ya calculada por ellos) -- y las compara equipo
-por equipo. Si coinciden en todo, no hay partidos faltantes/mal
-cargados. Si no, el diff te dice exactamente qué equipo y qué campo
-está desalineado (típicamente partidos_jugados de menos = partido
-faltante).
+Este script compara la reconstrucción vieja (main_lpf.
+_tabla_actual_clausura_desde_resultados(), el fallback -- NO la
+función con prioridad ESPN) contra la tabla de ESPN, equipo por
+equipo, para seguir detectando esos partidos faltantes.
 
 NO escribe nada -- es de solo lectura, pensado para correr después de
-actualizar_resultados_lpf.py y antes de confiar en la tabla del día.
+actualizar_resultados_lpf.py (que además lo corre solo, ver el punto 8
+de ese docstring) y antes de confiar en que el motor de simulación
+tiene todos los resultados reales.
 
 Uso:
     python comparar_tabla_espn_lpf.py                     # ESPN en vivo
@@ -27,7 +28,7 @@ import sys
 
 import data_access
 from modelos.estadisticas_lpf import normalizar
-from main_lpf import _tabla_actual_clausura
+from main_lpf import _tabla_actual_clausura_desde_resultados
 from scraper_espn_lpf import obtener_tabla_clausura_espn
 
 CAMPOS_COMPARADOS = ["partidos_jugados", "puntos", "gf", "gc", "dg"]
@@ -48,7 +49,7 @@ class _DatosLPF:
 
 def _tabla_real_como_indice():
     e = _DatosLPF()
-    tabla = _tabla_actual_clausura(e)
+    tabla = _tabla_actual_clausura_desde_resultados(e)
     indice = {}
     for zona in ("A", "B"):
         for fila in tabla[zona]:

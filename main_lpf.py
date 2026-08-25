@@ -58,10 +58,47 @@ def _apertura_a_zonas(apertura_df):
 
 
 def _tabla_actual_clausura(e):
-    """Tabla REAL del Clausura a hoy, armada desde resultados_lpf.csv,
-    separada por zona: {"A": [...], "B": [...]} con posicion/equipo/puntos/
-    gf/gc/dg/partidos_jugados. Si el Clausura no arrancó, viene todo en 0
-    ordenado alfabéticamente. La usa el buscador para "Posición actual"."""
+    """Tabla REAL del Clausura a hoy, separada por zona: {"A": [...], "B": [...]}
+    con posicion/equipo/puntos/gf/gc/dg/partidos_jugados. La usa el
+    buscador para "Posición actual".
+
+    Fuente PRIMARIA: ESPN (scraper_espn_lpf.obtener_tabla_clausura_espn()),
+    la tabla ya calculada por ellos -- así se deja de depender de
+    resultados_lpf.csv, que se rompe cada vez que un partido se cae de
+    la ventana de "últimos" que expone Promiedos (ver
+    scraper_promiedos_lpf.py; era el motivo real de que esta tabla
+    quedara con partidos de menos sin que nada avisara). Si ESPN no
+    responde, algún equipo no está mapeado (ESPN_ID_A_EQUIPO
+    desactualizado -- típico de un ascenso/descenso) o el set de
+    equipos no coincide con e.apertura (30 equipos reales del
+    proyecto), cae automáticamente a la reconstrucción vieja desde
+    resultados_lpf.csv: mejor una tabla potencialmente incompleta que
+    una que explote o quede vacía."""
+    try:
+        from scraper_espn_lpf import obtener_tabla_clausura_espn
+        tabla_espn = obtener_tabla_clausura_espn()
+        equipos_espn = {f["equipo"] for zona in ("A", "B") for f in tabla_espn[zona]}
+        equipos_apertura = set(e.apertura["equipo"])
+        if equipos_espn != equipos_apertura:
+            raise ValueError(
+                f"El set de equipos de ESPN no coincide con e.apertura. "
+                f"Solo en ESPN: {equipos_espn - equipos_apertura or '-'} | "
+                f"Solo en Apertura: {equipos_apertura - equipos_espn or '-'}"
+            )
+        print("  [tabla_actual_clausura] Fuente: ESPN.")
+        return tabla_espn
+    except Exception as ex:
+        print(f"  [tabla_actual_clausura] ESPN no disponible ({ex}) -- "
+              f"usando resultados_lpf.csv como fallback.")
+        return _tabla_actual_clausura_desde_resultados(e)
+
+
+def _tabla_actual_clausura_desde_resultados(e):
+    """Reconstrucción vieja armada desde resultados_lpf.csv, separada por
+    zona. Se usa como FALLBACK de _tabla_actual_clausura() si ESPN no
+    está disponible -- ver docstring de esa función para el porqué del
+    cambio de fuente primaria. Si el Clausura no arrancó, viene todo en
+    0 ordenado alfabéticamente."""
     acumulado = {
         fila["equipo"]: {"equipo": fila["equipo"], "zona": fila["zona"],
                           "partidos_jugados": 0, "puntos": 0, "gf": 0, "gc": 0, "dg": 0}

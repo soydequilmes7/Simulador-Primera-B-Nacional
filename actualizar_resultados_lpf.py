@@ -31,10 +31,12 @@ original (Nacional):
      de tamaño), usada solo como base histórica para ratings iniciales
      y para la Tabla Anual (que suma puntos_apertura + puntos_clausura
      por separado, ver EstadisticasLPF líneas ~390-414). La tabla real
-     del Clausura NO vive en `standings`: se recalcula desde cero cada
-     vez a partir de resultados_lpf.csv (ver main_lpf._tabla_actual_
-     clausura() y EstadisticasLPF.cargar_datos_lpf(), self.tabla =
-     self.apertura.copy() con las columnas puestas en 0).
+     del Clausura NO vive en `standings`: se arma en
+     main_lpf._tabla_actual_clausura(), que desde el punto 8 de más
+     abajo prioriza ESPN como fuente y solo cae a reconstruirla desde
+     resultados_lpf.csv (self.tabla = self.apertura.copy() con las
+     columnas puestas en 0, ver EstadisticasLPF.cargar_datos_lpf()) si
+     ESPN no está disponible.
      Versión anterior de este archivo SÍ llamaba _aplicar_partido() +
      repo.upsert_standings("lpf", ...) sobre esa misma fila -- eso
      sumaba cada partido del Clausura ARRIBA de la tabla del Apertura,
