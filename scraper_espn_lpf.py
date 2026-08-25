@@ -52,8 +52,23 @@ import urllib.request
 BASE_URL = "https://site.api.espn.com/apis/v2/sports/soccer/arg.1/standings"
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-                  "(KHTML, like Gecko) Chrome/124.0 Safari/537.36",
+                  "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
     "Accept": "application/json, text/plain, */*",
+    "Accept-Language": "es-AR,es;q=0.9,en-US;q=0.8,en;q=0.7",
+    # ESPN devolvía 403 solo con User-Agent + Accept -- agregando estos
+    # (Referer/Origin apuntando a la página real de posiciones, más los
+    # sec-fetch-* que manda cualquier navegador en un pedido "fetch" del
+    # mismo sitio) es lo que suele destrabar el bloqueo de bot básico de
+    # su API oculta. Si con esto SIGUE dando 403, no es un tema de
+    # headers sino de fingerprinting a nivel TLS (Akamai/similares
+    # detectan que no es un navegador real más allá de los headers que
+    # mandes) -- en ese caso no hay arreglo simple del lado de
+    # urllib/requests, ver el aviso que imprime `_get_json_desde_red`.
+    "Referer": "https://www.espn.com/soccer/standings/_/league/arg.1",
+    "Origin": "https://www.espn.com",
+    "sec-fetch-site": "same-site",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
 }
 TIMEOUT = 20
 
@@ -123,8 +138,21 @@ CAMPOS_STAT = {
 
 def _get_json_desde_red():
     req = urllib.request.Request(BASE_URL, headers=HEADERS)
-    with urllib.request.urlopen(req, timeout=TIMEOUT) as resp:
-        body = resp.read().decode("utf-8")
+    try:
+        with urllib.request.urlopen(req, timeout=TIMEOUT) as resp:
+            body = resp.read().decode("utf-8")
+    except urllib.error.HTTPError as e:
+        # Se loguea el cuerpo del error (si trae algo) para poder
+        # distinguir un bloqueo de bot genérico de otra cosa (rate
+        # limit, geo-bloqueo, etc.) sin tener que reproducirlo a mano.
+        detalle = ""
+        try:
+            detalle = e.read().decode("utf-8", errors="replace")[:500]
+        except Exception:
+            pass
+        print(f"  [scraper_espn_lpf] HTTP {e.code} de ESPN. Cuerpo (primeros 500 chars): "
+              f"{detalle!r}" if detalle else f"  [scraper_espn_lpf] HTTP {e.code} de ESPN, sin cuerpo legible.")
+        raise
     return json.loads(body)
 
 
