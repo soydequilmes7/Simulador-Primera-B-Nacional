@@ -85,6 +85,21 @@ def comparar(ruta_json=None):
     return diferencias
 
 
+def formatear_diferencias(diferencias):
+    """Arma el texto de aviso (multilínea) para las diferencias que
+    devuelve comparar(). Separado de main() para que
+    actualizar_resultados_lpf.py pueda reusar exactamente el mismo
+    formato al avisar automáticamente."""
+    lineas = [f"Se encontraron {len(diferencias)} diferencia(s) entre la tabla real y la de ESPN:",
+              "", f"{'Equipo':<28} {'Campo':<18} {'Real':>8} {'ESPN':>8}"]
+    for equipo, campo, real, espn in diferencias:
+        lineas.append(f"{equipo:<28} {campo:<18} {str(real):>8} {str(espn):>8}")
+    lineas.append("")
+    lineas.append("Un 'partidos_jugados' de menos en 'Real' suele indicar un partido que se cayó de "
+                   "la ventana de Promiedos -- cargalo con cargar_resultado_manual_lpf.py.")
+    return "\n".join(lineas)
+
+
 def main():
     ruta_json = sys.argv[1] if len(sys.argv) > 1 else None
     diferencias = comparar(ruta_json)
@@ -94,12 +109,7 @@ def main():
               "No hay partidos faltantes ni desalineados.")
         return
 
-    print(f"Se encontraron {len(diferencias)} diferencia(s):\n")
-    print(f"{'Equipo':<28} {'Campo':<18} {'Real':>8} {'ESPN':>8}")
-    for equipo, campo, real, espn in diferencias:
-        print(f"{equipo:<28} {campo:<18} {str(real):>8} {str(espn):>8}")
-    print("\nUn 'partidos_jugados' de menos en 'Real' suele indicar un partido que se cayó de "
-          "la ventana de Promiedos -- cargalo con cargar_resultado_manual_lpf.py.")
+    print(formatear_diferencias(diferencias))
 
 
 if __name__ == "__main__":

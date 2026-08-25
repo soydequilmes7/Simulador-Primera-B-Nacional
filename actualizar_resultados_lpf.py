@@ -55,6 +55,15 @@ original (Nacional):
      acuerde de correr el script de sync a mano. El offset de jornada
      que usa evita pisar resultados ya jugados de la fase anterior (ver
      el docstring de ese módulo para el detalle completo).
+  8. Al final de cada corrida (haya o no partidos nuevos), compara la
+     tabla real del Clausura contra la de ESPN (ver
+     comparar_tabla_espn_lpf.py / scraper_espn_lpf.py) y, si hay
+     diferencias, las imprime como aviso -- NO frena la actualización
+     ni hace falta que nadie se acuerde de correr el diagnóstico a
+     mano. Si ESPN no responde o algún equipo no está mapeado
+     (ESPN_ID_A_EQUIPO desactualizado, típico de un ascenso/descenso),
+     el aviso lo dice y sigue de largo: este chequeo es un plus, nunca
+     puede tirar abajo la carga de resultados real.
 
 Uso manual:
     python actualizar_resultados_lpf.py
@@ -72,10 +81,33 @@ from db.repository import transaction
 from scraper_promiedos_lpf import obtener_partidos_jugados_lpf
 from mapeo_equipos_lpf import resolver_equipo_lpf
 from sincronizar_fixture_clausura_lpf import APERTURA_TOTAL_JORNADAS, calcular_filas_nuevas
+from comparar_tabla_espn_lpf import comparar as comparar_tabla_espn, formatear_diferencias
 
 CAMPOS_FIXTURE = ["fecha", "jornada", "equipo_local", "equipo_visitante"]
 CAMPOS_RESULTADOS = ["fecha", "jornada", "equipo_local", "equipo_visitante",
                       "goles_local", "goles_visitante"]
+
+
+def _chequear_contra_espn(imprimir):
+    """Corre comparar_tabla_espn_lpf.comparar() y devuelve
+    (diferencias, error): `error` es un string si el chequeo en sí
+    falló (ESPN no respondió, equipo sin mapear, etc. -- ver docstring
+    del módulo, punto 8) y en ese caso `diferencias` viene None. Nunca
+    levanta: un fallo acá es un aviso, no un motivo para frenar la
+    actualización real de resultados."""
+    try:
+        diferencias = comparar_tabla_espn()
+    except Exception as e:  # noqa: BLE001 -- a propósito: cualquier falla de ESPN es solo un aviso
+        if imprimir:
+            print(f"  [ESPN] No se pudo comparar contra la tabla de ESPN: {e}")
+        return None, str(e)
+
+    if diferencias:
+        if imprimir:
+            print(f"\n  [ESPN] {formatear_diferencias(diferencias)}\n")
+    elif imprimir:
+        print("  [ESPN] Tabla real y tabla de ESPN coinciden -- sin partidos faltantes.")
+    return diferencias, None
 
 
 def actualizar(n_sims=1000, correr_simulacion_fn=None, imprimir=True):
@@ -220,6 +252,7 @@ def actualizar(n_sims=1000, correr_simulacion_fn=None, imprimir=True):
         elif imprimir:
             print("  No hay partidos nuevos para cargar (todo ya estaba al día).")
         _guardar_log(ahora, cargados, sin_matchear, simulacion_corrida=False)
+        diferencias_espn, error_espn = _chequear_contra_espn(imprimir)
         # Aunque no haya partidos nuevos, re-simulamos con los datos
         # actuales de Supabase y devolvemos `datos`, para que el frontend
         # refresque en vez de quedarse con el snapshot estático viejo.
@@ -233,6 +266,8 @@ def actualizar(n_sims=1000, correr_simulacion_fn=None, imprimir=True):
             "fixture_sincronizado": len(filas_nuevas_fixture),
             "datos": datos,
             "mensaje": "No había partidos nuevos jugados que coincidan con el fixture pendiente.",
+            "diferencias_espn": diferencias_espn,
+            "error_espn": error_espn,
         }
 
     fixture_restante = [f for i, f in enumerate(fixture) if i not in indices_a_borrar]
@@ -262,6 +297,7 @@ def actualizar(n_sims=1000, correr_simulacion_fn=None, imprimir=True):
               f"(sin correr_simulacion_fn -> no se corrió ninguna simulación)")
 
     _guardar_log(ahora, cargados, sin_matchear, simulacion_corrida=simulacion_corrida)
+    diferencias_espn, error_espn = _chequear_contra_espn(imprimir)
 
     return {
         "actualizado": True,
@@ -269,6 +305,8 @@ def actualizar(n_sims=1000, correr_simulacion_fn=None, imprimir=True):
         "sin_matchear": sin_matchear,
         "fixture_sincronizado": len(filas_nuevas_fixture),
         "datos": datos,
+        "diferencias_espn": diferencias_espn,
+        "error_espn": error_espn,
     }
 
 
@@ -283,3 +321,11 @@ if __name__ == "__main__":
         print("\n✓ Actualización completa.")
     else:
         print("\n– Sin cambios.")
+
+    if resultado.get("diferencias_espn"):
+        print(f"⚠ {len(resultado['diferencias_espn'])} diferencia(s) contra la tabla de ESPN "
+              f"(detalle arriba) -- revisar antes de confiar en la tabla del día.")
+    elif resultado.get("error_espn"):
+        print(f"⚠ No se pudo chequear contra ESPN: {resultado['error_espn']}")
+    else:
+        print("✓ Tabla verificada contra ESPN, sin diferencias.")
