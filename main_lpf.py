@@ -1,11 +1,20 @@
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import data_access
 import rutas
 from modelos.estadisticas_lpf import EstadisticasLPF
 
 RUTA_JSON_LPF = rutas.public_dir() / "data_lpf.json"
+
+# Umbral de antigüedad para el snapshot de ESPN (ver data_access.
+# tabla_espn_lpf() / subir_tabla_espn_lpf.py): si el último snapshot
+# subido es más viejo que esto, se descarta y se cae al fallback
+# (mejor una tabla reconstruida desde resultados_lpf.csv, aunque
+# potencialmente incompleta, que una de ESPN de hace una semana sin
+# que nadie se entere). 48hs da margen de sobra si el Programador de
+# tareas de Windows se salta alguna corrida.
+UMBRAL_HORAS_SNAPSHOT_ESPN = 48
 
 
 def _tabla_a_lista(tabla_df):
@@ -62,33 +71,49 @@ def _tabla_actual_clausura(e):
     con posicion/equipo/puntos/gf/gc/dg/partidos_jugados. La usa el
     buscador para "Posición actual".
 
-    Fuente PRIMARIA: ESPN (scraper_espn_lpf.obtener_tabla_clausura_espn()),
-    la tabla ya calculada por ellos -- así se deja de depender de
-    resultados_lpf.csv, que se rompe cada vez que un partido se cae de
-    la ventana de "últimos" que expone Promiedos (ver
-    scraper_promiedos_lpf.py; era el motivo real de que esta tabla
-    quedara con partidos de menos sin que nada avisara). Si ESPN no
-    responde, algún equipo no está mapeado (ESPN_ID_A_EQUIPO
-    desactualizado -- típico de un ascenso/descenso) o el set de
-    equipos no coincide con e.apertura (30 equipos reales del
-    proyecto), cae automáticamente a la reconstrucción vieja desde
-    resultados_lpf.csv: mejor una tabla potencialmente incompleta que
-    una que explote o quede vacía."""
+    Fuente PRIMARIA: el último snapshot de ESPN subido a Supabase (ver
+    data_access.tabla_espn_lpf() / subir_tabla_espn_lpf.py). Render NO
+    llama a ESPN en vivo -- confirmado real (25/08/2026) que ESPN le
+    devuelve 403 Forbidden al tráfico que sale desde su rango de IP de
+    datacenter, headers de navegador aparte (ver el intento anterior en
+    scraper_espn_lpf.py, que sí funciona corriendo local). El snapshot
+    lo sube aparte subir_tabla_espn_lpf.py, corriendo desde una IP que
+    ESPN no bloquea (la PC de Pablo, con el Programador de tareas de
+    Windows).
+
+    Si no hay snapshot todavía, el snapshot es más viejo que
+    UMBRAL_HORAS_SNAPSHOT_ESPN, o el set de equipos no coincide con
+    e.apertura (30 equipos reales del proyecto -- detecta un
+    ascenso/descenso que ESPN_ID_A_EQUIPO todavía no contempla), cae
+    automáticamente a la reconstrucción vieja desde resultados_lpf.csv:
+    mejor una tabla potencialmente incompleta que una vieja o rota sin
+    que nadie se entere."""
     try:
-        from scraper_espn_lpf import obtener_tabla_clausura_espn
-        tabla_espn = obtener_tabla_clausura_espn()
+        tabla_espn, generado = data_access.tabla_espn_lpf()
+        if tabla_espn is None:
+            raise ValueError("todavía no se subió ningún snapshot (correr subir_tabla_espn_lpf.py)")
+
+        if generado:
+            edad = datetime.now() - datetime.fromisoformat(generado)
+            if edad > timedelta(hours=UMBRAL_HORAS_SNAPSHOT_ESPN):
+                raise ValueError(
+                    f"snapshot de hace {edad} (subido {generado}), más viejo que el umbral de "
+                    f"{UMBRAL_HORAS_SNAPSHOT_ESPN}h"
+                )
+
         equipos_espn = {f["equipo"] for zona in ("A", "B") for f in tabla_espn[zona]}
         equipos_apertura = set(e.apertura["equipo"])
         if equipos_espn != equipos_apertura:
             raise ValueError(
-                f"El set de equipos de ESPN no coincide con e.apertura. "
-                f"Solo en ESPN: {equipos_espn - equipos_apertura or '-'} | "
+                f"el set de equipos del snapshot no coincide con e.apertura. "
+                f"Solo en snapshot: {equipos_espn - equipos_apertura or '-'} | "
                 f"Solo en Apertura: {equipos_apertura - equipos_espn or '-'}"
             )
-        print("  [tabla_actual_clausura] Fuente: ESPN.")
+
+        print(f"  [tabla_actual_clausura] Fuente: snapshot de ESPN (subido {generado}).")
         return tabla_espn
     except Exception as ex:
-        print(f"  [tabla_actual_clausura] ESPN no disponible ({ex}) -- "
+        print(f"  [tabla_actual_clausura] Snapshot de ESPN no disponible/válido ({ex}) -- "
               f"usando resultados_lpf.csv como fallback.")
         return _tabla_actual_clausura_desde_resultados(e)
 
