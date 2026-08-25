@@ -2,9 +2,10 @@
 """
 comparar_tabla_espn_lpf.py
 
-Desde que main_lpf._tabla_actual_clausura() prioriza ESPN como fuente
-(ver ese módulo), la tabla que muestra el sitio YA no depende de
-resultados_lpf.csv estando completo. Pero resultados_lpf.csv sigue
+Desde que main_lpf._tabla_actual_clausura() prioriza el snapshot de
+ESPN guardado en Supabase (ver data_access.tabla_espn_lpf() /
+subir_tabla_espn_lpf.py), la tabla que muestra el sitio YA no depende
+de resultados_lpf.csv estando completo. Pero resultados_lpf.csv sigue
 siendo la fuente real para todo lo demás del motor (rachas, ratings,
 ELO, simulación) -- así que si le siguen faltando partidos por la
 ventana de Promiedos, ESO sigue siendo un problema real aunque la
@@ -12,8 +13,11 @@ tabla visible ya no lo muestre.
 
 Este script compara la reconstrucción vieja (main_lpf.
 _tabla_actual_clausura_desde_resultados(), el fallback -- NO la
-función con prioridad ESPN) contra la tabla de ESPN, equipo por
-equipo, para seguir detectando esos partidos faltantes.
+función con prioridad ESPN) contra el último snapshot de ESPN subido,
+equipo por equipo, para seguir detectando esos partidos faltantes.
+Lee el snapshot de Supabase (lo mismo que usa la tabla en vivo) en vez
+de pedirle a ESPN en vivo -- así corre bien tanto en tu PC como en
+Render (ESPN bloquea el tráfico de Render, ver subir_tabla_espn_lpf.py).
 
 NO escribe nada -- es de solo lectura, pensado para correr después de
 actualizar_resultados_lpf.py (que además lo corre solo, ver el punto 8
@@ -21,8 +25,8 @@ de ese docstring) y antes de confiar en que el motor de simulación
 tiene todos los resultados reales.
 
 Uso:
-    python comparar_tabla_espn_lpf.py                     # ESPN en vivo
-    python comparar_tabla_espn_lpf.py ruta/al/archivo.json  # ESPN desde un JSON ya guardado
+    python comparar_tabla_espn_lpf.py                       # snapshot de Supabase
+    python comparar_tabla_espn_lpf.py ruta/al/archivo.json  # ESPN desde un JSON ya guardado (sin red ni Supabase)
 """
 import sys
 
@@ -58,7 +62,18 @@ def _tabla_real_como_indice():
 
 
 def _tabla_espn_como_indice(ruta_json):
-    tabla = obtener_tabla_clausura_espn(ruta_json)
+    """Por defecto lee el snapshot de Supabase (lo mismo que usa la
+    tabla en vivo). Si se pasa `ruta_json`, parsea ese archivo en vez
+    de tocar Supabase -- útil para pruebas offline."""
+    if ruta_json:
+        tabla = obtener_tabla_clausura_espn(ruta_json)
+    else:
+        tabla, generado = data_access.tabla_espn_lpf()
+        if tabla is None:
+            raise RuntimeError(
+                "Todavía no hay ningún snapshot de ESPN subido a Supabase -- "
+                "correr subir_tabla_espn_lpf.py primero (desde tu PC, no desde Render)."
+            )
     indice = {}
     for zona in ("A", "B"):
         for fila in tabla[zona]:

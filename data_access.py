@@ -45,6 +45,52 @@ def league_data(competition_slug: str):
     return repository().league_data(competition_slug)
 
 
+# ---------------------------------------------------------------------
+# Snapshot de la tabla del Clausura de LPF traída de ESPN
+# (scraper_espn_lpf.py), persistido con el mismo patrón genérico que
+# save_simulation_output()/simulation_output(). Existe porque ESPN le
+# devuelve 403 al tráfico que sale desde el rango de IP de datacenter
+# de Render (confirmado real, headers aparte -- ver scraper_espn_lpf.py)
+# así que Render NUNCA llama a ESPN en vivo: subir_tabla_espn_lpf.py
+# corre aparte, desde una IP que ESPN no bloquea, y deja acá el último
+# snapshot. main_lpf._tabla_actual_clausura() lee esto en vez de pegarle
+# a ESPN directo.
+# ---------------------------------------------------------------------
+_CLAVE_TABLA_ESPN_LPF = "lpf_tabla_clausura_espn"
+
+
+def guardar_tabla_espn_lpf(tabla: dict) -> None:
+    """Persiste el snapshot con marca de tiempo. En Pyodide no hace
+    nada (no hay Supabase desde el navegador) -- el único caller
+    esperado es subir_tabla_espn_lpf.py, corriendo en la PC de Pablo."""
+    if usando_pyodide():
+        return
+
+    from datetime import datetime as _datetime
+    from db.repository import repository
+
+    payload = {"tabla": tabla, "generado": _datetime.now().isoformat(timespec="seconds")}
+    repository().save_simulation_output(_CLAVE_TABLA_ESPN_LPF, "lpf", payload)
+
+
+def tabla_espn_lpf() -> tuple[dict | None, str | None]:
+    """Lee el último snapshot subido (ver guardar_tabla_espn_lpf()).
+    Devuelve (tabla, generado) o (None, None) si todavía no se subió
+    nada (deploy nuevo, o antes de la primera corrida de
+    subir_tabla_espn_lpf.py) o si estamos en Pyodide. NO valida
+    antigüedad acá -- eso lo decide el caller (main_lpf.
+    _tabla_actual_clausura(), con su propio umbral de "muy vieja")."""
+    if usando_pyodide():
+        return None, None
+
+    from db.repository import repository
+
+    payload = repository().simulation_output(_CLAVE_TABLA_ESPN_LPF)
+    if not payload:
+        return None, None
+    return payload.get("tabla"), payload.get("generado")
+
+
 def scorer_totals_df(competition_slug: str = "nacional") -> pd.DataFrame:
     if usando_pyodide():
         path = _csv_path("goleadores.csv")
