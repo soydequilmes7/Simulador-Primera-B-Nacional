@@ -267,6 +267,21 @@ Actions:
 - `VERCEL_ORG_ID`: ID del usuario/equipo de Vercel.
 - `VERCEL_PROJECT_ID`: ID del proyecto en Vercel.
 
+Para recibir un mail al terminar el pipeline, configurar también estos secrets
+SMTP. El mail se envía siempre que termina la corrida, tanto si salió bien como
+si falló, e incluye el resultado y el link a los logs de GitHub Actions:
+
+- `SMTP_HOST`: servidor SMTP, por ejemplo `smtp.gmail.com`.
+- `SMTP_PORT`: puerto SMTP. Usar `587` para STARTTLS o `465` para SSL.
+- `SMTP_USERNAME`: usuario de la cuenta SMTP.
+- `SMTP_PASSWORD`: password o app password de la cuenta SMTP.
+- `SMTP_FROM`: remitente del mail.
+- `SMTP_TO`: destinatario(s) del mail. Para varias cuentas, separar por coma,
+  por ejemplo `cuenta1@gmail.com,cuenta2@gmail.com`.
+
+Si falta alguno de estos secrets, el deploy no falla: Actions deja un warning y
+saltea el envío del mail.
+
 Los IDs se pueden obtener localmente con:
 
 ```bash
