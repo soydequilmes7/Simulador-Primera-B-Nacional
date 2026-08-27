@@ -60,3 +60,89 @@ jobs:
 
       - name: Deploy prebuilt output
         run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Send pipeline status email
+        if: always()
+        continue-on-error: true
+        env:
+          PIPELINE_STATUS: ${{ job.status }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          SMTP_FROM: ${{ secrets.SMTP_FROM }}
+          SMTP_TO: ${{ secrets.SMTP_TO }}
+        run: |
+          python3 - <<'PY'
+          import os
+          import re
+          import smtplib
+          import ssl
+          import sys
+          from email.message import EmailMessage
+
+          required = {
+              "SMTP_HOST": os.getenv("SMTP_HOST"),
+              "SMTP_PORT": os.getenv("SMTP_PORT"),
+              "SMTP_USERNAME": os.getenv("SMTP_USERNAME"),
+              "SMTP_PASSWORD": os.getenv("SMTP_PASSWORD"),
+              "SMTP_FROM": os.getenv("SMTP_FROM"),
+              "SMTP_TO": os.getenv("SMTP_TO"),
+          }
+          missing = [name for name, value in required.items() if not value]
+          if missing:
+              print(f"::warning::No se envia mail: faltan secrets {', '.join(missing)}")
+              sys.exit(0)
+
+          status = os.getenv("PIPELINE_STATUS", "unknown").upper()
+          repo = os.getenv("GITHUB_REPOSITORY", "")
+          workflow = os.getenv("GITHUB_WORKFLOW", "")
+          branch = os.getenv("GITHUB_REF_NAME", "")
+          sha = os.getenv("GITHUB_SHA", "")
+          actor = os.getenv("GITHUB_ACTOR", "")
+          server_url = os.getenv("GITHUB_SERVER_URL", "https://github.com")
+          run_id = os.getenv("GITHUB_RUN_ID", "")
+          run_attempt = os.getenv("GITHUB_RUN_ATTEMPT", "")
+          run_url = f"{server_url}/{repo}/actions/runs/{run_id}" if repo and run_id else ""
+          recipients = [
+              recipient.strip()
+              for recipient in re.split(r"[,;\n]+", required["SMTP_TO"])
+              if recipient.strip()
+          ]
+          if not recipients:
+              print("::warning::No se envia mail: SMTP_TO no tiene destinatarios validos")
+              sys.exit(0)
+
+          message = EmailMessage()
+          message["Subject"] = f"[{status}] {workflow} - {repo}"
+          message["From"] = required["SMTP_FROM"]
+          message["To"] = ", ".join(recipients)
+          message.set_content(
+              "\n".join(
+                  [
+                      f"Pipeline: {workflow}",
+                      f"Resultado: {status}",
+                      f"Repositorio: {repo}",
+                      f"Rama: {branch}",
+                      f"Commit: {sha}",
+                      f"Actor: {actor}",
+                      f"Intento: {run_attempt}",
+                      f"Logs: {run_url}",
+                      "",
+                      "Este mail fue enviado automaticamente por GitHub Actions.",
+                  ]
+              )
+          )
+
+          port = int(required["SMTP_PORT"])
+          context = ssl.create_default_context()
+          if port == 465:
+              with smtplib.SMTP_SSL(required["SMTP_HOST"], port, context=context) as smtp:
+                  smtp.login(required["SMTP_USERNAME"], required["SMTP_PASSWORD"])
+                  smtp.send_message(message, to_addrs=recipients)
+          else:
+              with smtplib.SMTP(required["SMTP_HOST"], port) as smtp:
+                  smtp.starttls(context=context)
+                  smtp.login(required["SMTP_USERNAME"], required["SMTP_PASSWORD"])
+                  smtp.send_message(message, to_addrs=recipients)
+          PY
