@@ -4,7 +4,7 @@ Simulador estadístico de la **Primera Nacional Argentina** desarrollado en Pyth
 
 Los resultados de las simulaciones se exportan a archivos JSON y se presentan mediante un dashboard interactivo desarrollado con HTML, CSS y JavaScript.
 
-Cambio mínimo para validar el pipeline de CI/CD.
+Cambio mínimo para validar el pipeline de CI/CD y el deploy de Vercel.
 
 ---
 
