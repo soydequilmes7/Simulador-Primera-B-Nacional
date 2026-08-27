@@ -251,6 +251,30 @@ Con Supabase configurado, Vercel y Render comparten la misma persistencia:
 del dashboard, y `/api/datos-*` construye CSV en memoria desde la base para el
 worker Pyodide del navegador.
 
+### CI/CD en Vercel con GitHub Actions
+
+El repo incluye `.github/workflows/vercel-production.yml`. En cada push a
+`main`, GitHub Actions instala Vercel CLI, trae la configuración del proyecto,
+compila con variables de producción y publica el output precompilado en Vercel.
+También se puede ejecutar manualmente desde la pestaña Actions.
+
+Configurar estos secrets en GitHub > Settings > Secrets and variables >
+Actions:
+
+- `VERCEL_TOKEN`: token de Vercel con permisos sobre el proyecto.
+- `VERCEL_ORG_ID`: ID del usuario/equipo de Vercel.
+- `VERCEL_PROJECT_ID`: ID del proyecto en Vercel.
+
+Los IDs se pueden obtener localmente con:
+
+```bash
+vercel link
+cat .vercel/project.json
+```
+
+No commitear `.vercel/`: ya está ignorado. El workflow usa esos IDs desde
+secrets para recrear el link en cada corrida.
+
 ---
 
 ## Objetivo
