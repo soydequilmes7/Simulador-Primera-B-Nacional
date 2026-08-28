@@ -4,6 +4,8 @@ Simulador estadístico de la **Primera Nacional Argentina** desarrollado en Pyth
 
 Los resultados de las simulaciones se exportan a archivos JSON y se presentan mediante un dashboard interactivo desarrollado con HTML, CSS y JavaScript.
 
+Cambio mínimo para validar el pipeline de CI/CD y el deploy de Vercel.
+
 ---
 
 ## Características
@@ -250,6 +252,45 @@ Con Supabase configurado, Vercel y Render comparten la misma persistencia:
 `/api/actualizar-*` escribe en Postgres, `simulation_outputs` cachea los JSON
 del dashboard, y `/api/datos-*` construye CSV en memoria desde la base para el
 worker Pyodide del navegador.
+
+### CI/CD en Vercel con GitHub Actions
+
+El repo incluye `.github/workflows/vercel-production.yml`. En cada push a
+`main`, GitHub Actions instala Vercel CLI, trae la configuración del proyecto,
+compila con variables de producción y publica el output precompilado en Vercel.
+También se puede ejecutar manualmente desde la pestaña Actions.
+
+Configurar estos secrets en GitHub > Settings > Secrets and variables >
+Actions:
+
+- `VERCEL_TOKEN`: token de Vercel con permisos sobre el proyecto.
+- `VERCEL_ORG_ID`: ID del usuario/equipo de Vercel.
+- `VERCEL_PROJECT_ID`: ID del proyecto en Vercel.
+
+Para recibir un mail al terminar el pipeline, configurar también estos secrets
+SMTP. El mail se envía siempre que termina la corrida, tanto si salió bien como
+si falló, e incluye el resultado y el link a los logs de GitHub Actions:
+
+- `SMTP_HOST`: servidor SMTP, por ejemplo `smtp.gmail.com`.
+- `SMTP_PORT`: puerto SMTP. Usar `587` para STARTTLS o `465` para SSL.
+- `SMTP_USERNAME`: usuario de la cuenta SMTP.
+- `SMTP_PASSWORD`: password o app password de la cuenta SMTP.
+- `SMTP_FROM`: remitente del mail.
+- `SMTP_TO`: destinatario(s) del mail. Para varias cuentas, separar por coma,
+  por ejemplo `cuenta1@gmail.com,cuenta2@gmail.com`.
+
+Si falta alguno de estos secrets, el deploy no falla: Actions deja un warning y
+saltea el envío del mail.
+
+Los IDs se pueden obtener localmente con:
+
+```bash
+vercel link
+cat .vercel/project.json
+```
+
+No commitear `.vercel/`: ya está ignorado. El workflow usa esos IDs desde
+secrets para recrear el link en cada corrida.
 
 ---
 
