@@ -134,7 +134,7 @@ class EnsureTeamsBulkNameMatchingTests(unittest.TestCase):
 
     def test_nombre_con_distinta_capitalizacion_resuelve_al_mismo_id_existente(self) -> None:
         with patch.object(SimulatorRepository, "_execute", self._fake_execute_con_equipo_existente()):
-            resultado = self.repo._ensure_teams_bulk(["Vasco Da Gama"], "brasileirao")
+            resultado = self.repo._ensure_teams_bulk(["Vasco Da Gama"], "nacional")
         self.assertEqual(resultado, {"Vasco Da Gama": 22255})
 
     def test_equipo_genuinamente_nuevo_se_inserta_una_sola_vez_aunque_venga_con_variantes(self) -> None:
@@ -154,7 +154,7 @@ class EnsureTeamsBulkNameMatchingTests(unittest.TestCase):
             return []
 
         with patch.object(SimulatorRepository, "_execute", fake_execute):
-            resultado = self.repo._ensure_teams_bulk(["Club Nuevo", "club nuevo"], "brasileirao")
+            resultado = self.repo._ensure_teams_bulk(["Club Nuevo", "club nuevo"], "nacional")
 
         self.assertEqual(len(llamadas_insert), 1)
         self.assertEqual(len(llamadas_insert[0]), 1)  # una sola fila en el insert, no dos

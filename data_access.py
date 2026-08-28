@@ -27,9 +27,6 @@ def league_data(competition_slug: str):
             "bmetro": ("resultados_bmetro.csv", "fixture_bmetro.csv", "tabla_bmetro.csv"),
             "federal_a": ("resultados_federal_a.csv", "fixture_federal_a.csv", "tabla_federal_a.csv"),
             "primerac": ("resultados_primerac.csv", "fixture_primerac.csv", "tabla_primerac.csv"),
-            "brasileirao": ("resultados_brasileirao.csv", "fixture_brasileirao.csv", "tabla_brasileirao.csv"),
-            "ligapro": ("resultados_ligapro.csv", "fixture_ligapro.csv", "tabla_ligapro.csv"),
-            "dimayor": ("resultados_dimayor.csv", "fixture_dimayor.csv", "tabla_dimayor.csv"),
         }[competition_slug]
         return tuple(pd.read_csv(_csv_path(nombre)) for nombre in nombres)
 
@@ -37,10 +34,6 @@ def league_data(competition_slug: str):
 
     if competition_slug == "primerac":
         bootstrap_league_from_csv("primerac")
-    if competition_slug == "ligapro":
-        bootstrap_league_from_csv("ligapro")
-    if competition_slug == "dimayor":
-        bootstrap_league_from_csv("dimayor")
 
     return repository().league_data(competition_slug)
 
@@ -117,15 +110,6 @@ def lpf_average_history_df() -> pd.DataFrame:
     from db.repository import repository
 
     return repository().lpf_average_history_df()
-
-
-def dimayor_average_history_df() -> pd.DataFrame:
-    if usando_pyodide():
-        return pd.read_csv(_csv_path("promedios_dimayor.csv"))
-
-    from db.repository import repository
-
-    return repository().dimayor_average_history_df()
 
 
 def cup_records() -> list[dict]:

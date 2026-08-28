@@ -88,20 +88,20 @@ class EmptyResultsValidationTests(unittest.TestCase):
 
 
 class PyodideDataAccessTests(unittest.TestCase):
-    def test_brasileirao_uses_its_bundled_csv_names(self):
+    def test_primerac_uses_its_bundled_csv_names(self):
         with (
             patch.object(data_access, "usando_pyodide", return_value=True),
             patch.object(data_access.rutas, "datos_dir", return_value=Path("/virtual/datos")),
             patch.object(data_access.pd, "read_csv", side_effect=lambda path: path.name),
         ):
-            result = data_access.league_data("brasileirao")
+            result = data_access.league_data("primerac")
 
         self.assertEqual(
             result,
             (
-                "resultados_brasileirao.csv",
-                "fixture_brasileirao.csv",
-                "tabla_brasileirao.csv",
+                "resultados_primerac.csv",
+                "fixture_primerac.csv",
+                "tabla_primerac.csv",
             ),
         )
 
@@ -111,11 +111,11 @@ class PyodideDispatcherSmokeTests(unittest.TestCase):
         with patch.object(data_access, "usando_pyodide", return_value=True), patch("builtins.print"):
             return pysim_dispatch.ejecutar_tarea(task, n_sims=1)
 
-    def test_ligapro_runs_before_the_first_played_match(self):
-        result = self._run_local_task("simular-ligapro")
+    def test_bmetro_runs_before_the_first_played_match(self):
+        result = self._run_local_task("simular-bmetro")
 
         self.assertTrue(result["ok"], result.get("error"))
-        self.assertEqual(result["data"]["liga"], "ligapro")
+        self.assertEqual(result["data"]["liga"], "bmetro")
 
 
 if __name__ == "__main__":

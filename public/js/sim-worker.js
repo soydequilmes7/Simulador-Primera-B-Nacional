@@ -1,19 +1,16 @@
 // sim-worker.js
 //
 // Web Worker que corre las simulaciones (Primera Nacional, LPF, Copa,
-// B Metro, Federal A, Primera C, Brasileirão Série A, LigaPro Serie A
-// (Ecuador), Liga BetPlay Dimayor (Colombia), Copa Libertadores y Copa
+// B Metro, Federal A, Primera C, Copa Libertadores y Copa
 // Sudamericana) adentro del navegador con Pyodide, para no pegarle al
 // backend cada vez que el usuario aprieta "Correr nueva simulación".
 // Usa exactamente el mismo código Python que el backend (main.py,
 // main_lpf.py, main_bmetro.py, main_federal.py, main_primerac.py,
-// main_brasileirao.py, main_ligapro.py, main_dimayor.py,
 // main_libertadores.py, main_sudamericana.py, modelos/,
 // pysim_dispatch.py): lo pide vía /api/pysim-source y lo escribe en el
 // filesystem virtual de Pyodide, junto con los CSV actuales
 // (/api/datos-nacional, /api/datos-lpf, /api/datos-copa,
 // /api/datos-bmetro, /api/datos-federal, /api/datos-primerac,
-// /api/datos-brasileirao, /api/datos-ligapro, /api/datos-dimayor,
 // /api/datos-libertadores y /api/datos-sudamericana).
 // No reimplementa ninguna lógica de simulación en JS.
 //
@@ -80,7 +77,7 @@ async function inicializar() {
 }
 
 async function cargarCodigoYDatos() {
-  const [fuente, datosNacional, datosLpf, datosCopa, datosBmetro, datosFederal, datosPrimeraC, datosBrasileirao, datosLigaPro, datosDimayor, datosLibertadores, datosSudamericana] = await Promise.all([
+  const [fuente, datosNacional, datosLpf, datosCopa, datosBmetro, datosFederal, datosPrimeraC, datosLibertadores, datosSudamericana] = await Promise.all([
     fetchJson(`${apiBase}/api/pysim-source`),
     fetchJson(`${apiBase}/api/datos-nacional`),
     fetchJson(`${apiBase}/api/datos-lpf`),
@@ -88,9 +85,6 @@ async function cargarCodigoYDatos() {
     fetchJson(`${apiBase}/api/datos-bmetro`),
     fetchJson(`${apiBase}/api/datos-federal`),
     fetchJson(`${apiBase}/api/datos-primerac`),
-    fetchJson(`${apiBase}/api/datos-brasileirao`),
-    fetchJson(`${apiBase}/api/datos-ligapro`),
-    fetchJson(`${apiBase}/api/datos-dimayor`),
     fetchJson(`${apiBase}/api/datos-libertadores`),
     fetchJson(`${apiBase}/api/datos-sudamericana`),
   ]);
@@ -102,9 +96,6 @@ async function cargarCodigoYDatos() {
   escribirArchivos(datosBmetro.files, "datos");
   escribirArchivos(datosFederal.files, "datos");
   escribirArchivos(datosPrimeraC.files, "datos");
-  escribirArchivos(datosBrasileirao.files, "datos");
-  escribirArchivos(datosLigaPro.files, "datos");
-  escribirArchivos(datosDimayor.files, "datos");
   escribirArchivos(datosLibertadores.files, "datos");
   escribirArchivos(datosSudamericana.files, "datos");
 
@@ -165,15 +156,6 @@ async function ejecutar(tarea, payload) {
     case "simular-primerac":
       kwargs = { n_sims: clamp(payload.n_sims, 50, 10000, 500) };
       break;
-    case "simular-brasileirao":
-      kwargs = { n_sims: clamp(payload.n_sims, 50, 10000, 1000) };
-      break;
-    case "simular-ligapro":
-      kwargs = { n_sims: clamp(payload.n_sims, 50, 10000, 1000) };
-      break;
-    case "simular-dimayor":
-      kwargs = { n_sims: clamp(payload.n_sims, 50, 10000, 1000) };
-      break;
     case "simular-libertadores":
       kwargs = { n_sims: clamp(payload.n_sims, 50, 10000, 1000) };
       break;
@@ -186,9 +168,6 @@ async function ejecutar(tarea, payload) {
     case "simular-campeon-bmetro":
     case "simular-campeon-federal":
     case "simular-campeon-primerac":
-    case "simular-campeon-brasileirao":
-    case "simular-campeon-ligapro":
-    case "simular-campeon-dimayor":
     case "simular-campeon-libertadores":
     case "simular-campeon-sudamericana": {
       const equipo = String(payload.equipo || "").trim();
