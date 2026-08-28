@@ -20,7 +20,7 @@ from db.client import get_connection
 
 def _normalizar_nombre_equipo(nombre: str) -> str:
     """minúsculas, sin tildes, sin puntuación, espacios simples. Mismo
-    criterio que mapeo_equipos_brasileirao.normalizar() / equivalentes,
+    criterio que mapeo_equipos_lpf.normalizar() / equivalentes,
     pero vive acá porque _ensure_teams_bulk es el ÚNICO lugar por el
     que pasan los nombres de equipo de TODAS las competiciones antes
     de llegar a `teams` -- no todas tienen (todavía) su propio
@@ -41,7 +41,6 @@ STANDING_COLUMNS = [
 ]
 SCORER_COLUMNS = ["jugador", "equipo", "goles"]
 LPF_AVERAGE_COLUMNS = ["equipo", "puntos_historicos", "partidos_historicos"]
-DIMAYOR_AVERAGE_COLUMNS = ["equipo", "puntos_historicos", "partidos_historicos"]
 CUP_COLUMNS = ["ronda", "llave", "equipo_local", "equipo_visitante", "goles_local", "goles_visitante", "ganador"]
 
 
@@ -58,10 +57,7 @@ COMPETITIONS = {
     "bmetro": CompetitionSpec("bmetro", "Primera B Metropolitana"),
     "federal_a": CompetitionSpec("federal_a", "Federal A"),
     "primerac": CompetitionSpec("primerac", "Primera C"),
-    "brasileirao": CompetitionSpec("brasileirao", "Brasileirão Série A"),
-    "ligapro": CompetitionSpec("ligapro", "LigaPro Serie A"),
     "copa": CompetitionSpec("copa", "Copa Argentina"),
-    "dimayor": CompetitionSpec("dimayor", "Liga BetPlay Dimayor"),
 }
 
 TABLE_FILE_SLUGS = {
@@ -70,9 +66,6 @@ TABLE_FILE_SLUGS = {
     "tabla_bmetro.csv": "bmetro",
     "tabla_federal_a.csv": "federal_a",
     "tabla_primerac.csv": "primerac",
-    "tabla_brasileirao.csv": "brasileirao",
-    "tabla_ligapro.csv": "ligapro",
-    "tabla_dimayor.csv": "dimayor",
 }
 
 
@@ -359,29 +352,6 @@ class SimulatorRepository:
             (season_id,),
         )
         df = _records_to_df(rows, LPF_AVERAGE_COLUMNS)
-        for col in ("puntos_historicos", "partidos_historicos"):
-            if not df.empty:
-                df[col] = pd.to_numeric(df[col], errors="coerce").astype("int64")
-        return df
-
-    def dimayor_average_history_df(self) -> pd.DataFrame:
-        """Igual que lpf_average_history_df() pero para Dimayor (Colombia):
-        puntos/partidos de 2024+2025 completos (el 2026 en curso -- Apertura
-        real + Clausura -- se suma aparte en calcular_tabla_promedios(),
-        NO acá). Fuente de los valores iniciales: datos/promedios_dimayor.csv
-        (ver seed_supabase.py)."""
-        season_id = self.season_id("dimayor")
-        rows = self._execute(
-            """
-            select t.name as equipo, h.puntos_historicos, h.partidos_historicos
-            from dimayor_average_history h
-            join teams t on t.id = h.team_id
-            where h.season_id = %s
-            order by t.name
-            """,
-            (season_id,),
-        )
-        df = _records_to_df(rows, DIMAYOR_AVERAGE_COLUMNS)
         for col in ("puntos_historicos", "partidos_historicos"):
             if not df.empty:
                 df[col] = pd.to_numeric(df[col], errors="coerce").astype("int64")
@@ -950,9 +920,6 @@ LEAGUE_FILE_SPECS = {
     "bmetro": ("tabla_bmetro.csv", "fixture_bmetro.csv", "resultados_bmetro.csv"),
     "federal_a": ("tabla_federal_a.csv", "fixture_federal_a.csv", "resultados_federal_a.csv"),
     "primerac": ("tabla_primerac.csv", "fixture_primerac.csv", "resultados_primerac.csv"),
-    "brasileirao": ("tabla_brasileirao.csv", "fixture_brasileirao.csv", "resultados_brasileirao.csv"),
-    "ligapro": ("tabla_ligapro.csv", "fixture_ligapro.csv", "resultados_ligapro.csv"),
-    "dimayor": ("tabla_dimayor.csv", "fixture_dimayor.csv", "resultados_dimayor.csv"),
 }
 
 
@@ -983,12 +950,6 @@ def bootstrap_league_from_csv(competition_slug: str) -> bool:
 def league_csv_files(competition_slug: str) -> dict[str, str]:
     if competition_slug == "primerac":
         bootstrap_league_from_csv("primerac")
-    if competition_slug == "brasileirao":
-        bootstrap_league_from_csv("brasileirao")
-    if competition_slug == "ligapro":
-        bootstrap_league_from_csv("ligapro")
-    if competition_slug == "dimayor":
-        bootstrap_league_from_csv("dimayor")
 
     repo = repository()
     resultados, fixture, tabla = repo.league_data(competition_slug)
@@ -1008,32 +969,10 @@ def league_csv_files(competition_slug: str) -> dict[str, str]:
             "resultados_lpf.csv": dataframe_to_csv(resultados, RESULT_COLUMNS),
             "promedios_lpf.csv": dataframe_to_csv(promedios, LPF_AVERAGE_COLUMNS),
         }
-    if competition_slug == "dimayor":
-        # Además de tabla/fixture/resultados del Clausura (igual que el
-        # resto de las ligas), Dimayor necesita 2 archivos más para que
-        # el simulador local (Pyodide) pueda calcular la tabla de
-        # promedios/descenso igual que el backend:
-        #   - promedios_dimayor.csv: histórico 2024+2025 (Supabase).
-        #   - resultados_apertura_dimayor.csv: el Apertura 2026 ya
-        #     jugado (estático, no vive en Supabase -- construir_tabla_
-        #     apertura() lo lee directo del filesystem, ver
-        #     calcular_tabla_dimayor.py).
-        promedios = repo.dimayor_average_history_df()
-        apertura_path = Path(__file__).resolve().parent.parent / "datos" / "resultados_apertura_dimayor.csv"
-        apertura_csv = apertura_path.read_text(encoding="utf-8") if apertura_path.exists() else ""
-        return {
-            "tabla_dimayor.csv": dataframe_to_csv(tabla, STANDING_COLUMNS),
-            "fixture_dimayor.csv": dataframe_to_csv(fixture, MATCH_COLUMNS),
-            "resultados_dimayor.csv": dataframe_to_csv(resultados, RESULT_COLUMNS),
-            "promedios_dimayor.csv": dataframe_to_csv(promedios, DIMAYOR_AVERAGE_COLUMNS),
-            "resultados_apertura_dimayor.csv": apertura_csv,
-        }
     prefixes = {
         "bmetro": ("tabla_bmetro.csv", "fixture_bmetro.csv", "resultados_bmetro.csv"),
         "federal_a": ("tabla_federal_a.csv", "fixture_federal_a.csv", "resultados_federal_a.csv"),
         "primerac": ("tabla_primerac.csv", "fixture_primerac.csv", "resultados_primerac.csv"),
-        "brasileirao": ("tabla_brasileirao.csv", "fixture_brasileirao.csv", "resultados_brasileirao.csv"),
-        "ligapro": ("tabla_ligapro.csv", "fixture_ligapro.csv", "resultados_ligapro.csv"),
     }
     tabla_name, fixture_name, resultados_name = prefixes[competition_slug]
     return {
