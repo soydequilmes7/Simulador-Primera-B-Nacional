@@ -86,11 +86,35 @@ class CalcularFilasNuevasTests(unittest.TestCase):
 
     def test_partido_ya_en_fixture_pendiente_no_se_duplica(self) -> None:
         # Idempotencia: correr el script dos veces no debe duplicar filas.
-        pending_actual = [_pendiente(2, "Sarmiento Junín", "Argentinos Juniors")]
+        # OJO: la jornada acá tiene que ser > APERTURA_TOTAL_JORNADAS (ya
+        # es una fila del CLAUSURA, agregada en una corrida anterior) --
+        # si fuera <= 16 sería un fantasma del Apertura y no debería
+        # contar como "ya cubierto" (ver test de más abajo, el bug real).
+        pending_actual = [_pendiente(18, "Sarmiento Junín", "Argentinos Juniors")]
         with patch("sincronizar_fixture_clausura_lpf.obtener_partidos_lpf",
                    return_value=[_promiedos(1, "Sarmiento Junín", "Argentinos Juniors", jugado=False)]):
             filas_nuevas, _ = calcular_filas_nuevas(pending_actual, [])
         self.assertEqual(filas_nuevas, [])
+
+    def test_fantasma_del_apertura_pendiente_no_bloquea_al_clausura(self) -> None:
+        # Caso real reportado por Pablo (05/09/2026): Estudiantes RC vs
+        # Sarmiento Junín, Belgrano vs Huracán y Platense vs Riestra
+        # tenían un cruce del Apertura Fecha 8 que se postergó y nunca se
+        # jugó -- quedó pendiente con jornada 8 desde entonces. Cuando
+        # Promiedos reportó el Clausura Fecha 8 con la MISMA pareja,
+        # calcular_filas_nuevas() veía la clave ya "cubierta" por esa
+        # fila vieja y nunca agregaba la del Clausura -- el partido
+        # terminaba en sin_matchear en actualizar_resultados_lpf.py sin
+        # que nadie pudiera cargarlo por la vía normal.
+        pending_actual = [_pendiente(8, "Estudiantes RC", "Sarmiento Junín")]  # fantasma del Apertura
+        with patch("sincronizar_fixture_clausura_lpf.obtener_partidos_lpf",
+                   return_value=[_promiedos(8, "Estudiantes RC", "Sarmiento Junín", jugado=True)]):
+            filas_nuevas, _ = calcular_filas_nuevas(pending_actual, [])
+
+        self.assertEqual(len(filas_nuevas), 1)
+        self.assertEqual(filas_nuevas[0]["jornada"], 24)  # offset fijo(16) + jornada de Promiedos(8)
+        self.assertEqual(filas_nuevas[0]["equipo_local"], "Estudiantes RC")
+        self.assertEqual(filas_nuevas[0]["equipo_visitante"], "Sarmiento Junín")
 
     def test_offset_es_fijo_no_depende_de_lo_que_haya_pendiente(self) -> None:
         # Antes el offset era "la jornada máxima ya usada" -- daba un

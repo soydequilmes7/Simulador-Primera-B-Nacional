@@ -45,6 +45,17 @@ Es seguro correrlo más de una vez: si un partido del Clausura ya está en
 el fixture pendiente (por ejemplo porque ya lo agregaste en una corrida
 anterior), no se vuelve a agregar.
 
+BUG #2 (encontrado 05/09/2026, mismo síntoma "sin identificar" pero causa
+distinta al de arriba): si una pareja de equipos tenía un cruce del
+APERTURA que se postergó y nunca se jugó, esa fila queda pendiente en el
+fixture con jornada <= APERTURA_TOTAL_JORNADAS para siempre. Sin querer,
+esa fila "tapaba" la sincronización del Clausura para esa misma pareja:
+calcular_filas_nuevas() veía la clave (equipo_local, equipo_visitante) ya
+presente en el fixture pendiente y nunca agregaba la fila nueva del
+Clausura. El fix: al armar claves_pendientes, se ignoran las filas con
+jornada <= APERTURA_TOTAL_JORNADAS (mismo criterio que ya usa el filtro
+anti-fantasmas de actualizar_resultados_lpf.py, ahora replicado acá).
+
 NOTA: desde que se agregó este script, actualizar_resultados_lpf.py
 llama a calcular_filas_nuevas() (la función de acá) automáticamente en
 cada corrida -- no hace falta acordarse de correr este archivo a mano
@@ -111,7 +122,26 @@ def calcular_filas_nuevas(pending_actual: list[dict], jugados_actual: list[dict]
     """
     jornada_offset = APERTURA_TOTAL_JORNADAS
 
-    claves_pendientes = {_clave(f["equipo_local"], f["equipo_visitante"]) for f in pending_actual}
+    # OJO: acá se excluyen las filas pendientes con jornada <= APERTURA_
+    # TOTAL_JORNADAS (fantasmas del Apertura -- partidos que quedaron sin
+    # jugar en su momento y nunca se sacaron del fixture pendiente). Sin
+    # este filtro, una pareja de equipos con un cruce del Apertura todavía
+    # pendiente "tapa" al Clausura: calcular_filas_nuevas() ve la clave
+    # (equipo_local, equipo_visitante) ya presente en claves_pendientes y
+    # nunca agrega la fila nueva del Clausura para esa pareja -- aunque
+    # sean partidos completamente distintos. Bug real (05/09/2026): 3
+    # partidos de Clausura Fecha 8 (Estudiantes RC-Sarmiento Junín,
+    # Belgrano-Huracán, Platense-Riestra) tenían de fondo un cruce del
+    # Apertura Fecha 8 que se había postergado y nunca se jugó -- esa fila
+    # vieja (jornada 8) bloqueó silenciosamente la creación de la fila
+    # nueva (jornada 24), y los 3 terminaron en "sin_matchear" en
+    # actualizar_resultados_lpf.py, que sí aplica este mismo filtro del
+    # otro lado (ver ese módulo) pero no alcanza a arreglar la causa acá.
+    claves_pendientes = {
+        _clave(f["equipo_local"], f["equipo_visitante"])
+        for f in pending_actual
+        if int(f.get("jornada") or 0) > APERTURA_TOTAL_JORNADAS
+    }
 
     marcadores_ya_cargados: dict[tuple[str, str], set[tuple]] = {}
     for f in jugados_actual:
